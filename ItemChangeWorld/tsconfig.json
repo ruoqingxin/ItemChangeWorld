@@ -1,20 +1,18 @@
 {
   "compilerOptions": {
-    "module": "es6",
+    "module": "System",
     "target": "es6",
-    "strict": true,
+    //"strict": true,
     "strictNullChecks": false,
     "noEmitHelpers": true,
     "sourceMap": false,
     "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "skipLibCheck": true,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
-    "paths": {
-      "~/packages/*": [
-        "./library/packages/*"
-      ]
-    }
+    "baseUrl": ".",
+    "noEmit": true
   },
   "include": [
     "./assets",

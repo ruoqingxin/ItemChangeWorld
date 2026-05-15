@@ -1,20 +1,26 @@
-const { regClass, property } = Laya;
-import { GameManager } from "./manager/GameManager";
+import { SubpackageLoader } from "./SubpackageLoader";
 
+const { regClass, property } = Laya;
+
+// 请注意，不要引用任何script目录下的文件，该脚本环境与其互相独立
+// 务必注意代码隔离
+// 负责加载子包与显示进度
 @regClass()
 export class Main extends Laya.Script {
-
-    onStart() {
-        console.log("Game start - 打怪/掉落/物品 单机架构");
-        // 初始化游戏总管理器（物品、背包、怪物、掉落）
-        const gm = GameManager.init();
-        // 示例：模拟击杀一只野狼，会自动加经验/金币并摇掉落入背包
-        Laya.timer.once(1000, this, () => {
-            gm.onMonsterKilled(10001);
-            const inv = gm.getInventory();
-            const slots = inv.getSlots();
-            console.log("背包格子数:", slots.length, "已用:", slots.filter(s => s != null).length);
-            console.log("玩家 经验:", gm.getPlayer().exp, "金币:", gm.getPlayer().gold);
+    onStart(): void {
+        const loader = new SubpackageLoader();
+        // 子包如果扩展请在这里添加
+        loader.loadAll(["ttf", "jslib", "subscript"], { subscript: "jslib" });
+        // 添加计时器判断子包是否加载完毕
+        // 子包进度条更新
+        Laya.timer.loop(100, this, () => {
+            if (loader.loaded) {
+                // 加载完成清理timer
+                Laya.timer.clearAll(this);
+                // 请求执行子包入口
+                console.log("game start");
+                new window["GameStart"]();
+            }
         });
     }
-}
+} 
