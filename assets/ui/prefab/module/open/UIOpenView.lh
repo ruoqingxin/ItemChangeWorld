@@ -1,0 +1,69 @@
+{
+  "_$ver": 1,
+  "_$id": "c2lnzudv",
+  "_$type": "GWidget",
+  "name": "UIOpenView",
+  "width": 720,
+  "height": 1280,
+  "_$comp": [
+    {
+      "_$type": "3593fc26-337e-42e3-92dc-1b9c2bb8f988",
+      "scriptPath": "../src/script/games/ui/components/ElementMapper.ts",
+      "adapter": null,
+      "elements": [
+        {
+          "_$ref": "h28cw3xt"
+        },
+        {
+          "_$ref": "rv4s5gtj"
+        }
+      ],
+      "prefabs": null,
+      "mapperType": 2
+    }
+  ],
+  "_$child": [
+    {
+      "_$id": "oqgij6m2",
+      "_$type": "GImage",
+      "name": "img_2",
+      "y": 144,
+      "width": 720,
+      "height": 890,
+      "relations": [
+        {
+          "_$type": "Relation",
+          "target": {
+            "_$ref": "c2lnzudv"
+          },
+          "data": [
+            21,
+            0,
+            24,
+            0
+          ]
+        }
+      ],
+      "src": "res://bc79f5b4-ae78-4ff0-adb7-9d8fa3e8eac8",
+      "autoSize": false
+    },
+    {
+      "_$id": "h28cw3xt",
+      "_$type": "GBox",
+      "name": "box",
+      "x": 10,
+      "y": 225,
+      "width": 698,
+      "height": 726
+    },
+    {
+      "_$id": "rv4s5gtj",
+      "_$prefab": "bdd7b8dc-8fd8-4643-a8c8-360c616f2bf8",
+      "name": "btn_close",
+      "active": true,
+      "x": 78,
+      "y": 1206,
+      "visible": true
+    }
+  ]
+}

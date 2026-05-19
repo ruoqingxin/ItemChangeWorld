@@ -1,0 +1,14 @@
+{
+  "uuid": "19404a27-288b-4ff3-b8d1-e3ad2d135136",
+  "importer": {
+    "sRGB": true,
+    "generateMipmap": false,
+    "textureType": 2,
+    "platformAndroid": {
+      "format": "ASTC_6X6"
+    },
+    "platformIOS": {
+      "format": "ASTC_6X6"
+    }
+  }
+}
