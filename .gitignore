@@ -1,8 +1,11 @@
 .DS_Store
-temp
-library
-local
-release
-node_modules
+/temp
+/library
+/local
+/release
+/node_modules
 bin/js/bundles
-src/script/config/schema.ts
+/assets/ui/design
+/bin
+/assets/logincfg.json.meta
+/assets/logincfg.json
