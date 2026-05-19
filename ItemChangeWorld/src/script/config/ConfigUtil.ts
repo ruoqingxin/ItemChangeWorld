@@ -1,4 +1,5 @@
-import PackRes from "src/games/asset/PackRes";
+
+import PackRes from "../games/asset/PackRes";
 import ByteBuf from "./bright/serialization/ByteBuf";
 import { Tables } from "./schema";
 

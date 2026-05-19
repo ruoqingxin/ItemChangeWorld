@@ -1,4 +1,5 @@
-import { UIUtils } from "src/script/sfgames/utils/UIUtils";
+
+import { UIUtils } from "../../utils/UIUtils";
 import { ElementAdapater } from "./ElementAdapater";
 
 const { regClass, classInfo, runInEditor, property } = Laya;
@@ -98,7 +99,7 @@ export class ElementMapper extends Laya.Script {
 
             this.v_adapter.width = this.owner.width;
             this.v_adapter.height = this.owner.height;
-            if(! this.adapter){
+            if (!this.adapter) {
                 this.adapter = this.v_adapter;
                 this.autoSize();
             }

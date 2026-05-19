@@ -3,7 +3,7 @@ import { TabCtrl } from "./TabCtrl";
 import { UIBaseView } from "./UIBaseView";
 import { UILayer } from "./UILayer";
 import { UIManager } from "./UIManager";
-import { FuncEntryData } from "src/script/module/main/data/FuncEntryData";
+
 
 export abstract class UITabSubView extends UIBaseView {
     public get layer(): UILayer {
@@ -34,14 +34,14 @@ export abstract class UITabView extends UIBaseView {
         if (!tabIdList || tabIdList.length <= 0) {
             return;
         }
-        tabIdList.sort((a, b) => {
-            const aCfg = FuncEntryData.ins().getFuncCfg(a as any);
-            const bCfg = FuncEntryData.ins().getFuncCfg(b as any);
-            if (!aCfg || !bCfg) {
-                return a - b;
-            }
-            return aCfg.order - bCfg.order;
-        });
+        // tabIdList.sort((a, b) => {
+        //     const aCfg = FuncEntryData.ins().getFuncCfg(a as any);
+        //     const bCfg = FuncEntryData.ins().getFuncCfg(b as any);
+        //     if (!aCfg || !bCfg) {
+        //         return a - b;
+        //     }
+        //     return aCfg.order - bCfg.order;
+        // });
         tabConstructor.viewClassList = this.buildViewClassList(tabIdList);
     }
 

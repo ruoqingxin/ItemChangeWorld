@@ -1,9 +1,11 @@
-import { BaseClass } from "src/games/common/BaseClass";
+
 import GameConst from "../const/GameConst";
-import { RedDotManager } from "src/games/reddot/RedDotManager";
+
 import { ModuleManager } from "../manager/ModuleManager";
 import NetService from "../net/NetService";
 import GameMessageFactory from "../net/GameMessageFactory";
+import { BaseClass } from "../games/common/BaseClass";
+import { RedDotManager } from "../games/reddot/RedDotManager";
 
 export default class GameMain extends BaseClass {
 

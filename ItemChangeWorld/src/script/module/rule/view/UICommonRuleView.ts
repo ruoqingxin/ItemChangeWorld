@@ -1,5 +1,6 @@
-import { UIBaseView } from "src/games/ui/UIBaseView";
-import { UILayer } from "src/games/ui/UILayer";
+import { UIBaseView } from "src/script/games/ui/UIBaseView";
+import { UILayer } from "src/script/games/ui/UILayer";
+
 
 
 /**

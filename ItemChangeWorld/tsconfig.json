@@ -3,6 +3,10 @@
     "module": "System",
     "target": "es6",
     //"strict": true,
+    "lib": [
+      "es2020",
+      "dom"
+    ],
     "strictNullChecks": false,
     "noEmitHelpers": true,
     "sourceMap": false,

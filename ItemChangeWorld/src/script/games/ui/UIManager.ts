@@ -1,10 +1,10 @@
 import { UIBaseView } from "./UIBaseView";
 import { UILayer } from "./UILayer";
-import { UIUtils } from "src/script/sfgames/utils/UIUtils";
 import { UIEvents } from "./UIEvnets";
 import { MapperTypeEnum } from "./components/ElementMapper";
-import { UIRotateLoadingTipsView } from "src/script/module/tips/view/UIRotateLoadingTipsView";
+
 import { TabFormSearcher } from "./TabCtrl";
+import { UIUtils } from "../utils/UIUtils";
 
 export type UIOpenParameters<T extends (...args: any) => any> = T extends (...args: infer P) => any ? P : never;
 /**
@@ -529,11 +529,19 @@ export class UIManager extends Laya.EventDispatcher {
         if (ansyc) {
             // isReady 防止加载过程中出现遮罩
             if (this._asyncOpenCnt == 0 && this.isReady) {
-                this.openForm(UIRotateLoadingTipsView, "加载中...");
+                //this.openForm(UIRotateLoadingTipsView, "加载中...");
             }
             this._asyncOpenCnt++;
         }
+
+        console.log("open form:", form);
+
+        console.log("form.layer:", form.layer);
+
         let layer = form.layer;
+
+        console.log("group:", this._openstacks);
+
         let group = this._openstacks[layer];
         const oldIndex = group.indexOf(form);
         if (oldIndex != -1) {
@@ -548,7 +556,7 @@ export class UIManager extends Laya.EventDispatcher {
     _onFormAsyncLoad(form: UIBaseView) {
         this._asyncOpenCnt--;
         if (this._asyncOpenCnt == 0) {
-            this.closeForm(UIRotateLoadingTipsView);
+            //this.closeForm(UIRotateLoadingTipsView);
         }
         //uts.log("remove form:" + form.Name);
     }

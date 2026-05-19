@@ -1,17 +1,11 @@
-/*
- * @Author: GaryJy 1035465291@qq.com
- * @Date: 2024-04-30 15:22:25
- * @LastEditors: GaryJy 1035465291@qq.com
- * @LastEditTime: 2025-06-10 17:18:45
- * @FilePath: \minigame3.0\src\script\net\GameMessageFactory.ts
- * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
- */
 
-import { BaseClass } from "src/games/common/BaseClass";
+
 import GameConst from "../const/GameConst";
+import { BaseClass } from "../games/common/BaseClass";
+import { ErrorReportManager } from "../games/report/ErrorReportManager";
 import DeviceUtils from "../utils/DeviceUtils";
 import NetService, { NetMessageType } from "./NetService";
-import { ErrorReportManager } from "src/games/report/ErrorReportManager";
+
 
 export default class GameMessageFactory extends BaseClass implements asgard.message.IMessageFactory {
 

@@ -1,4 +1,3 @@
-import { UIManager } from "src/games/ui/UIManager";
 import GameConst from "../const/GameConst";
 import DeviceUtils from "../utils/DeviceUtils";
 import { GameCmd } from "./Protoid";

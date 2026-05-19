@@ -1,5 +1,6 @@
-import { BaseClass } from "../../games/common/BaseClass";
+
 import { AppConfig } from "../AppConfig";
+import { BaseClass } from "../games/common/BaseClass";
 
 
 export default class DeviceUtils extends BaseClass {
@@ -15,6 +16,12 @@ export default class DeviceUtils extends BaseClass {
      */
     public isDevelop(): boolean {
         return AppConfig.defines.indexOf("DEVELOP") > -1;
+    }
+
+
+    /**是否小游戏 */
+    public get isMiniGame(): boolean {
+        return window["tt"] != undefined || window["wx"] != undefined || window["qg"] != undefined || window["qq"] != undefined || window["ks"] != undefined;
     }
 
     /**

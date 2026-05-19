@@ -1,11 +1,12 @@
-import EventEngine from "../../games/eventSystem/EventEngine";
-import { SoundManager } from "../../games/sound/SoundManager";
-import { AppConfig } from "../AppConfig";
-import GameConst from "../const/GameConst";
-import { SoundDef } from "../sound/SoundDef";
-import { StageEnum } from "../stage/StageEnum";
-import StageFactory from "../stage/StageFactory";
-import DeviceUtils from "../utils/DeviceUtils";
+import { AppConfig } from "./AppConfig";
+import GameConst from "./const/GameConst";
+import EventEngine from "./games/eventSystem/EventEngine";
+import { SoundManager } from "./games/sound/SoundManager";
+import { SoundDef } from "./sound/SoundDef";
+import { StageEnum } from "./stage/StageEnum";
+import StageFactory from "./stage/StageFactory";
+import DeviceUtils from "./utils/DeviceUtils";
+
 
 export class GameStart {
     constructor() {

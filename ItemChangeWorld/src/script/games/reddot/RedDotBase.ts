@@ -1,4 +1,5 @@
-import { BaseClass } from "src/script/sfgames/common/BaseClass";
+
+import { BaseClass } from "../common/BaseClass";
 import { FuncChecker } from "../FuncChecker";
 
 /**

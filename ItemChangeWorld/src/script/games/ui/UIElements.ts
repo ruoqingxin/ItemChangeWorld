@@ -1,6 +1,6 @@
-import { Asset } from "src/script/sfgames/asset/Asset";
-import { List } from "src/script/sfgames/uilib/List";
-import { ListItemCtrl } from "src/script/sfgames/uilib/ListItemCtrl";
+import { Asset } from "../asset/Asset";
+import { List } from "../uilib/List";
+import { ListItemCtrl } from "../uilib/ListItemCtrl";
 import { UIButton } from "./UIButton";
 import { ElementMapper, MapperTypeEnum } from "./components/ElementMapper";
 

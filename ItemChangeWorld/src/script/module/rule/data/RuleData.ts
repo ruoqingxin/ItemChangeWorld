@@ -1,5 +1,6 @@
-import { BaseDataClass } from "src/script/sfgames/common/BaseDataClass";
+
 import { ConfigUtil } from "src/script/config/ConfigUtil";
+import { BaseDataClass } from "src/script/games/common/BaseDataClass";
 
 /**
  * 规则数据

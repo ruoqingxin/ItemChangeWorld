@@ -1,8 +1,10 @@
-import { UIManager } from "src/games/ui/UIManager";
+
 import GameConst from "../const/GameConst";
 import { StageEnum } from "./StageEnum";
-import { UILayer } from "src/games/ui/UILayer";
+
 import { UICommonRuleView } from "../module/rule/view/UICommonRuleView";
+import { UIManager } from "../games/ui/UIManager";
+import { UILayer } from "../games/ui/UILayer";
 
 
 export class LobbyStage extends asgard.stage.BaseStage {
@@ -35,6 +37,10 @@ export class LobbyStage extends asgard.stage.BaseStage {
         UIManager.ins().closeLayerForms(UILayer.Base);
         UIManager.ins().closeLayerForms(UILayer.HighBase);
         UIManager.ins().closeLayerForms(UILayer.Second);
+
+
+        asgard.events.EventsDispatcher.init(GameConst.appName);
+        UIManager.ins().init();
 
         UIManager.ins().openForm(UICommonRuleView);
     }

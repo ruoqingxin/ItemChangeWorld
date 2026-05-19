@@ -1,5 +1,5 @@
 
-import { BaseClass } from "src/games/common/BaseClass";
+import { BaseClass } from "../games/common/BaseClass";
 import { BaseModule } from "./BaseModule";
 
 /**

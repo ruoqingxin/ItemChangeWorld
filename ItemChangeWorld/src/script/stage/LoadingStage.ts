@@ -1,13 +1,13 @@
-import { UIManager } from "src/games/ui/UIManager";
 import GameConst from "../const/GameConst";
 import { StageEnum } from "./StageEnum";
 import { AppConfig } from "../AppConfig";
 import { StringUtils } from "../utils/StringUtils";
 import { ConfigLoader } from "../config/ConfigUtil";
-import { ResLoader } from "src/games/asset/ResLoader";
-import { UIResDepConfig } from "src/games/asset/UIResDepConfig";
-import { U3DResDepConfig } from "src/games/asset/U3DResDepConfig";
 import GameMain from "../start/GameMain";
+import { UIManager } from "../games/ui/UIManager";
+import { UIResDepConfig } from "../games/asset/UIResDepConfig";
+import { U3DResDepConfig } from "../games/asset/U3DResDepConfig";
+import { ResLoader } from "../games/asset/ResLoader";
 
 export class LoadingStage extends asgard.stage.BaseStage {
     private _loadFlowStartTime: number = 0;

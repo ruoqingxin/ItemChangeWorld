@@ -1,0 +1,131 @@
+{
+  "_$ver": 1,
+  "_$id": "c2lnzudv",
+  "_$type": "GWidget",
+  "name": "UICommonRuleView",
+  "width": 720,
+  "height": 1280,
+  "_$comp": [
+    {
+      "_$type": "3593fc26-337e-42e3-92dc-1b9c2bb8f988",
+      "scriptPath": "../src/script/games/ui/components/ElementMapper.ts",
+      "adapter": null,
+      "elements": [
+        {
+          "_$ref": "iyr6fngv"
+        },
+        {
+          "_$ref": "xfavpnw1"
+        },
+        {
+          "_$ref": "rv4s5gtj"
+        }
+      ],
+      "prefabs": null,
+      "mapperType": 2
+    }
+  ],
+  "_$child": [
+    {
+      "_$id": "oqgij6m2",
+      "_$type": "GImage",
+      "name": "img_2",
+      "y": 144,
+      "width": 720,
+      "height": 890,
+      "relations": [
+        {
+          "_$type": "Relation",
+          "target": {
+            "_$ref": "c2lnzudv"
+          },
+          "data": [
+            21,
+            0,
+            24,
+            0
+          ]
+        }
+      ],
+      "src": "res://bc79f5b4-ae78-4ff0-adb7-9d8fa3e8eac8",
+      "autoSize": false
+    },
+    {
+      "_$id": "xfavpnw1",
+      "_$type": "GList",
+      "name": "scroll_content",
+      "x": 21,
+      "y": 194,
+      "width": 678,
+      "height": 788,
+      "relations": [
+        {
+          "_$type": "Relation",
+          "target": {
+            "_$ref": "c2lnzudv"
+          },
+          "data": [
+            21,
+            0,
+            24,
+            0
+          ]
+        }
+      ],
+      "layout": {
+        "type": 1,
+        "rowGap": -50,
+        "columnGap": -40,
+        "align": 1
+      },
+      "scroller": {
+        "_$type": "Scroller",
+        "barDisplay": 5
+      },
+      "_initItemNum": null,
+      "_$child": [
+        {
+          "_$id": "iyr6fngv",
+          "_$type": "GTextField",
+          "name": "txt_content",
+          "x": 339,
+          "width": 678,
+          "height": 788,
+          "anchorX": 0.5,
+          "relations": [
+            {
+              "_$type": "Relation",
+              "target": {
+                "_$ref": "xfavpnw1"
+              },
+              "data": [
+                21,
+                0,
+                24,
+                0
+              ]
+            }
+          ],
+          "text": "",
+          "_isDemo": true,
+          "fontSize": 30,
+          "color": "#ffffff",
+          "fitContent": 2,
+          "html": true,
+          "valign": "middle",
+          "wordWrap": true,
+          "leading": 0
+        }
+      ]
+    },
+    {
+      "_$id": "rv4s5gtj",
+      "_$prefab": "bdd7b8dc-8fd8-4643-a8c8-360c616f2bf8",
+      "name": "btn_close",
+      "active": true,
+      "x": 78,
+      "y": 1206,
+      "visible": true
+    }
+  ]
+}

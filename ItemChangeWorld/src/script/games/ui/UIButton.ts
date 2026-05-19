@@ -1,5 +1,5 @@
-import { ElemFinder } from "src/script/sfgames/utils/ElemFinder";
-import { UIUtils } from "src/script/sfgames/utils/UIUtils";
+import { ElemFinder } from "../utils/ElemFinder";
+import { UIUtils } from "../utils/UIUtils";
 
 /**
  * 模板式按钮

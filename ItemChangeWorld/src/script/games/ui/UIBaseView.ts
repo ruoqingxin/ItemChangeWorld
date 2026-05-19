@@ -3,11 +3,11 @@ import { ResLoader } from "../asset/ResLoader";
 import { UIElements } from "./UIElements";
 import { UILayer } from "./UILayer";
 import { UIManager } from "./UIManager";
-import { SoundManager } from "src/script/sfgames/sound/SoundManager";
-import EventEngine from "src/script/sfgames/eventSystem/EventEngine";
-import { UIUtils } from "src/script/sfgames/utils/UIUtils";
 import { ErrorReportManager } from "../report/ErrorReportManager";
 import { MapperTypeEnum } from "./components/ElementMapper";
+import { SoundManager } from "../sound/SoundManager";
+import EventEngine from "../eventSystem/EventEngine";
+import { UIUtils } from "../utils/UIUtils";
 /**
  * ui界面基类
  */

@@ -1,5 +1,4 @@
 
-import { IShareQueryBase } from "../module/ad/enum/IShareQuery";
 import GameMessageFactory from "../net/GameMessageFactory";
 import { ModuleManager } from "./ModuleManager";
 
@@ -38,7 +37,7 @@ export abstract class BaseModule {
      * 分享
      * @param query 分享参数
      */
-    onShare(query: IShareQueryBase) {
+    onShare(query: any) {
     }
     /**
      * 注册协议回调

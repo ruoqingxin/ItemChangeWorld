@@ -1,7 +1,7 @@
-import { UIManager } from "src/games/ui/UIManager";
 import GameConst from "../const/GameConst";
+import { ResLoader } from "../games/asset/ResLoader";
 import { StageEnum } from "./StageEnum";
-import { ResLoader } from "src/games/asset/ResLoader";
+
 /**
  * 自定义场景，可以给一些需要加载场景的子玩法使用
  */

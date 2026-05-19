@@ -1,5 +1,6 @@
-import { BaseClass } from "src/games/common/BaseClass";
+
 import GameConst from "../const/GameConst";
+import { BaseClass } from "../games/common/BaseClass";
 import { StageEnum } from "../stage/StageEnum";
 
 export default class GameManager extends BaseClass {

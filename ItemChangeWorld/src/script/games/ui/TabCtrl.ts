@@ -1,10 +1,10 @@
 import { UIBaseView } from "./UIBaseView";
-import { List } from "src/script/sfgames/uilib/List";
-import { ListItemCtrl } from "src/script/sfgames/uilib/ListItemCtrl";
-import { ElemFinder } from "src/script/sfgames/utils/ElemFinder";
-import { UIUtils } from "src/script/sfgames/utils/UIUtils";
 import { UITabSubView } from "./UITabView";
 import { TabConstructor } from "./TabConstructor";
+import { UIUtils } from "../utils/UIUtils";
+import { ElemFinder } from "../utils/ElemFinder";
+import { ListItemCtrl } from "../uilib/ListItemCtrl";
+import { List } from "../uilib/List";
 
 export type TabFormSearcher = {
     getTabFormByClass<T extends UIBaseView>(formclass: new () => T): T;

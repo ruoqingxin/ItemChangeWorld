@@ -1,0 +1,31 @@
+{
+  "_$ver": 1,
+  "_$id": "ap4fjs6u",
+  "_$type": "GWidget",
+  "name": "btn_close",
+  "x": 78,
+  "y": 67,
+  "width": 100,
+  "height": 100,
+  "anchorX": 0.5,
+  "anchorY": 0.5,
+  "_$comp": [
+    {
+      "_$type": "5f45c17e-dc7e-487c-b0d5-8383cd3b8c47",
+      "scriptPath": "../src/script/games/ui/components/UIScaleButton.ts",
+      "tweenTarget": null
+    }
+  ],
+  "_$child": [
+    {
+      "_$id": "6pj7k0of",
+      "_$type": "GImage",
+      "name": "img_5",
+      "x": 4,
+      "y": 2,
+      "width": 92,
+      "height": 95,
+      "src": "res://32159e03-8a2b-422e-9e6a-8cb9d1e526aa"
+    }
+  ]
+}

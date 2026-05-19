@@ -1,9 +1,32 @@
 {
-    "modules": {
-        "laya.ui": true,
-        "laya.d3": true
-    },
-    "addons": {
-        "laya.ui": "ui2"
-    }
+  "resolution": {
+    "designWidth": 720,
+    "designHeight": 1280,
+    "backgroundColor": "#303030"
+  },
+  "2D": {
+    "defaultFontSize": 26
+  },
+  "UI": {
+    "horizontalScrollBar": null,
+    "verticalScrollBar": null,
+    "popupMenu": null,
+    "tooltipsWidget": null
+  },
+  "modules": {
+    "laya.ui": true,
+    "laya.d3": true,
+    "laya.spine": true,
+    "laya.trail3D": true,
+    "laya.particle3D": true,
+    "laya.physics3D": true
+  },
+  "addons": {
+    "laya.ui": "ui2"
+  },
+  "spineVersion": "4.1",
+  "splash": {
+    "enabled": false,
+    "fit": "center"
+  }
 }
