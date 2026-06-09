@@ -1,9 +1,15 @@
 {
   "uuid": "206e0c36-15a7-4939-a76a-d4e3260f00a6",
   "importer": {
-    "sRGB": true,
-    "generateMipmap": false,
     "textureType": 2,
+    "sRGB": true,
+    "sizeGrid": [
+      51,
+      52,
+      44,
+      41,
+      0
+    ],
     "platformAndroid": {
       "format": "ASTC_6X6"
     },

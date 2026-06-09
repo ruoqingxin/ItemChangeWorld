@@ -10,7 +10,7 @@
 
 import ByteBuf from './bright/serialization/ByteBuf'
 
- 
+
 export enum EFuncID {
     none = 0,
     /**
@@ -35,8 +35,8 @@ export enum EFuncID {
     home = 101003,
 }
 
- 
- 
+
+
 export enum EMainType {
     /**
      * 货币
@@ -64,8 +64,8 @@ export enum EMainType {
     functional_item = 5,
 }
 
- 
- 
+
+
 export enum EQuality {
     /**
      * 状态较差的低品质物品，通常属性偏低，出售价值低
@@ -97,8 +97,8 @@ export enum EQuality {
     mythic = 7,
 }
 
- 
- 
+
+
 export enum ESubType {
     /**
      * 装备-头盔
@@ -178,8 +178,8 @@ export enum ESubType {
     key_item = 501,
 }
 
- 
- 
+
+
 export enum ETargetType {
     /**
      * 被动物品或不可直接点击使用
@@ -199,7 +199,7 @@ export enum ETargetType {
     scene = 3,
 }
 
- 
+
 
 
 
@@ -224,12 +224,12 @@ export class group1 {
      */
     readonly times: number
 
-/*
-    resolve(tables:Tables) {
-        
-        
-    }
-    */
+    /*
+        resolve(tables:Tables) {
+            
+            
+        }
+        */
 }
 
 
@@ -242,7 +242,9 @@ export class IitemConfig {
         this.item_id = _buf_.ReadInt()
         this.item_type = _buf_.ReadInt()
         this.sub_type = _buf_.ReadInt()
-        this.index = _buf_.ReadInt()
+        this.quality = _buf_.ReadInt()
+        this.icon = _buf_.ReadString()
+        this.bag_size = _buf_.ReadInt()
     }
 
     /**
@@ -257,16 +259,29 @@ export class IitemConfig {
      * 细分类型
      */
     readonly sub_type: ESubType
-    readonly index: number
+    /**
+     * 品质
+     */
+    readonly quality: number
+    /**
+     * 图片
+     */
+    readonly icon: string
+    /**
+     * 物品占据格子
+     */
+    readonly bag_size: number
 
-/*
-    resolve(tables:Tables) {
-        
-        
-        
-        
-    }
-    */
+    /*
+        resolve(tables:Tables) {
+            
+            
+            
+            
+            
+            
+        }
+        */
 }
 
 
@@ -292,12 +307,12 @@ export class int2 {
      */
     readonly v2: number
 
-/*
-    resolve(tables:Tables) {
-        
-        
-    }
-    */
+    /*
+        resolve(tables:Tables) {
+            
+            
+        }
+        */
 }
 
 
@@ -328,13 +343,13 @@ export class int3 {
      */
     readonly v3: number
 
-/*
-    resolve(tables:Tables) {
-        
-        
-        
-    }
-    */
+    /*
+        resolve(tables:Tables) {
+            
+            
+            
+        }
+        */
 }
 
 
@@ -357,12 +372,12 @@ export class item1 {
      */
     readonly num: number
 
-/*
-    resolve(tables:Tables) {
-        
-        
-    }
-    */
+    /*
+        resolve(tables:Tables) {
+            
+            
+        }
+        */
 }
 
 
@@ -385,12 +400,12 @@ export class item2 {
      */
     readonly id2: number
 
-/*
-    resolve(tables:Tables) {
-        
-        
-    }
-    */
+    /*
+        resolve(tables:Tables) {
+            
+            
+        }
+        */
 }
 
 
@@ -421,13 +436,13 @@ export class price1 {
      */
     readonly num: number
 
-/*
-    resolve(tables:Tables) {
-        
-        
-        
-    }
-    */
+    /*
+        resolve(tables:Tables) {
+            
+            
+            
+        }
+        */
 }
 
 
@@ -453,12 +468,12 @@ export class reward1 {
      */
     readonly num: number
 
-/*
-    resolve(tables:Tables) {
-        
-        
-    }
-    */
+    /*
+        resolve(tables:Tables) {
+            
+            
+        }
+        */
 }
 
 
@@ -489,13 +504,13 @@ export class reward2 {
      */
     readonly weight: number
 
-/*
-    resolve(tables:Tables) {
-        
-        
-        
-    }
-    */
+    /*
+        resolve(tables:Tables) {
+            
+            
+            
+        }
+        */
 }
 
 
@@ -531,14 +546,14 @@ export class reward3 {
      */
     readonly prob: number
 
-/*
-    resolve(tables:Tables) {
-        
-        
-        
-        
-    }
-    */
+    /*
+        resolve(tables:Tables) {
+            
+            
+            
+            
+        }
+        */
 }
 
 
@@ -557,13 +572,13 @@ export class type1 {
     readonly v2: number
     readonly str: string
 
-/*
-    resolve(tables:Tables) {
-        
-        
-        
-    }
-    */
+    /*
+        resolve(tables:Tables) {
+            
+            
+            
+        }
+        */
 }
 
 
@@ -580,12 +595,12 @@ export class vector2 {
     readonly x: number
     readonly y: number
 
-/*
-    resolve(tables:Tables) {
-        
-        
-    }
-    */
+    /*
+        resolve(tables:Tables) {
+            
+            
+        }
+        */
 }
 
 
@@ -604,13 +619,13 @@ export class vector3 {
     readonly y: number
     readonly z: number
 
-/*
-    resolve(tables:Tables) {
-        
-        
-        
-    }
-    */
+    /*
+        resolve(tables:Tables) {
+            
+            
+            
+        }
+        */
 }
 
 
@@ -631,14 +646,14 @@ export class vector4 {
     readonly z: number
     readonly w: number
 
-/*
-    resolve(tables:Tables) {
-        
-        
-        
-        
-    }
-    */
+    /*
+        resolve(tables:Tables) {
+            
+            
+            
+            
+        }
+        */
 }
 
 
@@ -661,12 +676,12 @@ export class xy1 {
      */
     readonly y: number
 
-/*
-    resolve(tables:Tables) {
-        
-        
-    }
-    */
+    /*
+        resolve(tables:Tables) {
+            
+            
+        }
+        */
 }
 
 
@@ -699,14 +714,14 @@ export class xy2 {
      */
     readonly y1: number
 
-/*
-    resolve(tables:Tables) {
-        
-        
-        
-        
-    }
-    */
+    /*
+        resolve(tables:Tables) {
+            
+            
+            
+            
+        }
+        */
 }
 
 
@@ -734,13 +749,13 @@ export class xy3 {
      */
     readonly y: number
 
-/*
-    resolve(tables:Tables) {
-        
-        
-        
-    }
-    */
+    /*
+        resolve(tables:Tables) {
+            
+            
+            
+        }
+        */
 }
 
 
@@ -778,15 +793,15 @@ export class xy4 {
      */
     readonly y1: number
 
-/*
-    resolve(tables:Tables) {
-        
-        
-        
-        
-        
-    }
-    */
+    /*
+        resolve(tables:Tables) {
+            
+            
+            
+            
+            
+        }
+        */
 }
 
 
@@ -824,15 +839,15 @@ export class xy5 {
      */
     readonly y1: number
 
-/*
-    resolve(tables:Tables) {
-        
-        
-        
-        
-        
-    }
-    */
+    /*
+        resolve(tables:Tables) {
+            
+            
+            
+            
+            
+        }
+        */
 }
 
 
@@ -842,52 +857,52 @@ export class xy5 {
 
 export class item {
     private _dataMap: Map<number, IitemConfig>
-	//private _dataObj: {[index:number]:IitemConfig}
+    //private _dataObj: {[index:number]:IitemConfig}
     private _dataList: IitemConfig[]
-    private _loaded:boolean=false;
+    private _loaded: boolean = false;
     private _buf: ByteBuf;
     constructor(_buf_: ByteBuf) {
         this._buf = _buf_;
         this._loaded = false;
     }
 
-    private load():void{
-        if(this._loaded){
+    private load(): void {
+        if (this._loaded) {
             return;
         }
         let _buf_ = this._buf;
-        if(!_buf_){
+        if (!_buf_) {
             console.error("_buf_ null");
             return;
         }
         this._dataMap = new Map<number, IitemConfig>()
         this._dataList = []
-		//this._dataObj = {}
-        for(let n = _buf_.ReadInt(); n > 0; n--) {
+        //this._dataObj = {}
+        for (let n = _buf_.ReadInt(); n > 0; n--) {
             let _v: IitemConfig
             _v = new IitemConfig(_buf_)
             this._dataList.push(_v)
             this._dataMap.set(_v.item_id, _v)
-			//this._dataObj[_v.item_id] = _v
+            //this._dataObj[_v.item_id] = _v
         }
         this._loaded = true;
     }
-    getDataMap(): Map<number, IitemConfig> {this.load(); return this._dataMap; }
-	
-	//getDataObj(): { [index: number]: IitemConfig } {this.load(); return this._dataObj; }
-	
-    getDataList(): IitemConfig[] { this.load();return this._dataList; }
+    getDataMap(): Map<number, IitemConfig> { this.load(); return this._dataMap; }
+
+    //getDataObj(): { [index: number]: IitemConfig } {this.load(); return this._dataObj; }
+
+    getDataList(): IitemConfig[] { this.load(); return this._dataList; }
 
     get(key: number): IitemConfig | undefined {
-		this.load();
-        return this._dataMap.get(key); 
+        this.load();
+        return this._dataMap.get(key);
     }
-    
-/**
-    resolve(tables:Tables) {
-        
-    }
- */    
+
+    /**
+        resolve(tables:Tables) {
+            
+        }
+     */
 
 }
 
@@ -898,7 +913,7 @@ type ByteBufLoader = (file: string) => ByteBuf
 
 export class Tables {
     private _item: item
-    get item(): item  { return this._item;}
+    get item(): item { return this._item; }
 
     static getTableNames(): string[] {
         let names: string[] = [];

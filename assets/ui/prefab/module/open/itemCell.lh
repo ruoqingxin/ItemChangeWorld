@@ -1,0 +1,79 @@
+{
+  "_$ver": 1,
+  "_$id": "ap4fjs6u",
+  "_$type": "GWidget",
+  "name": "itemCell",
+  "width": 139,
+  "height": 139,
+  "_$child": [
+    {
+      "_$id": "mu8elfql",
+      "_$type": "GImage",
+      "name": "img_item",
+      "x": 70,
+      "y": 70,
+      "width": 139,
+      "height": 139,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "relations": [
+        {
+          "_$type": "Relation",
+          "target": {
+            "_$ref": "ap4fjs6u"
+          },
+          "data": [
+            1,
+            0,
+            2,
+            0
+          ]
+        }
+      ],
+      "src": "res://b0aefa2a-2c27-4999-b0fc-3fd7a230694f",
+      "autoSize": false
+    },
+    {
+      "_$id": "3efsahi7",
+      "_$type": "GImage",
+      "name": "img_mask",
+      "x": 70,
+      "y": 70,
+      "width": 139,
+      "height": 139,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "relations": [
+        {
+          "_$type": "Relation",
+          "target": {
+            "_$ref": "ap4fjs6u"
+          },
+          "data": [
+            1,
+            0,
+            2,
+            0
+          ]
+        }
+      ],
+      "src": "res://51c97a51-b91f-41fb-a6bc-2afe894b768d",
+      "autoSize": false
+    },
+    {
+      "_$id": "k8m2search",
+      "_$type": "GImage",
+      "name": "img_search",
+      "x": 65,
+      "y": 75,
+      "width": 30,
+      "height": 30,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "scaleX": 2,
+      "scaleY": 2,
+      "src": "res://7fef8dfc-f2af-49a1-835b-f615e1f95297",
+      "autoSize": false
+    }
+  ]
+}

@@ -1,15 +1,26 @@
 import { ConfigLoader, ConfigUtil } from "src/script/config/ConfigUtil";
+import { IitemConfig } from "src/script/config/schema";
 import { UIBaseView } from "src/script/games/ui/UIBaseView";
 import { UILayer } from "src/script/games/ui/UILayer";
 import { OpenSearchItemData } from "../data/OpenSearchItemData";
+import { OpenGridUtil } from "../util/OpenGridUtil";
+import { OpenSearchUtil } from "../util/OpenSearchUtil";
 import { ItemDisplayUtil } from "../util/ItemDisplayUtil";
 import { OPEN_ITEM_CELL_SIZE, UIOpenItemCell } from "./UIOpenItemCell";
 
+interface OpenViewItemEntry {
+    data: OpenSearchItemData;
+    cfg: IitemConfig;
+}
+
 /**
- * 搜打撤 - 物品搜索/开箱展示界面
+ * 物品搜索/开箱展示界面
  * 使用预制 UIOpenView.lh，品质框资源：ui/image/itemQualityBg/ui_bg_djk_{quality}.png
+ * 搜索时长由品质决定，占位格数由 bag_size 决定
  */
+
 export class UIOpenView extends UIBaseView {
+
     private static readonly COL_COUNT = 5;
 
     public get layer(): UILayer {
@@ -25,26 +36,34 @@ export class UIOpenView extends UIBaseView {
     }
 
     private box: Laya.GBox;
+    private _itemCellTemplate: Laya.GWidget;
     private _cells: UIOpenItemCell[] = [];
+    private _searchEntries: OpenViewItemEntry[] = [];
+    private _searching = false;
 
     protected onConstruct(): void {
         this.box = this.getElement<Laya.GBox>("box");
+        this._itemCellTemplate = this.getElement<Laya.GWidget>("itemCell");
+        if (this._itemCellTemplate) {
+            this._itemCellTemplate.visible = false;
+        }
         this.addClickListener(this.getElement("btn_close"), this.onClickClose);
-        this._clearPlaceholderSlots();
     }
 
     /**
-     * @param items 搜索到的物品列表；不传则取配置表前若干条做演示
-     */
+    * @param items 搜索到的物品列表；不传则取配置表若干条做演示
+    */
     onOpen(items?: OpenSearchItemData[]): void {
         const show = () => {
             const list = items && items.length > 0 ? items : this._buildDemoItems();
-            this._refreshItems(list);
+            this._startSearch(list);
         };
+
         if (ConfigUtil.Tables?.item) {
             show();
             return;
         }
+
         ConfigLoader.loadAllConfig(Laya.Handler.create(this, (ok: boolean) => {
             if (!ok) {
                 console.error("[UIOpenView] 配置加载失败");
@@ -54,47 +73,95 @@ export class UIOpenView extends UIBaseView {
         }));
     }
 
+
+
     protected onClose(): void {
+        this._stopSearch();
         this._clearCells();
     }
+
+
 
     private onClickClose(): void {
         this.close();
     }
 
-    /** 移除预制里用于占位的静态图，改由代码动态生成格子 */
-    private _clearPlaceholderSlots(): void {
-        if (!this.box) {
+
+
+    private _startSearch(items: OpenSearchItemData[]): void {
+        this._stopSearch();
+        this._clearCells();
+        if (!this.box || !this._itemCellTemplate || items.length === 0) {
             return;
         }
-        const children = [...this.box._children];
-        for (const child of children) {
-            if (child.name.startsWith("img_")) {
-                child.removeSelf();
-                child.destroy();
-            }
+
+        const entries = this._resolveEntries(items);
+        if (entries.length === 0) {
+            return;
         }
+
+        const placements = OpenGridUtil.layoutItems(
+            entries.map((e) => e.cfg.bag_size),
+            UIOpenView.COL_COUNT
+        );
+
+        const rowCount = OpenGridUtil.getRequiredRowCount(placements);
+        this.box.height = rowCount * OPEN_ITEM_CELL_SIZE;
+        this._searchEntries = entries;
+        this._searching = true;
+
+        entries.forEach((entry, index) => {
+            const cell = new UIOpenItemCell(this.box, placements[index], this._itemCellTemplate);
+            cell.bind(entry.cfg, entry.data.count ?? 1);
+            this._cells.push(cell);
+        });
+
+        this._searchNext(0);
     }
 
-    private _refreshItems(items: OpenSearchItemData[]): void {
-        this._clearCells();
-        if (!this.box) {
+    /** 按顺序逐个搜索：当前格子动画完成并揭示后，再开始下一个 */
+    private _searchNext(index: number): void {
+        if (!this._searching || index >= this._cells.length) {
+            if (index >= this._cells.length) {
+                this._searching = false;
+            }
             return;
         }
 
-        const rowCount = Math.max(1, Math.ceil(items.length / UIOpenView.COL_COUNT));
-        this.box.height = rowCount * OPEN_ITEM_CELL_SIZE;
+        const cell = this._cells[index];
+        const entry = this._searchEntries[index];
+        const duration = OpenSearchUtil.getSearchDurationMs(entry.cfg.quality);
 
-        items.forEach((data, index) => {
+        cell.playSearch(duration, () => {
+            if (!this._searching) {
+                return;
+            }
+            cell.reveal();
+            this._searchNext(index + 1);
+        });
+    }
+
+
+
+    private _resolveEntries(items: OpenSearchItemData[]): OpenViewItemEntry[] {
+        const result: OpenViewItemEntry[] = [];
+        for (const data of items) {
             const cfg = ConfigUtil.Tables?.item?.get(data.itemId);
             if (!cfg) {
                 console.warn(`[UIOpenView] 未找到物品配置: ${data.itemId}`);
-                return;
+                continue;
             }
-            const cell = new UIOpenItemCell(this.box, index);
-            cell.bind(cfg, data.count ?? 1);
-            this._cells.push(cell);
-        });
+            result.push({ data, cfg });
+        }
+        return result;
+    }
+
+    private _stopSearch(): void {
+        this._searching = false;
+        this._searchEntries.length = 0;
+        for (const cell of this._cells) {
+            cell.stopSearch();
+        }
     }
 
     private _clearCells(): void {
@@ -104,22 +171,43 @@ export class UIOpenView extends UIBaseView {
         this._cells.length = 0;
     }
 
-    /** 配置未传入时，从物品表取前 12 条做展示 */
+    /** 配置未传入时，优先挑选不同 size/品质做演示 */
     private _buildDemoItems(): OpenSearchItemData[] {
         const table = ConfigUtil.Tables?.item;
         if (!table) {
             return [];
         }
         const list = table.getDataList();
-        const max = Math.min(12, list.length);
-        const result: OpenSearchItemData[] = [];
-        for (let i = 0; i < max; i++) {
-            const cfg = list[i];
-            result.push({
-                itemId: cfg.id,
-                count: (i % 3) + 1,
-            });
+        const picked: IitemConfig[] = [];
+        const seenSize = new Set<number>();
+
+        for (const cfg of list) {
+            if (!seenSize.has(cfg.bag_size)) {
+                seenSize.add(cfg.bag_size);
+                picked.push(cfg);
+            }
+
+            if (picked.length >= 8) {
+                break;
+            }
         }
-        return result;
+
+        if (picked.length < 8) {
+            for (const cfg of list) {
+                if (picked.indexOf(cfg) >= 0) {
+                    continue;
+                }
+                picked.push(cfg);
+                if (picked.length >= 8) {
+                    break;
+                }
+            }
+        }
+
+        return picked.map((cfg, i) => ({
+            itemId: cfg.item_id,
+            count: (i % 3) + 1,
+        }));
     }
 }
+

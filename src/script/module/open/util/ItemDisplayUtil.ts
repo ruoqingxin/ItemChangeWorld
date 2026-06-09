@@ -33,34 +33,38 @@ export class ItemDisplayUtil {
     }
 
     /**
-     * 将品质框、图标、数量渲染到格子节点（需含 img_quality、img_icon，可选 txt_count）
+     * 将品质框、图标、数量渲染到 itemCell（img_item 品质框，可选 img_icon）
      */
     static applyItemCell(
         cell: Laya.GWidget,
         itemCfg: IitemConfig,
-        count: number = 1
     ): void {
-        const imgQuality = cell.getChildByName("img_quality") as Laya.GImage;
-        const imgIcon = cell.getChildByName("img_icon") as Laya.GImage;
-        const txtCount = cell.getChildByName("txt_count") as Laya.GTextField;
+        const imgItem = cell.getChildByName("img_item") as Laya.GImage;
+        let imgIcon = cell.getChildByName("img_icon") as Laya.GImage;
 
-        if (imgQuality) {
-            imgQuality.src = ItemDisplayUtil.getQualityBgUrl(itemCfg.quality);
+        const cellW = cell.width;
+        const cellH = cell.height;
+
+        if (imgItem) {
+            imgItem.src = ItemDisplayUtil.getQualityBgUrl(itemCfg.quality);
         }
-        if (imgIcon) {
-            const iconUrl = ItemDisplayUtil.getItemIconUrl(itemCfg.icon);
-            imgIcon.src = iconUrl;
-            imgIcon.visible = !!iconUrl;
-        }
-        if (txtCount) {
-            if (count > 1) {
-                txtCount.text = count.toString();
-                txtCount.visible = true;
-            } else {
-                txtCount.visible = false;
+
+        const iconUrl = ItemDisplayUtil.getItemIconUrl(itemCfg.icon);
+        if (iconUrl) {
+            if (!imgIcon) {
+                const iconSize = Math.floor(Math.min(cellW, cellH) * 0.72);
+                imgIcon = new Laya.GImage();
+                imgIcon.name = "img_icon";
+                imgIcon.size(iconSize, iconSize);
+                imgIcon.pos((cellW - iconSize) / 2, (cellH - iconSize) / 2);
+                imgIcon.autoSize = false;
+                cell.addChild(imgIcon);
             }
+            imgIcon.src = iconUrl;
+            imgIcon.visible = true;
+        } else if (imgIcon) {
+            imgIcon.visible = false;
         }
-        cell.visible = true;
     }
 
     /**

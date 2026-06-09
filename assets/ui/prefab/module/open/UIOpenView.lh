@@ -15,6 +15,9 @@
           "_$ref": "h28cw3xt"
         },
         {
+          "_$ref": "0jifuolq"
+        },
+        {
           "_$ref": "rv4s5gtj"
         }
       ],
@@ -48,13 +51,41 @@
       "autoSize": false
     },
     {
+      "_$id": "nluzsbsf",
+      "_$type": "GImage",
+      "name": "img_7",
+      "x": 10,
+      "y": 225,
+      "width": 698,
+      "height": 726,
+      "src": "res://920304fc-601a-4bb6-b33c-7d2835c2df22",
+      "autoSize": false
+    },
+    {
       "_$id": "h28cw3xt",
       "_$type": "GBox",
       "name": "box",
       "x": 10,
       "y": 225,
       "width": 698,
-      "height": 726
+      "height": 726,
+      "_$child": [
+        {
+          "_$id": "0jifuolq",
+          "_$prefab": "489d2c7e-0757-4624-b656-72bd5120b6ad",
+          "name": "itemCell",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": true,
+          "_$child": [
+            {
+              "_$override": "mu8elfql",
+              "visible": false
+            }
+          ]
+        }
+      ]
     },
     {
       "_$id": "rv4s5gtj",
