@@ -28,6 +28,18 @@ export class LoadingStage extends asgard.stage.BaseStage {
     }
 
     onExit(): void {
+        // 清理旧的场景
+        let root: Laya.Sprite = Laya.Scene.root;
+        for (let i = 0, n = root.numChildren; i < n; i++) {
+            var scene = root.getChildAt(i);
+            if (scene instanceof Laya.Scene) {
+                scene.close();
+                scene.destroy();
+            }
+            else {
+                scene.removeSelf();
+            }
+        }
     }
 
     beginLogin() {

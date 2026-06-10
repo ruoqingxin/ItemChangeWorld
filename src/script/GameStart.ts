@@ -2,6 +2,7 @@ import { AppConfig } from "./AppConfig";
 import GameConst from "./const/GameConst";
 import EventEngine from "./games/eventSystem/EventEngine";
 import { SoundManager } from "./games/sound/SoundManager";
+import { ElementMapper } from "./games/ui/components/ElementMapper";
 import { SoundDef } from "./sound/SoundDef";
 import { StageEnum } from "./stage/StageEnum";
 import StageFactory from "./stage/StageFactory";
@@ -26,14 +27,16 @@ export class GameStart {
         // 关闭多点触碰
         Laya.InputManager.multiTouchEnabled = false;
         // 设置顶部padding
-        //ElementMapper.TOP_PADDING = 55;
+        ElementMapper.TOP_PADDING = 55;
 
         // 移除console日志
         //ConsoleLogger.instance.initialize(DeviceUtils.ins().isDevelop(), false);
 
         console.log("Laya.LayaEnv.isEditor:" + Laya.LayaEnv.isEditor);
-        //console.log("DeviceUtils.ins().isDevelop():" + DeviceUtils.ins().isDevelop());
+        console.log("DeviceUtils.ins().isDevelop():" + DeviceUtils.ins().isDevelop());
+
         this.hideSplashScreen();
+
         //installCpuParticle3DHook();
 
         //Hook.init();
@@ -43,14 +46,14 @@ export class GameStart {
         Laya.Shader3D.debugMode = DeviceUtils.ins().isDevelop();
 
         Laya.loader.maxLoader = 25;
-        Laya.Resource.DEBUG = DeviceUtils.ins().isDevelop();
-        // if (!DeviceUtils.ins().isDevelop() && window["conchConfig"]) {
-        //     //值为0：表示关闭所有日志输出
-        //     //值为1：表示只有Fatal日志输出
-        //     //值为2：表示只有Fatal和Error日志输出
-        //     //值为n：表示只有LogLevel <= n的日志输出
-        //     window["conchConfig"].setLogLevel(2);
-        // }
+        //Laya.Resource.DEBUG = DeviceUtils.ins().isDevelop();
+        if (!DeviceUtils.ins().isDevelop() && window["conchConfig"]) {
+            //值为0：表示关闭所有日志输出
+            //值为1：表示只有Fatal日志输出
+            //值为2：表示只有Fatal和Error日志输出
+            //值为n：表示只有LogLevel <= n的日志输出
+            window["conchConfig"].setLogLevel(2);
+        }
 
         // GamePlatform.initialize();
 
@@ -59,7 +62,7 @@ export class GameStart {
         EventEngine.appName = GameConst.appName;
 
         asgard.stage.StageManager.init(new StageFactory());
-        asgard.stage.StageManager.enterStage(GameConst.appName, StageEnum.STAGE_LOBBY);
+        asgard.stage.StageManager.enterStage(GameConst.appName, StageEnum.STAGE_LODING);
     }
 
     /**

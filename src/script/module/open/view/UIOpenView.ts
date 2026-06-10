@@ -54,23 +54,9 @@ export class UIOpenView extends UIBaseView {
     * @param items 搜索到的物品列表；不传则取配置表若干条做演示
     */
     onOpen(items?: OpenSearchItemData[]): void {
-        const show = () => {
-            const list = items && items.length > 0 ? items : this._buildDemoItems();
-            this._startSearch(list);
-        };
 
-        if (ConfigUtil.Tables?.item) {
-            show();
-            return;
-        }
-
-        ConfigLoader.loadAllConfig(Laya.Handler.create(this, (ok: boolean) => {
-            if (!ok) {
-                console.error("[UIOpenView] 配置加载失败");
-                return;
-            }
-            show();
-        }));
+        const list = items && items.length > 0 ? items : this._buildDemoItems();
+        this._startSearch(list);
     }
 
 

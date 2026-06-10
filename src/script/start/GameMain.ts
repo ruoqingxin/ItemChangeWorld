@@ -6,6 +6,8 @@ import NetService from "../net/NetService";
 import GameMessageFactory from "../net/GameMessageFactory";
 import { BaseClass } from "../games/common/BaseClass";
 import { RedDotManager } from "../games/reddot/RedDotManager";
+import GameManager from "../manager/GameManager";
+
 
 export default class GameMain extends BaseClass {
 
@@ -16,6 +18,8 @@ export default class GameMain extends BaseClass {
         asgard.message.MessageDispatcher.init(GameMessageFactory.ins());
         asgard.events.EventsDispatcher.init(GameConst.appName);
         Laya.timer.frameLoop(1, this, this.onUpdate);
+
+        GameManager.ins().onLoginSuccess();
 
         //  ModuleManager.ins().loginModule.connetServer();
     }
