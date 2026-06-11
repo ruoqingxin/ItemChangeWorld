@@ -1,0 +1,365 @@
+{
+  "_$ver": 1,
+  "_$id": "b7v1ew01",
+  "_$type": "GWidget",
+  "name": "BattleView",
+  "width": 720,
+  "height": 1280,
+  "_$comp": [
+    {
+      "_$type": "3593fc26-337e-42e3-92dc-1b9c2bb8f988",
+      "scriptPath": "../src/script/games/ui/components/ElementMapper.ts",
+      "adapter": null,
+      "elements": [
+        {
+          "_$ref": "st01txtf"
+        },
+        {
+          "_$ref": "hd02txtf"
+        },
+        {
+          "_$ref": "lg03txtf"
+        },
+        {
+          "_$ref": "bs04btnw"
+        },
+        {
+          "_$ref": "be05btnw"
+        },
+        {
+          "_$ref": "h0b06btn"
+        },
+        {
+          "_$ref": "h1b07btn"
+        },
+        {
+          "_$ref": "h2b08btn"
+        },
+        {
+          "_$ref": "h3b09btn"
+        },
+        {
+          "_$ref": "h4b10btn"
+        },
+        {
+          "_$ref": "e0b11btn"
+        },
+        {
+          "_$ref": "e1b12btn"
+        },
+        {
+          "_$ref": "e2b13btn"
+        },
+        {
+          "_$ref": "rv4s5gtj"
+        }
+      ],
+      "prefabs": null,
+      "mapperType": 2
+    }
+  ],
+  "_$child": [
+    {
+      "_$id": "bg01img0",
+      "_$type": "GImage",
+      "name": "img_bg",
+      "width": 720,
+      "height": 1280,
+      "relations": [
+        {
+          "_$type": "Relation",
+          "target": {
+            "_$ref": "b7v1ew01"
+          },
+          "data": [
+            21,
+            0,
+            24,
+            0
+          ]
+        }
+      ],
+      "src": "res://bc79f5b4-ae78-4ff0-adb7-9d8fa3e8eac8",
+      "autoSize": false
+    },
+    {
+      "_$id": "st01txtf",
+      "_$type": "GTextField",
+      "name": "txt_status",
+      "x": 20,
+      "y": 40,
+      "width": 680,
+      "height": 260,
+      "text": "",
+      "fontSize": 24,
+      "color": "#ffffff",
+      "wordWrap": true,
+      "leading": 4
+    },
+    {
+      "_$id": "hd02txtf",
+      "_$type": "GTextField",
+      "name": "txt_hand",
+      "x": 20,
+      "y": 400,
+      "width": 680,
+      "height": 80,
+      "text": "",
+      "fontSize": 22,
+      "color": "#ffe08a",
+      "wordWrap": true
+    },
+    {
+      "_$id": "h0b06btn",
+      "_$type": "GWidget",
+      "name": "btn_hand_0",
+      "x": 20,
+      "y": 489,
+      "width": 128,
+      "height": 56,
+      "_$child": [
+        {
+          "_$id": "hnald612",
+          "_$type": "GTextField",
+          "name": "txt",
+          "width": 128,
+          "height": 56,
+          "text": "手牌0",
+          "fontSize": 22,
+          "color": "#ffffff",
+          "align": "center",
+          "valign": "middle"
+        }
+      ]
+    },
+    {
+      "_$id": "h1b07btn",
+      "_$type": "GWidget",
+      "name": "btn_hand_1",
+      "x": 156,
+      "y": 489,
+      "width": 128,
+      "height": 56,
+      "_$child": [
+        {
+          "_$id": "6bzxk8um",
+          "_$type": "GTextField",
+          "name": "txt",
+          "width": 128,
+          "height": 56,
+          "text": "手牌1",
+          "fontSize": 22,
+          "color": "#ffffff",
+          "align": "center",
+          "valign": "middle"
+        }
+      ]
+    },
+    {
+      "_$id": "h2b08btn",
+      "_$type": "GWidget",
+      "name": "btn_hand_2",
+      "x": 292,
+      "y": 489,
+      "width": 128,
+      "height": 56,
+      "_$child": [
+        {
+          "_$id": "tnn0iisi",
+          "_$type": "GTextField",
+          "name": "txt",
+          "width": 128,
+          "height": 56,
+          "text": "手牌2",
+          "fontSize": 22,
+          "color": "#ffffff",
+          "align": "center",
+          "valign": "middle"
+        }
+      ]
+    },
+    {
+      "_$id": "h3b09btn",
+      "_$type": "GWidget",
+      "name": "btn_hand_3",
+      "x": 428,
+      "y": 489,
+      "width": 128,
+      "height": 56,
+      "_$child": [
+        {
+          "_$id": "1qosteil",
+          "_$type": "GTextField",
+          "name": "txt",
+          "width": 128,
+          "height": 56,
+          "text": "手牌3",
+          "fontSize": 22,
+          "color": "#ffffff",
+          "align": "center",
+          "valign": "middle"
+        }
+      ]
+    },
+    {
+      "_$id": "h4b10btn",
+      "_$type": "GWidget",
+      "name": "btn_hand_4",
+      "x": 564,
+      "y": 489,
+      "width": 128,
+      "height": 56,
+      "_$child": [
+        {
+          "_$id": "lpwc0oh6",
+          "_$type": "GTextField",
+          "name": "txt",
+          "width": 128,
+          "height": 56,
+          "text": "手牌4",
+          "fontSize": 22,
+          "color": "#ffffff",
+          "align": "center",
+          "valign": "middle"
+        }
+      ]
+    },
+    {
+      "_$id": "e0b11btn",
+      "_$type": "GWidget",
+      "name": "btn_enemy_0",
+      "x": 20,
+      "y": 600,
+      "width": 210,
+      "height": 56,
+      "_$child": [
+        {
+          "_$id": "c4dgefah",
+          "_$type": "GTextField",
+          "name": "txt",
+          "width": 210,
+          "height": 56,
+          "text": "敌人0",
+          "fontSize": 22,
+          "color": "#ff9a9a",
+          "align": "center",
+          "valign": "middle"
+        }
+      ]
+    },
+    {
+      "_$id": "e1b12btn",
+      "_$type": "GWidget",
+      "name": "btn_enemy_1",
+      "x": 250,
+      "y": 600,
+      "width": 210,
+      "height": 56,
+      "_$child": [
+        {
+          "_$id": "m3cunzc1",
+          "_$type": "GTextField",
+          "name": "txt",
+          "width": 210,
+          "height": 56,
+          "text": "敌人1",
+          "fontSize": 22,
+          "color": "#ff9a9a",
+          "align": "center",
+          "valign": "middle"
+        }
+      ]
+    },
+    {
+      "_$id": "e2b13btn",
+      "_$type": "GWidget",
+      "name": "btn_enemy_2",
+      "x": 480,
+      "y": 600,
+      "width": 210,
+      "height": 56,
+      "_$child": [
+        {
+          "_$id": "xgfqgbi6",
+          "_$type": "GTextField",
+          "name": "txt",
+          "width": 210,
+          "height": 56,
+          "text": "敌人2",
+          "fontSize": 22,
+          "color": "#ff9a9a",
+          "align": "center",
+          "valign": "middle"
+        }
+      ]
+    },
+    {
+      "_$id": "lg03txtf",
+      "_$type": "GTextField",
+      "name": "txt_log",
+      "x": 20,
+      "y": 670,
+      "width": 680,
+      "height": 344,
+      "text": "",
+      "fontSize": 20,
+      "color": "#c8d6e5",
+      "wordWrap": true
+    },
+    {
+      "_$id": "bs04btnw",
+      "_$type": "GWidget",
+      "name": "btn_start",
+      "x": 80,
+      "y": 1055,
+      "width": 200,
+      "height": 64,
+      "_$child": [
+        {
+          "_$id": "qpzkuibl",
+          "_$type": "GTextField",
+          "name": "txt",
+          "width": 200,
+          "height": 64,
+          "text": "开始战斗",
+          "fontSize": 26,
+          "color": "#7bed9f",
+          "align": "center",
+          "valign": "middle"
+        }
+      ]
+    },
+    {
+      "_$id": "be05btnw",
+      "_$type": "GWidget",
+      "name": "btn_end_turn",
+      "x": 440,
+      "y": 1055,
+      "width": 200,
+      "height": 64,
+      "_$child": [
+        {
+          "_$id": "nkw18l1b",
+          "_$type": "GTextField",
+          "name": "txt",
+          "width": 200,
+          "height": 64,
+          "text": "结束回合",
+          "fontSize": 26,
+          "color": "#70a1ff",
+          "align": "center",
+          "valign": "middle"
+        }
+      ]
+    },
+    {
+      "_$id": "rv4s5gtj",
+      "_$prefab": "bdd7b8dc-8fd8-4643-a8c8-360c616f2bf8",
+      "name": "btn_close",
+      "active": true,
+      "x": 78,
+      "y": 1206,
+      "visible": true
+    }
+  ]
+}

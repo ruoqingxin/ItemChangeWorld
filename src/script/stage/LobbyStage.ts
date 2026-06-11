@@ -2,10 +2,10 @@
 import GameConst from "../const/GameConst";
 import { StageEnum } from "./StageEnum";
 
-import { UIOpenView } from "../module/open/view/UIOpenView";
 import { UIManager } from "../games/ui/UIManager";
 import { UILayer } from "../games/ui/UILayer";
 import { BattleDebug } from "../module/battle/debug/BattleDebug";
+import { BattleView } from "../module/battle/view/BattleView";
 
 
 export class LobbyStage extends asgard.stage.BaseStage {
@@ -44,7 +44,7 @@ export class LobbyStage extends asgard.stage.BaseStage {
         UIManager.ins().init();
 
         BattleDebug.mountToWindow();
-        // UIManager.ins().openForm(UIOpenView);
+        UIManager.ins().openForm(BattleView);
     }
 
     onExit(): void {
