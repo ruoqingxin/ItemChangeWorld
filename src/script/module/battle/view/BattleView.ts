@@ -299,6 +299,10 @@ export class BattleView extends UIBaseView {
 
     private buildActionText(state: IBattleState): string {
         if (state.result !== EBattleResult.Running) {
+            if (state.result === EBattleResult.Win) {
+                return "战斗胜利！控制台：BattleDebug.reward() 查看掉落，InventoryDebug.pick(0) 拾取，InventoryDebug.bag() 查看背包。";
+            }
+
             return `战斗已${this.getResultText(state.result)}。可点击「开始战斗」重新开始。`;
         }
 

@@ -1,3 +1,4 @@
+import { InventoryDebug } from "../../inventory/InventoryDebug";
 import { BattleManager } from "../manager/BattleManager";
 import { BattleFormulaUtils } from "../utils/BattleFormulaUtils";
 import { IDamagePreview, IEnchantCheckResult } from "../types/BattleTypes";
@@ -17,6 +18,7 @@ import { IDamagePreview, IEnchantCheckResult } from "../types/BattleTypes";
  * BattleDebug.preview(0, 0)   // 预览第0张手牌对第0个敌人的伤害
  * BattleDebug.play(0, 0)
  * BattleDebug.end()
+ * BattleDebug.reward()
  * BattleDebug.state()
  */
 export class BattleDebug {
@@ -59,6 +61,10 @@ export class BattleDebug {
             reset: () => {
                 BattleDebug.reset();
             },
+
+            reward: () => {
+                BattleDebug.reward();
+            },
         };
 
         console.log("[BattleDebug] 已挂载到 window.BattleDebug");
@@ -67,6 +73,7 @@ export class BattleDebug {
         console.log("[BattleDebug] 示例：BattleDebug.preview(0, 0)");
         console.log("[BattleDebug] 示例：BattleDebug.play(0, 0)");
         console.log("[BattleDebug] 示例：BattleDebug.end()");
+        console.log("[BattleDebug] 示例：BattleDebug.reward()");
     }
 
     static start(scenarioId: number = 1): void {
@@ -116,6 +123,16 @@ export class BattleDebug {
     static reset(): void {
         BattleManager.ins().reset();
         console.log("[BattleDebug] 已重置战斗");
+    }
+
+    static reward(): void {
+        const reward = BattleManager.ins().rewardState;
+        if (!reward) {
+            console.warn("[BattleDebug] 当前没有战斗掉落，请先战斗胜利");
+            return;
+        }
+
+        InventoryDebug.listDrops(reward.drops);
     }
 
     private static formatPreview(preview: ReturnType<typeof BattleManager.prototype.previewDamage>): string[] {

@@ -18,6 +18,12 @@ import {
 import { BattleConfigUtils } from "../utils/BattleConfigUtils";
 import { BaseClass } from "src/script/games/common/BaseClass";
 import { IBattleState } from "../types/BattleTypes";
+import { BattleDropPlaceholder } from "../reward/BattleDropPlaceholder";
+import {
+    IDropItemConfig,
+    IDropTableConfig,
+    IItemPlaceholderConfig,
+} from "../reward/BattleRewardTypes";
 
 /**
  * 战斗配置数据
@@ -42,8 +48,35 @@ export default class BattleData extends BaseClass {
         return ConfigUtil.Tables.weapon.get(weaponId);
     }
 
-    public getItem(itemId: number): IitemConfig | undefined {
-        return ConfigUtil.Tables.item.get(itemId);
+    public getItem(itemId: number): IitemConfig | IItemPlaceholderConfig | undefined {
+        const row = ConfigUtil.Tables?.item?.get(itemId);
+        if (row) {
+            return row;
+        }
+
+        return BattleDropPlaceholder.getItem(itemId);
+    }
+
+    public getDropTable(dropTableId: number): IDropTableConfig | undefined {
+        const tables = (ConfigUtil.Tables as any)?.drop_table;
+        const row = tables?.get?.(dropTableId);
+        if (row && BattleConfigUtils.isEnabled(row)) {
+            return row as IDropTableConfig;
+        }
+
+        return BattleDropPlaceholder.getDropTable(dropTableId);
+    }
+
+    public getDropItems(dropTableId: number): IDropItemConfig[] {
+        const table = (ConfigUtil.Tables as any)?.drop_item;
+        const rows = table?.getDataList?.() as IDropItemConfig[] | undefined;
+        if (rows && rows.length > 0) {
+            return rows.filter(row => {
+                return BattleConfigUtils.isEnabled(row) && Number(row.drop_table_id) === Number(dropTableId);
+            });
+        }
+
+        return BattleDropPlaceholder.getDropItems(dropTableId);
     }
 
     public getElementStoneByItemId(itemId: number): Ielement_stoneConfig | undefined {
