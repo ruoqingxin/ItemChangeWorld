@@ -12,7 +12,7 @@ export default class RuleData extends BaseDataClass {
      * @returns 规则配置数组
      */
     public getRuleConfigList() {
-        return ConfigUtil.Tables.rule.getDataList();
+        //return ConfigUtil.Tables.rule.getDataList();
     }
 
     /**
@@ -21,6 +21,6 @@ export default class RuleData extends BaseDataClass {
      * @returns 规则配置
      */
     public getRuleConfigById(id: number) {
-        return ConfigUtil.Tables.rule.get(id);
+        //return ConfigUtil.Tables.rule.get(id);
     }
 }

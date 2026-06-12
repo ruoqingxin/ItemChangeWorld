@@ -11,48 +11,28 @@
       "scriptPath": "../src/script/games/ui/components/ElementMapper.ts",
       "adapter": null,
       "elements": [
-        {
-          "_$ref": "st01txtf"
-        },
-        {
-          "_$ref": "hd02txtf"
-        },
-        {
-          "_$ref": "lg03txtf"
-        },
-        {
-          "_$ref": "bs04btnw"
-        },
-        {
-          "_$ref": "be05btnw"
-        },
-        {
-          "_$ref": "h0b06btn"
-        },
-        {
-          "_$ref": "h1b07btn"
-        },
-        {
-          "_$ref": "h2b08btn"
-        },
-        {
-          "_$ref": "h3b09btn"
-        },
-        {
-          "_$ref": "h4b10btn"
-        },
-        {
-          "_$ref": "e0b11btn"
-        },
-        {
-          "_$ref": "e1b12btn"
-        },
-        {
-          "_$ref": "e2b13btn"
-        },
-        {
-          "_$ref": "rv4s5gtj"
-        }
+        { "_$ref": "flow01txt" },
+        { "_$ref": "act02txt" },
+        { "_$ref": "st01txtf" },
+        { "_$ref": "hd02txtf" },
+        { "_$ref": "pv03txtf" },
+        { "_$ref": "lg03txtf" },
+        { "_$ref": "bs04btnw" },
+        { "_$ref": "be05btnw" },
+        { "_$ref": "h0b06btn" },
+        { "_$ref": "h1b07btn" },
+        { "_$ref": "h2b08btn" },
+        { "_$ref": "h3b09btn" },
+        { "_$ref": "h4b10btn" },
+        { "_$ref": "e0b11btn" },
+        { "_$ref": "e1b12btn" },
+        { "_$ref": "e2b13btn" },
+        { "_$ref": "p0b14btn" },
+        { "_$ref": "p1b15btn" },
+        { "_$ref": "p2b16btn" },
+        { "_$ref": "p3b17btn" },
+        { "_$ref": "p4b18btn" },
+        { "_$ref": "rv4s5gtj" }
       ],
       "prefabs": null,
       "mapperType": 2
@@ -68,67 +48,201 @@
       "relations": [
         {
           "_$type": "Relation",
-          "target": {
-            "_$ref": "b7v1ew01"
-          },
-          "data": [
-            21,
-            0,
-            24,
-            0
-          ]
+          "target": { "_$ref": "b7v1ew01" },
+          "data": [21, 0, 24, 0]
         }
       ],
       "src": "res://bc79f5b4-ae78-4ff0-adb7-9d8fa3e8eac8",
       "autoSize": false
     },
     {
-      "_$id": "st01txtf",
+      "_$id": "title00txt",
       "_$type": "GTextField",
-      "name": "txt_status",
+      "name": "txt_title",
       "x": 20,
-      "y": 40,
+      "y": 10,
       "width": 680,
-      "height": 260,
+      "height": 30,
+      "text": "第二阶段战斗调试",
+      "fontSize": 22,
+      "color": "#dff9fb",
+      "align": "center",
+      "valign": "middle"
+    },
+    {
+      "_$id": "flow01txt",
+      "_$type": "GTextField",
+      "name": "txt_flow",
+      "x": 20,
+      "y": 44,
+      "width": 680,
+      "height": 46,
       "text": "",
-      "fontSize": 24,
+      "fontSize": 21,
+      "color": "#dff9fb",
+      "align": "center",
+      "valign": "middle",
+      "wordWrap": true
+    },
+    {
+      "_$id": "act02txt",
+      "_$type": "GTextField",
+      "name": "txt_action",
+      "x": 24,
+      "y": 96,
+      "width": 672,
+      "height": 58,
+      "text": "",
+      "fontSize": 20,
       "color": "#ffffff",
       "wordWrap": true,
       "leading": 4
+    },
+    {
+      "_$id": "st01txtf",
+      "_$type": "GTextField",
+      "name": "txt_status",
+      "x": 24,
+      "y": 164,
+      "width": 672,
+      "height": 118,
+      "text": "",
+      "fontSize": 21,
+      "color": "#ffffff",
+      "wordWrap": true,
+      "leading": 5
+    },
+    {
+      "_$id": "enemytitle",
+      "_$type": "GTextField",
+      "name": "txt_enemy_title",
+      "x": 20,
+      "y": 294,
+      "width": 680,
+      "height": 26,
+      "text": "敌人 / 意图",
+      "fontSize": 20,
+      "color": "#ffb3b3"
+    },
+    {
+      "_$id": "e0b11btn",
+      "_$type": "GWidget",
+      "name": "btn_enemy_0",
+      "x": 20,
+      "y": 326,
+      "width": 210,
+      "height": 78,
+      "_$child": [
+        {
+          "_$id": "e0txt",
+          "_$type": "GTextField",
+          "name": "txt",
+          "width": 210,
+          "height": 78,
+          "text": "敌人0",
+          "fontSize": 19,
+          "color": "#ff9a9a",
+          "align": "center",
+          "valign": "middle",
+          "wordWrap": true
+        }
+      ]
+    },
+    {
+      "_$id": "e1b12btn",
+      "_$type": "GWidget",
+      "name": "btn_enemy_1",
+      "x": 255,
+      "y": 326,
+      "width": 210,
+      "height": 78,
+      "_$child": [
+        {
+          "_$id": "e1txt",
+          "_$type": "GTextField",
+          "name": "txt",
+          "width": 210,
+          "height": 78,
+          "text": "敌人1",
+          "fontSize": 19,
+          "color": "#ff9a9a",
+          "align": "center",
+          "valign": "middle",
+          "wordWrap": true
+        }
+      ]
+    },
+    {
+      "_$id": "e2b13btn",
+      "_$type": "GWidget",
+      "name": "btn_enemy_2",
+      "x": 490,
+      "y": 326,
+      "width": 210,
+      "height": 78,
+      "_$child": [
+        {
+          "_$id": "e2txt",
+          "_$type": "GTextField",
+          "name": "txt",
+          "width": 210,
+          "height": 78,
+          "text": "敌人2",
+          "fontSize": 19,
+          "color": "#ff9a9a",
+          "align": "center",
+          "valign": "middle",
+          "wordWrap": true
+        }
+      ]
+    },
+    {
+      "_$id": "handtitle",
+      "_$type": "GTextField",
+      "name": "txt_hand_title",
+      "x": 20,
+      "y": 422,
+      "width": 680,
+      "height": 26,
+      "text": "手牌",
+      "fontSize": 20,
+      "color": "#ffe08a"
     },
     {
       "_$id": "hd02txtf",
       "_$type": "GTextField",
       "name": "txt_hand",
       "x": 20,
-      "y": 400,
+      "y": 452,
       "width": 680,
-      "height": 80,
+      "height": 58,
       "text": "",
-      "fontSize": 22,
+      "fontSize": 20,
       "color": "#ffe08a",
-      "wordWrap": true
+      "wordWrap": true,
+      "leading": 4
     },
     {
       "_$id": "h0b06btn",
       "_$type": "GWidget",
       "name": "btn_hand_0",
       "x": 20,
-      "y": 489,
+      "y": 520,
       "width": 128,
-      "height": 56,
+      "height": 76,
       "_$child": [
         {
-          "_$id": "hnald612",
+          "_$id": "h0txt",
           "_$type": "GTextField",
           "name": "txt",
           "width": 128,
-          "height": 56,
+          "height": 76,
           "text": "手牌0",
-          "fontSize": 22,
+          "fontSize": 18,
           "color": "#ffffff",
           "align": "center",
-          "valign": "middle"
+          "valign": "middle",
+          "wordWrap": true
         }
       ]
     },
@@ -137,21 +251,22 @@
       "_$type": "GWidget",
       "name": "btn_hand_1",
       "x": 156,
-      "y": 489,
+      "y": 520,
       "width": 128,
-      "height": 56,
+      "height": 76,
       "_$child": [
         {
-          "_$id": "6bzxk8um",
+          "_$id": "h1txt",
           "_$type": "GTextField",
           "name": "txt",
           "width": 128,
-          "height": 56,
+          "height": 76,
           "text": "手牌1",
-          "fontSize": 22,
+          "fontSize": 18,
           "color": "#ffffff",
           "align": "center",
-          "valign": "middle"
+          "valign": "middle",
+          "wordWrap": true
         }
       ]
     },
@@ -160,21 +275,22 @@
       "_$type": "GWidget",
       "name": "btn_hand_2",
       "x": 292,
-      "y": 489,
+      "y": 520,
       "width": 128,
-      "height": 56,
+      "height": 76,
       "_$child": [
         {
-          "_$id": "tnn0iisi",
+          "_$id": "h2txt",
           "_$type": "GTextField",
           "name": "txt",
           "width": 128,
-          "height": 56,
+          "height": 76,
           "text": "手牌2",
-          "fontSize": 22,
+          "fontSize": 18,
           "color": "#ffffff",
           "align": "center",
-          "valign": "middle"
+          "valign": "middle",
+          "wordWrap": true
         }
       ]
     },
@@ -183,21 +299,22 @@
       "_$type": "GWidget",
       "name": "btn_hand_3",
       "x": 428,
-      "y": 489,
+      "y": 520,
       "width": 128,
-      "height": 56,
+      "height": 76,
       "_$child": [
         {
-          "_$id": "1qosteil",
+          "_$id": "h3txt",
           "_$type": "GTextField",
           "name": "txt",
           "width": 128,
-          "height": 56,
+          "height": 76,
           "text": "手牌3",
-          "fontSize": 22,
+          "fontSize": 18,
           "color": "#ffffff",
           "align": "center",
-          "valign": "middle"
+          "valign": "middle",
+          "wordWrap": true
         }
       ]
     },
@@ -206,105 +323,196 @@
       "_$type": "GWidget",
       "name": "btn_hand_4",
       "x": 564,
-      "y": 489,
+      "y": 520,
       "width": 128,
-      "height": 56,
+      "height": 76,
       "_$child": [
         {
-          "_$id": "lpwc0oh6",
+          "_$id": "h4txt",
           "_$type": "GTextField",
           "name": "txt",
           "width": 128,
-          "height": 56,
+          "height": 76,
           "text": "手牌4",
-          "fontSize": 22,
+          "fontSize": 18,
           "color": "#ffffff",
           "align": "center",
-          "valign": "middle"
+          "valign": "middle",
+          "wordWrap": true
         }
       ]
     },
     {
-      "_$id": "e0b11btn",
-      "_$type": "GWidget",
-      "name": "btn_enemy_0",
+      "_$id": "pouchtitle",
+      "_$type": "GTextField",
+      "name": "txt_pouch_title",
       "x": 20,
-      "y": 600,
-      "width": 210,
-      "height": 56,
+      "y": 612,
+      "width": 680,
+      "height": 26,
+      "text": "临战法囊 / 注灵属性石",
+      "fontSize": 20,
+      "color": "#dff9fb"
+    },
+    {
+      "_$id": "p0b14btn",
+      "_$type": "GWidget",
+      "name": "btn_pouch_0",
+      "x": 20,
+      "y": 646,
+      "width": 128,
+      "height": 50,
       "_$child": [
         {
-          "_$id": "c4dgefah",
+          "_$id": "p0txt",
           "_$type": "GTextField",
           "name": "txt",
-          "width": 210,
-          "height": 56,
-          "text": "敌人0",
-          "fontSize": 22,
-          "color": "#ff9a9a",
+          "width": 128,
+          "height": 50,
+          "text": "[0] 空",
+          "fontSize": 18,
+          "color": "#dff9fb",
           "align": "center",
-          "valign": "middle"
+          "valign": "middle",
+          "wordWrap": true
         }
       ]
     },
     {
-      "_$id": "e1b12btn",
+      "_$id": "p1b15btn",
       "_$type": "GWidget",
-      "name": "btn_enemy_1",
-      "x": 250,
-      "y": 600,
-      "width": 210,
-      "height": 56,
+      "name": "btn_pouch_1",
+      "x": 156,
+      "y": 646,
+      "width": 128,
+      "height": 50,
       "_$child": [
         {
-          "_$id": "m3cunzc1",
+          "_$id": "p1txt",
           "_$type": "GTextField",
           "name": "txt",
-          "width": 210,
-          "height": 56,
-          "text": "敌人1",
-          "fontSize": 22,
-          "color": "#ff9a9a",
+          "width": 128,
+          "height": 50,
+          "text": "[1] 空",
+          "fontSize": 18,
+          "color": "#dff9fb",
           "align": "center",
-          "valign": "middle"
+          "valign": "middle",
+          "wordWrap": true
         }
       ]
     },
     {
-      "_$id": "e2b13btn",
+      "_$id": "p2b16btn",
       "_$type": "GWidget",
-      "name": "btn_enemy_2",
-      "x": 480,
-      "y": 600,
-      "width": 210,
-      "height": 56,
+      "name": "btn_pouch_2",
+      "x": 292,
+      "y": 646,
+      "width": 128,
+      "height": 50,
       "_$child": [
         {
-          "_$id": "xgfqgbi6",
+          "_$id": "p2txt",
           "_$type": "GTextField",
           "name": "txt",
-          "width": 210,
-          "height": 56,
-          "text": "敌人2",
-          "fontSize": 22,
-          "color": "#ff9a9a",
+          "width": 128,
+          "height": 50,
+          "text": "[2] 空",
+          "fontSize": 18,
+          "color": "#dff9fb",
           "align": "center",
-          "valign": "middle"
+          "valign": "middle",
+          "wordWrap": true
         }
       ]
+    },
+    {
+      "_$id": "p3b17btn",
+      "_$type": "GWidget",
+      "name": "btn_pouch_3",
+      "x": 428,
+      "y": 646,
+      "width": 128,
+      "height": 50,
+      "_$child": [
+        {
+          "_$id": "p3txt",
+          "_$type": "GTextField",
+          "name": "txt",
+          "width": 128,
+          "height": 50,
+          "text": "[3] 空",
+          "fontSize": 18,
+          "color": "#dff9fb",
+          "align": "center",
+          "valign": "middle",
+          "wordWrap": true
+        }
+      ]
+    },
+    {
+      "_$id": "p4b18btn",
+      "_$type": "GWidget",
+      "name": "btn_pouch_4",
+      "x": 564,
+      "y": 646,
+      "width": 128,
+      "height": 50,
+      "_$child": [
+        {
+          "_$id": "p4txt",
+          "_$type": "GTextField",
+          "name": "txt",
+          "width": 128,
+          "height": 50,
+          "text": "[4] 空",
+          "fontSize": 18,
+          "color": "#dff9fb",
+          "align": "center",
+          "valign": "middle",
+          "wordWrap": true
+        }
+      ]
+    },
+    {
+      "_$id": "pv03txtf",
+      "_$type": "GTextField",
+      "name": "txt_preview",
+      "x": 24,
+      "y": 716,
+      "width": 672,
+      "height": 86,
+      "text": "",
+      "fontSize": 20,
+      "color": "#ffd166",
+      "wordWrap": true,
+      "leading": 4
+    },
+    {
+      "_$id": "logtitle",
+      "_$type": "GTextField",
+      "name": "txt_log_title",
+      "x": 20,
+      "y": 818,
+      "width": 680,
+      "height": 26,
+      "text": "战斗日志",
+      "fontSize": 20,
+      "color": "#c8d6e5"
     },
     {
       "_$id": "lg03txtf",
       "_$type": "GTextField",
       "name": "txt_log",
-      "x": 20,
-      "y": 670,
-      "width": 680,
-      "height": 344,
+      "x": 24,
+      "y": 850,
+      "width": 672,
+      "height": 178,
       "text": "",
-      "fontSize": 20,
+      "fontSize": 19,
       "color": "#c8d6e5",
-      "wordWrap": true
+      "wordWrap": true,
+      "leading": 4
     },
     {
       "_$id": "bs04btnw",
@@ -316,7 +524,7 @@
       "height": 64,
       "_$child": [
         {
-          "_$id": "qpzkuibl",
+          "_$id": "starttxt",
           "_$type": "GTextField",
           "name": "txt",
           "width": 200,
@@ -339,7 +547,7 @@
       "height": 64,
       "_$child": [
         {
-          "_$id": "nkw18l1b",
+          "_$id": "endtxt",
           "_$type": "GTextField",
           "name": "txt",
           "width": 200,

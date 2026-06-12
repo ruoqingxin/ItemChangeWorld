@@ -86,23 +86,23 @@ export class UIOpenView extends UIBaseView {
             return;
         }
 
-        const placements = OpenGridUtil.layoutItems(
-            entries.map((e) => e.cfg.bag_size),
-            UIOpenView.COL_COUNT
-        );
+        // const placements = OpenGridUtil.layoutItems(
+        //     entries.map((e) => e.cfg.bag_size),
+        //     UIOpenView.COL_COUNT
+        // );
 
-        const rowCount = OpenGridUtil.getRequiredRowCount(placements);
-        this.box.height = rowCount * OPEN_ITEM_CELL_SIZE;
-        this._searchEntries = entries;
-        this._searching = true;
+        // const rowCount = OpenGridUtil.getRequiredRowCount(placements);
+        // this.box.height = rowCount * OPEN_ITEM_CELL_SIZE;
+        // this._searchEntries = entries;
+        // this._searching = true;
 
-        entries.forEach((entry, index) => {
-            const cell = new UIOpenItemCell(this.box, placements[index], this._itemCellTemplate);
-            cell.bind(entry.cfg, entry.data.count ?? 1);
-            this._cells.push(cell);
-        });
+        // entries.forEach((entry, index) => {
+        //     const cell = new UIOpenItemCell(this.box, placements[index], this._itemCellTemplate);
+        //     cell.bind(entry.cfg, entry.data.count ?? 1);
+        //     this._cells.push(cell);
+        // });
 
-        this._searchNext(0);
+        // this._searchNext(0);
     }
 
     /** 按顺序逐个搜索：当前格子动画完成并揭示后，再开始下一个 */
@@ -167,16 +167,16 @@ export class UIOpenView extends UIBaseView {
         const picked: IitemConfig[] = [];
         const seenSize = new Set<number>();
 
-        for (const cfg of list) {
-            if (!seenSize.has(cfg.bag_size)) {
-                seenSize.add(cfg.bag_size);
-                picked.push(cfg);
-            }
+        // for (const cfg of list) {
+        //     if (!seenSize.has(cfg.bag_size)) {
+        //         seenSize.add(cfg.bag_size);
+        //         picked.push(cfg);
+        //     }
 
-            if (picked.length >= 8) {
-                break;
-            }
-        }
+        //     if (picked.length >= 8) {
+        //         break;
+        //     }
+        // }
 
         if (picked.length < 8) {
             for (const cfg of list) {

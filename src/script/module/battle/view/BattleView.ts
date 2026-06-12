@@ -48,9 +48,9 @@ export class BattleView extends UIBaseView {
         this.txt_status = this.getElement<Laya.GTextField>("txt_status");
         this.txt_hand = this.getElement<Laya.GTextField>("txt_hand");
         this.txt_log = this.getElement<Laya.GTextField>("txt_log");
-
-        this.setupLayout();
-        this.createFlowWidgets();
+        this.txt_flow = this.getElement<Laya.GTextField>("txt_flow");
+        this.txt_action = this.getElement<Laya.GTextField>("txt_action");
+        this.txt_preview = this.getElement<Laya.GTextField>("txt_preview");
 
         this.addClickListener(this.getElement("btn_close"), this.onClickClose);
         this.addClickListener(this.getElement("btn_start"), this.onClickStart);
@@ -76,7 +76,15 @@ export class BattleView extends UIBaseView {
             this.addClickListener(btn, () => this.onSelectEnemy(i));
         }
 
-        this.createPouchButtons();
+        for (let i = 0; i < BattleView.POUCH_SLOT_COUNT; i++) {
+            const btn = this.getElement<Laya.GWidget>(`btn_pouch_${i}`, false);
+            if (!btn) {
+                continue;
+            }
+            this._pouchButtons.push(btn);
+            this.styleButton(btn, "#243c3f", "#5f8187");
+            this.addClickListener(btn, () => this.onPouchSlotClick(i));
+        }
     }
 
     /**
@@ -411,147 +419,9 @@ export class BattleView extends UIBaseView {
         }
     }
 
-    private setupLayout(): void {
-        this.txt_status.x = 20;
-        this.txt_status.y = 120;
-        this.txt_status.width = 680;
-        this.txt_status.height = 150;
-        this.txt_status.fontSize = 22;
-        this.txt_status.leading = 5;
-
-        this.txt_hand.x = 20;
-        this.txt_hand.y = 505;
-        this.txt_hand.width = 680;
-        this.txt_hand.height = 70;
-        this.txt_hand.fontSize = 20;
-
-        this.txt_log.x = 20;
-        this.txt_log.y = 780;
-        this.txt_log.width = 680;
-        this.txt_log.height = 250;
-        this.txt_log.fontSize = 19;
-        this.txt_log.leading = 4;
-
-        for (let i = 0; i < BattleView.HAND_BTN_COUNT; i++) {
-            const btn = this.getElement<Laya.GWidget>(`btn_hand_${i}`, false);
-            if (btn) {
-                btn.x = 20 + i * 136;
-                btn.y = 590;
-                btn.width = 128;
-                btn.height = 62;
-                this.resizeButtonText(btn, 128, 62, 19);
-            }
-        }
-
-        for (let i = 0; i < BattleView.ENEMY_BTN_COUNT; i++) {
-            const btn = this.getElement<Laya.GWidget>(`btn_enemy_${i}`, false);
-            if (btn) {
-                btn.x = 20 + i * 230;
-                btn.y = 310;
-                btn.width = 210;
-                btn.height = 78;
-                this.resizeButtonText(btn, 210, 78, 19);
-            }
-        }
-
-        const btnStart = this.getElement<Laya.GWidget>("btn_start", false);
-        if (btnStart) {
-            btnStart.x = 80;
-            btnStart.y = 1055;
-            this.styleButton(btnStart, "#1f4d35", "#7bed9f");
-        }
-
-        const btnEnd = this.getElement<Laya.GWidget>("btn_end_turn", false);
-        if (btnEnd) {
-            btnEnd.x = 440;
-            btnEnd.y = 1055;
-            this.styleButton(btnEnd, "#243b65", "#70a1ff");
-        }
-    }
-
-    private createFlowWidgets(): void {
-        this.txt_flow = this.createText("txt_flow_runtime", 20, 28, 680, 54, 22, "#dff9fb");
-        this.txt_flow.align = "center";
-        this.txt_flow.valign = "middle";
-
-        this.txt_action = this.createText("txt_action_runtime", 20, 82, 680, 62, 20, "#ffffff");
-        this.txt_action.leading = 4;
-
-        this.txt_preview = this.createText("txt_preview_runtime", 20, 675, 680, 82, 20, "#ffd166");
-        this.txt_preview.leading = 4;
-    }
-
-    private createText(
-        name: string,
-        x: number,
-        y: number,
-        width: number,
-        height: number,
-        fontSize: number,
-        color: string,
-    ): Laya.GTextField {
-        const txt = new Laya.GTextField();
-        txt.name = name;
-        txt.x = x;
-        txt.y = y;
-        txt.width = width;
-        txt.height = height;
-        txt.fontSize = fontSize;
-        txt.color = color;
-        txt.wordWrap = true;
-        this.view.addChild(txt);
-        return txt;
-    }
-
-    private resizeButtonText(btn: Laya.GWidget, width: number, height: number, fontSize: number): void {
-        const txt = btn.getChildByName("txt") as Laya.GTextField;
-        if (!txt) {
-            return;
-        }
-
-        txt.width = width;
-        txt.height = height;
-        txt.fontSize = fontSize;
-        txt.wordWrap = true;
-        txt.align = "center";
-        txt.valign = "middle";
-    }
-
     private styleButton(btn: Laya.GWidget, fill: string, stroke: string): void {
         btn.graphics.clear();
         btn.graphics.drawRect(0, 0, btn.width, btn.height, fill, stroke, 2, true);
-    }
-
-    private createPouchButtons(): void {
-        if (!this.view || this._pouchButtons.length > 0) {
-            return;
-        }
-
-        for (let i = 0; i < BattleView.POUCH_SLOT_COUNT; i++) {
-            const btn = new Laya.GWidget();
-            btn.name = `btn_pouch_${i}`;
-            btn.x = 20 + i * 136;
-            btn.y = 670;
-            btn.width = 128;
-            btn.height = 38;
-            btn.mouseEnabled = true;
-            this.styleButton(btn, "#243c3f", "#5f8187");
-
-            const txt = new Laya.GTextField();
-            txt.name = "txt";
-            txt.width = btn.width;
-            txt.height = btn.height;
-            txt.fontSize = 18;
-            txt.color = "#dff9fb";
-            txt.align = "center";
-            txt.valign = "middle";
-            txt.text = `[${i}] 空`;
-
-            btn.addChild(txt);
-            this.view.addChild(btn);
-            this._pouchButtons.push(btn);
-            this.addClickListener(btn, () => this.onPouchSlotClick(i));
-        }
     }
 
     private updatePouchButtons(state: IBattleState | null, canUse: boolean): void {
