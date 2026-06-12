@@ -111,7 +111,8 @@ export class BattleEngine {
         }
 
         const stoneCfg = BattleData.ins().getElementStoneByItemId(slot!.itemId!)!;
-        const durabilityCost = BattleConfigUtils.toNumber(stoneCfg.durabilityCost, 0);
+        const durabilityCost = BattleConfigUtils.toNumber(stoneCfg.durability_cost, 0);
+        const stoneName = BattleData.ins().getItem(stoneCfg.item_id)?.name || `item_${stoneCfg.item_id}`;
 
         state.player.weaponDurability = Math.max(0, state.player.weaponDurability - durabilityCost);
         this.clearBattlePouchSlot(state, pouchSlotIndex);
@@ -120,11 +121,11 @@ export class BattleEngine {
             sourceSlotIndex: pouchSlotIndex,
             consumedItemUid: slot!.itemUid!,
             itemId: slot!.itemId!,
-            stoneId: stoneCfg.stoneId,
+            stoneId: stoneCfg.stone_id,
             element: stoneCfg.element,
-            damageRate: stoneCfg.damageRate,
+            damageRate: stoneCfg.damage_rate,
             durabilityCost,
-            minorEffectGroup: BattleFormulaUtils.parseMinorEffects(stoneCfg.minorEffectGroup),
+            minorEffectGroup: BattleFormulaUtils.parseMinorEffects(stoneCfg.minor_effect_group),
             applied: true,
         };
 
@@ -133,7 +134,7 @@ export class BattleEngine {
 
         this.log(
             state,
-            `【${card!.name}】注灵成功，消耗 ${stoneCfg.name}，武器耐久 -${durabilityCost}（剩余 ${state.player.weaponDurability}）`,
+            `【${card!.name}】注灵成功，消耗 ${stoneName}，武器耐久 -${durabilityCost}（剩余 ${state.player.weaponDurability}）`,
         );
 
         this.printState(state);
@@ -1113,7 +1114,7 @@ export class BattleEngine {
             return { ok: false, reason: "属性石配置不存在" };
         }
 
-        const durabilityCost = BattleConfigUtils.toNumber(stoneCfg.durabilityCost, 0);
+        const durabilityCost = BattleConfigUtils.toNumber(stoneCfg.durability_cost, 0);
         if (state.player.weaponDurability < durabilityCost) {
             return { ok: false, reason: `武器耐久不足（需要 ${durabilityCost}，当前 ${state.player.weaponDurability}）` };
         }
@@ -1167,7 +1168,9 @@ export class BattleEngine {
                 }
 
                 const stoneCfg = BattleData.ins().getElementStoneByItemId(Number(slot.itemId));
-                const name = stoneCfg?.name || `item_${slot.itemId}`;
+                const name = stoneCfg
+                    ? (BattleData.ins().getItem(stoneCfg.item_id)?.name || `item_${stoneCfg.item_id}`)
+                    : `item_${slot.itemId}`;
                 return `[${slot.slotIndex}]${name}`;
             })
             .join(" | ");

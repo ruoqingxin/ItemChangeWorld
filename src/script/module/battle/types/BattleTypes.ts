@@ -18,15 +18,6 @@ export enum EBattleSide {
     Enemy = "enemy",
 }
 
-/** 属性石纯度档，与策划 EPurityGrade 一致 */
-export enum EPurityGrade {
-    None = 0,
-    Poor = 1,
-    Normal = 2,
-    Refined = 3,
-    Flawless = 4,
-}
-
 export interface IEffectSpec {
     /**
      * effect_define.effect_id
@@ -73,7 +64,7 @@ export interface IBattleItemSlotRuntime {
     subType?: number;
 }
 
-/** 卡牌注灵状态（enchant = 注灵，代码字段名保留兼容） */
+/** 卡牌注灵状态 */
 export interface IBattleCardEnchantState {
     /** 消耗来源法囊格 */
     sourceSlotIndex: number;
@@ -236,19 +227,4 @@ export interface IDamagePreview {
 
     /** 是否已注灵 */
     hasEnchant: boolean;
-}
-
-/** 属性石战斗规则配置（对应 element_stone 表） */
-export interface IElementStoneConfig {
-    stoneId: number;
-    itemId: number;
-    name: string;
-    element: number;
-    level: number;
-    purityGrade: number;
-    purityValue: number;
-    damageRate: number;
-    durabilityCost: number;
-    minorEffectGroup: number[][];
-    enabled: number;
 }

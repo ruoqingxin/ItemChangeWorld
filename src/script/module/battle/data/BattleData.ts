@@ -7,16 +7,16 @@ import {
     Ideck_cardConfig,
     IdeckConfig,
     Ieffect_defineConfig,
+    Ielement_stoneConfig,
     Ienemy_intentConfig,
     IenemyConfig,
     IitemConfig,
     IstatusConfig,
     IweaponConfig,
 } from "src/script/config/schema";
-import { ElementStoneDebugConfig } from "../config/ElementStoneDebugConfig";
 import { BattleConfigUtils } from "../utils/BattleConfigUtils";
 import { BaseClass } from "src/script/games/common/BaseClass";
-import { IBattleState, IElementStoneConfig } from "../types/BattleTypes";
+import { IBattleState } from "../types/BattleTypes";
 
 /**
  * 战斗配置数据
@@ -45,9 +45,15 @@ export default class BattleData extends BaseClass {
         return ConfigUtil.Tables.item.get(itemId);
     }
 
-    /** 属性石战斗规则，优先 Debug 配置，后续可切到 element_stone 表 */
-    public getElementStoneByItemId(itemId: number): IElementStoneConfig | undefined {
-        return ElementStoneDebugConfig.getByItemId(itemId);
+    public getElementStoneByItemId(itemId: number): Ielement_stoneConfig | undefined {
+        const row = ConfigUtil.Tables.element_stone.getDataList()
+            .find(cfg => Number(cfg.item_id) === Number(itemId));
+        return row && BattleConfigUtils.isEnabled(row) ? row : undefined;
+    }
+
+    public getElementStoneByStoneId(stoneId: number): Ielement_stoneConfig | undefined {
+        const row = ConfigUtil.Tables.element_stone.get(stoneId);
+        return row && BattleConfigUtils.isEnabled(row) ? row : undefined;
     }
 
     public getEnemy(enemyId: number): IenemyConfig | undefined {
