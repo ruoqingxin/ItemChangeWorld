@@ -410,8 +410,10 @@ export class BattleEngine {
                 continue;
             }
 
+            const effectType = BattleData.ins().getEffectType(effect.effectId);
+
             for (const target of targets) {
-                switch (Number(effect.effectId)) {
+                switch (effectType) {
                     case EEffectType.damage:
                         this.applyDamage(state, source, target, effect.value, isAttackAction);
                         break;
@@ -460,7 +462,7 @@ export class BattleEngine {
                         break;
 
                     default:
-                        this.log(state, `暂未实现效果：effectId=${effect.effectId}`);
+                        this.log(state, `暂未实现效果：effectId=${effect.effectId}, effectType=${effectType}`);
                         break;
                 }
             }
@@ -645,9 +647,9 @@ export class BattleEngine {
             }
 
             const value = this.getStatusTickValue(status);
-            const effectId = BattleConfigUtils.toNumber(status.cfg.tick_effect_id);
+            const effectType = BattleData.ins().getEffectType(status.cfg.tick_effect_id);
 
-            switch (effectId) {
+            switch (effectType) {
                 case EEffectType.damage:
                     this.log(state, `${unit.name} 的【${status.name}】触发`);
                     this.applyDamage(state, unit, unit, value, false);
@@ -673,11 +675,11 @@ export class BattleEngine {
 
         for (const status of statuses) {
             const tickTiming = BattleConfigUtils.toNumber(status.cfg.tick_timing);
-            const tickEffectId = BattleConfigUtils.toNumber(status.cfg.tick_effect_id);
+            const tickEffectType = BattleData.ins().getEffectType(status.cfg.tick_effect_id);
 
             if (
                 tickTiming === EStatusTickTiming.before_action &&
-                tickEffectId === EEffectType.skip_action
+                tickEffectType === EEffectType.skip_action
             ) {
                 this.log(state, `${unit.name} 的【${status.name}】触发，跳过行动`);
 

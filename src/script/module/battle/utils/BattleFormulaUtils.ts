@@ -1,4 +1,5 @@
 import { EEffectType, EElement } from "src/script/config/schema";
+import BattleData from "../data/BattleData";
 import { EBattleStatusId, IBattleCard, IBattleUnit, IEffectSpec } from "../types/BattleTypes";
 import { BattleConfigUtils } from "./BattleConfigUtils";
 
@@ -103,7 +104,7 @@ export class BattleFormulaUtils {
     /** 取卡牌 effect_group 中首个 damage 效果值作为注灵基准 */
     static getCardBaseDamage(card: IBattleCard): number {
         for (const effect of card.effects) {
-            if (Number(effect.effectId) === EEffectType.damage) {
+            if (BattleData.ins().getEffectType(effect.effectId) === EEffectType.damage) {
                 return Math.max(0, Math.floor(effect.value));
             }
         }

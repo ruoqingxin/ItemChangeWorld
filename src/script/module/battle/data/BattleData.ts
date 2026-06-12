@@ -1,5 +1,6 @@
 import { ConfigUtil } from "src/script/config/ConfigUtil";
 import {
+    EEffectType,
     Ibattle_ruleConfig,
     IcardConfig,
     Icombat_scenarioConfig,
@@ -69,7 +70,14 @@ export default class BattleData extends BaseClass {
     }
 
     public getEffectDefine(effectId: number): Ieffect_defineConfig | undefined {
-        return ConfigUtil.Tables.effect_define.get(effectId);
+        const row = ConfigUtil.Tables.effect_define.get(effectId);
+        return row && BattleConfigUtils.isEnabled(row) ? row : undefined;
+    }
+
+    /** effect_group / tick_effect_id 存的是 effect_define.effect_id，需查表取 effect_type */
+    public getEffectType(effectId: number): EEffectType {
+        const row = this.getEffectDefine(effectId);
+        return row ? Number(row.effect_type) as EEffectType : EEffectType.none;
     }
 
     public getDeck(deckId: number): IdeckConfig | undefined {

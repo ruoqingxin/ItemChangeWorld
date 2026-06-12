@@ -5,12 +5,22 @@ export enum EBattleResult {
 }
 
 
-/** status.status_id，与导表配置保持一致 */
+/** status.status_id，与 status 配置表一致 */
 export enum EBattleStatusId {
+    /** 力量 */
     Power = 1,
+    /** 虚弱 */
     Weak = 2,
-    Vulnerable = 3,
-    ArmorBreak = 4,
+    /** 中毒 */
+    Poison = 3,
+    /** 灼烧 */
+    Burn = 4,
+    /** 易伤 */
+    Vulnerable = 5,
+    /** 破甲 */
+    ArmorBreak = 6,
+    /** 冻结 */
+    Freeze = 7,
 }
 
 export enum EBattleSide {
