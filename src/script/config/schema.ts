@@ -136,7 +136,7 @@ export enum EEffectOwnerType {
      */
     event = 5,
     /**
-     * 附魔
+     * 注灵
      */
     enchant = 6,
     /**
@@ -292,13 +292,9 @@ export enum EElement {
  
 export enum EFuncID {
     /**
-     *  无
+     * 无
      */
     none = 0,
-    /**
-     * 拍脸推送图
-     */
-    push_img = 1,
     /**
      * 商城
      */
@@ -397,9 +393,34 @@ export enum EMainType {
 
  
  
+export enum EPurityGrade {
+    /**
+     * 无
+     */
+    none = 0,
+    /**
+     * 劣质纯度
+     */
+    poor = 1,
+    /**
+     * 普通纯度
+     */
+    normal = 2,
+    /**
+     * 精纯纯度
+     */
+    refined = 3,
+    /**
+     * 无瑕纯度
+     */
+    flawless = 4,
+}
+
+ 
+ 
 export enum EQuality {
     /**
-     *  无
+     * 无
      */
     none = 0,
     /**
@@ -1054,6 +1075,7 @@ export class IcardConfig {
 export class Icombat_scenario_enemyConfig {
 
     constructor(_buf_: ByteBuf) {
+        this.id = _buf_.ReadInt()
         this.scenario_id = _buf_.ReadInt()
         this.order = _buf_.ReadInt()
         this.enemy_id = _buf_.ReadInt()
@@ -1062,6 +1084,10 @@ export class Icombat_scenario_enemyConfig {
         this.enabled = _buf_.ReadInt()
     }
 
+    /**
+     * ID
+     */
+    readonly id: number
     /**
      * 战斗场景ID
      */
@@ -1089,6 +1115,7 @@ export class Icombat_scenario_enemyConfig {
 
 /*
     resolve(tables:Tables) {
+        
         
         
         
@@ -1275,6 +1302,88 @@ export class Ieffect_defineConfig {
 
 
 
+export class Ielement_stoneConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.stone_id = _buf_.ReadInt()
+        this.item_id = _buf_.ReadInt()
+        this.element = _buf_.ReadInt()
+        this.level = _buf_.ReadInt()
+        this.purity_grade = _buf_.ReadInt()
+        this.purity_min = _buf_.ReadInt()
+        this.purity_max = _buf_.ReadInt()
+        this.damage_rate = _buf_.ReadInt()
+        this.durability_cost = _buf_.ReadInt()
+        { let n = Math.min(_buf_.ReadSize(), _buf_.Size); this.minor_effect_group = []; for(let i = 0 ; i < n ; i++) { let _e0; { let n = Math.min(_buf_.ReadSize(), _buf_.Size); _e0 = []; for(let i = 0 ; i < n ; i++) { let _e1; _e1 = _buf_.ReadInt(); _e0.push(_e1);}}; this.minor_effect_group.push(_e0);}}
+        this.enabled = _buf_.ReadInt()
+    }
+
+    /**
+     * 属性石ID
+     */
+    readonly stone_id: number
+    /**
+     * 对应物品ID
+     */
+    readonly item_id: number
+    /**
+     * 五行属性
+     */
+    readonly element: EElement
+    /**
+     * 等级
+     */
+    readonly level: number
+    /**
+     * 纯度档
+     */
+    readonly purity_grade: EPurityGrade
+    /**
+     * 纯度下限
+     */
+    readonly purity_min: number
+    /**
+     * 纯度上限
+     */
+    readonly purity_max: number
+    /**
+     * 注灵伤害倍率
+     */
+    readonly damage_rate: number
+    /**
+     * 注灵消耗耐久
+     */
+    readonly durability_cost: number
+    /**
+     * 轻微效果组
+     */
+    readonly minor_effect_group: number[][]
+    /**
+     * 是否启用
+     */
+    readonly enabled: number
+
+/*
+    resolve(tables:Tables) {
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    }
+    */
+}
+
+
+
+
+
 export class Ienemy_intentConfig {
 
     constructor(_buf_: ByteBuf) {
@@ -1407,6 +1516,8 @@ export class IitemConfig {
 
     constructor(_buf_: ByteBuf) {
         this.item_id = _buf_.ReadInt()
+        this.name = _buf_.ReadString()
+        this.des = _buf_.ReadString()
         this.item_type = _buf_.ReadInt()
         this.sub_type = _buf_.ReadInt()
         this.quality = _buf_.ReadInt()
@@ -1420,6 +1531,14 @@ export class IitemConfig {
      * 序号
      */
     readonly item_id: number
+    /**
+     * 物品名称
+     */
+    readonly name: string
+    /**
+     * 描述
+     */
+    readonly des: string
     /**
      * 物品主类型
      */
@@ -1451,6 +1570,8 @@ export class IitemConfig {
 
 /*
     resolve(tables:Tables) {
+        
+        
         
         
         
@@ -2765,8 +2886,8 @@ export class combat_scenario_enemy {
             let _v: Icombat_scenario_enemyConfig
             _v = new Icombat_scenario_enemyConfig(_buf_)
             this._dataList.push(_v)
-            this._dataMap.set(_v.scenario_id, _v)
-			//this._dataObj[_v.scenario_id] = _v
+            this._dataMap.set(_v.id, _v)
+			//this._dataObj[_v.id] = _v
         }
         this._loaded = true;
     }
@@ -2846,6 +2967,60 @@ export class status {
 
 
 
+export class element_stone {
+    private _dataMap: Map<number, Ielement_stoneConfig>
+	//private _dataObj: {[index:number]:Ielement_stoneConfig}
+    private _dataList: Ielement_stoneConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, Ielement_stoneConfig>()
+        this._dataList = []
+		//this._dataObj = {}
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Ielement_stoneConfig
+            _v = new Ielement_stoneConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.stone_id, _v)
+			//this._dataObj[_v.stone_id] = _v
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, Ielement_stoneConfig> {this.load(); return this._dataMap; }
+	
+	//getDataObj(): { [index: number]: Ielement_stoneConfig } {this.load(); return this._dataObj; }
+	
+    getDataList(): Ielement_stoneConfig[] { this.load();return this._dataList; }
+
+    get(key: number): Ielement_stoneConfig | undefined {
+		this.load();
+        return this._dataMap.get(key); 
+    }
+    
+/**
+    resolve(tables:Tables) {
+        
+    }
+ */    
+
+}
+
+
+
+
 type ByteBufLoader = (file: string) => ByteBuf
 
 export class Tables {
@@ -2873,6 +3048,8 @@ export class Tables {
     get combat_scenario_enemy(): combat_scenario_enemy  { return this._combat_scenario_enemy;}
     private _status: status
     get status(): status  { return this._status;}
+    private _element_stone: element_stone
+    get element_stone(): element_stone  { return this._element_stone;}
 
     static getTableNames(): string[] {
         let names: string[] = [];
@@ -2888,6 +3065,7 @@ export class Tables {
         names.push('combat_scenario');
         names.push('combat_scenario_enemy');
         names.push('status');
+        names.push('element_stone');
         return names;
     }
 
@@ -2904,6 +3082,7 @@ export class Tables {
         this._combat_scenario = new combat_scenario(loader('combat_scenario'))
         this._combat_scenario_enemy = new combat_scenario_enemy(loader('combat_scenario_enemy'))
         this._status = new status(loader('status'))
+        this._element_stone = new element_stone(loader('element_stone'))
 
         /*
         this._item.resolve(this)
@@ -2918,6 +3097,7 @@ export class Tables {
         this._combat_scenario.resolve(this)
         this._combat_scenario_enemy.resolve(this)
         this._status.resolve(this)
+        this._element_stone.resolve(this)
         */
     }
 }
