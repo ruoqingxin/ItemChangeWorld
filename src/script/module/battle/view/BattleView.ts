@@ -20,7 +20,7 @@ export class BattleView extends UIBaseView {
     private static readonly HAND_BTN_COUNT = 5;
     private static readonly ENEMY_BTN_COUNT = 3;
     private static readonly POUCH_SLOT_COUNT = 5;
-    private static readonly LOG_LINE_COUNT = 18;
+    private static readonly LOG_LINE_COUNT = 13;
 
     public get layer(): UILayer {
         return UILayer.Second;
@@ -33,6 +33,9 @@ export class BattleView extends UIBaseView {
     private txt_status: Laya.GTextField;
     private txt_hand: Laya.GTextField;
     private txt_log: Laya.GTextField;
+    private txt_flow: Laya.GTextField;
+    private txt_action: Laya.GTextField;
+    private txt_preview: Laya.GTextField;
 
     private _scenarioId = 1;
     private _targetEnemyIndex = 0;
@@ -46,6 +49,9 @@ export class BattleView extends UIBaseView {
         this.txt_hand = this.getElement<Laya.GTextField>("txt_hand");
         this.txt_log = this.getElement<Laya.GTextField>("txt_log");
 
+        this.setupLayout();
+        this.createFlowWidgets();
+
         this.addClickListener(this.getElement("btn_close"), this.onClickClose);
         this.addClickListener(this.getElement("btn_start"), this.onClickStart);
         this.addClickListener(this.getElement("btn_end_turn"), this.onClickEndTurn);
@@ -56,6 +62,7 @@ export class BattleView extends UIBaseView {
                 continue;
             }
             this._handButtons.push(btn);
+            this.styleButton(btn, "#263247", "#52627a");
             this.addClickListener(btn, () => this.onPlayCard(i));
         }
 
@@ -65,6 +72,7 @@ export class BattleView extends UIBaseView {
                 continue;
             }
             this._enemyButtons.push(btn);
+            this.styleButton(btn, "#3a242b", "#76505a");
             this.addClickListener(btn, () => this.onSelectEnemy(i));
         }
 
@@ -179,8 +187,11 @@ export class BattleView extends UIBaseView {
     private refreshView(): void {
         const state = BattleManager.ins().state;
         if (!state) {
-            this.txt_status.text = "未开始战斗，点击「开始战斗」";
-            this.txt_hand.text = "";
+            this.txt_flow.text = this.buildFlowText(null);
+            this.txt_action.text = "未开始战斗。点击「开始战斗」进入抽牌阶段。";
+            this.txt_status.text = "战斗状态\n等待开始";
+            this.txt_hand.text = "手牌区";
+            this.txt_preview.text = "";
             this.txt_log.text = "";
             this.updateHandButtons([], false);
             this.updateEnemyButtons([], -1);
@@ -195,8 +206,11 @@ export class BattleView extends UIBaseView {
             this._selectedHandIndex = Math.max(0, state.hand.length - 1);
         }
 
+        this.txt_flow.text = this.buildFlowText(state);
+        this.txt_action.text = this.buildActionText(state);
         this.txt_status.text = this.buildStatusText(state);
         this.txt_hand.text = this.buildHandText(state);
+        this.txt_preview.text = this.buildPreviewText(state);
         this.txt_log.text = this.buildLogText(state);
 
         const canPlay = this.canOperate(state);
@@ -220,65 +234,105 @@ export class BattleView extends UIBaseView {
 
     private buildStatusText(state: IBattleState): string {
         const player = state.player;
-        const enemyLines = state.enemies.map((enemy, index) => {
-            const intent = this.getEnemyIntent(enemy);
-            const aliveText = this.isAlive(enemy) ? "" : " (死亡)";
-            return `[${index}] ${enemy.name}${aliveText}\nHP ${enemy.hp}/${enemy.maxHp}  护盾 ${enemy.block}\n状态 ${this.formatStatuses(enemy)}  意图 ${intent}`;
-        });
 
         return [
-            `结果：${this.getResultText(state.result)}`,
-            `回合 ${state.turnNo}  ${state.isPlayerTurn ? "玩家回合" : "敌人回合"}`,
-            `玩家 HP ${player.hp}/${player.maxHp}  MP ${player.mp}/${player.maxMp}  AP ${player.ap}  护盾 ${player.block}`,
-            `武器耐久 ${player.weaponDurability}/${player.maxWeaponDurability}`,
-            `临战法囊 ${this.formatBattlePouch(state)}`,
+            `玩家  HP ${player.hp}/${player.maxHp}   MP ${player.mp}/${player.maxMp}   AP ${player.ap}`,
+            `护盾 ${player.block}   武器耐久 ${player.weaponDurability}/${player.maxWeaponDurability}`,
             `状态 ${this.formatStatuses(player)}`,
-            `牌堆 抽 ${state.drawPile.length} / 手 ${state.hand.length} / 弃 ${state.discardPile.length}`,
-            `当前手牌 [${this._selectedHandIndex}]：${state.hand[this._selectedHandIndex]?.name || "无"}`,
-            "",
-            "敌人：",
-            enemyLines.join("\n\n") || "无",
-            "",
-            this.buildPreviewText(state),
+            `牌堆  抽 ${state.drawPile.length} / 手 ${state.hand.length} / 弃 ${state.discardPile.length}`,
+            `临战法囊  ${this.formatBattlePouch(state)}`,
         ].join("\n");
     }
 
     private buildHandText(state: IBattleState): string {
         if (state.hand.length === 0) {
-            return "手牌：无";
+            return "手牌：无。结束回合后进入敌人行动，再回到抽牌。";
         }
 
         return state.hand
             .map((card, index) => {
                 const enchantTag = card.enchantState?.applied ? " [已注灵]" : card.canEnchant ? " [可注灵]" : "";
                 const selected = index === this._selectedHandIndex ? ">" : " ";
-                return `${selected}[${index}] ${card.name} (AP ${card.costAp})${enchantTag}`;
+                return `${selected}[${index}] ${card.name}(AP${card.costAp})${enchantTag}`;
             })
             .join("   ");
+    }
+
+    private buildFlowText(state: IBattleState | null): string {
+        if (!state) {
+            return "流程  准备战斗 > 开始 > 抽牌 > 选敌 > 选牌 > 注灵/打出 > 结束回合 > 敌人行动";
+        }
+
+        if (state.result !== EBattleResult.Running) {
+            return `流程  战斗结束：${this.getResultText(state.result)}`;
+        }
+
+        const step = state.isPlayerTurn ? this.getPlayerFlowStep(state) : 6;
+        const steps = [
+            "抽牌",
+            "选敌",
+            "选牌",
+            "注灵",
+            "打出",
+            "结束",
+            "敌人",
+        ];
+
+        return steps
+            .map((name, index) => {
+                const no = index + 1;
+                if (no === step) {
+                    return `[${name}]`;
+                }
+                return name;
+            })
+            .join("  >  ");
+    }
+
+    private buildActionText(state: IBattleState): string {
+        if (state.result !== EBattleResult.Running) {
+            return `战斗已${this.getResultText(state.result)}。可点击「开始战斗」重新开始。`;
+        }
+
+        if (!state.isPlayerTurn) {
+            return "敌人行动中：敌人会按意图执行，随后回到玩家抽牌。";
+        }
+
+        const enemy = state.enemies[this._targetEnemyIndex];
+        const card = state.hand[this._selectedHandIndex];
+        const targetText = enemy ? `目标 [${this._targetEnemyIndex}] ${enemy.name}` : "未选择目标";
+        const cardText = card ? `手牌 [${this._selectedHandIndex}] ${card.name}` : "未选择手牌";
+        const enchantText = card?.enchantState?.applied
+            ? "已注灵，点击同一张手牌可打出。"
+            : card?.canEnchant
+                ? "可先点击法囊属性石注灵，也可再次点击手牌直接打出。"
+                : "不可注灵，再次点击手牌直接打出。";
+
+        return `${targetText}  |  ${cardText}\n${enchantText}`;
     }
 
     private buildPreviewText(state: IBattleState): string {
         const card = state.hand[this._selectedHandIndex];
         if (!card) {
-            return "";
+            return "伤害预览：无可用手牌";
         }
 
         const preview = BattleManager.ins().previewDamage(this._selectedHandIndex, this._targetEnemyIndex);
         if (!preview) {
-            return "";
+            return "伤害预览：请选择存活敌人";
         }
 
         if (preview.hasEnchant) {
             const elementName = BattleFormulaUtils.getElementName(preview.enchantElement);
             const counter = preview.counterText ? `，${preview.counterText}` : "";
             return [
-                `预计伤害（手牌[${this._selectedHandIndex}]）：`,
+                `伤害预览  手牌[${this._selectedHandIndex}] -> 敌人[${this._targetEnemyIndex}]`,
                 `基础 ${preview.baseFinalDamage} + 注灵 ${preview.enchantFinalDamage}（${elementName}行${counter}）`,
                 preview.blockAbsorb > 0 ? `护盾吸收 ${preview.blockAbsorb}，生命损失 ${preview.hpLoss}` : `生命损失 ${preview.hpLoss}`,
             ].join("\n");
         }
 
-        return `预计伤害（手牌[${this._selectedHandIndex}]）：基础 ${preview.baseFinalDamage}，生命损失 ${preview.hpLoss}`;
+        return `伤害预览  手牌[${this._selectedHandIndex}] -> 敌人[${this._targetEnemyIndex}]：基础 ${preview.baseFinalDamage}，生命损失 ${preview.hpLoss}`;
     }
 
     private formatBattlePouch(state: IBattleState): string {
@@ -317,6 +371,12 @@ export class BattleView extends UIBaseView {
                 txt.text = `${selectedTag}${card.name}\nAP${card.costAp}${enchantTag}`;
                 txt.color = canPlay ? (i === this._selectedHandIndex ? "#ffd166" : "#ffffff") : "#888888";
             }
+
+            this.styleButton(
+                btn,
+                i === this._selectedHandIndex ? "#39465f" : "#263247",
+                card.enchantState?.applied ? "#f7c948" : "#52627a",
+            );
         }
     }
 
@@ -338,10 +398,128 @@ export class BattleView extends UIBaseView {
 
             if (txt) {
                 const selected = i === selectedIndex && alive;
-                txt.text = `${selected ? "★ " : ""}${enemy.name}\n${enemy.hp}/${enemy.maxHp}`;
+                const intent = this.getEnemyIntent(enemy);
+                txt.text = `${selected ? "> " : ""}${enemy.name}\nHP ${enemy.hp}/${enemy.maxHp}  ${intent}`;
                 txt.color = alive ? (selected ? "#ffd166" : "#ff9a9a") : "#666666";
             }
+
+            this.styleButton(
+                btn,
+                i === selectedIndex && alive ? "#54313a" : "#3a242b",
+                alive ? "#76505a" : "#3a3a3a",
+            );
         }
+    }
+
+    private setupLayout(): void {
+        this.txt_status.x = 20;
+        this.txt_status.y = 120;
+        this.txt_status.width = 680;
+        this.txt_status.height = 150;
+        this.txt_status.fontSize = 22;
+        this.txt_status.leading = 5;
+
+        this.txt_hand.x = 20;
+        this.txt_hand.y = 505;
+        this.txt_hand.width = 680;
+        this.txt_hand.height = 70;
+        this.txt_hand.fontSize = 20;
+
+        this.txt_log.x = 20;
+        this.txt_log.y = 780;
+        this.txt_log.width = 680;
+        this.txt_log.height = 250;
+        this.txt_log.fontSize = 19;
+        this.txt_log.leading = 4;
+
+        for (let i = 0; i < BattleView.HAND_BTN_COUNT; i++) {
+            const btn = this.getElement<Laya.GWidget>(`btn_hand_${i}`, false);
+            if (btn) {
+                btn.x = 20 + i * 136;
+                btn.y = 590;
+                btn.width = 128;
+                btn.height = 62;
+                this.resizeButtonText(btn, 128, 62, 19);
+            }
+        }
+
+        for (let i = 0; i < BattleView.ENEMY_BTN_COUNT; i++) {
+            const btn = this.getElement<Laya.GWidget>(`btn_enemy_${i}`, false);
+            if (btn) {
+                btn.x = 20 + i * 230;
+                btn.y = 310;
+                btn.width = 210;
+                btn.height = 78;
+                this.resizeButtonText(btn, 210, 78, 19);
+            }
+        }
+
+        const btnStart = this.getElement<Laya.GWidget>("btn_start", false);
+        if (btnStart) {
+            btnStart.x = 80;
+            btnStart.y = 1055;
+            this.styleButton(btnStart, "#1f4d35", "#7bed9f");
+        }
+
+        const btnEnd = this.getElement<Laya.GWidget>("btn_end_turn", false);
+        if (btnEnd) {
+            btnEnd.x = 440;
+            btnEnd.y = 1055;
+            this.styleButton(btnEnd, "#243b65", "#70a1ff");
+        }
+    }
+
+    private createFlowWidgets(): void {
+        this.txt_flow = this.createText("txt_flow_runtime", 20, 28, 680, 54, 22, "#dff9fb");
+        this.txt_flow.align = "center";
+        this.txt_flow.valign = "middle";
+
+        this.txt_action = this.createText("txt_action_runtime", 20, 82, 680, 62, 20, "#ffffff");
+        this.txt_action.leading = 4;
+
+        this.txt_preview = this.createText("txt_preview_runtime", 20, 675, 680, 82, 20, "#ffd166");
+        this.txt_preview.leading = 4;
+    }
+
+    private createText(
+        name: string,
+        x: number,
+        y: number,
+        width: number,
+        height: number,
+        fontSize: number,
+        color: string,
+    ): Laya.GTextField {
+        const txt = new Laya.GTextField();
+        txt.name = name;
+        txt.x = x;
+        txt.y = y;
+        txt.width = width;
+        txt.height = height;
+        txt.fontSize = fontSize;
+        txt.color = color;
+        txt.wordWrap = true;
+        this.view.addChild(txt);
+        return txt;
+    }
+
+    private resizeButtonText(btn: Laya.GWidget, width: number, height: number, fontSize: number): void {
+        const txt = btn.getChildByName("txt") as Laya.GTextField;
+        if (!txt) {
+            return;
+        }
+
+        txt.width = width;
+        txt.height = height;
+        txt.fontSize = fontSize;
+        txt.wordWrap = true;
+        txt.align = "center";
+        txt.valign = "middle";
+    }
+
+    private styleButton(btn: Laya.GWidget, fill: string, stroke: string): void {
+        btn.graphics.clear();
+        btn.graphics.drawRect(0, 0, btn.width, btn.height, fill, stroke, 2, true);
     }
 
     private createPouchButtons(): void {
@@ -353,10 +531,11 @@ export class BattleView extends UIBaseView {
             const btn = new Laya.GWidget();
             btn.name = `btn_pouch_${i}`;
             btn.x = 20 + i * 136;
-            btn.y = 555;
+            btn.y = 670;
             btn.width = 128;
             btn.height = 38;
             btn.mouseEnabled = true;
+            this.styleButton(btn, "#243c3f", "#5f8187");
 
             const txt = new Laya.GTextField();
             txt.name = "txt";
@@ -389,7 +568,30 @@ export class BattleView extends UIBaseView {
                 txt.text = hasItem ? `[${i}] ${this.getPouchSlotName(Number(slot!.itemId))}` : `[${i}] 空`;
                 txt.color = canUse && hasItem ? "#dff9fb" : "#666666";
             }
+
+            this.styleButton(btn, canUse && hasItem ? "#243c3f" : "#252a30", hasItem ? "#5f8187" : "#3b4148");
         }
+    }
+
+    private getPlayerFlowStep(state: IBattleState): number {
+        if (state.hand.length <= 0) {
+            return 6;
+        }
+
+        const card = state.hand[this._selectedHandIndex];
+        if (!state.enemies[this._targetEnemyIndex] || !this.isAlive(state.enemies[this._targetEnemyIndex])) {
+            return 2;
+        }
+
+        if (!card) {
+            return 3;
+        }
+
+        if (card.canEnchant && !card.enchantState?.applied && state.battlePouch.some(slot => !!slot.itemUid)) {
+            return 4;
+        }
+
+        return 5;
     }
 
     private getPouchSlotName(itemId: number): string {
