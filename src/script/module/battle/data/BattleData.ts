@@ -9,12 +9,14 @@ import {
     Ieffect_defineConfig,
     Ienemy_intentConfig,
     IenemyConfig,
+    IitemConfig,
     IstatusConfig,
     IweaponConfig,
 } from "src/script/config/schema";
+import { ElementStoneDebugConfig } from "../config/ElementStoneDebugConfig";
 import { BattleConfigUtils } from "../utils/BattleConfigUtils";
 import { BaseClass } from "src/script/games/common/BaseClass";
-import { IBattleState } from "../types/BattleTypes";
+import { IBattleState, IElementStoneConfig } from "../types/BattleTypes";
 
 /**
  * 战斗配置数据
@@ -37,6 +39,15 @@ export default class BattleData extends BaseClass {
 
     public getWeapon(weaponId: number): IweaponConfig | undefined {
         return ConfigUtil.Tables.weapon.get(weaponId);
+    }
+
+    public getItem(itemId: number): IitemConfig | undefined {
+        return ConfigUtil.Tables.item.get(itemId);
+    }
+
+    /** 属性石战斗规则，优先 Debug 配置，后续可切到 element_stone 表 */
+    public getElementStoneByItemId(itemId: number): IElementStoneConfig | undefined {
+        return ElementStoneDebugConfig.getByItemId(itemId);
     }
 
     public getEnemy(enemyId: number): IenemyConfig | undefined {

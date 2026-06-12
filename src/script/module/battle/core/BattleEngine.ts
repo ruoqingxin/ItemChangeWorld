@@ -1,11 +1,14 @@
 import {
     EBlockClearTiming,
     ECardType,
+    EDeckType,
     EEffectTarget,
     EEffectType,
     EIntentType,
+    EMainType,
     EStatusRemoveTiming,
     EStatusTickTiming,
+    ESubType,
 } from "src/script/config/schema";
 import BattleData from "../data/BattleData";
 import {
@@ -13,15 +16,20 @@ import {
     EBattleSide,
     EBattleStatusId,
     IBattleCard,
+    IBattleCardEnchantState,
     IBattleEnemy,
     IBattleIntent,
+    IBattleItemSlotRuntime,
     IBattlePlayer,
     IBattleState,
     IBattleStatus,
     IBattleUnit,
+    IDamagePreview,
     IEffectSpec,
+    IEnchantCheckResult,
 } from "../types/BattleTypes";
 import { BattleConfigUtils } from "../utils/BattleConfigUtils";
+import { BattleFormulaUtils } from "../utils/BattleFormulaUtils";
 
 export class BattleEngine {
     private _cardUid: number = 1;
@@ -50,7 +58,8 @@ export class BattleEngine {
         }
 
         const player = this.createPlayer(scenarioCfg, weaponCfg);
-        const deck = this.createDeckByWeapon(weaponCfg);
+        const weaponUid = `weapon_${BattleConfigUtils.toNumber(weaponCfg.weapon_id)}`;
+        const deck = this.createDeckByWeapon(weaponCfg, weaponUid);
         const enemies = this.createEnemies(scenarioId);
 
         const state: IBattleState = {
@@ -60,6 +69,7 @@ export class BattleEngine {
 
             player,
             enemies,
+            battlePouch: this.createDebugBattlePouch(),
 
             drawPile: this.shuffle(deck),
             hand: [],
@@ -76,6 +86,83 @@ export class BattleEngine {
         this.log(state, `进入战斗场景：${scenarioId}`);
         this.startPlayerTurn(state, true);
         return state;
+    }
+
+    /**
+     * 注灵：将临战法囊中的属性石拖拽到可注灵卡牌上（Debug 用索引模拟）。
+     * 拖拽成功立即消耗属性石与武器耐久，卡牌进入注灵态。
+     */
+    enchantCard(
+        state: IBattleState,
+        handIndex: number,
+        pouchSlotIndex: number,
+    ): IEnchantCheckResult {
+        if (!this.canOperate(state)) {
+            return { ok: false, reason: "当前无法操作" };
+        }
+
+        const card = state.hand[handIndex];
+        const slot = state.battlePouch[pouchSlotIndex];
+        const check = this.checkCanEnchant(state, card, slot);
+
+        if (!check.ok) {
+            this.log(state, `注灵失败：${check.reason}`);
+            return check;
+        }
+
+        const stoneCfg = BattleData.ins().getElementStoneByItemId(slot!.itemId!)!;
+        const durabilityCost = BattleConfigUtils.toNumber(stoneCfg.durabilityCost, 0);
+
+        state.player.weaponDurability = Math.max(0, state.player.weaponDurability - durabilityCost);
+        this.clearBattlePouchSlot(state, pouchSlotIndex);
+
+        const enchantState: IBattleCardEnchantState = {
+            sourceSlotIndex: pouchSlotIndex,
+            consumedItemUid: slot!.itemUid!,
+            itemId: slot!.itemId!,
+            stoneId: stoneCfg.stoneId,
+            element: stoneCfg.element,
+            damageRate: stoneCfg.damageRate,
+            durabilityCost,
+            minorEffectGroup: BattleFormulaUtils.parseMinorEffects(stoneCfg.minorEffectGroup),
+            applied: true,
+        };
+
+        card!.enchantState = enchantState;
+        card!.name = BattleFormulaUtils.buildEnchantCardName(stoneCfg.element, card!.baseName);
+
+        this.log(
+            state,
+            `【${card!.name}】注灵成功，消耗 ${stoneCfg.name}，武器耐久 -${durabilityCost}（剩余 ${state.player.weaponDurability}）`,
+        );
+
+        this.printState(state);
+        return { ok: true };
+    }
+
+    /** 伤害预览，与真实结算共用公式 */
+    previewDamage(
+        state: IBattleState,
+        handIndex: number,
+        targetEnemyIndex: number = 0,
+    ): IDamagePreview | null {
+        const card = state.hand[handIndex];
+        const target = this.getAliveEnemies(state)[targetEnemyIndex];
+
+        if (!card || !target) {
+            return null;
+        }
+
+        const preview = BattleFormulaUtils.previewSplitDamage(
+            state.player,
+            target,
+            card,
+            (unit, statusId) => this.getStatusStack(unit, statusId),
+            (unit, statusId) => this.getStatusCfg(unit, statusId),
+            (unit) => this.getUnitElement(unit),
+        );
+
+        return preview;
     }
 
     playCard(state: IBattleState, handIndex: number, targetEnemyIndex: number = 0): void {
@@ -110,6 +197,32 @@ export class BattleEngine {
         const isAttackAction = Number(card.cardType) === ECardType.attack;
         this.executeEffects(state, state.player, card.effects, selectedEnemy, isAttackAction);
 
+        if (isAttackAction && card.enchantState?.applied) {
+            const baseDamage = BattleFormulaUtils.getCardBaseDamage(card);
+            const enchantDamage = BattleFormulaUtils.calcEnchantRealDamage(
+                baseDamage,
+                card.enchantState.damageRate,
+                card.enchantState.element,
+                selectedEnemy ? this.getUnitElement(selectedEnemy) : 0,
+            );
+
+            if (selectedEnemy && enchantDamage > 0) {
+                this.applyEnchantDamage(state, state.player, selectedEnemy, enchantDamage);
+            }
+
+            if (card.enchantState.minorEffectGroup.length > 0) {
+                this.executeEffects(
+                    state,
+                    state.player,
+                    card.enchantState.minorEffectGroup,
+                    selectedEnemy,
+                    false,
+                );
+            }
+
+            this.clearCardEnchant(card);
+        }
+
         if (isAttackAction) {
             this.handleRemoveTiming(state, state.player, EStatusRemoveTiming.after_attack);
         }
@@ -132,6 +245,12 @@ export class BattleEngine {
 
         while (state.hand.length > 0) {
             const card = state.hand.shift()!;
+
+            if (card.enchantState?.applied) {
+                this.log(state, `【${card.name}】回合结束未打出，注灵清除（资源不返还）`);
+                this.clearCardEnchant(card);
+            }
+
             state.discardPile.push(card);
         }
 
@@ -170,7 +289,8 @@ export class BattleEngine {
                 "========== Battle State ==========",
                 `结果：${state.result}`,
                 `回合：${state.turnNo}，当前：${state.isPlayerTurn ? "玩家回合" : "敌人回合"}`,
-                `玩家 HP:${player.hp}/${player.maxHp} MP:${player.mp}/${player.maxMp} AP:${player.ap} 护盾:${player.block} 状态:${this.formatStatuses(player)}`,
+                `玩家 HP:${player.hp}/${player.maxHp} MP:${player.mp}/${player.maxMp} AP:${player.ap} 护盾:${player.block} 武器耐久:${player.weaponDurability}/${player.maxWeaponDurability} 状态:${this.formatStatuses(player)}`,
+                `临战法囊：${this.formatBattlePouch(state)}`,
                 `牌堆：抽牌 ${state.drawPile.length} / 手牌 ${state.hand.length} / 弃牌 ${state.discardPile.length}`,
                 `手牌：${handText || "无"}`,
                 "敌人：",
@@ -402,6 +522,37 @@ export class BattleEngine {
 
         if (isAttackAction) {
             this.handleRemoveTiming(state, target, EStatusRemoveTiming.after_damaged);
+        }
+    }
+
+    /** 注灵伤害：不吃防御，可被护盾吸收 */
+    private applyEnchantDamage(
+        state: IBattleState,
+        source: IBattleUnit,
+        target: IBattleUnit,
+        damage: number,
+    ): void {
+        if (!this.isAlive(target)) {
+            return;
+        }
+
+        const finalDamage = Math.max(0, Math.floor(damage));
+        const beforeHp = target.hp;
+        const beforeBlock = target.block;
+
+        const blocked = Math.min(target.block, finalDamage);
+        target.block -= blocked;
+
+        const realDamage = finalDamage - blocked;
+        target.hp = Math.max(0, target.hp - realDamage);
+
+        this.log(
+            state,
+            `${source.name} 对 ${target.name} 造成 ${finalDamage} 点注灵伤害，护盾抵挡 ${blocked}，生命减少 ${beforeHp - target.hp}`,
+        );
+
+        if (beforeBlock !== target.block) {
+            this.log(state, `${target.name} 护盾：${beforeBlock} -> ${target.block}`);
         }
     }
 
@@ -762,7 +913,7 @@ export class BattleEngine {
         });
     }
 
-    private createDeckByWeapon(weaponCfg: any): IBattleCard[] {
+    private createDeckByWeapon(weaponCfg: any, sourceWeaponUid: string): IBattleCard[] {
         const deckId = BattleConfigUtils.toNumber(weaponCfg.base_deck_id);
         const deckRows = BattleData.ins().getDeckCards(deckId);
         const cards: IBattleCard[] = [];
@@ -777,7 +928,7 @@ export class BattleEngine {
             }
 
             for (let i = 0; i < count; i++) {
-                cards.push(this.createCard(cardCfg));
+                cards.push(this.createCard(cardCfg, EDeckType.weapon_basic, sourceWeaponUid));
             }
         }
 
@@ -788,16 +939,25 @@ export class BattleEngine {
         return cards;
     }
 
-    private createCard(cardCfg: any): IBattleCard {
+    private createCard(
+        cardCfg: any,
+        sourceDeckType: number = EDeckType.weapon_basic,
+        sourceWeaponUid?: string,
+    ): IBattleCard {
+        const baseName = cardCfg.name || `card_${cardCfg.card_id}`;
+
         return {
             uid: this._cardUid++,
             cardId: BattleConfigUtils.toNumber(cardCfg.card_id),
-            name: cardCfg.name || `card_${cardCfg.card_id}`,
+            name: baseName,
+            baseName,
             icon: cardCfg.icon || "",
             cardType: BattleConfigUtils.toNumber(cardCfg.card_type),
             costAp: BattleConfigUtils.toNumber(cardCfg.cost_ap),
             canEnchant: BattleConfigUtils.toNumber(cardCfg.can_enchant) === 1,
             effects: BattleConfigUtils.parseEffectGroup(cardCfg.effect_group),
+            sourceDeckType,
+            sourceWeaponUid,
             cfg: cardCfg,
         };
     }
@@ -903,6 +1063,114 @@ export class BattleEngine {
         return list
             .map(status => `${status.name}x${status.stack}`)
             .join(",");
+    }
+
+    private createDebugBattlePouch(): IBattleItemSlotRuntime[] {
+        return [
+            { slotIndex: 0, itemUid: "debug_stone_metal_001", itemId: 2112, mainType: EMainType.consumable, subType: ESubType.element_stone },
+            { slotIndex: 1, itemUid: "debug_stone_wood_001", itemId: 2122, mainType: EMainType.consumable, subType: ESubType.element_stone },
+            { slotIndex: 2, itemUid: "debug_stone_water_001", itemId: 2132, mainType: EMainType.consumable, subType: ESubType.element_stone },
+            { slotIndex: 3, itemUid: "debug_stone_fire_001", itemId: 2142, mainType: EMainType.consumable, subType: ESubType.element_stone },
+            { slotIndex: 4, itemUid: "debug_stone_earth_001", itemId: 2152, mainType: EMainType.consumable, subType: ESubType.element_stone },
+        ];
+    }
+
+    private checkCanEnchant(
+        state: IBattleState,
+        card: IBattleCard | undefined,
+        slot: IBattleItemSlotRuntime | undefined,
+    ): IEnchantCheckResult {
+        if (!card) {
+            return { ok: false, reason: "手牌不存在" };
+        }
+
+        if (!slot?.itemUid || !slot.itemId) {
+            return { ok: false, reason: "法囊格为空" };
+        }
+
+        if (!this.isElementStoneSlot(slot)) {
+            return { ok: false, reason: "只能使用属性石注灵" };
+        }
+
+        if (Number(card.cardType) !== ECardType.attack) {
+            return { ok: false, reason: "只有攻击牌可以注灵" };
+        }
+
+        if (!card.canEnchant) {
+            return { ok: false, reason: "该卡牌不可注灵" };
+        }
+
+        if (Number(card.sourceDeckType) !== EDeckType.weapon_basic) {
+            return { ok: false, reason: "只有武器基础牌可以注灵" };
+        }
+
+        if (card.enchantState?.applied) {
+            return { ok: false, reason: "该卡牌已注灵，不可覆盖" };
+        }
+
+        const stoneCfg = BattleData.ins().getElementStoneByItemId(slot.itemId);
+        if (!stoneCfg) {
+            return { ok: false, reason: "属性石配置不存在" };
+        }
+
+        const durabilityCost = BattleConfigUtils.toNumber(stoneCfg.durabilityCost, 0);
+        if (state.player.weaponDurability < durabilityCost) {
+            return { ok: false, reason: `武器耐久不足（需要 ${durabilityCost}，当前 ${state.player.weaponDurability}）` };
+        }
+
+        return { ok: true };
+    }
+
+    private isElementStoneSlot(slot: IBattleItemSlotRuntime): boolean {
+        if (Number(slot.mainType) === EMainType.consumable && Number(slot.subType) === ESubType.element_stone) {
+            return true;
+        }
+
+        const itemCfg = BattleData.ins().getItem(Number(slot.itemId));
+        return (
+            !!itemCfg &&
+            Number(itemCfg.item_type) === EMainType.consumable &&
+            Number(itemCfg.sub_type) === ESubType.element_stone
+        );
+    }
+
+    private clearBattlePouchSlot(state: IBattleState, slotIndex: number): void {
+        const slot = state.battlePouch[slotIndex];
+        if (!slot) {
+            return;
+        }
+
+        slot.itemUid = undefined;
+        slot.itemId = undefined;
+        slot.mainType = undefined;
+        slot.subType = undefined;
+    }
+
+    private clearCardEnchant(card: IBattleCard): void {
+        if (!card.enchantState) {
+            return;
+        }
+
+        card.name = card.baseName;
+        card.enchantState = undefined;
+    }
+
+    private getUnitElement(unit: IBattleUnit): number {
+        return BattleConfigUtils.toNumber(unit.cfg?.element, 0);
+    }
+
+    private formatBattlePouch(state: IBattleState): string {
+        return state.battlePouch
+            .map(slot => {
+                if (!slot.itemUid) {
+                    return `[${slot.slotIndex}]空`;
+                }
+
+                const stoneCfg = BattleData.ins().getElementStoneByItemId(Number(slot.itemId));
+                const name = stoneCfg?.name || `item_${slot.itemId}`;
+                return `[${slot.slotIndex}]${name}`;
+            })
+            .join(" | ");
     }
 
     private shuffle<T>(arr: T[]): T[] {

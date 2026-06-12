@@ -1,6 +1,7 @@
 import { UIBaseView } from "src/script/games/ui/UIBaseView";
 import { UILayer } from "src/script/games/ui/UILayer";
 import { BattleManager } from "../manager/BattleManager";
+import { BattleFormulaUtils } from "../utils/BattleFormulaUtils";
 import {
     EBattleResult,
     IBattleCard,
@@ -191,11 +192,15 @@ export class BattleView extends UIBaseView {
             `结果：${this.getResultText(state.result)}`,
             `回合 ${state.turnNo}  ${state.isPlayerTurn ? "玩家回合" : "敌人回合"}`,
             `玩家 HP ${player.hp}/${player.maxHp}  MP ${player.mp}/${player.maxMp}  AP ${player.ap}  护盾 ${player.block}`,
+            `武器耐久 ${player.weaponDurability}/${player.maxWeaponDurability}`,
+            `临战法囊 ${this.formatBattlePouch(state)}`,
             `状态 ${this.formatStatuses(player)}`,
             `牌堆 抽 ${state.drawPile.length} / 手 ${state.hand.length} / 弃 ${state.discardPile.length}`,
             "",
             "敌人：",
             enemyLines.join("\n\n") || "无",
+            "",
+            this.buildPreviewText(state),
         ].join("\n");
     }
 
@@ -205,8 +210,46 @@ export class BattleView extends UIBaseView {
         }
 
         return state.hand
-            .map((card, index) => `[${index}] ${card.name} (AP ${card.costAp})`)
+            .map((card, index) => {
+                const enchantTag = card.enchantState?.applied ? " [已注灵]" : card.canEnchant ? " [可注灵]" : "";
+                return `[${index}] ${card.name} (AP ${card.costAp})${enchantTag}`;
+            })
             .join("   ");
+    }
+
+    private buildPreviewText(state: IBattleState): string {
+        const card = state.hand[0];
+        if (!card) {
+            return "";
+        }
+
+        const preview = BattleManager.ins().previewDamage(0, this._targetEnemyIndex);
+        if (!preview) {
+            return "";
+        }
+
+        if (preview.hasEnchant) {
+            const elementName = BattleFormulaUtils.getElementName(preview.enchantElement);
+            const counter = preview.counterText ? `，${preview.counterText}` : "";
+            return [
+                "预计伤害（手牌[0]）：",
+                `基础 ${preview.baseFinalDamage} + 注灵 ${preview.enchantFinalDamage}（${elementName}行${counter}）`,
+                preview.blockAbsorb > 0 ? `护盾吸收 ${preview.blockAbsorb}，生命损失 ${preview.hpLoss}` : `生命损失 ${preview.hpLoss}`,
+            ].join("\n");
+        }
+
+        return `预计伤害（手牌[0]）：基础 ${preview.baseFinalDamage}，生命损失 ${preview.hpLoss}`;
+    }
+
+    private formatBattlePouch(state: IBattleState): string {
+        return state.battlePouch
+            .map(slot => {
+                if (!slot.itemUid) {
+                    return `[${slot.slotIndex}]空`;
+                }
+                return `[${slot.slotIndex}]石${slot.itemId}`;
+            })
+            .join(" ");
     }
 
     private buildLogText(state: IBattleState): string {
@@ -229,7 +272,8 @@ export class BattleView extends UIBaseView {
             btn.visible = true;
             btn.mouseEnabled = canPlay;
             if (txt) {
-                txt.text = `${card.name}\nAP${card.costAp}`;
+                const enchantTag = card.enchantState?.applied ? "\n注灵" : "";
+                txt.text = `${card.name}\nAP${card.costAp}${enchantTag}`;
                 txt.color = canPlay ? "#ffffff" : "#888888";
             }
         }
