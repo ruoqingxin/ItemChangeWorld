@@ -1656,6 +1656,308 @@ export class int3 {
 
 
 
+export class Iskill_battle_ruleConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.rule_id = _buf_.ReadInt()
+        this.action_count = _buf_.ReadInt()
+        this.qi_max = _buf_.ReadInt()
+        this.start_qi = _buf_.ReadInt()
+        this.enable_intent = _buf_.ReadInt()
+        this.player_hp = _buf_.ReadInt()
+        this.enabled = _buf_.ReadInt()
+    }
+
+    /**
+     * 规则ID
+     */
+    readonly rule_id: number
+    /**
+     * 每回合行动数
+     */
+    readonly action_count: number
+    /**
+     * 剑势上限
+     */
+    readonly qi_max: number
+    /**
+     * 初始剑势
+     */
+    readonly start_qi: number
+    /**
+     * 显示意图
+     */
+    readonly enable_intent: number
+    /**
+     * 测试玩家生命
+     */
+    readonly player_hp: number
+    /**
+     * 启用
+     */
+    readonly enabled: number
+
+/*
+    resolve(tables:Tables) {
+        
+        
+        
+        
+        
+        
+        
+    }
+    */
+}
+
+
+
+
+
+export class Iskill_encounterConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.encounter_id = _buf_.ReadInt()
+        this.order = _buf_.ReadInt()
+        this.rule_id = _buf_.ReadInt()
+        this.weapon_id = _buf_.ReadInt()
+        this.enemy_id = _buf_.ReadInt()
+        this.intent_group_id = _buf_.ReadInt()
+        this.reward_group_id = _buf_.ReadInt()
+        this.enabled = _buf_.ReadInt()
+    }
+
+    /**
+     * 遭遇ID
+     */
+    readonly encounter_id: number
+    /**
+     * 路线顺序
+     */
+    readonly order: number
+    /**
+     * 规则ID
+     */
+    readonly rule_id: number
+    /**
+     * 武器ID
+     */
+    readonly weapon_id: number
+    /**
+     * 敌人ID
+     */
+    readonly enemy_id: number
+    /**
+     * 意图组ID
+     */
+    readonly intent_group_id: number
+    /**
+     * 奖励组ID
+     */
+    readonly reward_group_id: number
+    /**
+     * 启用
+     */
+    readonly enabled: number
+
+/*
+    resolve(tables:Tables) {
+        
+        
+        
+        
+        
+        
+        
+        
+    }
+    */
+}
+
+
+
+
+
+export class Iskill_enemy_intent_stepConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.id = _buf_.ReadInt()
+        this.intent_group_id = _buf_.ReadInt()
+        this.step_index = _buf_.ReadInt()
+        this.intent_id = _buf_.ReadInt()
+    }
+
+    /**
+     * ID
+     */
+    readonly id: number
+    /**
+     * 意图组ID
+     */
+    readonly intent_group_id: number
+    /**
+     * 步骤顺序
+     */
+    readonly step_index: number
+    /**
+     * 意图ID
+     */
+    readonly intent_id: number
+
+/*
+    resolve(tables:Tables) {
+        
+        
+        
+        
+    }
+    */
+}
+
+
+
+
+
+export class Iskill_enemy_intentConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.intent_id = _buf_.ReadInt()
+        this.name = _buf_.ReadString()
+        this.icon = _buf_.ReadString()
+        this.intent_type = _buf_.ReadString()
+        this.damage = _buf_.ReadInt()
+        this.block = _buf_.ReadInt()
+        this.interruptible = _buf_.ReadInt()
+        this.enabled = _buf_.ReadInt()
+    }
+
+    /**
+     * 意图ID
+     */
+    readonly intent_id: number
+    /**
+     * 意图名
+     */
+    readonly name: string
+    /**
+     * 图标
+     */
+    readonly icon: string
+    /**
+     * 类型
+     */
+    readonly intent_type: string
+    /**
+     * 伤害
+     */
+    readonly damage: number
+    /**
+     * 护盾
+     */
+    readonly block: number
+    /**
+     * 可打断
+     */
+    readonly interruptible: number
+    /**
+     * 启用
+     */
+    readonly enabled: number
+
+/*
+    resolve(tables:Tables) {
+        
+        
+        
+        
+        
+        
+        
+        
+    }
+    */
+}
+
+
+
+
+
+export class IskillConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.skill_id = _buf_.ReadInt()
+        this.name = _buf_.ReadString()
+        this.icon = _buf_.ReadString()
+        this.qi_cost = _buf_.ReadInt()
+        this.damage = _buf_.ReadInt()
+        this.block = _buf_.ReadInt()
+        this.qi_gain = _buf_.ReadInt()
+        this.can_enchant = _buf_.ReadInt()
+        this.interrupt_mode = _buf_.ReadInt()
+        this.enabled = _buf_.ReadInt()
+    }
+
+    /**
+     * 招式ID
+     */
+    readonly skill_id: number
+    /**
+     * 招式名
+     */
+    readonly name: string
+    /**
+     * 图标
+     */
+    readonly icon: string
+    /**
+     * 剑势消耗
+     */
+    readonly qi_cost: number
+    /**
+     * 基础伤害
+     */
+    readonly damage: number
+    /**
+     * 获得护盾
+     */
+    readonly block: number
+    /**
+     * 获得剑势
+     */
+    readonly qi_gain: number
+    /**
+     * 可注灵
+     */
+    readonly can_enchant: number
+    /**
+     * 打断模式
+     */
+    readonly interrupt_mode: number
+    /**
+     * 启用
+     */
+    readonly enabled: number
+
+/*
+    resolve(tables:Tables) {
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    }
+    */
+}
+
+
+
+
+
 export class IstatusConfig {
 
     constructor(_buf_: ByteBuf) {
@@ -1808,6 +2110,46 @@ export class item2 {
 
 /*
     resolve(tables:Tables) {
+        
+        
+    }
+    */
+}
+
+
+
+
+
+export class Iweapon_skillConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.id = _buf_.ReadInt()
+        this.weapon_id = _buf_.ReadInt()
+        this.slot_index = _buf_.ReadInt()
+        this.skill_id = _buf_.ReadInt()
+    }
+
+    /**
+     * ID
+     */
+    readonly id: number
+    /**
+     * 武器ID
+     */
+    readonly weapon_id: number
+    /**
+     * 招式槽位
+     */
+    readonly slot_index: number
+    /**
+     * 招式ID
+     */
+    readonly skill_id: number
+
+/*
+    resolve(tables:Tables) {
+        
+        
         
         
     }
@@ -3021,6 +3363,330 @@ export class element_stone {
 
 
 
+export class skill_battle_rule {
+    private _dataMap: Map<number, Iskill_battle_ruleConfig>
+	//private _dataObj: {[index:number]:Iskill_battle_ruleConfig}
+    private _dataList: Iskill_battle_ruleConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, Iskill_battle_ruleConfig>()
+        this._dataList = []
+		//this._dataObj = {}
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Iskill_battle_ruleConfig
+            _v = new Iskill_battle_ruleConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.rule_id, _v)
+			//this._dataObj[_v.rule_id] = _v
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, Iskill_battle_ruleConfig> {this.load(); return this._dataMap; }
+	
+	//getDataObj(): { [index: number]: Iskill_battle_ruleConfig } {this.load(); return this._dataObj; }
+	
+    getDataList(): Iskill_battle_ruleConfig[] { this.load();return this._dataList; }
+
+    get(key: number): Iskill_battle_ruleConfig | undefined {
+		this.load();
+        return this._dataMap.get(key); 
+    }
+    
+/**
+    resolve(tables:Tables) {
+        
+    }
+ */    
+
+}
+
+
+
+
+export class skill {
+    private _dataMap: Map<number, IskillConfig>
+	//private _dataObj: {[index:number]:IskillConfig}
+    private _dataList: IskillConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, IskillConfig>()
+        this._dataList = []
+		//this._dataObj = {}
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: IskillConfig
+            _v = new IskillConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.skill_id, _v)
+			//this._dataObj[_v.skill_id] = _v
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, IskillConfig> {this.load(); return this._dataMap; }
+	
+	//getDataObj(): { [index: number]: IskillConfig } {this.load(); return this._dataObj; }
+	
+    getDataList(): IskillConfig[] { this.load();return this._dataList; }
+
+    get(key: number): IskillConfig | undefined {
+		this.load();
+        return this._dataMap.get(key); 
+    }
+    
+/**
+    resolve(tables:Tables) {
+        
+    }
+ */    
+
+}
+
+
+
+
+export class weapon_skill {
+    private _dataMap: Map<number, Iweapon_skillConfig>
+	//private _dataObj: {[index:number]:Iweapon_skillConfig}
+    private _dataList: Iweapon_skillConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, Iweapon_skillConfig>()
+        this._dataList = []
+		//this._dataObj = {}
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Iweapon_skillConfig
+            _v = new Iweapon_skillConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+			//this._dataObj[_v.id] = _v
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, Iweapon_skillConfig> {this.load(); return this._dataMap; }
+	
+	//getDataObj(): { [index: number]: Iweapon_skillConfig } {this.load(); return this._dataObj; }
+	
+    getDataList(): Iweapon_skillConfig[] { this.load();return this._dataList; }
+
+    get(key: number): Iweapon_skillConfig | undefined {
+		this.load();
+        return this._dataMap.get(key); 
+    }
+    
+/**
+    resolve(tables:Tables) {
+        
+    }
+ */    
+
+}
+
+
+
+
+export class skill_enemy_intent {
+    private _dataMap: Map<number, Iskill_enemy_intentConfig>
+	//private _dataObj: {[index:number]:Iskill_enemy_intentConfig}
+    private _dataList: Iskill_enemy_intentConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, Iskill_enemy_intentConfig>()
+        this._dataList = []
+		//this._dataObj = {}
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Iskill_enemy_intentConfig
+            _v = new Iskill_enemy_intentConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.intent_id, _v)
+			//this._dataObj[_v.intent_id] = _v
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, Iskill_enemy_intentConfig> {this.load(); return this._dataMap; }
+	
+	//getDataObj(): { [index: number]: Iskill_enemy_intentConfig } {this.load(); return this._dataObj; }
+	
+    getDataList(): Iskill_enemy_intentConfig[] { this.load();return this._dataList; }
+
+    get(key: number): Iskill_enemy_intentConfig | undefined {
+		this.load();
+        return this._dataMap.get(key); 
+    }
+    
+/**
+    resolve(tables:Tables) {
+        
+    }
+ */    
+
+}
+
+
+
+
+export class skill_enemy_intent_step {
+    private _dataMap: Map<number, Iskill_enemy_intent_stepConfig>
+	//private _dataObj: {[index:number]:Iskill_enemy_intent_stepConfig}
+    private _dataList: Iskill_enemy_intent_stepConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, Iskill_enemy_intent_stepConfig>()
+        this._dataList = []
+		//this._dataObj = {}
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Iskill_enemy_intent_stepConfig
+            _v = new Iskill_enemy_intent_stepConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+			//this._dataObj[_v.id] = _v
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, Iskill_enemy_intent_stepConfig> {this.load(); return this._dataMap; }
+	
+	//getDataObj(): { [index: number]: Iskill_enemy_intent_stepConfig } {this.load(); return this._dataObj; }
+	
+    getDataList(): Iskill_enemy_intent_stepConfig[] { this.load();return this._dataList; }
+
+    get(key: number): Iskill_enemy_intent_stepConfig | undefined {
+		this.load();
+        return this._dataMap.get(key); 
+    }
+    
+/**
+    resolve(tables:Tables) {
+        
+    }
+ */    
+
+}
+
+
+
+
+export class skill_encounter {
+    private _dataMap: Map<number, Iskill_encounterConfig>
+	//private _dataObj: {[index:number]:Iskill_encounterConfig}
+    private _dataList: Iskill_encounterConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, Iskill_encounterConfig>()
+        this._dataList = []
+		//this._dataObj = {}
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Iskill_encounterConfig
+            _v = new Iskill_encounterConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.encounter_id, _v)
+			//this._dataObj[_v.encounter_id] = _v
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, Iskill_encounterConfig> {this.load(); return this._dataMap; }
+	
+	//getDataObj(): { [index: number]: Iskill_encounterConfig } {this.load(); return this._dataObj; }
+	
+    getDataList(): Iskill_encounterConfig[] { this.load();return this._dataList; }
+
+    get(key: number): Iskill_encounterConfig | undefined {
+		this.load();
+        return this._dataMap.get(key); 
+    }
+    
+/**
+    resolve(tables:Tables) {
+        
+    }
+ */    
+
+}
+
+
+
+
 type ByteBufLoader = (file: string) => ByteBuf
 
 export class Tables {
@@ -3050,6 +3716,18 @@ export class Tables {
     get status(): status  { return this._status;}
     private _element_stone: element_stone
     get element_stone(): element_stone  { return this._element_stone;}
+    private _skill_battle_rule: skill_battle_rule
+    get skill_battle_rule(): skill_battle_rule  { return this._skill_battle_rule;}
+    private _skill: skill
+    get skill(): skill  { return this._skill;}
+    private _weapon_skill: weapon_skill
+    get weapon_skill(): weapon_skill  { return this._weapon_skill;}
+    private _skill_enemy_intent: skill_enemy_intent
+    get skill_enemy_intent(): skill_enemy_intent  { return this._skill_enemy_intent;}
+    private _skill_enemy_intent_step: skill_enemy_intent_step
+    get skill_enemy_intent_step(): skill_enemy_intent_step  { return this._skill_enemy_intent_step;}
+    private _skill_encounter: skill_encounter
+    get skill_encounter(): skill_encounter  { return this._skill_encounter;}
 
     static getTableNames(): string[] {
         let names: string[] = [];
@@ -3066,6 +3744,12 @@ export class Tables {
         names.push('combat_scenario_enemy');
         names.push('status');
         names.push('element_stone');
+        names.push('skill_battle_rule');
+        names.push('skill');
+        names.push('weapon_skill');
+        names.push('skill_enemy_intent');
+        names.push('skill_enemy_intent_step');
+        names.push('skill_encounter');
         return names;
     }
 
@@ -3083,6 +3767,12 @@ export class Tables {
         this._combat_scenario_enemy = new combat_scenario_enemy(loader('combat_scenario_enemy'))
         this._status = new status(loader('status'))
         this._element_stone = new element_stone(loader('element_stone'))
+        this._skill_battle_rule = new skill_battle_rule(loader('skill_battle_rule'))
+        this._skill = new skill(loader('skill'))
+        this._weapon_skill = new weapon_skill(loader('weapon_skill'))
+        this._skill_enemy_intent = new skill_enemy_intent(loader('skill_enemy_intent'))
+        this._skill_enemy_intent_step = new skill_enemy_intent_step(loader('skill_enemy_intent_step'))
+        this._skill_encounter = new skill_encounter(loader('skill_encounter'))
 
         /*
         this._item.resolve(this)
@@ -3098,6 +3788,12 @@ export class Tables {
         this._combat_scenario_enemy.resolve(this)
         this._status.resolve(this)
         this._element_stone.resolve(this)
+        this._skill_battle_rule.resolve(this)
+        this._skill.resolve(this)
+        this._weapon_skill.resolve(this)
+        this._skill_enemy_intent.resolve(this)
+        this._skill_enemy_intent_step.resolve(this)
+        this._skill_encounter.resolve(this)
         */
     }
 }
