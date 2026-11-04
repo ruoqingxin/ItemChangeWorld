@@ -24,6 +24,7 @@ const { SkillBattleFormulaUtils: Rules } = require(path.join(build, "script/modu
 const { SkillBattleManager: Manager } = require(path.join(build, "script/module/skillBattle/manager/SkillBattleManager.js"));
 const { SkillBattleDebug: Debug } = require(path.join(build, "script/module/skillBattle/debug/SkillBattleDebug.js"));
 const { ConfigUtil } = require(path.join(build, "script/config/ConfigUtil.js"));
+const { SkillBattlePresenter: Presenter } = require(path.join(build, "script/module/skillBattle/view/SkillBattlePresenter.js"));
 
 // Read the same uncompressed package that ConfigLoader/PackRes loads in Laya.
 const pack = fs.readFileSync(path.join(__dirname, "../assets/config/configbin.bin"));
@@ -513,4 +514,78 @@ if (process.argv.includes("--show-battle-log")) {
     console.log("\nSample battle log:\n" + manager.logs.join("\n"));
     console.log(manager.printState());
 }
-console.log(`\n${passed} tests passed; real config package and all 9 strategy baselines verified.`);
+test("UI preview and cancel never mutate the committed battle", () => {
+    const m = new Manager(), p = new Presenter(m);
+    p.open(setups[0]);
+    const before = m.state;
+    p.select(1);
+    assert.ok(p.selection.ok);
+    p.cancel();
+    assert.deepEqual(m.state, before);
+    p.select(3);
+    assert.equal(p.selection.ok, false);
+    assert.equal(p.confirm(), null);
+    assert.deepEqual(m.state, before);
+});
+test("UI locks immediately and double confirm cannot advance another turn", () => {
+    const m = new Manager(), p = new Presenter(m);
+    p.open(setups[0]);
+    p.select(1);
+    const result = p.confirm();
+    assert.ok(result.ok);
+    assert.ok(p.busy);
+    const committed = m.state;
+    assert.equal(p.confirm(), null);
+    p.select(2);
+    p.cancel();
+    assert.deepEqual(m.state, committed);
+    result.events.forEach(event => p.applyEvent(event));
+    p.finishPlayback();
+    assert.deepEqual(p.display, committed);
+    assert.equal(p.busy, false);
+});
+test("skipping every event prefix gives the identical committed snapshot", () => {
+    for (let prefix = 0; prefix < 10; prefix++) {
+        const m = new Manager(), p = new Presenter(m);
+        p.open(setups[0]);
+        p.select(1);
+        const result = p.confirm();
+        result.events.slice(0, prefix).forEach(event => p.applyEvent(event));
+        p.finishPlayback();
+        assert.deepEqual(p.display, m.state);
+        const before = m.state;
+        p.open(setups[0]);
+        assert.deepEqual(p.display, before);
+    }
+});
+test("stale selected token returns an error without a second action", () => {
+    const m = new Manager(), p = new Presenter(m);
+    p.open(setups[0]);
+    p.select(1);
+    m.confirmAction(action(1), m.previewAction(action(1)).preview.token);
+    const before = m.state;
+    assert.equal(p.confirm().ok, false);
+    assert.match(p.message, /过期/);
+    assert.deepEqual(m.state, before);
+    assert.equal(p.busy, false);
+});
+test("victory, defeat, reopening and encounter restart are independent", () => {
+    for (const id of [1, 3]) {
+        const m = new Manager(), p = new Presenter(m);
+        p.open(setups[id - 1]);
+        for (let turn = 0; turn < 30 && p.display.phase === "player_input"; turn++) {
+            p.select(1);
+            const result = p.confirm();
+            result.events.forEach(event => p.applyEvent(event));
+            p.finishPlayback();
+        }
+        assert.equal(p.display.phase, id === 1 ? "victory" : "defeat");
+        const end = m.state;
+        p.open(setups[id - 1]);
+        assert.deepEqual(p.display, end);
+        p.open(setups[id - 1], true);
+        assert.equal(p.display.player.hp, 50);
+        assert.notEqual(p.display.battleId, end.battleId);
+    }
+});
+console.log(`\n${passed} tests passed; real config, rule baselines and UI presentation lifecycle verified.`);

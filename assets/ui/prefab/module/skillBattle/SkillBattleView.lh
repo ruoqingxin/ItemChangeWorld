@@ -1,0 +1,16 @@
+{
+  "_$ver": 1,
+  "_$id": "skillbattle-root",
+  "_$type": "GWidget",
+  "name": "SkillBattleView",
+  "width": 720,
+  "height": 1280,
+  "_$comp": [
+    {
+      "_$type": "3593fc26-337e-42e3-92dc-1b9c2bb8f988",
+      "scriptPath": "../src/script/games/ui/components/ElementMapper.ts",
+      "elements": [],
+      "mapperType": 2
+    }
+  ]
+}
