@@ -1,6 +1,33 @@
 export type SkillBattlePhase = "player_input" | "resolving" | "victory" | "defeat";
 export type SkillBattleSide = "player" | "enemy";
 export type SkillIntentType = "attack" | "charge" | "block";
+export type SkillItemUseType = "fire_stone" | "earth_stone" | "heal";
+
+export interface ISkillItemConfig {
+    itemId: number;
+    name: string;
+    useType: SkillItemUseType;
+    initialSlot: number;
+    healValue: number;
+    burnStacks: number;
+    blockValue: number;
+    element: number;
+    damageRate: number;
+    durabilityCost: number;
+}
+
+export interface ISkillItemInstance {
+    itemUid: string;
+    itemId: number;
+}
+
+export interface ISkillBattleCarry {
+    playerHp: number;
+    playerMaxHp: number;
+    weaponId: number;
+    weaponDurability: number;
+    pouchSlots: Array<ISkillItemInstance | null>;
+}
 
 export interface ISkillConfig {
     id: number;
@@ -32,6 +59,7 @@ export interface ISkillBattleSetup {
     startQi: number;
     weaponId: number;
     weaponDurability: number;
+    items: ISkillItemConfig[];
     skills: ISkillConfig[];
     enemy: {
         id: number;
@@ -62,12 +90,14 @@ export interface ISkillBattleState {
     enemyId: number;
     enemyIntentIndex: number;
     weaponDurability: number;
+    weaponId: number;
+    enemyBurn: number;
+    pouchSlots: Array<ISkillItemInstance | null>;
 }
 
-export interface ISkillBattleAction {
-    type: "skill";
-    skillId: number;
-}
+export type ISkillBattleAction =
+    | { type: "skill"; skillId: number; stoneItemUid?: string }
+    | { type: "use_item"; itemUid: string };
 
 /** A confirmation applies only to the exact snapshot that was previewed. */
 export interface ISkillBattleInputToken {
@@ -84,7 +114,16 @@ export type SkillBattleEvent =
     | { type: "intent_interrupted"; intentId: number; name: string }
     | { type: "intent_executed"; intentId: number; name: string }
     | { type: "round_started"; round: number; intentId: number; name: string }
-    | { type: "battle_ended"; result: "victory" | "defeat" };
+    | { type: "battle_ended"; result: "victory" | "defeat" }
+    | SkillSupplyEvent;
+
+export type SkillSupplyEvent =
+    | { type: "item_consumed"; itemUid: string; itemId: number; slot: number; name: string }
+    | { type: "durability_changed"; before: number; after: number }
+    | { type: "enchant_used"; element: number; name: string }
+    | { type: "healed"; amount: number }
+    | { type: "burn_changed"; before: number; after: number }
+    | { type: "burn_damage"; amount: number; hpLoss: number };
 
 export interface ISkillActionPreview {
     token: ISkillBattleInputToken;
@@ -98,6 +137,14 @@ export interface ISkillActionPreview {
     enemyDamage: number;
     playerBlockAbsorbed: number;
     playerHpLoss: number;
+    enchantDamage: number;
+    enchantBlockAbsorbed: number;
+    enchantHpLoss: number;
+    burnApplied: number;
+    burnDamage: number;
+    healAmount: number;
+    durabilityCost: number;
+    consumedItemUid: string | null;
 }
 
 export interface ISkillActionResolution {

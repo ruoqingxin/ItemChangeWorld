@@ -95,8 +95,8 @@ function rejectWithoutMutation(state, input) {
     assert.equal(result.preview, null);
 }
 
-test("generated package contains all 19 tables and loads all table APIs", () => {
-    assert.equal(buffers.size, 19);
+test("generated package contains all 20 tables and loads all table APIs", () => {
+    assert.equal(buffers.size, 20);
     for (const name of Tables.getTableNames()) {
         assert.ok(Array.isArray(tables[name].getDataList()), name);
     }
@@ -588,4 +588,7 @@ test("victory, defeat, reopening and encounter restart are independent", () => {
         assert.notEqual(p.display.battleId, end.battleId);
     }
 });
-console.log(`\n${passed} tests passed; real config, rule baselines and UI presentation lifecycle verified.`);
+require("./skill-battle-supplies.test.cjs")({
+    assert, test, setups, tables, Config, Rules, Manager, Presenter, copy, freeze, withTables, build,
+});
+console.log(`\n${passed} tests passed; real config, battle rules, supplies and UI lifecycle verified.`);

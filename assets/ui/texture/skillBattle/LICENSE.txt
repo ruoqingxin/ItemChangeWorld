@@ -1,4 +1,4 @@
-Icons: Sword, Shield, Zap, ShieldOff from Lucide.
+Icons: Sword, Shield, Zap, ShieldOff, Flame, Hexagon, FlaskRound from Lucide.
 ISC License
 
 Copyright (c) 2026 Lucide Icons and Contributors

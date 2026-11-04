@@ -5,6 +5,7 @@ import type {
     ISkillBattleInputToken,
     ISkillBattleSetup,
     ISkillBattleState,
+    ISkillBattleCarry,
 } from "../types/SkillBattleTypes";
 import { SkillBattleDebugUtils } from "../utils/SkillBattleDebugUtils";
 import { SkillBattleFormulaUtils } from "../utils/SkillBattleFormulaUtils";
@@ -30,13 +31,27 @@ export class SkillBattleManager {
         return this._data.logs.slice();
     }
 
-    start(setup: ISkillBattleSetup): ISkillBattleState {
+    get encounterOrder(): number { return this._data.setup?.order || 0; }
+
+    start(setup: ISkillBattleSetup, carry?: ISkillBattleCarry): ISkillBattleState {
         const ownedSetup: ISkillBattleSetup = {
             ...setup,
             skills: setup.skills.map(row => ({ ...row })),
+            items: setup.items.map(row => ({ ...row })),
             enemy: { ...setup.enemy, intents: setup.enemy.intents.map(row => ({ ...row })) },
         };
-        const state = SkillBattleFormulaUtils.startBattle(ownedSetup, `skill_battle_${++this._battleSequence}`);
+        const battleId = `skill_battle_${++this._battleSequence}`;
+        const initial: ISkillBattleCarry = carry || {
+            playerHp: setup.playerMaxHp, playerMaxHp: setup.playerMaxHp, weaponId: setup.weaponId,
+            weaponDurability: setup.weaponDurability,
+            pouchSlots: [null, null, null, null, null],
+        };
+        if (!carry) ownedSetup.items.forEach(item => {
+            if (item.initialSlot) initial.pouchSlots[item.initialSlot - 1] = {
+                itemUid: `${battleId}_item_${item.initialSlot}`, itemId: item.itemId,
+            };
+        });
+        const state = SkillBattleFormulaUtils.startBattle(ownedSetup, battleId, initial);
         this._data.setup = ownedSetup;
         this._data.state = state;
         this._data.logs = [SkillBattleDebugUtils.formatState(ownedSetup, state)];

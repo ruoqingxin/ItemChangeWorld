@@ -3,6 +3,8 @@ import type {
     ISkillBattleSetup,
     ISkillConfig,
     ISkillIntentConfig,
+    ISkillItemConfig,
+    SkillItemUseType,
     SkillIntentType,
 } from "../types/SkillBattleTypes";
 
@@ -79,6 +81,7 @@ export class SkillBattleConfigUtils {
             startQi,
             weaponId: weapon.weapon_id,
             weaponDurability: this.integer(weapon.max_durability, "max_durability"),
+            items: this.readItems(tables),
             skills,
             enemy: {
                 id: enemy.enemy_id,
@@ -89,6 +92,36 @@ export class SkillBattleConfigUtils {
                 intents,
             },
         };
+    }
+
+    private static readItems(tables: Tables): ISkillItemConfig[] {
+        if (!tables.skill_item_use) throw new Error("[SkillBattle] 请重新导出阶段 C 物品配置");
+        const slots = new Set<number>();
+        return tables.skill_item_use.getDataList().filter(row => row.enabled === 1).map(row => {
+            const display = this.enabled(tables.item.get(row.item_id), `item ${row.item_id}`);
+            if (!["fire_stone", "earth_stone", "heal"].includes(row.use_type))
+                throw new Error(`[SkillBattle] Unsupported item use ${row.use_type}`);
+            const initialSlot = this.integer(row.initial_slot, "initial_slot");
+            if (initialSlot > 5 || (initialSlot > 0 && slots.has(initialSlot)))
+                throw new Error("[SkillBattle] Invalid or duplicate initial pouch slot");
+            if (initialSlot) slots.add(initialSlot);
+            const stone = row.use_type === "heal" ? null : tables.element_stone.getDataList()
+                .find(value => value.item_id === row.item_id && value.enabled === 1);
+            const healValue = this.integer(row.heal_value, "heal_value");
+            const burnStacks = this.integer(row.burn_stacks, "burn_stacks");
+            const blockValue = this.integer(row.block_value, "block_value");
+            if (row.use_type === "heal" ? healValue <= 0 || burnStacks !== 0 || blockValue !== 0
+                : !stone || stone.element !== (row.use_type === "fire_stone" ? 4 : 5) || healValue !== 0 ||
+                    (row.use_type === "fire_stone" ? burnStacks <= 0 || blockValue !== 0 : blockValue <= 0 || burnStacks !== 0))
+                throw new Error(`[SkillBattle] Incompatible item effects ${row.item_id}`);
+            return {
+                itemId: row.item_id, name: display.name, useType: row.use_type as SkillItemUseType,
+                initialSlot, healValue, burnStacks, blockValue,
+                element: stone?.element || 0,
+                damageRate: stone ? this.integer(stone.damage_rate, "damage_rate") : 0,
+                durabilityCost: stone ? this.integer(stone.durability_cost, "durability_cost") : 0,
+            };
+        });
     }
 
     private static enabled<T extends { enabled: number }>(row: T | undefined, label: string): T {

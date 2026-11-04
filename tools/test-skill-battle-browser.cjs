@@ -34,8 +34,8 @@ async function main() {
                 await page.mouse.click((viewport.width - 720 * scale) / 2 + x * scale,
                     (viewport.height - 1280 * scale) / 2 + y * scale, { clickCount: count });
             };
-            const select = id => click(106 + (id - 1) * 169, 982);
-            const skip = () => click(598, 898);
+            const select = id => click(106 + (id - 1) * 169, 890);
+            const skip = () => click(598, 822);
             const confirm = () => click(458, 1220);
             const action = async (id, skipAnimation = true) => {
                 await select(id); await confirm();
@@ -72,14 +72,14 @@ async function main() {
             assert.equal(state.result, true);
             await page.screenshot({ path: path.join(output, `victory-${viewport.width}.png`) });
             checks++;
-            await click(584, 805); // Guard encounter from the result surface.
+            await click(584, 855); // Guard encounter from the result surface.
             for (let i = 0; i < 7; i++) await action(1);
             state = await read();
             assert.equal(state.state.phase, "defeat");
             assert.equal(state.result, true);
             await page.screenshot({ path: path.join(output, `defeat-${viewport.width}.png`) });
             checks++;
-            await click(360, 694); // Replay.
+            await click(360, 757); // Replay.
             assert.equal((await read()).state.player.hp, 50);
             await click(360, 108); // Rabbit.
             await page.screenshot({ path: path.join(output, `rabbit-${viewport.width}.png`) });
@@ -112,6 +112,11 @@ async function main() {
             assert.deepEqual(errors, []);
             assert.deepEqual(failedResources, []);
             checks += 2;
+            checks += await require("./skill-battle-supplies-browser.cjs")({
+                page, read, click, select, skip, confirm, action, output, viewport,
+            });
+            assert.deepEqual(errors, []);
+            assert.deepEqual(failedResources, []);
             await page.close();
         }
         console.log(`${checks} browser checks passed across desktop and two mobile viewports.`);

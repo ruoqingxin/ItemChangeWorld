@@ -18,6 +18,7 @@ export class SkillBattlePanel extends Laya.GWidget {
     private queue: SkillBattleEvent[] = [];
     private loadEncounter: (id: number) => ISkillBattleSetup;
     private lastEvent = "";
+    private pouchIcons: Laya.GImage[] = [];
 
     constructor(loadEncounter: (id: number) => ISkillBattleSetup) {
         super();
@@ -27,7 +28,7 @@ export class SkillBattlePanel extends Laya.GWidget {
         this.drawScene();
         this.addLabel("brand", "末法寻仙", 30, 20, 330, 46, 32);
         this.addLabel("round", "", 430, 24, 260, 38, 23, C.muted, "right");
-        ["腐化灵鼠", "赤眼妖兔", "灵田守卫"].forEach((name, i) =>
+        ["灵鼠新局", "妖兔新局", "守卫新局"].forEach((name, i) =>
             this.button(`encounter${i + 1}`, name, 30 + i * 224, 84, 212, 48,
                 () => { if (!this.presenter.busy) this.openEncounter(i + 1, true); }));
         this.addLabel("enemyName", "", 30, 156, 440, 42, 30);
@@ -36,37 +37,47 @@ export class SkillBattlePanel extends Laya.GWidget {
         this.addLabel("intent", "", 30, 266, 660, 38, 26, C.red, "center");
         this.addLabel("interrupt", "", 30, 308, 660, 30, 20, C.muted, "center");
         this.enemy.pos(360, 455);
-        this.player.pos(360, 671);
+        this.player.pos(360, 608);
         this.addChild(this.enemy);
         this.addChild(this.player);
-        this.addLabel("event", "", 30, 527, 660, 40, 25, C.gold, "center");
-        this.addLabel("playerName", "散修", 30, 782, 220, 38, 28);
-        this.addLabel("durability", "", 250, 787, 440, 32, 21, C.muted, "right");
-        this.addLabel("playerHp", "", 30, 843, 350, 32, 22);
-        this.addLabel("playerBlock", "", 430, 843, 260, 32, 22, C.gold, "right");
-        this.addLabel("qi", "", 30, 881, 660, 32, 23, C.jade);
-        this.button("skip", "跳过动画", 506, 878, 184, 40, () => this.skip());
+        this.addLabel("event", "", 30, 556, 236, 30, 20, C.gold);
+        this.addLabel("playerName", "散修", 30, 704, 220, 34, 28);
+        this.addLabel("durability", "", 250, 710, 440, 28, 21, C.muted, "right");
+        this.addLabel("playerHp", "", 30, 765, 350, 30, 22);
+        this.addLabel("playerBlock", "", 430, 765, 260, 30, 22, C.gold, "right");
+        this.addLabel("qi", "", 30, 806, 660, 30, 23, C.jade);
+        this.button("skip", "跳过动画", 506, 804, 184, 36, () => this.skip());
         ["剑击", "守势", "贯虹", "破势"].forEach((name, i) => {
-            const button = this.button(`skill${i + 1}`, "", 30 + i * 169, 939, 153, 88,
+            const button = this.button(`skill${i + 1}`, "", 30 + i * 169, 852, 153, 76,
                 () => { this.presenter.select(i + 1); this.refresh(); });
             const label = button.getChildAt(0) as Laya.GTextField;
-            label.pos(40, 0); label.size(110, 88); label.fontSize = 22;
+            label.pos(40, 0); label.size(110, 76); label.fontSize = 22;
             const icon = new Laya.GImage();
-            icon.pos(10, 29); icon.size(30, 30); icon.autoSize = false;
+            icon.pos(10, 23); icon.size(30, 30); icon.autoSize = false;
             icon.src = `ui/texture/skillBattle/skill-${i + 1}.png`;
             icon.mouseEnabled = false;
             button.addChild(icon);
         });
-        this.addLabel("previewTitle", "", 30, 1050, 660, 36, 25, C.jade);
-        const preview = this.addLabel("preview", "", 30, 1093, 660, 68, 22);
+        for (let i = 0; i < 5; i++) {
+            const button = this.button(`pouch${i}`, "", 30 + i * 134, 946, 124, 62,
+                () => { this.presenter.selectPouch(i); this.refresh(); });
+            const label = button.getChildAt(0) as Laya.GTextField;
+            label.pos(34, 0); label.size(88, 62); label.fontSize = 20;
+            const icon = new Laya.GImage();
+            icon.pos(8, 19); icon.size(26, 26); icon.autoSize = false; icon.mouseEnabled = false;
+            button.addChild(icon);
+            this.pouchIcons.push(icon);
+        }
+        this.addLabel("previewTitle", "", 30, 1018, 660, 32, 24, C.jade);
+        const preview = this.addLabel("preview", "", 30, 1060, 660, 110, 21);
         preview.wordWrap = true;
         preview.leading = 5;
         this.button("cancel", "取消", 30, 1190, 180, 60, () => {
             this.presenter.cancel(); this.refresh();
         });
         this.button("confirm", "确认行动", 226, 1190, 464, 60, () => this.confirm());
-        this.numbers.size(200, 68);
-        this.numbers.fontSize = 39;
+        this.numbers.size(214, 68);
+        this.numbers.fontSize = 32;
         this.numbers.bold = true;
         this.numbers.align = "center";
         this.numbers.mouseEnabled = false;
@@ -79,6 +90,16 @@ export class SkillBattlePanel extends Laya.GWidget {
         this.presenter.open(this.loadEncounter(id), restart);
         this.lastEvent = "";
         this.drawActors(id);
+        this.refresh();
+    }
+
+    private continueNext(): void {
+        if (this.presenter.busy || this.presenter.display.phase !== "victory") return;
+        const setup = this.loadEncounter(this.presenter.setup.encounterId + 1);
+        if (!this.presenter.continueTo(setup)) { this.refresh(); return; }
+        this.stopEffects();
+        this.lastEvent = "";
+        this.drawActors(setup.encounterId);
         this.refresh();
     }
 
@@ -141,6 +162,20 @@ export class SkillBattlePanel extends Laya.GWidget {
                 delay = 270;
                 break;
             case "intent_interrupted": this.lastEvent = `${event.name} · 已打断`; delay = 420; break;
+            case "enchant_used":
+                this.lastEvent = event.element === 4 ? "火行注灵" : "土行注灵";
+                delay = 200;
+                break;
+            case "healed":
+                this.lastEvent = `恢复生命 ${event.amount}`;
+                this.showNumber(`+${event.amount}`, this.player, C.jade);
+                delay = 320;
+                break;
+            case "burn_damage":
+                this.lastEvent = `灼烧 · 失血 ${event.hpLoss}`;
+                this.showNumber(`灼烧 -${event.hpLoss}`, this.enemy, C.red);
+                delay = 340;
+                break;
             case "battle_ended":
                 Laya.Tween.to(event.result === "victory" ? this.enemy : this.player, { alpha: 0 }, 280);
                 delay = 340;
@@ -155,20 +190,21 @@ export class SkillBattlePanel extends Laya.GWidget {
         if (!s) return;
         const intent = p.setup.enemy.intents[s.enemyIntentIndex];
         const terminal = s.phase === "victory" || s.phase === "defeat";
-        this.labels.round.text = `第 ${s.round} 回合`;
+        this.labels.round.text = `第 ${p.setup.order} 战 · ${s.round} 回合`;
         this.labels.enemyName.text = `${p.setup.enemy.name} · ${["无", "金", "木", "水", "火", "土"][p.setup.enemy.element] || "无"}`;
         this.labels.enemyBlock.text = `护盾 ${s.enemy.block}`;
         this.labels.enemyHp.text = `${s.enemy.hp} / ${s.enemy.maxHp}`;
         this.labels.intent.text = terminal ? (s.phase === "victory" ? "敌人已倒下" : "战斗结束")
             : `${intent.name}  ·  ${intent.type === "charge" ? "蓄力" : intent.type === "block" ? `护盾 ${intent.block}` : `伤害 ${intent.damage}`}`;
         this.labels.interrupt.text = terminal ? "" : intent.interruptible ? "可被破势打断" : "不可打断";
+        if (s.enemyBurn) this.labels.interrupt.text += ` · 灼烧 ${s.enemyBurn}`;
         this.labels.playerHp.text = `生命 ${s.player.hp} / ${s.player.maxHp}`;
         this.labels.playerBlock.text = `护盾 ${s.player.block}`;
         this.labels.durability.text = `破旧铁剑  ·  耐久 ${s.weaponDurability} / ${p.setup.weaponDurability}`;
         this.labels.qi.text = `剑势  ${"◆ ".repeat(s.swordQi)}${"◇ ".repeat(s.swordQiMax - s.swordQi)} ${s.swordQi}/${s.swordQiMax}`;
         this.labels.event.text = this.lastEvent;
         this.bar(30, 204, 660, s.enemy.hp / s.enemy.maxHp, C.red);
-        this.bar(30, 828, 660, s.player.hp / s.player.maxHp, C.jade);
+        this.bar(30, 750, 660, s.player.hp / s.player.maxHp, C.jade);
         p.setup.skills.forEach(skill => {
             const b = this.buttons[`skill${skill.id}`];
             (b.getChildAt(0) as Laya.GTextField).text = `${skill.name}\n${skill.qiCost} 剑势`;
@@ -179,19 +215,48 @@ export class SkillBattlePanel extends Laya.GWidget {
         });
         for (let i = 1; i <= 3; i++)
             this.styleButton(this.buttons[`encounter${i}`], s.encounterId === i, !p.busy);
+        s.pouchSlots.forEach((instance, i) => {
+            const item = p.setup.items.find(row => row.itemId === instance?.itemId);
+            const selected = p.selectedAction?.type === "use_item" ? p.selectedAction.itemUid
+                : p.selectedAction?.stoneItemUid;
+            const active = !!instance && selected === instance.itemUid;
+            const button = this.buttons[`pouch${i}`];
+            const available = !!item && (item.useType === "heal" ? s.player.hp < s.player.maxHp
+                : s.weaponDurability >= item.durabilityCost && !!p.selectedId &&
+                    !!p.setup.skills.find(skill => skill.id === p.selectedId)?.canEnchant);
+            this.styleButton(button, active, !p.busy && !terminal && available);
+            button.mouseEnabled = !!instance && !p.busy && !terminal;
+            (button.getChildAt(0) as Laya.GTextField).text = item
+                ? `${item.useType === "heal" ? "疗伤丹" : item.useType === "fire_stone" ? "火石" : "土石"}\n${active ? (item.useType === "heal" ? "待用药" : "待附带") : item.useType === "heal" ? `恢复${item.healValue}` : "注灵"}`
+                : p.setup.items.some(row => row.initialSlot === i + 1) ? "已消耗" : "空";
+            const icon = this.pouchIcons[i];
+            icon.visible = !!item;
+            if (item) icon.src = `ui/texture/skillBattle/${item.useType}.png`;
+        });
         this.buttons.skip.visible = p.busy;
         this.styleButton(this.buttons.confirm, true, !p.busy && !!p.selection?.ok);
         this.styleButton(this.buttons.cancel, false, !p.busy && !!p.selection);
         const selected = p.setup.skills.find(skill => skill.id === p.selectedId);
         const preview = p.selection?.preview;
-        this.labels.previewTitle.text = p.busy ? "交锋中" : selected ? selected.name : terminal ? "此战已决" : "待出招";
+        const selectedStoneUid = p.selectedAction?.type === "skill" ? p.selectedAction.stoneItemUid : null;
+        const stone = selectedStoneUid
+            ? p.setup.items.find(row => row.itemId === s.pouchSlots.find(item => item?.itemUid === selectedStoneUid)?.itemId)
+            : null;
+        this.labels.previewTitle.text = p.busy ? "交锋中" : selected
+            ? `${selected.name}${stone ? stone.useType === "fire_stone" ? " · 火行注灵" : " · 土行注灵" : ""}`
+            : p.selectedAction?.type === "use_item" ? "疗伤丹" : terminal ? "此战已决" : "待出招";
         this.labels.preview.text = p.busy ? this.lastEvent : p.message || (preview
-            ? `伤害 ${preview.baseDamage} · 护盾吸收 ${preview.blockAbsorbed} · 敌方失血 ${preview.enemyHpLoss}\n${preview.interrupted ? "打断意图" : `承受伤害 ${preview.playerHpLoss}`} · 获得护盾 ${preview.blockGained} · 行动后剑势 ${preview.qiAfterAction}`
+            ? `${p.selectedAction?.type === "use_item" ? `恢复生命 ${preview.healAmount} · 占用本回合行动`
+                : `基础 ${preview.baseDamage} · 注灵 ${preview.enchantDamage} · 吸收 ${preview.blockAbsorbed + preview.enchantBlockAbsorbed} · 失血 ${preview.enemyHpLoss + preview.enchantHpLoss}`}\n`
+                + `施加灼烧 ${preview.burnApplied} · 随后灼烧失血 ${preview.burnDamage}\n`
+                + `${preview.interrupted ? "打断意图" : `承受伤害 ${preview.playerHpLoss}`} · 获得护盾 ${preview.blockGained} · 剑势 ${preview.qiAfterAction}\n`
+                + `剑势消耗 ${preview.qiCost} · 耐久消耗 ${preview.durabilityCost} · 物品消耗 ${preview.consumedItemUid ? 1 : 0}`
             : "");
         this.result.visible = terminal && !p.busy;
         if (this.result.visible) {
             this.resultTitle.text = s.phase === "victory" ? "此战告捷" : "力竭落败";
-            this.resultDetail.text = `${p.setup.enemy.name} · ${s.round} 回合\n剩余生命 ${s.player.hp} / ${s.player.maxHp}`;
+            this.resultDetail.text = `${p.setup.enemy.name} · ${s.round} 回合\n剩余生命 ${s.player.hp} / ${s.player.maxHp} · 耐久 ${s.weaponDurability}`;
+            this.buttons.continue.visible = s.phase === "victory" && p.setup.order < 3;
         }
         if (!p.busy) {
             this.enemy.alpha = s.enemy.hp ? 1 : 0;
@@ -206,10 +271,11 @@ export class SkillBattlePanel extends Laya.GWidget {
         this.addChild(this.result);
         this.resultTitle = this.addLabel("resultTitle", "", 50, 414, 620, 72, 46, C.gold, "center", this.result);
         this.resultDetail = this.addLabel("resultDetail", "", 50, 516, 620, 90, 25, C.text, "center", this.result);
-        this.button("replay", "再战一场", 170, 662, 380, 64,
+        this.button("continue", "携物继续", 170, 642, 380, 64, () => this.continueNext(), this.result);
+        this.button("replay", "重置测试档", 170, 730, 380, 54,
             () => this.openEncounter(this.presenter.setup.encounterId, true), this.result);
-        ["腐化灵鼠", "赤眼妖兔", "灵田守卫"].forEach((name, i) =>
-            this.button(`resultEncounter${i}`, name, 30 + i * 224, 778, 212, 54,
+        ["灵鼠新局", "妖兔新局", "守卫新局"].forEach((name, i) =>
+            this.button(`resultEncounter${i}`, name, 30 + i * 224, 828, 212, 54,
                 () => this.openEncounter(i + 1, true), this.result));
     }
 
@@ -269,8 +335,8 @@ export class SkillBattlePanel extends Laya.GWidget {
         g.drawLine(64, 462, 113, 484, "#17201a", 3);
         g.drawLine(113, 484, 101, 501, "#17201a", 3);
         g.drawLine(545, 651, 590, 629, "#17201a", 3);
-        g.drawRect(0, 760, 720, 520, C.bg);
-        g.drawLine(30, 925, 690, 925, C.line, 1);
+        g.drawRect(0, 694, 720, 586, C.bg);
+        g.drawLine(30, 844, 690, 844, C.line, 1);
     }
 
     private drawActors(encounterId: number): void {
@@ -311,7 +377,7 @@ export class SkillBattlePanel extends Laya.GWidget {
     }
 
     private lunge(actor: Laya.Sprite, dy: number): void {
-        const y = actor === this.player ? 671 : 455;
+        const y = actor === this.player ? 608 : 455;
         Laya.Tween.to(actor, { y: y + dy }, 100, null,
             Laya.Handler.create(this, () => Laya.Tween.to(actor, { y }, 110)));
     }
@@ -324,7 +390,7 @@ export class SkillBattlePanel extends Laya.GWidget {
     }
 
     private resetActors(): void {
-        this.player.pos(360, 671); this.enemy.pos(360, 455);
+        this.player.pos(360, 608); this.enemy.pos(360, 455);
         this.player.alpha = this.enemy.alpha = 1;
     }
 
