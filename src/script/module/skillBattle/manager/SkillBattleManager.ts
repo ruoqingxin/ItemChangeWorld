@@ -22,7 +22,7 @@ export class SkillBattleManager {
 
     private readonly _data = new SkillBattleData();
     private _battleSequence = 0;
-    beforeCommit: ((state: ISkillBattleState) => void) | null = null;
+    beforeCommit: ((state: ISkillBattleState, action: ISkillBattleAction) => void) | null = null;
 
     get state(): ISkillBattleState | null {
         return this._data.state ? SkillBattleFormulaUtils.cloneState(this._data.state) : null;
@@ -77,7 +77,7 @@ export class SkillBattleManager {
         const result = SkillBattleFormulaUtils.resolveAction(this._data.setup!, current, action);
         if (result.ok) {
             try {
-                this.beforeCommit?.(SkillBattleFormulaUtils.cloneState(result.state));
+                this.beforeCommit?.(SkillBattleFormulaUtils.cloneState(result.state), { ...action });
             } catch (error) {
                 return { ok: false, reason: `存档未成功，行动未提交：${(error as Error).message}`,
                     state: SkillBattleFormulaUtils.cloneState(current), events: [], preview: null };

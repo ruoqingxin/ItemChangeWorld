@@ -1,7 +1,26 @@
 import type { ISkillBattleSetup, ISkillBattleState, ISkillItemInstance } from "../../skillBattle/types/SkillBattleTypes";
-import type { IExpeditionConfig, IExpeditionSave } from "../types/ExpeditionTypes";
+import type { IExpeditionConfig, IExpeditionSave, IExpeditionReport } from "../types/ExpeditionTypes";
+import { ExpeditionStatsUtils } from "./ExpeditionStatsUtils";
 
 export class ExpeditionSaveUtils {
+    static upgradeLegacy(save: IExpeditionSave): void {
+        if (!save || save.version !== 1) return;
+        if (save.history === undefined) save.history = [];
+        if (save.run && save.run.report === undefined) {
+            // D never stored past actions or brought loot. Do not invent historical measurements.
+            const run = save.run, report = ExpeditionStatsUtils.create(run, true);
+            if (run.phase === "reward") report.choices.push({
+                encounterIndex: run.encounterIndex, ids: run.pendingUpgradeChoices.slice(), selectedId: null,
+            });
+            if (run.settled) {
+                report.outcome = run.phase as "extracted" | "failed";
+                report.exitEncounter = run.encounterIndex + 1;
+                report.remainingPouch = save.profile.pouchSlots.map(item => item ? { ...item } : null);
+            }
+            run.report = report;
+        }
+    }
+
     static validate(save: IExpeditionSave, config: IExpeditionConfig, signature: string): void {
         const check = (ok: boolean) => { if (!ok) throw new Error("存档结构或状态不一致"); };
         const integer = (value: number, min = 0, max = Number.MAX_SAFE_INTEGER) =>
@@ -36,6 +55,12 @@ export class ExpeditionSaveUtils {
         };
         items(p.warehouse, config.loot.map(row => row.itemId));
         pouch(p.pouchSlots);
+        check(Array.isArray(save.history) && save.history.length <= 20 &&
+            new Set(save.history.map(report => report.runId)).size === save.history.length);
+        for (const report of save.history) {
+            this.validateReport(report, config);
+            check(p.settledRunIds.includes(report.runId) && report.outcome !== null);
+        }
         if (save.run === null) return;
         const r = save.run;
         check(!!r && integer(r.encounterIndex, 0, config.encounters.length - 1) &&
@@ -57,6 +82,17 @@ export class ExpeditionSaveUtils {
         items(r.loot, config.loot.map(row => row.itemId));
         const setup = config.encounters[r.encounterIndex], b = r.battle;
         this.validateBattle(b, setup);
+        const reportState = this.validateReport(r.report, config);
+        check(r.report.runId === r.runId && r.report.seed === r.seed &&
+            JSON.stringify(reportState) === JSON.stringify(b) &&
+            r.report.outcome === (r.settled ? r.phase : null) &&
+            r.report.exitEncounter === (r.settled ? r.encounterIndex + 1 : null) &&
+            !save.history.some(report => report.runId === r.runId));
+        if (r.phase === "reward") {
+            const choice = r.report.choices[r.report.choices.length - 1];
+            check(!!choice && choice.encounterIndex === r.encounterIndex && choice.selectedId === null &&
+                JSON.stringify(choice.ids) === JSON.stringify(r.pendingUpgradeChoices));
+        }
         check(b.battleId === `${r.runId}_battle_${r.encounterIndex + 1}`);
         pouch(b.pouchSlots, !r.settled);
         if (r.settled) {
@@ -78,6 +114,55 @@ export class ExpeditionSaveUtils {
             const expected = config.rewards.slice(0, won).reduce<number[]>((all, values) => all.concat(values), []);
             check(JSON.stringify(r.loot.map(item => item.itemId)) === JSON.stringify(expected));
         }
+    }
+
+    private static validateReport(report: IExpeditionReport, config: IExpeditionConfig): ISkillBattleState {
+        const check = (ok: boolean) => { if (!ok) throw new Error("行动记录或统计存档无效"); };
+        check(!!report && typeof report.runId === "string" && !!report.runId &&
+            Number.isSafeInteger(report.seed) && report.seed >= 0 && report.seed <= 0xffffffff &&
+            typeof report.partial === "boolean" && Array.isArray(report.battles) &&
+            report.battles.length > 0 && report.battles.length <= 3 &&
+            [null, "extracted", "failed"].includes(report.outcome));
+        let state: ISkillBattleState;
+        let previousOrder = 0;
+        for (const record of report.battles) {
+            check(!!record && !!record.initial && Array.isArray(record.actions));
+            const setup = config.encounters.find(row => row.encounterId === record.initial.encounterId);
+            check(!!setup && setup.order > previousOrder &&
+                record.initial.battleId === `${report.runId}_battle_${setup.order}`);
+            this.validateBattle(record.initial, setup);
+            if (!report.partial) check(record.initial.revision === 0 && setup.order === previousOrder + 1);
+            if (previousOrder) check(state.phase === "victory" &&
+                state.player.hp === record.initial.player.hp &&
+                state.weaponDurability === record.initial.weaponDurability &&
+                JSON.stringify(state.pouchSlots) === JSON.stringify(record.initial.pouchSlots));
+            state = ExpeditionStatsUtils.battle(record, setup).state;
+            previousOrder = setup.order;
+        }
+        check(Array.isArray(report.choices) && report.choices.length <= 2 &&
+            new Set(report.choices.map(choice => choice.encounterIndex)).size === report.choices.length);
+        for (const choice of report.choices) check(!!choice && [0, 1].includes(choice.encounterIndex) &&
+            Array.isArray(choice.ids) && choice.ids.length <= 3 && new Set(choice.ids).size === choice.ids.length &&
+            choice.ids.every(id => config.upgrades.some(row => row.id === id)) &&
+            (choice.selectedId === null || choice.ids.includes(choice.selectedId)));
+        check(Array.isArray(report.broughtLoot) && report.broughtLoot.length <= 6 &&
+            new Set(report.broughtLoot.map(item => item.itemUid)).size === report.broughtLoot.length &&
+            report.broughtLoot.every(item => !!item && typeof item.itemUid === "string" && !!item.itemUid &&
+                config.loot.some(row => row.itemId === item.itemId)));
+        check(Array.isArray(report.collectionUnlockIds) &&
+            new Set(report.collectionUnlockIds).size === report.collectionUnlockIds.length &&
+            report.collectionUnlockIds.every(id => config.loot.some(row => row.collectionId === id && id > 0)));
+        check(Array.isArray(report.remainingPouch));
+        if (report.outcome === null) check(report.exitEncounter === null && report.broughtLoot.length === 0 &&
+            report.remainingPouch.length === 0 && report.collectionUnlockIds.length === 0);
+        else {
+            check(report.exitEncounter === previousOrder && report.remainingPouch.length === 5 &&
+                state.phase === (report.outcome === "extracted" ? "victory" : "defeat"));
+            if (report.outcome === "failed") check(report.broughtLoot.length === 0 &&
+                report.remainingPouch.every(item => item === null) && report.collectionUnlockIds.length === 0);
+            else check(JSON.stringify(report.remainingPouch) === JSON.stringify(state.pouchSlots));
+        }
+        return state;
     }
 
     private static validateBattle(b: ISkillBattleState, setup: ISkillBattleSetup): void {

@@ -325,7 +325,7 @@ module.exports = ({ assert, test, setups, tables, Config, Rules, Manager, Presen
         assert.deepEqual(reload(c).expedition.snapshot, s);
         for (const item of s.profile.warehouse.slice(0, 3)) c.expedition.openLoot(item.itemUid);
         assert.equal(c.expedition.snapshot.profile.currency, 80);
-        assert.throws(() => c.expedition.openLoot(s.profile.warehouse[3].itemUid), /阶段 E/);
+        assert.throws(() => c.expedition.openLoot(s.profile.warehouse[3].itemUid), /需要收藏/);
         assert.equal(c.expedition.snapshot.profile.warehouse.length, 1);
         assert.deepEqual(c.expedition.snapshot.profile.collectionIds, []);
     });
@@ -469,5 +469,207 @@ module.exports = ({ assert, test, setups, tables, Config, Rules, Manager, Presen
         c.expedition.configuration.upgrades[0].value = 999;
         c.expedition.setup.enemy.maxHp = 999;
         assert.deepEqual(c.expedition.snapshot, before);
+    });
+    const { ExpeditionStatsUtils: Stats } = require(path.join(build, "script/module/expedition/utils/ExpeditionStatsUtils.js"));
+    const stats = c => c.expedition.run.report.battles.map(record =>
+        Stats.battle(record, config.encounters.find(setup => setup.encounterId === record.initial.encounterId)));
+    const complete = () => {
+        const c = firstReward(); choose(c); c.expedition.continueNext(); win(c);
+        choose(c); c.expedition.continueNext(); win(c);
+        return c;
+    };
+    test("E: extracted scroll is consumed atomically and only subsequent runs get the expanded pool", () => {
+        const c = complete(), scroll = c.expedition.snapshot.profile.warehouse.find(item => item.itemId === 2704);
+        const oldPool = c.expedition.run.allowedUpgradeIds, oldChoices = copy(c.expedition.run.report.choices);
+        assert.equal(c.expedition.collectLoot(scroll.itemUid), 1);
+        assert.deepEqual(c.expedition.snapshot.profile.collectionIds, [1]);
+        assert.equal(c.expedition.snapshot.profile.warehouse.length, 3);
+        assert.deepEqual(c.expedition.run.allowedUpgradeIds, oldPool);
+        assert.deepEqual(c.expedition.run.report.choices, oldChoices);
+        assert.deepEqual(c.expedition.run.report.collectionUnlockIds, [1]);
+        assert.throws(() => c.expedition.collectLoot(scroll.itemUid), /不存在/);
+        const loaded = reload(c);
+        assert.deepEqual(loaded.expedition.snapshot, c.expedition.snapshot);
+        loaded.expedition.startNew(11); win(loaded);
+        assert.deepEqual(loaded.expedition.run.allowedUpgradeIds, [1, 2, 3, 4, 5, 6]);
+        assert.ok(loaded.expedition.run.pendingUpgradeChoices.some(id => id === 3 || id === 4));
+        assert.deepEqual(loaded.expedition.snapshot.history[0].collectionUnlockIds, [1]);
+    });
+    test("E: duplicate scrolls stay in warehouse and repeated collection makes no write", () => {
+        const c = complete(), save = c.expedition.snapshot;
+        save.profile.warehouse.push({ itemUid: "second-scroll", itemId: 2704 });
+        c.store.value = JSON.stringify(save);
+        const loaded = reload(c), first = save.profile.warehouse.find(item => item.itemId === 2704);
+        loaded.expedition.collectLoot(first.itemUid);
+        const before = loaded.expedition.snapshot, writes = loaded.store.writes;
+        for (let i = 0; i < 3; i++) assert.throws(() => loaded.expedition.collectLoot("second-scroll"), /已经收藏/);
+        assert.deepEqual(loaded.expedition.snapshot, before);
+        assert.equal(loaded.store.writes, writes);
+        assert.ok(reload(loaded).expedition.snapshot.profile.warehouse.some(item => item.itemUid === "second-scroll"));
+    });
+    test("E: a scroll collected after another run attributes the unlock to its archived source", () => {
+        const c = complete(), uid = c.expedition.snapshot.profile.warehouse[3].itemUid;
+        c.expedition.startNew(11); win(c); choose(c); c.expedition.extract();
+        c.expedition.collectLoot(uid);
+        const save = c.expedition.snapshot;
+        assert.deepEqual(save.history[0].collectionUnlockIds, [1]);
+        assert.deepEqual(save.run.report.collectionUnlockIds, []);
+        assert.deepEqual(save.run.allowedUpgradeIds, [1, 2, 5, 6]);
+        assert.deepEqual(reload(c).expedition.snapshot, save);
+        c.expedition.resetTestProfile();
+        assert.deepEqual(c.expedition.snapshot.history, []);
+        assert.deepEqual(c.expedition.snapshot.profile.collectionIds, []);
+    });
+    test("E: both newly unlocked choices can be selected, persisted and carried into battle two", () => {
+        for (const id of [3, 4]) {
+            const c = complete(), uid = c.expedition.snapshot.profile.warehouse[3].itemUid;
+            c.expedition.collectLoot(uid); c.expedition.startNew(11); win(c);
+            assert.deepEqual(c.expedition.run.pendingUpgradeChoices, [2, 3, 4]);
+            c.expedition.chooseUpgrade(id); c.expedition.continueNext();
+            const loaded = reload(c);
+            assert.deepEqual(loaded.battle.state.upgradeIds, [id]);
+            assert.deepEqual(loaded.expedition.run.report.choices[0], {
+                encounterIndex: 0, ids: [2, 3, 4], selectedId: id,
+            });
+        }
+    });
+    test("E: active runs, currency bags and missing instances cannot be collected", () => {
+        const c = complete(), items = c.expedition.snapshot.profile.warehouse;
+        assert.throws(() => c.expedition.collectLoot(items[0].itemUid), /不可收藏/);
+        assert.throws(() => c.expedition.collectLoot("missing"), /不存在/);
+        c.expedition.startNew(42);
+        const before = c.expedition.snapshot;
+        assert.throws(() => c.expedition.collectLoot(items[3].itemUid), /据点/);
+        assert.deepEqual(c.expedition.snapshot, before);
+        assert.deepEqual(c.expedition.run.allowedUpgradeIds, [1, 2, 5, 6]);
+    });
+    test("E: collection write failure rolls back inventory, flags and report together", () => {
+        const c = complete(), uid = c.expedition.snapshot.profile.warehouse[3].itemUid;
+        unchangedOnFailure(c, () => assert.throws(() => c.expedition.collectLoot(uid), /disk full/));
+        c.expedition.collectLoot(uid);
+        assert.deepEqual(c.expedition.run.report.collectionUnlockIds, [1]);
+    });
+    test("E: previews, invalid/stale confirms and animation replay never add statistics", () => {
+        const c = create(); c.expedition.startNew(42);
+        const p = new Presenter(c.battle, c.expedition); p.open(setups[0]);
+        const before = c.expedition.snapshot;
+        for (let i = 0; i < 4; i++) { p.select(1); p.selectPouch(0); p.cancel(); }
+        assert.deepEqual(c.expedition.snapshot, before);
+        p.select(3); assert.equal(p.confirm(), null);
+        p.select(1); p.selectPouch(0);
+        const result = p.confirm(), committed = c.expedition.snapshot;
+        result.events.forEach(event => p.applyEvent(event));
+        p.finishPlayback(); p.finishPlayback(); p.open(setups[0]);
+        assert.deepEqual(c.expedition.snapshot, committed);
+        assert.equal(c.battle.confirmAction(skill(1), result.preview.token).ok, false);
+        const s = stats(c)[0];
+        assert.equal(s.rounds, 1); assert.deepEqual(s.skillUses, [1, 0, 0, 0]);
+        assert.equal(s.stonesUsed, 1); assert.equal(s.durabilitySpent, 5);
+        assert.equal(s.burnDamage, result.preview.burnDamage);
+        assert.equal(s.damage, 6 + result.preview.enchantHpLoss + result.preview.burnDamage);
+        assert.equal(s.qiGenerated, 1); assert.equal(s.qiSpent, 0);
+        assert.deepEqual(stats(reload(c)), stats(c));
+    });
+    test("E: generated, spent and overflow qi are counted separately, including terminal cleanup", () => {
+        const initial = new Manager().start(setups[2]);
+        initial.pouchSlots.fill(null);
+        const record = { initial, actions: [2, 1, 2, 2, 3, 1].map(skillId => skill(skillId)) };
+        const s = Stats.battle(record, setups[2]);
+        assert.equal(s.qiGenerated, 5); assert.equal(s.qiSpent, 2); assert.equal(s.qiOverflow, 1);
+        assert.equal(s.rounds, 6);
+        const terminal = Stats.battle({ initial: new Manager().start(setups[0]),
+            actions: [1, 1, 3].map(skillId => skill(skillId)) }, setups[0]);
+        assert.equal(terminal.result, "victory"); assert.equal(terminal.qiSpent, 2);
+        assert.equal(terminal.qiGenerated, 2);
+    });
+    test("E: medicine, shield absorption and interrupts are measured from actual events", () => {
+        const initial = new Manager().start(setups[1]); initial.player.hp = 30;
+        const s = Stats.battle({ initial, actions: [
+            { type: "use_item", itemUid: initial.pouchSlots[2].itemUid }, skill(2), skill(2), skill(1),
+            skill(2), skill(1), skill(4),
+        ] }, setups[1]);
+        assert.equal(s.medicineUses, 1); assert.equal(s.healed, 12);
+        assert.ok(s.blockAbsorbed > 0); assert.equal(s.interrupts, 1);
+        assert.equal(s.startHp + s.healed - s.incomingDamage, s.endHp);
+    });
+    test("E: run report retains choices, both upgrades, all battles, extracted loot and supplies", () => {
+        const c = complete(), report = c.expedition.run.report, measured = stats(c);
+        assert.equal(report.battles.length, 3); assert.equal(report.choices.length, 2);
+        assert.ok(report.choices.every(row => row.ids.includes(row.selectedId)));
+        assert.deepEqual(measured.map(row => row.upgradeIds.length), [0, 1, 2]);
+        assert.equal(report.outcome, "extracted"); assert.equal(report.exitEncounter, 3);
+        assert.deepEqual(report.broughtLoot, c.expedition.snapshot.profile.warehouse);
+        assert.deepEqual(report.remainingPouch, c.expedition.snapshot.profile.pouchSlots);
+        assert.ok(measured.every(row => row.result === "victory" && row.damage === row.state.enemy.maxHp));
+        c.expedition.startNew(7);
+        assert.deepEqual(c.expedition.snapshot.history[0], report);
+        assert.deepEqual(reload(c).expedition.snapshot, c.expedition.snapshot);
+    });
+    test("E: failed report records the exit battle and zero brought loot and supplies", () => {
+        const c = firstReward();
+        c.expedition.chooseUpgrade(c.expedition.run.pendingUpgradeChoices.find(id => id !== 1));
+        c.expedition.continueNext();
+        while (c.battle.state.phase === "player_input") play(c, 2);
+        const report = c.expedition.run.report;
+        assert.equal(report.outcome, "failed"); assert.equal(report.exitEncounter, 2);
+        assert.deepEqual(report.broughtLoot, []); assert.deepEqual(report.remainingPouch, [null, null, null, null, null]);
+        assert.deepEqual(stats(reload(c)), stats(c));
+    });
+    test("E: report retention keeps the latest twenty archives without altering profile progress", () => {
+        const c = create();
+        for (let i = 0; i < 23; i++) {
+            c.expedition.startNew(i); win(c); choose(c); c.expedition.extract();
+        }
+        const s = c.expedition.snapshot;
+        assert.equal(s.history.length, 20); assert.equal(s.profile.settledRunIds.length, 23);
+        assert.equal(s.profile.warehouse.length, 23);
+        assert.equal(s.history[0].seed, 2); assert.equal(s.history[19].seed, 21);
+        assert.deepEqual(reload(c).expedition.snapshot, s);
+    });
+    test("E: legacy D saves keep resources and candidates and explicitly mark missing old actions", () => {
+        for (const phase of ["hub", "battle", "reward", "decision", "extracted", "failed"]) {
+            const c = create();
+            if (phase !== "hub") c.expedition.startNew(42);
+            if (["reward", "decision", "extracted"].includes(phase)) win(c);
+            if (["decision", "extracted"].includes(phase)) choose(c);
+            if (phase === "extracted") c.expedition.extract();
+            if (phase === "failed") while (c.battle.state.phase === "player_input") play(c, 1);
+            // Slash-only wins the first battle; manufacture defeat using a second encounter.
+            if (phase === "failed" && !c.expedition.run.settled) {
+                choose(c); c.expedition.continueNext();
+                while (c.battle.state.phase === "player_input") play(c, 2);
+            }
+            const old = c.expedition.snapshot;
+            delete old.history; if (old.run) delete old.run.report;
+            c.store.value = JSON.stringify(old);
+            const loaded = reload(c);
+            assert.deepEqual(loaded.expedition.snapshot.profile, old.profile);
+            assert.equal(c.store.value, JSON.stringify(old), "read-only migration must not write");
+            if (old.run) {
+                assert.equal(loaded.expedition.run.report.partial, true);
+                assert.equal(stats(loaded)[0].rounds, 0);
+                assert.deepEqual(loaded.expedition.run.pendingUpgradeChoices, old.run.pendingUpgradeChoices);
+            }
+            if (phase === "battle") play(loaded, 1);
+            if (phase === "reward") choose(loaded);
+            if (phase === "decision") loaded.expedition.continueNext();
+            if (phase === "extracted") loaded.expedition.openLoot(old.profile.warehouse[0].itemUid);
+            assert.equal(reload(loaded).expedition.error, "");
+        }
+    });
+    test("E: corrupted action or report snapshots block loading without overwriting the raw save", () => {
+        const c = firstReward(), good = c.expedition.snapshot;
+        for (const mutate of [
+            s => { s.run.report.battles[0].actions[0].skillId = 999; },
+            s => { s.run.report.battles[0].initial.player.hp = 99; },
+            s => { s.run.report.battles[0].actions.pop(); },
+            s => { s.run.report.choices[0].selectedId = 999; },
+            s => { s.run.report.seed = -1; }, s => { s.history = [s.run.report]; },
+        ]) {
+            const bad = copy(good); mutate(bad);
+            const store = storage(); store.value = JSON.stringify(bad);
+            const e = new ExpeditionManager(config, new Manager(), store);
+            assert.ok(e.error); assert.equal(store.value, JSON.stringify(bad)); assert.equal(store.writes, 0);
+        }
     });
 };

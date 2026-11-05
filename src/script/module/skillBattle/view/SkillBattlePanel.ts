@@ -4,6 +4,7 @@ import { SkillBattleManager } from "../manager/SkillBattleManager";
 import { SkillBattleFormulaUtils } from "../utils/SkillBattleFormulaUtils";
 import { ExpeditionManager } from "../../expedition/manager/ExpeditionManager";
 import type { IExpeditionConfig } from "../../expedition/types/ExpeditionTypes";
+import { ExpeditionStatsUtils } from "../../expedition/utils/ExpeditionStatsUtils";
 
 const C = { bg: "#171d1b", surface: "#232b27", line: "#526054", text: "#e3e8de",
     muted: "#a3afa5", jade: "#9ac8ae", red: "#d58c80", gold: "#d4bc7e" };
@@ -30,6 +31,10 @@ export class SkillBattlePanel extends Laya.GWidget {
     private overlayButtons: string[] = [];
     private notice = "";
     private overlayCommandAt = 0;
+    private showReport = false;
+    private reportMode: "summary" | "actions" = "summary";
+    private reportPage = 0;
+    private reportIndex = 0;
 
     constructor(config: IExpeditionConfig) {
         super();
@@ -41,7 +46,8 @@ export class SkillBattlePanel extends Laya.GWidget {
         this.drawScene();
         this.addLabel("brand", "末法寻仙", 30, 20, 330, 46, 32);
         this.addLabel("round", "", 430, 24, 260, 38, 23, C.muted, "right");
-        this.addLabel("upgrades", "", 30, 84, 470, 48, 21, C.gold);
+        this.addLabel("upgrades", "", 30, 84, 300, 48, 21, C.gold);
+        this.button("battleReport", "战斗记录", 350, 84, 160, 48, () => this.openReport());
         this.button("loot", "战利品", 530, 84, 160, 48, () => {
             if (!this.presenter.busy) { this.showLoot = true; this.refresh(); }
         });
@@ -208,6 +214,7 @@ export class SkillBattlePanel extends Laya.GWidget {
         const config = this.expedition.configuration;
         this.labels.upgrades.text = `强化：${s.upgradeIds.map(id => config.upgrades.find(row => row.id === id)?.name).join(" · ") || "无"}`;
         this.styleButton(this.buttons.loot, false, !p.busy);
+        this.styleButton(this.buttons.battleReport, false, !p.busy);
         this.labels.enemyName.text = `${p.setup.enemy.name} · ${["无", "金", "木", "水", "火", "土"][p.setup.enemy.element] || "无"}`;
         this.labels.enemyBlock.text = `护盾 ${s.enemy.block}`;
         this.labels.enemyHp.text = `${s.enemy.hp} / ${s.enemy.maxHp}`;
@@ -288,6 +295,8 @@ export class SkillBattlePanel extends Laya.GWidget {
         this.addLabel("section", "", 30, 350, 660, 36, 24, C.jade, "left", this.result);
         this.addLabel("overlayMessage", "", 30, 1110, 660, 66, 21, C.red, "left", this.result).wordWrap = true;
         this.addLabel("choiceTitle", "", 30, 554, 660, 36, 24, C.jade, "left", this.result);
+        const body = this.addLabel("reportBody", "", 30, 404, 660, 480, 21, C.text, "left", this.result);
+        body.leading = 8; body.valign = "top";
         const button = (key: string, text: string, x: number, y: number, w: number, h: number, click: () => void) => {
             this.overlayButtons.push(key);
             return this.button(key, text, x, y, w, h, () => {
@@ -309,12 +318,23 @@ export class SkillBattlePanel extends Laya.GWidget {
                 212, 58, 20, C.text, "left", this.result);
             const b = button(`warehouse${i}`, "", 30, 404 + i * 78, 660, 64, () => this.runCommand(() => {
                 const item = this.expedition.snapshot.profile.warehouse[this.warehousePage * 6 + i];
-                if (item) this.notice = `打开获得 ${this.expedition.openLoot(item.itemUid)} 灵石`;
+                if (!item) return;
+                const loot = this.expedition.configuration.loot.find(row => row.itemId === item.itemId);
+                if (loot.useType === "collection") {
+                    this.expedition.collectLoot(item.itemUid);
+                    this.notice = "收藏成功：后续新局开放余势、破绽";
+                } else this.notice = `打开获得 ${this.expedition.openLoot(item.itemUid)} 灵石`;
             }));
             (b.getChildAt(0) as Laya.GTextField).fontSize = 22;
         }
-        button("previousPage", "<", 30, 900, 70, 48, () => { this.warehousePage--; this.refresh(); });
-        button("nextPage", ">", 620, 900, 70, 48, () => { this.warehousePage++; this.refresh(); });
+        button("previousPage", "<", 30, 900, 70, 48, () => {
+            if (this.showReport) this.reportPage--; else this.warehousePage--;
+            this.refresh();
+        });
+        button("nextPage", ">", 620, 900, 70, 48, () => {
+            if (this.showReport) this.reportPage++; else this.warehousePage++;
+            this.refresh();
+        });
         this.addLabel("page", "", 130, 900, 460, 48, 22, C.muted, "center", this.result);
         button("continue", "继续深入", 30, 954, 660, 60, () => this.continueNext());
         button("extract", "带上战利品撤离", 30, 1030, 660, 60, () => this.runCommand(() => this.expedition.extract()));
@@ -331,6 +351,77 @@ export class SkillBattlePanel extends Laya.GWidget {
             this.resetConfirm = false; this.showHub = true; this.notice = ""; this.openEncounter();
         }));
         button("resetNo", "取消", 30, 1190, 660, 54, () => { this.resetConfirm = false; this.refresh(); });
+        button("report", "战斗记录", 530, 96, 160, 48, () => this.openReport());
+        button("summary", "统计", 30, 350, 320, 42, () => {
+            this.reportMode = "summary"; this.reportPage = 0; this.refresh();
+        });
+        button("actions", "行动日志", 370, 350, 320, 42, () => {
+            this.reportMode = "actions"; this.reportPage = 0; this.refresh();
+        });
+        button("olderReport", "上一局", 30, 954, 320, 48, () => {
+            this.reportIndex--; this.reportPage = 0; this.refresh();
+        });
+        button("newerReport", "下一局", 370, 954, 320, 48, () => {
+            this.reportIndex++; this.reportPage = 0; this.refresh();
+        });
+        button("reportClose", "返回", 30, 1010, 660, 64, () => { this.showReport = false; this.refresh(); });
+    }
+
+    private openReport(): void {
+        if (this.presenter.busy) return;
+        this.showReport = true; this.reportMode = "summary"; this.reportPage = 0;
+        this.reportIndex = this.expedition.snapshot.history.length;
+        this.refresh();
+    }
+
+    private refreshReport(): void {
+        const save = this.expedition.snapshot, config = this.expedition.configuration;
+        const reports = save.history.concat(save.run ? [save.run.report] : []);
+        this.reportIndex = Math.max(0, Math.min(reports.length - 1, this.reportIndex));
+        const report = reports[this.reportIndex], names = (ids: number[]) =>
+            ids.map(id => config.upgrades.find(row => row.id === id).name).join("、") || "无";
+        this.resultTitle.text = "战斗记录";
+        this.resultDetail.text = report ? `第 ${this.reportIndex + 1} 份记录 · 种子 ${report.seed}\n`
+            + `${report.outcome === "extracted" ? `第 ${report.exitEncounter} 战撤离` : report.outcome === "failed"
+                ? `第 ${report.exitEncounter} 战失败` : "秘境进行中"}${report.partial ? " · 旧局记录不完整" : ""}` : "暂无战斗记录";
+        let lines: string[] = [];
+        if (report) {
+            if (this.reportMode === "summary") {
+                lines.push(`带出奖励：${report.broughtLoot.map(item => config.loot.find(row => row.itemId === item.itemId).name).join("、") || "无"}`,
+                    `结算剩余物资：${report.outcome ? report.remainingPouch.filter(Boolean).length : "未结算"}`,
+                    `本局带出收藏解锁：${report.collectionUnlockIds.length ? "成功" : "未解锁"}`);
+                report.choices.forEach(choice => lines.push(`第 ${choice.encounterIndex + 1} 战候选：${names(choice.ids)}`,
+                    `选择：${choice.selectedId === null ? "未选择" : names([choice.selectedId])}`));
+            }
+            for (const record of report.battles) {
+                const setup = config.encounters.find(row => row.encounterId === record.initial.encounterId);
+                const s = ExpeditionStatsUtils.battle(record, setup);
+                lines.push(`【${setup.enemy.name}】${s.result === "victory" ? "胜利" : s.result === "defeat" ? "失败" : "进行中"}`);
+                if (this.reportMode === "actions") lines.push(...s.logs);
+                else lines.push(`敌人 ${s.enemyId} · 已记录 ${s.rounds} 回合`,
+                    `生命 ${s.startHp} → ${s.endHp} · 强化 ${names(s.upgradeIds)}`,
+                    `剑击/守势/贯虹/破势：${s.skillUses.join("/")}`,
+                    `用药 ${s.medicineUses} · 恢复 ${s.healed} · 承伤 ${s.incomingDamage}`,
+                    `格挡吸收 ${s.blockAbsorbed} · 打断 ${s.interrupts}`,
+                    `实际伤害 ${s.damage} · 其中灼烧 ${s.burnDamage}`,
+                    `剑势生成/消耗/溢出：${s.qiGenerated}/${s.qiSpent}/${s.qiOverflow}`,
+                    `属性石 ${s.stonesUsed} · 耐久消耗 ${s.durabilitySpent}`);
+            }
+        }
+        lines = lines.reduce<string[]>((all, line) => all.concat(line.match(/.{1,28}/g) || [""]), []);
+        const pages = Math.max(1, Math.ceil(lines.length / 13));
+        this.reportPage = Math.max(0, Math.min(pages - 1, this.reportPage));
+        this.labels.reportBody.text = lines.slice(this.reportPage * 13, (this.reportPage + 1) * 13).join("\n");
+        this.labels.reportBody.visible = true;
+        this.labels.page.text = `${this.reportPage + 1} / ${pages}`;
+        ["summary", "actions", "previousPage", "nextPage", "olderReport", "newerReport", "reportClose"]
+            .forEach(key => this.buttons[key].visible = true);
+        this.styleButton(this.buttons.summary, this.reportMode === "summary", true);
+        this.styleButton(this.buttons.actions, this.reportMode === "actions", true);
+        this.styleButton(this.buttons.previousPage, false, this.reportPage > 0);
+        this.styleButton(this.buttons.nextPage, false, this.reportPage + 1 < pages);
+        this.styleButton(this.buttons.olderReport, false, this.reportIndex > 0);
+        this.styleButton(this.buttons.newerReport, false, this.reportIndex + 1 < reports.length);
     }
 
     private runCommand(command: () => unknown): void {
@@ -342,12 +433,13 @@ export class SkillBattlePanel extends Laya.GWidget {
 
     private refreshResult(): void {
         const run = this.expedition.run, save = this.expedition.snapshot, config = this.expedition.configuration;
-        this.result.visible = !this.presenter.busy && (this.showHub || this.showLoot ||
+        this.result.visible = !this.presenter.busy && (this.showHub || this.showLoot || this.showReport ||
             !!this.expedition.error || !run || run.phase !== "battle");
         if (!this.result.visible) return;
         this.overlayButtons.forEach(key => this.buttons[key].visible = false);
         for (let i = 0; i < 6; i++) this.labels[`lootSlot${i}`].visible = false;
         this.labels.choiceTitle.text = ""; this.labels.page.text = "";
+        this.labels.reportBody.visible = false;
         this.labels.overlayMessage.text = this.notice;
         this.labels.currency.text = `灵石 ${save?.profile.currency || 0}`;
         this.labels.section.text = "";
@@ -363,6 +455,8 @@ export class SkillBattlePanel extends Laya.GWidget {
             this.labels.overlayMessage.text = this.expedition.error;
             show("reset"); return;
         }
+        if (this.showReport) { this.refreshReport(); return; }
+        show("report");
         if (this.showHub || !run) {
             const profile = save.profile;
             this.resultTitle.text = "散修据点";
@@ -370,7 +464,7 @@ export class SkillBattlePanel extends Laya.GWidget {
                 + `法囊：${profile.pouchSlots.filter(Boolean).map(item => {
                     const use = config.encounters[0].items.find(row => row.itemId === item.itemId).useType;
                     return use === "fire_stone" ? "火石" : use === "earth_stone" ? "土石" : "疗伤丹";
-                }).join("、") || "空"}\n出发时生命全满`;
+                }).join("、") || "空"}\n试炼剑诀：${profile.collectionIds.includes(1) ? "已收藏 · 余势、破绽开放" : "未收藏"}`;
             this.labels.section.text = `入库物品 · ${profile.warehouse.length}`;
             const pages = Math.max(1, Math.ceil(profile.warehouse.length / 6));
             this.warehousePage = Math.max(0, Math.min(pages - 1, this.warehousePage));
@@ -380,8 +474,9 @@ export class SkillBattlePanel extends Laya.GWidget {
                 const loot = config.loot.find(row => row.itemId === item.itemId);
                 const b = this.buttons[`warehouse${i}`];
                 (b.getChildAt(0) as Laya.GTextField).text = `${loot.name}   ${loot.useType === "currency"
-                    ? `${loot.currencyValue} 灵石   打开` : "已入库"}`;
-                this.styleButton(b, false, loot.useType === "currency");
+                    ? `${loot.currencyValue} 灵石   打开` : profile.collectionIds.includes(loot.collectionId)
+                        ? "已收藏 · 重复残卷留存" : "收藏"}`;
+                this.styleButton(b, false, true);
                 show(`warehouse${i}`);
             }
             if (pages > 1) {

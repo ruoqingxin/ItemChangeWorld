@@ -1,4 +1,17 @@
-import type { ISkillBattleSetup, ISkillBattleState, ISkillItemInstance, ISkillUpgradeConfig } from "../../skillBattle/types/SkillBattleTypes";
+import type { ISkillBattleAction, ISkillBattleSetup, ISkillBattleState, ISkillItemInstance, ISkillUpgradeConfig } from "../../skillBattle/types/SkillBattleTypes";
+
+export interface IExpeditionReport {
+    runId: string;
+    seed: number;
+    partial: boolean;
+    battles: Array<{ initial: ISkillBattleState; actions: ISkillBattleAction[] }>;
+    choices: Array<{ encounterIndex: number; ids: number[]; selectedId: number | null }>;
+    outcome: "extracted" | "failed" | null;
+    exitEncounter: number | null;
+    broughtLoot: ISkillItemInstance[];
+    remainingPouch: Array<ISkillItemInstance | null>;
+    collectionUnlockIds: number[];
+}
 
 export interface IExpeditionLootConfig {
     itemId: number;
@@ -39,6 +52,7 @@ export interface IExpeditionState {
     pendingUpgradeChoices: number[];
     settled: boolean;
     battle: ISkillBattleState;
+    report: IExpeditionReport;
 }
 
 export interface IExpeditionSave {
@@ -46,6 +60,7 @@ export interface IExpeditionSave {
     configSignature: string;
     profile: IExpeditionProfile;
     run: IExpeditionState | null;
+    history: IExpeditionReport[];
 }
 
 export interface IExpeditionStorage {

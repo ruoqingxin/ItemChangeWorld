@@ -61,7 +61,7 @@ async function main() {
                         textWidth: t.textWidth, textHeight: t.textHeight }));
                 });
                 assert.deepEqual(overflow, [], `Text overflow at ${name}`);
-                const file = path.join(output, `D-${name}-${viewport.width}.png`);
+                const file = path.join(output, `E-${name}-${viewport.width}.png`);
                 await page.screenshot({ path: file });
                 const { data } = await sharp(file).raw().toBuffer({ resolveWithObject: true });
                 assert.ok(new Set(data).size > 70, "Laya canvas must contain nonblank content");
@@ -239,11 +239,57 @@ async function main() {
             assert.equal((await read()).save.profile.currency, 80);
             assert.equal((await read()).save.profile.warehouse.length, 1);
             assert.deepEqual((await read()).save.profile.collectionIds, []);
-            assert.ok(!(await read()).visible.includes("warehouse0")); checks += 4;
+            assert.ok((await read()).visible.includes("warehouse0")); checks += 4;
+            await screenshot("scroll-ready");
+            const beforeCollection = (await read()).save;
+            await page.evaluate(() => {
+                window.__originalSetItem = Storage.prototype.setItem;
+                Storage.prototype.setItem = () => { throw new Error("quota exceeded"); };
+            });
+            await click("warehouse0");
+            assert.deepEqual((await read()).save, beforeCollection);
+            assert.match((await read()).notice, /quota exceeded/); checks += 2;
+            await page.evaluate(() => { Storage.prototype.setItem = window.__originalSetItem; });
+            await click("warehouse0", 2);
+            assert.deepEqual((await read()).save.profile.collectionIds, [1]);
+            assert.equal((await read()).save.profile.warehouse.length, 0);
+            assert.deepEqual((await read()).save.run.report.collectionUnlockIds, [1]);
+            assert.deepEqual((await read()).save.run.allowedUpgradeIds, [1, 2, 5, 6]);
+            checks += 4;
+            await screenshot("collection-unlocked");
+            await click("report");
+            assert.equal((await read()).title, "战斗记录");
+            await screenshot("statistics");
+            for (let i = 0; i < 8 && (await read()).visible.includes("nextPage"); i++) {
+                await click("nextPage"); await screenshot(`statistics-page-${i + 2}`);
+            }
+            await click("actions"); await screenshot("action-log");
+            await click("nextPage"); await screenshot("action-log-page-2");
+            await click("reportClose");
             await reload();
             assert.equal((await read()).save.profile.currency, 80); checks++;
-            // A storage exception must leave the action and inventory untouched.
+            assert.deepEqual((await read()).save.profile.collectionIds, [1]); checks++;
+            // Set only the next run's RNG seed; all progression remains actual mouse input.
+            await page.evaluate(() => { window.__originalRandom = Math.random; Math.random = () => 11 / 0x100000000; });
             await click("newRun");
+            await page.evaluate(() => { Math.random = window.__originalRandom; });
+            assert.equal((await read()).save.run.seed, 11);
+            assert.equal((await read()).save.history.length, 1);
+            await win();
+            const unlockedChoices = (await read()).save.run.pendingUpgradeChoices;
+            assert.ok(unlockedChoices.includes(3) && unlockedChoices.includes(4)); checks += 3;
+            await screenshot("unlocked-choices");
+            await reload();
+            assert.deepEqual((await read()).save.run.pendingUpgradeChoices, unlockedChoices); checks++;
+            await click(`upgrade${unlockedChoices.indexOf(3)}`);
+            await click("continue"); await act(2);
+            assert.equal((await read()).state.swordQi, 1); checks++;
+            await click("skill3");
+            assert.ok((await read()).visible.includes("confirm"));
+            await screenshot("unlocked-thrust");
+            await click("confirm"); await click("skip");
+            assert.equal((await read()).state.swordQi, 0); checks++;
+            // A storage exception must leave the action and inventory untouched.
             const beforeFailure = await read();
             await page.evaluate(() => {
                 window.__originalSetItem = Storage.prototype.setItem;
