@@ -12,17 +12,20 @@ export class SkillBattlePresenter {
     busy = false;
     message = "";
     selectedAction: ISkillBattleAction | null = null;
-    private expedition: ExpeditionManager;
-
-    constructor(private readonly manager = SkillBattleManager.ins()) {
-        this.expedition = new ExpeditionManager(manager);
-    }
+    constructor(private readonly manager = SkillBattleManager.ins(), readonly expedition?: ExpeditionManager) {}
 
     open(setup: ISkillBattleSetup, restart = false): void {
+        if (this.expedition) {
+            this.setup = this.expedition.setup;
+            this.display = this.manager.state;
+            this.busy = false;
+            this.cancel();
+            return;
+        }
         this.setup = setup;
         const state = this.manager.state;
         this.display = restart || !state || state.encounterId !== setup.encounterId
-            ? this.expedition.startNew(setup) : state;
+            ? this.manager.start(setup) : state;
         this.busy = false;
         this.cancel();
     }
@@ -56,7 +59,17 @@ export class SkillBattlePresenter {
     continueTo(setup: ISkillBattleSetup): boolean {
         if (this.busy) return false;
         try {
-            this.display = this.expedition.continueTo(setup);
+            if (this.expedition) this.display = this.expedition.continueNext();
+            else {
+                const state = this.manager.state;
+                if (state?.phase !== "victory" || setup.order !== this.manager.encounterOrder + 1)
+                    throw new Error("只有胜利后才能进入下一场遭遇");
+                this.display = this.manager.start(setup, {
+                    playerHp: state.player.hp, playerMaxHp: state.player.maxHp,
+                    weaponId: state.weaponId, weaponDurability: state.weaponDurability, pouchSlots: state.pouchSlots,
+                    upgradeIds: state.upgradeIds,
+                });
+            }
             this.setup = setup;
             this.cancel();
             return true;

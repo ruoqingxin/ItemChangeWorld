@@ -1,8 +1,7 @@
 import { UIBaseView } from "../../../games/ui/UIBaseView";
 import { UILayer } from "../../../games/ui/UILayer";
 import { ConfigUtil } from "../../../config/ConfigUtil";
-import { SkillBattleConfigUtils } from "../utils/SkillBattleConfigUtils";
-import { SkillBattleManager } from "../manager/SkillBattleManager";
+import { ExpeditionConfigUtils } from "../../expedition/utils/ExpeditionConfigUtils";
 import { SkillBattlePanel } from "./SkillBattlePanel";
 
 export class SkillBattleView extends UIBaseView {
@@ -11,13 +10,13 @@ export class SkillBattleView extends UIBaseView {
     private panel: SkillBattlePanel;
 
     protected onConstruct(): void {
-        this.panel = new SkillBattlePanel(id => SkillBattleConfigUtils.readEncounter(ConfigUtil.Tables, id));
+        this.panel = new SkillBattlePanel(ExpeditionConfigUtils.read(ConfigUtil.Tables));
         this.view.addChild(this.panel);
         this.view.on(Laya.Event.RESIZE, this, this.resize);
     }
 
     onOpen(): void {
-        this.panel.openEncounter(SkillBattleManager.ins().state?.encounterId || 1);
+        this.panel.openEncounter();
         this.resize();
     }
 

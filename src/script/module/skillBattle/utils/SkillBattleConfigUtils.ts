@@ -6,6 +6,8 @@ import type {
     ISkillItemConfig,
     SkillItemUseType,
     SkillIntentType,
+    ISkillUpgradeConfig,
+    SkillUpgradeEffect,
 } from "../types/SkillBattleTypes";
 
 export class SkillBattleConfigUtils {
@@ -83,6 +85,7 @@ export class SkillBattleConfigUtils {
             weaponDurability: this.integer(weapon.max_durability, "max_durability"),
             items: this.readItems(tables),
             skills,
+            upgrades: this.readUpgrades(tables),
             enemy: {
                 id: enemy.enemy_id,
                 name: enemy.name,
@@ -92,6 +95,19 @@ export class SkillBattleConfigUtils {
                 intents,
             },
         };
+    }
+
+    static readUpgrades(tables: Tables): ISkillUpgradeConfig[] {
+        const effects = ["counter", "full_qi_slash", "thrust_cost", "interrupt_slash", "guard_block", "fire_burn"];
+        const seen = new Set<string>();
+        return tables.skill_upgrade.getDataList().filter(row => row.enabled === 1).map(row => {
+            if (!effects.includes(row.effect_kind) || seen.has(row.effect_kind))
+                throw new Error("[SkillBattle] Invalid or duplicate upgrade effect");
+            seen.add(row.effect_kind);
+            return { id: this.integer(row.upgrade_id, "upgrade_id", 1), name: row.name,
+                effect: row.effect_kind as SkillUpgradeEffect, value: this.integer(row.value, "upgrade value", 1),
+                requiredCollectionId: this.integer(row.required_collection_id, "required_collection_id") };
+        });
     }
 
     private static readItems(tables: Tables): ISkillItemConfig[] {

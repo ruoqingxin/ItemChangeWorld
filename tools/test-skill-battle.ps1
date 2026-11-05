@@ -8,6 +8,7 @@ $sources = @(
     (Join-Path $root "src/script/module/skillBattle/manager/SkillBattleManager.ts"),
     (Join-Path $root "src/script/module/skillBattle/debug/SkillBattleDebug.ts"),
     (Join-Path $root "src/script/module/skillBattle/view/SkillBattlePresenter.ts"),
+    (Join-Path $root "src/script/module/expedition/utils/ExpeditionConfigUtils.ts"),
     (Join-Path $root "engine/types/LayaAir.d.ts")
 )
 

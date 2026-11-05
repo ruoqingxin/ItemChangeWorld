@@ -4,7 +4,6 @@ import { StageEnum } from "./StageEnum";
 
 import { UIManager } from "../games/ui/UIManager";
 import { UILayer } from "../games/ui/UILayer";
-import { SkillBattleDebug } from "../module/skillBattle/debug/SkillBattleDebug";
 import { SkillBattleView } from "../module/skillBattle/view/SkillBattleView";
 
 
@@ -43,7 +42,6 @@ export class LobbyStage extends asgard.stage.BaseStage {
         asgard.events.EventsDispatcher.init(GameConst.appName);
         UIManager.ins().init();
 
-        SkillBattleDebug.mountToWindow();
         UIManager.ins().openForm(SkillBattleView);
     }
 

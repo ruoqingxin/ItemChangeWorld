@@ -2,6 +2,15 @@ export type SkillBattlePhase = "player_input" | "resolving" | "victory" | "defea
 export type SkillBattleSide = "player" | "enemy";
 export type SkillIntentType = "attack" | "charge" | "block";
 export type SkillItemUseType = "fire_stone" | "earth_stone" | "heal";
+export type SkillUpgradeEffect = "counter" | "full_qi_slash" | "thrust_cost" | "interrupt_slash" | "guard_block" | "fire_burn";
+
+export interface ISkillUpgradeConfig {
+    id: number;
+    name: string;
+    effect: SkillUpgradeEffect;
+    value: number;
+    requiredCollectionId: number;
+}
 
 export interface ISkillItemConfig {
     itemId: number;
@@ -27,6 +36,7 @@ export interface ISkillBattleCarry {
     weaponId: number;
     weaponDurability: number;
     pouchSlots: Array<ISkillItemInstance | null>;
+    upgradeIds?: number[];
 }
 
 export interface ISkillConfig {
@@ -61,6 +71,7 @@ export interface ISkillBattleSetup {
     weaponDurability: number;
     items: ISkillItemConfig[];
     skills: ISkillConfig[];
+    upgrades?: ISkillUpgradeConfig[];
     enemy: {
         id: number;
         name: string;
@@ -93,6 +104,8 @@ export interface ISkillBattleState {
     weaponId: number;
     enemyBurn: number;
     pouchSlots: Array<ISkillItemInstance | null>;
+    upgradeIds: number[];
+    nextSlashBonus: number;
 }
 
 export type ISkillBattleAction =
@@ -145,6 +158,8 @@ export interface ISkillActionPreview {
     healAmount: number;
     durabilityCost: number;
     consumedItemUid: string | null;
+    counterDamage: number;
+    counterHpLoss: number;
 }
 
 export interface ISkillActionResolution {

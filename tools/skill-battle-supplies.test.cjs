@@ -1,5 +1,9 @@
 module.exports = ({ assert, test, setups, tables, Config, Rules, Manager, Presenter, copy, freeze, withTables, build }) => {
     const { ExpeditionManager } = require(require("node:path").join(build, "script/module/expedition/manager/ExpeditionManager.js"));
+    const { ExpeditionConfigUtils } = require(require("node:path").join(build, "script/module/expedition/utils/ExpeditionConfigUtils.js"));
+    const createExpedition = manager => new ExpeditionManager(ExpeditionConfigUtils.read(tables), manager,
+        { read: () => null, write: () => {} });
+    const choose = expedition => expedition.chooseUpgrade(expedition.run.pendingUpgradeChoices.find(id => id !== 1));
     const skill = (id, stoneItemUid) => ({ type: "skill", skillId: id, ...(stoneItemUid ? { stoneItemUid } : {}) });
     const heal = itemUid => ({ type: "use_item", itemUid });
     const setup = setups[0];
@@ -303,21 +307,22 @@ module.exports = ({ assert, test, setups, tables, Config, Rules, Manager, Presen
         assert.equal(p.selectedAction.stoneItemUid, undefined);
     });
     test("C: the same supply batch reaches battle three without regeneration or refunds", () => {
-        const manager = new Manager(), expedition = new ExpeditionManager(manager);
-        const initial = expedition.startNew(setup);
+        const manager = new Manager(), expedition = createExpedition(manager);
+        const initial = expedition.startNew(42);
         play(manager, skill(1, initial.pouchSlots[0].itemUid));
         play(manager, skill(1));
         play(manager, skill(1));
         const first = manager.state;
         assert.equal(first.phase, "victory");
-        const second = expedition.continueTo(setups[1]);
+        choose(expedition);
+        const second = expedition.continueNext();
         assert.equal(second.player.hp, first.player.hp);
         assert.equal(second.weaponDurability, 45);
         assert.deepEqual(second.pouchSlots, first.pouchSlots);
         assert.equal(second.enemyBurn, 0);
         assert.equal(second.swordQi, 0);
         assert.equal(second.player.block, 0);
-        assert.throws(() => expedition.continueTo(setups[1]));
+        assert.throws(() => expedition.continueNext());
         const token = manager.previewAction(skill(1)).preview.token;
         play(manager, heal(second.pouchSlots[2].itemUid));
         play(manager, skill(1));
@@ -325,28 +330,30 @@ module.exports = ({ assert, test, setups, tables, Config, Rules, Manager, Presen
         play(manager, skill(3));
         const beforeThird = manager.state;
         assert.equal(beforeThird.phase, "victory");
-        const third = expedition.continueTo(setups[2]);
+        choose(expedition);
+        const third = expedition.continueNext();
         assert.equal(third.player.hp, beforeThird.player.hp);
         assert.equal(third.weaponDurability, 40);
         assert.deepEqual(third.pouchSlots, [null, null, null, null, null]);
         assert.equal(manager.confirmAction(skill(1), token).ok, false);
     });
     test("C: continuation refuses unfinished, failed, repeated and out-of-order battles", () => {
-        const manager = new Manager(), expedition = new ExpeditionManager(manager);
-        expedition.startNew(setup);
-        assert.throws(() => expedition.continueTo(setups[1]));
+        const manager = new Manager(), expedition = createExpedition(manager);
+        expedition.startNew(42);
+        assert.throws(() => expedition.continueNext());
         for (let i = 0; i < 4; i++) play(manager, skill(1));
-        assert.throws(() => expedition.continueTo(setups[2]));
-        expedition.continueTo(setups[1]);
+        assert.throws(() => expedition.continueNext());
+        choose(expedition);
+        expedition.continueNext();
         while (manager.state.phase === "player_input") play(manager, skill(2));
         const result = manager.state;
         assert.equal(result.phase, "defeat");
-        assert.throws(() => expedition.continueTo(setups[2]));
+        assert.throws(() => expedition.continueNext());
         assert.deepEqual(manager.state, result);
-        const fresh = expedition.startNew(setup);
+        const fresh = expedition.startNew(43);
         assert.equal(fresh.player.hp, 50);
         assert.equal(fresh.weaponDurability, 50);
-        assert.equal(fresh.pouchSlots.filter(Boolean).length, 3);
-        assert.notEqual(fresh.pouchSlots[0].itemUid, result.pouchSlots[0].itemUid);
+        assert.equal(fresh.pouchSlots.filter(Boolean).length, 0);
+        assert.notEqual(fresh.battleId, result.battleId);
     });
 };

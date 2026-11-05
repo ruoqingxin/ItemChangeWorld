@@ -1,7 +1,7 @@
 import { ConfigLoader, ConfigUtil } from "../src/script/config/ConfigUtil";
 import { SkillBattlePanel } from "../src/script/module/skillBattle/view/SkillBattlePanel";
 import { SkillBattleManager } from "../src/script/module/skillBattle/manager/SkillBattleManager";
-import { SkillBattleConfigUtils } from "../src/script/module/skillBattle/utils/SkillBattleConfigUtils";
+import { ExpeditionConfigUtils } from "../src/script/module/expedition/utils/ExpeditionConfigUtils";
 
 async function main(): Promise<void> {
     Laya.PlayerConfig.UI = { alwaysIncludeDefaultSkin: false } as any;
@@ -13,13 +13,13 @@ async function main(): Promise<void> {
     Laya.stage.bgColor = "#111613";
     await new Promise<void>((resolve, reject) => ConfigLoader.loadAllConfig(
         Laya.Handler.create(null, ok => ok ? resolve() : reject(new Error("Config load failed")))));
-    const panel = new SkillBattlePanel(id => SkillBattleConfigUtils.readEncounter(ConfigUtil.Tables, id));
+    const panel = new SkillBattlePanel(ExpeditionConfigUtils.read(ConfigUtil.Tables));
     Laya.stage.addChild(panel);
-    panel.openEncounter(1);
+    panel.openEncounter();
     (window as any).__skillBattlePreview = {
-        panel, manager: SkillBattleManager.ins(),
+        panel, manager: SkillBattleManager.ins(), expedition: panel.expedition,
         close: () => { panel.suspend(); panel.visible = false; },
-        reopen: () => { panel.visible = true; panel.openEncounter(SkillBattleManager.ins().state?.encounterId || 1); },
+        reopen: () => { panel.visible = true; panel.openEncounter(); },
     };
 }
 main().catch(error => { console.error(error); document.body.dataset.error = String(error); });

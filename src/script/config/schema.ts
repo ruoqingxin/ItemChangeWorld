@@ -1940,6 +1940,156 @@ export class Iskill_item_useConfig {
 
 
 
+export class Iskill_loot_useConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.item_id = _buf_.ReadInt()
+        this.use_type = _buf_.ReadString()
+        this.currency_value = _buf_.ReadInt()
+        this.collection_id = _buf_.ReadInt()
+        this.enabled = _buf_.ReadInt()
+    }
+
+    /**
+     * 物品ID
+     */
+    readonly item_id: number
+    /**
+     * 使用类型
+     */
+    readonly use_type: string
+    /**
+     * 灵石数量
+     */
+    readonly currency_value: number
+    /**
+     * 收藏ID
+     */
+    readonly collection_id: number
+    /**
+     * 启用
+     */
+    readonly enabled: number
+
+/*
+    resolve(tables:Tables) {
+        
+        
+        
+        
+        
+    }
+    */
+}
+
+
+
+
+
+export class Iskill_reward_entryConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.id = _buf_.ReadInt()
+        this.reward_group_id = _buf_.ReadInt()
+        this.item_id = _buf_.ReadInt()
+        this.count = _buf_.ReadInt()
+        this.enabled = _buf_.ReadInt()
+    }
+
+    /**
+     * 条目ID
+     */
+    readonly id: number
+    /**
+     * 奖励组ID
+     */
+    readonly reward_group_id: number
+    /**
+     * 物品ID
+     */
+    readonly item_id: number
+    /**
+     * 数量
+     */
+    readonly count: number
+    /**
+     * 启用
+     */
+    readonly enabled: number
+
+/*
+    resolve(tables:Tables) {
+        
+        
+        
+        
+        
+    }
+    */
+}
+
+
+
+
+
+export class Iskill_upgradeConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.upgrade_id = _buf_.ReadInt()
+        this.name = _buf_.ReadString()
+        this.icon = _buf_.ReadString()
+        this.effect_kind = _buf_.ReadString()
+        this.value = _buf_.ReadInt()
+        this.required_collection_id = _buf_.ReadInt()
+        this.enabled = _buf_.ReadInt()
+    }
+
+    /**
+     * 强化ID
+     */
+    readonly upgrade_id: number
+    /**
+     * 名称
+     */
+    readonly name: string
+    /**
+     * 图标
+     */
+    readonly icon: string
+    /**
+     * 效果类型
+     */
+    readonly effect_kind: string
+    /**
+     * 数值
+     */
+    readonly value: number
+    /**
+     * 所需收藏ID
+     */
+    readonly required_collection_id: number
+    /**
+     * 启用
+     */
+    readonly enabled: number
+
+/*
+    resolve(tables:Tables) {
+        
+        
+        
+        
+        
+        
+        
+    }
+    */
+}
+
+
+
+
+
 export class IskillConfig {
 
     constructor(_buf_: ByteBuf) {
@@ -3799,6 +3949,168 @@ export class skill_item_use {
 
 
 
+export class skill_upgrade {
+    private _dataMap: Map<number, Iskill_upgradeConfig>
+	//private _dataObj: {[index:number]:Iskill_upgradeConfig}
+    private _dataList: Iskill_upgradeConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, Iskill_upgradeConfig>()
+        this._dataList = []
+		//this._dataObj = {}
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Iskill_upgradeConfig
+            _v = new Iskill_upgradeConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.upgrade_id, _v)
+			//this._dataObj[_v.upgrade_id] = _v
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, Iskill_upgradeConfig> {this.load(); return this._dataMap; }
+	
+	//getDataObj(): { [index: number]: Iskill_upgradeConfig } {this.load(); return this._dataObj; }
+	
+    getDataList(): Iskill_upgradeConfig[] { this.load();return this._dataList; }
+
+    get(key: number): Iskill_upgradeConfig | undefined {
+		this.load();
+        return this._dataMap.get(key); 
+    }
+    
+/**
+    resolve(tables:Tables) {
+        
+    }
+ */    
+
+}
+
+
+
+
+export class skill_reward_entry {
+    private _dataMap: Map<number, Iskill_reward_entryConfig>
+	//private _dataObj: {[index:number]:Iskill_reward_entryConfig}
+    private _dataList: Iskill_reward_entryConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, Iskill_reward_entryConfig>()
+        this._dataList = []
+		//this._dataObj = {}
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Iskill_reward_entryConfig
+            _v = new Iskill_reward_entryConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+			//this._dataObj[_v.id] = _v
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, Iskill_reward_entryConfig> {this.load(); return this._dataMap; }
+	
+	//getDataObj(): { [index: number]: Iskill_reward_entryConfig } {this.load(); return this._dataObj; }
+	
+    getDataList(): Iskill_reward_entryConfig[] { this.load();return this._dataList; }
+
+    get(key: number): Iskill_reward_entryConfig | undefined {
+		this.load();
+        return this._dataMap.get(key); 
+    }
+    
+/**
+    resolve(tables:Tables) {
+        
+    }
+ */    
+
+}
+
+
+
+
+export class skill_loot_use {
+    private _dataMap: Map<number, Iskill_loot_useConfig>
+	//private _dataObj: {[index:number]:Iskill_loot_useConfig}
+    private _dataList: Iskill_loot_useConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, Iskill_loot_useConfig>()
+        this._dataList = []
+		//this._dataObj = {}
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Iskill_loot_useConfig
+            _v = new Iskill_loot_useConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.item_id, _v)
+			//this._dataObj[_v.item_id] = _v
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, Iskill_loot_useConfig> {this.load(); return this._dataMap; }
+	
+	//getDataObj(): { [index: number]: Iskill_loot_useConfig } {this.load(); return this._dataObj; }
+	
+    getDataList(): Iskill_loot_useConfig[] { this.load();return this._dataList; }
+
+    get(key: number): Iskill_loot_useConfig | undefined {
+		this.load();
+        return this._dataMap.get(key); 
+    }
+    
+/**
+    resolve(tables:Tables) {
+        
+    }
+ */    
+
+}
+
+
+
+
 type ByteBufLoader = (file: string) => ByteBuf
 
 export class Tables {
@@ -3842,6 +4154,12 @@ export class Tables {
     get skill_encounter(): skill_encounter  { return this._skill_encounter;}
     private _skill_item_use: skill_item_use
     get skill_item_use(): skill_item_use  { return this._skill_item_use;}
+    private _skill_upgrade: skill_upgrade
+    get skill_upgrade(): skill_upgrade  { return this._skill_upgrade;}
+    private _skill_reward_entry: skill_reward_entry
+    get skill_reward_entry(): skill_reward_entry  { return this._skill_reward_entry;}
+    private _skill_loot_use: skill_loot_use
+    get skill_loot_use(): skill_loot_use  { return this._skill_loot_use;}
 
     static getTableNames(): string[] {
         let names: string[] = [];
@@ -3865,6 +4183,9 @@ export class Tables {
         names.push('skill_enemy_intent_step');
         names.push('skill_encounter');
         names.push('skill_item_use');
+        names.push('skill_upgrade');
+        names.push('skill_reward_entry');
+        names.push('skill_loot_use');
         return names;
     }
 
@@ -3889,6 +4210,9 @@ export class Tables {
         this._skill_enemy_intent_step = new skill_enemy_intent_step(loader('skill_enemy_intent_step'))
         this._skill_encounter = new skill_encounter(loader('skill_encounter'))
         this._skill_item_use = new skill_item_use(loader('skill_item_use'))
+        this._skill_upgrade = new skill_upgrade(loader('skill_upgrade'))
+        this._skill_reward_entry = new skill_reward_entry(loader('skill_reward_entry'))
+        this._skill_loot_use = new skill_loot_use(loader('skill_loot_use'))
 
         /*
         this._item.resolve(this)
@@ -3911,6 +4235,9 @@ export class Tables {
         this._skill_enemy_intent_step.resolve(this)
         this._skill_encounter.resolve(this)
         this._skill_item_use.resolve(this)
+        this._skill_upgrade.resolve(this)
+        this._skill_reward_entry.resolve(this)
+        this._skill_loot_use.resolve(this)
         */
     }
 }

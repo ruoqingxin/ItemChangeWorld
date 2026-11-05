@@ -22,6 +22,7 @@ export class SkillBattleManager {
 
     private readonly _data = new SkillBattleData();
     private _battleSequence = 0;
+    beforeCommit: ((state: ISkillBattleState) => void) | null = null;
 
     get state(): ISkillBattleState | null {
         return this._data.state ? SkillBattleFormulaUtils.cloneState(this._data.state) : null;
@@ -38,6 +39,7 @@ export class SkillBattleManager {
             ...setup,
             skills: setup.skills.map(row => ({ ...row })),
             items: setup.items.map(row => ({ ...row })),
+            upgrades: setup.upgrades?.map(row => ({ ...row })),
             enemy: { ...setup.enemy, intents: setup.enemy.intents.map(row => ({ ...row })) },
         };
         const battleId = `skill_battle_${++this._battleSequence}`;
@@ -74,11 +76,23 @@ export class SkillBattleManager {
         }
         const result = SkillBattleFormulaUtils.resolveAction(this._data.setup!, current, action);
         if (result.ok) {
+            try {
+                this.beforeCommit?.(SkillBattleFormulaUtils.cloneState(result.state));
+            } catch (error) {
+                return { ok: false, reason: `存档未成功，行动未提交：${(error as Error).message}`,
+                    state: SkillBattleFormulaUtils.cloneState(current), events: [], preview: null };
+            }
             // Keep returned preview/results separate from the manager-owned snapshot.
             this._data.state = SkillBattleFormulaUtils.cloneState(result.state);
             this._data.logs.push(...result.events.map(event => SkillBattleDebugUtils.formatEvent(event)));
         }
         return result;
+    }
+
+    restore(setup: ISkillBattleSetup, state: ISkillBattleState): void {
+        this._data.setup = JSON.parse(JSON.stringify(setup));
+        this._data.state = SkillBattleFormulaUtils.cloneState(state);
+        this._data.logs = [SkillBattleDebugUtils.formatState(setup, state)];
     }
 
     printState(): string {

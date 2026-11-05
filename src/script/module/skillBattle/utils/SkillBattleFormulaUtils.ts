@@ -1,7 +1,7 @@
 import type {
     ISkillActionPreview, ISkillActionResolution, ISkillBattleAction, ISkillBattleCarry,
     ISkillBattleSetup, ISkillBattleState, ISkillIntentConfig, ISkillItemConfig,
-    SkillBattleEvent, SkillBattleSide,
+    SkillBattleEvent, SkillBattleSide, SkillUpgradeEffect,
 } from "../types/SkillBattleTypes";
 
 export class SkillBattleFormulaUtils {
@@ -16,12 +16,23 @@ export class SkillBattleFormulaUtils {
             weaponId: setup.weaponId,
             weaponDurability: carry ? carry.weaponDurability : setup.weaponDurability,
             pouchSlots: carry ? carry.pouchSlots.map(item => item ? { ...item } : null) : [null, null, null, null, null],
+            upgradeIds: carry?.upgradeIds?.slice() || [], nextSlashBonus: 0,
         };
     }
 
     static cloneState(state: ISkillBattleState): ISkillBattleState {
         return { ...state, player: { ...state.player }, enemy: { ...state.enemy },
-            pouchSlots: state.pouchSlots.map(item => item ? { ...item } : null) };
+            pouchSlots: state.pouchSlots.map(item => item ? { ...item } : null),
+            upgradeIds: state.upgradeIds.slice() };
+    }
+
+    static upgradeValue(setup: ISkillBattleSetup, state: ISkillBattleState, effect: SkillUpgradeEffect): number | undefined {
+        return setup.upgrades?.find(row => row.effect === effect && state.upgradeIds.includes(row.id))?.value;
+    }
+
+    static qiCost(setup: ISkillBattleSetup, state: ISkillBattleState, skillId: number): number {
+        const skill = setup.skills.find(row => row.id === skillId);
+        return skillId === 3 ? this.upgradeValue(setup, state, "thrust_cost") ?? skill?.qiCost ?? 0 : skill?.qiCost || 0;
     }
 
     static currentIntent(setup: ISkillBattleSetup, state: ISkillBattleState): ISkillIntentConfig {
@@ -50,8 +61,9 @@ export class SkillBattleFormulaUtils {
         if (!action || (action.type !== "skill" && action.type !== "use_item")) return reject("无效行动");
         const skill = action.type === "skill" ? setup.skills.find(row => row.id === action.skillId) : null;
         if (action.type === "skill" && (!Number.isSafeInteger(action.skillId) || !skill)) return reject("当前武器没有这个招式");
-        if (skill && snapshot.swordQi < skill.qiCost)
-            return reject(`剑势不足，需要 ${skill.qiCost}，当前 ${snapshot.swordQi}`);
+        const qiCost = skill ? this.qiCost(setup, snapshot, skill.id) : 0;
+        if (skill && snapshot.swordQi < qiCost)
+            return reject(`剑势不足，需要 ${qiCost}，当前 ${snapshot.swordQi}`);
         const uid = action.type === "use_item" ? action.itemUid : action.stoneItemUid;
         let slot = -1;
         let item: ISkillItemConfig | undefined;
@@ -78,12 +90,13 @@ export class SkillBattleFormulaUtils {
         const events: SkillBattleEvent[] = [];
         const preview: ISkillActionPreview = {
             token: { battleId: snapshot.battleId, revision: snapshot.revision },
-            qiCost: skill?.qiCost || 0, qiAfterAction: state.swordQi,
+            qiCost, qiAfterAction: state.swordQi,
             baseDamage: skill?.damage || 0, blockAbsorbed: 0, enemyHpLoss: 0,
             blockGained: skill?.block || 0, interrupted: false, enemyDamage: 0,
             playerBlockAbsorbed: 0, playerHpLoss: 0, enchantDamage: 0, enchantBlockAbsorbed: 0,
             enchantHpLoss: 0, burnApplied: 0, burnDamage: 0, healAmount: 0, durabilityCost: 0,
             consumedItemUid: uid || null,
+            counterDamage: 0, counterHpLoss: 0,
         };
         state.phase = "resolving";
         state.revision++;
@@ -95,7 +108,7 @@ export class SkillBattleFormulaUtils {
         if (skill) {
             events.push({ type: "skill_used", skillId: skill.id, name: skill.name });
             const beforeQi = state.swordQi;
-            const availableQi = beforeQi - skill.qiCost + skill.qiGain;
+            const availableQi = beforeQi - qiCost + skill.qiGain;
             state.swordQi = Math.min(state.swordQiMax, availableQi);
             preview.qiAfterAction = state.swordQi;
             events.push({ type: "qi_changed", before: beforeQi, after: state.swordQi, overflow: Math.max(0, availableQi - state.swordQiMax) });
@@ -106,12 +119,22 @@ export class SkillBattleFormulaUtils {
                 events.push({ type: "durability_changed", before, after: state.weaponDurability });
             }
             if (skill.damage > 0) {
-                const hit = this.damage(state, "player", "enemy", skill.damage);
+                if (skill.id === 1) {
+                    preview.baseDamage += state.nextSlashBonus;
+                    if (beforeQi === state.swordQiMax)
+                        preview.baseDamage += this.upgradeValue(setup, state, "full_qi_slash") || 0;
+                    state.nextSlashBonus = 0;
+                }
+                const hit = this.damage(state, "player", "enemy", preview.baseDamage);
                 events.push(hit);
                 preview.blockAbsorbed = hit.blockAbsorbed;
                 preview.enemyHpLoss = hit.hpLoss;
             }
-            if (skill.block > 0) this.gainBlock(state, "player", skill.block, events);
+            if (skill.block > 0) {
+                preview.blockGained = skill.id === 2
+                    ? this.upgradeValue(setup, state, "guard_block") ?? skill.block : skill.block;
+                this.gainBlock(state, "player", preview.blockGained, events);
+            }
             if (item) {
                 if (state.enemy.hp > 0) {
                     events.push({ type: "enchant_used", element: item.element, name: item.name });
@@ -123,7 +146,8 @@ export class SkillBattleFormulaUtils {
                     preview.enchantHpLoss = hit.hpLoss;
                     if (state.enemy.hp > 0 && item.burnStacks > 0) {
                         const before = state.enemyBurn;
-                        state.enemyBurn = Math.min(20, before + item.burnStacks);
+                        state.enemyBurn = Math.min(20, before + item.burnStacks +
+                            (this.upgradeValue(setup, state, "fire_burn") || 0));
                         preview.burnApplied = state.enemyBurn - before;
                         events.push({ type: "burn_changed", before, after: state.enemyBurn });
                     }
@@ -158,7 +182,10 @@ export class SkillBattleFormulaUtils {
             }
         }
         preview.interrupted = !!skill?.interrupts && intent.interruptible;
-        if (preview.interrupted) events.push({ type: "intent_interrupted", intentId: intent.id, name: intent.name });
+        if (preview.interrupted) {
+            events.push({ type: "intent_interrupted", intentId: intent.id, name: intent.name });
+            state.nextSlashBonus = this.upgradeValue(setup, state, "interrupt_slash") || 0;
+        }
         else {
             events.push({ type: "intent_executed", intentId: intent.id, name: intent.name });
             if (intent.type === "attack") {
@@ -172,6 +199,17 @@ export class SkillBattleFormulaUtils {
         if (state.player.hp === 0) {
             this.finish(state, events, "defeat");
             return { ok: true, state, events, preview };
+        }
+        const counter = this.upgradeValue(setup, state, "counter") || 0;
+        if (skill?.id === 2 && preview.playerBlockAbsorbed > 0 && counter > 0) {
+            const hit = this.damage(state, "player", "enemy", counter);
+            events.push(hit);
+            preview.counterDamage = hit.amount;
+            preview.counterHpLoss = hit.hpLoss;
+            if (state.enemy.hp === 0) {
+                this.finish(state, events, "victory");
+                return { ok: true, state, events, preview };
+            }
         }
         this.clearBlock(state, "player", events);
         state.enemyIntentIndex = (state.enemyIntentIndex + 1) % setup.enemy.intents.length;
@@ -189,6 +227,9 @@ export class SkillBattleFormulaUtils {
             !Number.isSafeInteger(carry.weaponDurability) || carry.weaponDurability < 0 ||
             carry.weaponDurability > setup.weaponDurability || !Array.isArray(carry.pouchSlots) ||
             carry.pouchSlots.length !== 5) fail();
+        if (carry.upgradeIds && (!Array.isArray(carry.upgradeIds) ||
+            new Set(carry.upgradeIds).size !== carry.upgradeIds.length ||
+            carry.upgradeIds.some(id => !setup.upgrades?.some(row => row.id === id)))) fail();
         const uids = new Set<string>();
         for (let slot = 0; slot < 5; slot++) {
             const item = carry.pouchSlots[slot];
@@ -226,6 +267,7 @@ export class SkillBattleFormulaUtils {
         if (state.enemyBurn) events.push({ type: "burn_changed", before: state.enemyBurn, after: 0 });
         state.enemyBurn = 0;
         state.swordQi = 0;
+        state.nextSlashBonus = 0;
         events.push({ type: "battle_ended", result });
     }
 }
