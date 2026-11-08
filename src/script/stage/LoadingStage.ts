@@ -44,7 +44,6 @@ export class LoadingStage extends asgard.stage.BaseStage {
 
     beginLogin() {
         asgard.events.EventsDispatcher.init(GameConst.appName);
-        UIManager.ins().init();
     }
 
     beginLoad() {

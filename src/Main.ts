@@ -8,6 +8,11 @@ const { regClass, property } = Laya;
 @regClass()
 export class Main extends Laya.Script {
     onStart(): void {
+        if (Laya.LayaEnv.isEditor && typeof window["GameStart"] === "function") {
+            new window["GameStart"]();
+            return;
+        }
+
         const loader = new SubpackageLoader();
         // 子包如果扩展请在这里添加
         loader.loadAll(["ttf", "jslib", "subscript"], { subscript: "jslib" });

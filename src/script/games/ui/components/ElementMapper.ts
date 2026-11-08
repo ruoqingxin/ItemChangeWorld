@@ -22,7 +22,7 @@ export enum MapperTypeEnum {
      */
     Fullscreen
 }
-@regClass()
+@regClass("3593fc26-337e-42e3-92dc-1b9c2bb8f988")
 @classInfo({
     menu: "UI扩展",
     caption: "ElementMapper",

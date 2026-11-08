@@ -1,17 +1,18 @@
 import { UIBaseView } from "../../../games/ui/UIBaseView";
 import { UILayer } from "../../../games/ui/UILayer";
-import { ConfigUtil } from "../../../config/ConfigUtil";
-import { ExpeditionConfigUtils } from "../../expedition/utils/ExpeditionConfigUtils";
 import { SkillBattlePanel } from "./SkillBattlePanel";
+import { SkillBattleUISession } from "./SkillBattleUISession";
+import { openSkillBattleScreen } from "./SkillBattleUINavigation";
 
 export class SkillBattleView extends UIBaseView {
     get layer(): UILayer { return UILayer.Second; }
-    get path(): string { return "ui/prefab/module/skillBattle/SkillBattleView.lh"; }
-    private panel: SkillBattlePanel;
+    get path(): string { return "ui/prefab/module/skillBattle/SkillBattleBattleView.lh"; }
+    protected panel: SkillBattlePanel;
 
     protected onConstruct(): void {
-        this.panel = new SkillBattlePanel(ExpeditionConfigUtils.read(ConfigUtil.Tables));
-        this.view.addChild(this.panel);
+        const expedition = SkillBattleUISession.getExpedition();
+        this.panel = new SkillBattlePanel(this, expedition.configuration, expedition,
+            screen => openSkillBattleScreen(screen), "battle");
         this.view.on(Laya.Event.RESIZE, this, this.resize);
     }
 
@@ -20,13 +21,9 @@ export class SkillBattleView extends UIBaseView {
         this.resize();
     }
 
-    protected onClose(): void { this.panel.suspend(); }
+    protected onClose(): void { this.panel?.suspend(); }
 
-    private resize(): void {
-        const scale = Math.min(this.view.width / 720, this.view.height / 1280);
-        this.view.graphics.clear();
-        this.view.graphics.drawRect(0, 0, this.view.width, this.view.height, "#171d1b");
-        this.panel.scale(scale, scale);
-        this.panel.pos((this.view.width - 720 * scale) / 2, (this.view.height - 1280 * scale) / 2);
+    protected resize(): void {
+        this.panel.resizeTo(this.view);
     }
 }

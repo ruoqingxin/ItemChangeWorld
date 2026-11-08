@@ -34,8 +34,11 @@ export class SkillBattlePresenter {
         if (this.busy || this.display.phase !== "player_input") return;
         this.selectedId = skillId;
         const stone = this.selectedAction?.type === "skill" ? this.selectedAction.stoneItemUid : undefined;
+        const medicine = this.selectedAction?.type === "use_item" ? this.selectedAction.itemUid : undefined;
         const skill = this.setup.skills.find(row => row.id === skillId);
-        this.preview({ type: "skill", skillId, ...(skill?.canEnchant && stone ? { stoneItemUid: stone } : {}) });
+        this.preview({ type: "skill", skillId,
+            ...(skill?.canEnchant && stone ? { stoneItemUid: stone } : {}),
+            ...(medicine ? { itemUid: medicine } : {}) });
     }
 
     selectPouch(slot: number): void {
@@ -44,8 +47,12 @@ export class SkillBattlePresenter {
         if (!instance) return;
         const item = this.setup.items.find(row => row.itemId === instance.itemId)!;
         if (item.useType === "heal") {
-            this.selectedId = 0;
-            this.preview({ type: "use_item", itemUid: instance.itemUid });
+            if (this.selectedAction?.type === "skill") {
+                this.preview({ ...this.selectedAction, itemUid: instance.itemUid });
+            } else {
+                this.selectedId = 0;
+                this.preview({ type: "use_item", itemUid: instance.itemUid });
+            }
         } else if (this.selectedAction?.type !== "skill") {
             this.cancel();
             this.message = "先选择可注灵的攻击招式";
@@ -121,6 +128,7 @@ export class SkillBattlePresenter {
             case "healed": state.player.hp = Math.min(state.player.maxHp, state.player.hp + event.amount); break;
             case "burn_changed": state.enemyBurn = event.after; break;
             case "burn_damage": state.enemy.hp = Math.max(0, state.enemy.hp - event.hpLoss); break;
+            case "keen_changed": state.keen = event.active; break;
         }
     }
 

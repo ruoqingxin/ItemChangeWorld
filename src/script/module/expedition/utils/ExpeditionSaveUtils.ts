@@ -1,6 +1,7 @@
 import type { ISkillBattleSetup, ISkillBattleState, ISkillItemInstance } from "../../skillBattle/types/SkillBattleTypes";
 import type { IExpeditionConfig, IExpeditionSave, IExpeditionReport } from "../types/ExpeditionTypes";
 import { ExpeditionStatsUtils } from "./ExpeditionStatsUtils";
+import type { IExpeditionBuildState } from "../types/ExpeditionBuildTypes";
 
 export class ExpeditionSaveUtils {
     static upgradeLegacy(save: IExpeditionSave): void {
@@ -66,6 +67,8 @@ export class ExpeditionSaveUtils {
         check(!!r && integer(r.encounterIndex, 0, config.encounters.length - 1) &&
             r.runId === `${p.profileId}_run_${p.nextRunIndex - 1}` &&
             integer(r.seed, 0, 0xffffffff) && integer(r.rngState, 0, 0xffffffff));
+        if (config.build) this.validateBuild(r.build, config.build);
+        else check(r.build === undefined);
         check(["battle", "reward", "decision", "extracted", "failed"].includes(r.phase) &&
             typeof r.settled === "boolean" && r.settled === ["extracted", "failed"].includes(r.phase) &&
             r.settled === p.settledRunIds.includes(r.runId));
@@ -114,6 +117,40 @@ export class ExpeditionSaveUtils {
             const expected = config.rewards.slice(0, won).reduce<number[]>((all, values) => all.concat(values), []);
             check(JSON.stringify(r.loot.map(item => item.itemId)) === JSON.stringify(expected));
         }
+    }
+
+    private static validateBuild(build: IExpeditionBuildState | undefined, config: NonNullable<IExpeditionConfig["build"]>): void {
+        const check = (ok: boolean) => { if (!ok) throw new Error("构筑存档结构或状态无效"); };
+        const schools = build?.schools;
+        check(!!build && Array.isArray(schools) && schools.length === 2 &&
+            schools[0] !== schools[1] && schools.every(value => config.schools.includes(value)));
+        check(Array.isArray(build.startCandidates) && new Set(build.startCandidates).size === build.startCandidates.length &&
+            build.startCandidates.length <= (config.startCandidateCount ?? 3) &&
+            build.startCandidates.every(id => config.skills.some(skill => skill.id === id && schools.includes(skill.school))));
+        check(Array.isArray(build.activeSkills) && build.activeSkills.length <= (config.activeSkillSlots ?? 3) &&
+            new Set(build.activeSkills.map(skill => skill.skillId)).size === build.activeSkills.length &&
+            build.activeSkills.every(skill => config.skills.some(row => row.id === skill.skillId &&
+                schools.includes(row.school)) && Number.isSafeInteger(skill.level) && skill.level >= 0 &&
+                skill.level <= (config.maxSkillLevel ?? 5)));
+        check(Array.isArray(build.pendingActiveCandidateIds) &&
+            new Set(build.pendingActiveCandidateIds).size === build.pendingActiveCandidateIds.length &&
+            build.pendingActiveCandidateIds.length <= 3 &&
+            build.pendingActiveCandidateIds.every(id => config.skills.some(skill => skill.id === id &&
+                schools.includes(skill.school))) &&
+            build.pendingActiveCandidateIds.every(id =>
+                !build.activeSkills.some(skill => skill.skillId === id)));
+        check(Array.isArray(build.passiveIds) && new Set(build.passiveIds).size === build.passiveIds.length &&
+            build.passiveIds.every(id => config.passives.some(passive => passive.id === id)));
+        check(Number.isSafeInteger(build.skillPoints) && build.skillPoints >= 0 &&
+            Number.isSafeInteger(build.daoyun) && build.daoyun >= 0 &&
+            Number.isSafeInteger(build.nextDaoyunThresholdIndex) && build.nextDaoyunThresholdIndex >= 0 &&
+            Number.isSafeInteger(build.pendingPassiveChoices) && build.pendingPassiveChoices >= 0 &&
+            Array.isArray(build.pendingPassiveCandidateIds) &&
+            new Set(build.pendingPassiveCandidateIds).size === build.pendingPassiveCandidateIds.length &&
+            build.pendingPassiveCandidateIds.length <= 3 &&
+            build.pendingPassiveCandidateIds.every(id => config.passives.some(passive => passive.id === id &&
+                (schools.includes(passive.school) || passive.school === "universal"))) &&
+            (build.pendingPassiveChoices > 0 || build.pendingPassiveCandidateIds.length === 0));
     }
 
     private static validateReport(report: IExpeditionReport, config: IExpeditionConfig): ISkillBattleState {

@@ -6,7 +6,7 @@ export class SkillBattleDebugUtils {
         const intent = SkillBattleFormulaUtils.currentIntent(setup, state);
         return [
             `[SkillBattle] 遭遇 ${state.encounterId}，回合 ${state.round}，状态 ${state.phase}，版本 ${state.revision}`,
-            `玩家 HP ${state.player.hp}/${state.player.maxHp}，护盾 ${state.player.block}，剑势 ${state.swordQi}/${state.swordQiMax}，耐久 ${state.weaponDurability}`,
+            `玩家 HP ${state.player.hp}/${state.player.maxHp}，护盾 ${state.player.block}，剑势 ${state.swordQi}/${state.swordQiMax}${state.keen ? "，锋意" : ""}，耐久 ${state.weaponDurability}`,
             `${setup.enemy.name} HP ${state.enemy.hp}/${state.enemy.maxHp}，护盾 ${state.enemy.block}，灼烧 ${state.enemyBurn}`,
             `法囊 ${state.pouchSlots.map(item => item ? `${item.itemId}(${item.itemUid})` : "空").join(" / ")}`,
             state.phase === "player_input"
@@ -33,6 +33,8 @@ export class SkillBattleDebugUtils {
             case "healed": return `恢复 ${event.amount} 生命`;
             case "burn_changed": return `灼烧 ${event.before} → ${event.after}`;
             case "burn_damage": return `灼烧伤害 ${event.amount}，实际失血 ${event.hpLoss}`;
+            case "keen_changed": return event.active ? `锋意生成，兑现伤害 ${event.damage}` : "锋意已兑现";
+            case "passive_triggered": return `被动【${event.name}】触发（${event.value}）`;
         }
     }
 }

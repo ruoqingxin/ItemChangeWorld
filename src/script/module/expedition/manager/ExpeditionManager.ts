@@ -5,6 +5,7 @@ import { ExpeditionData, ExpeditionLocalStorage } from "../data/ExpeditionData";
 import type { IExpeditionConfig, IExpeditionSave, IExpeditionState, IExpeditionStorage } from "../types/ExpeditionTypes";
 import { ExpeditionSaveUtils } from "../utils/ExpeditionSaveUtils";
 import { ExpeditionStatsUtils } from "../utils/ExpeditionStatsUtils";
+import { ExpeditionBuildUtils } from "../utils/ExpeditionBuildUtils";
 
 /** Owns the run and profile in one transactional local snapshot. */
 export class ExpeditionManager {
@@ -39,9 +40,18 @@ export class ExpeditionManager {
     get error(): string { return this.data.error; }
     get snapshot(): IExpeditionSave | null { return this.data.snapshot ? ExpeditionData.clone(this.data.snapshot) : null; }
     get run(): IExpeditionState | null { return this.snapshot?.run || null; }
-    get setup() { return ExpeditionData.clone(this.config.encounters[this.data.snapshot?.run?.encounterIndex || 0]); }
+    get setup() {
+        const setup = ExpeditionData.clone(this.config.encounters[this.data.snapshot?.run?.encounterIndex || 0]);
+        const build = this.data.snapshot?.run?.build;
+        if (!build || !build.activeSkills.length) return setup;
+        const activeIds = new Set(build.activeSkills.map(skill => skill.skillId));
+        const selected = setup.skills.filter(skill => activeIds.has(skill.id));
+        if (selected.length) setup.skills = selected;
+        return setup;
+    }
     get configuration(): IExpeditionConfig { return ExpeditionData.clone(this.config); }
     get active(): boolean { const run = this.data.snapshot?.run; return !!run && !run.settled; }
+    get build() { return this.run?.build ? ExpeditionData.clone(this.run.build) : null; }
 
     startNew(seed = (Math.random() * 0x100000000) >>> 0): ISkillBattleState {
         const save = this.requireSave();
@@ -50,20 +60,120 @@ export class ExpeditionManager {
         const profile = save.profile, setup = this.config.encounters[0];
         if (save.run) save.history = save.history.concat(save.run.report).slice(-20);
         const runId = `${profile.profileId}_run_${profile.nextRunIndex++}`;
+        let rngState = seed;
+        const build = this.config.build ? ExpeditionBuildUtils.create(this.config.build, () => {
+            rngState = (Math.imul(rngState, 1664525) + 1013904223) >>> 0;
+            return rngState / 0x100000000;
+        }) : undefined;
         const carry: ISkillBattleCarry = {
             playerHp: setup.playerMaxHp, playerMaxHp: setup.playerMaxHp, weaponId: profile.weaponId,
             weaponDurability: profile.weaponDurability, pouchSlots: profile.pouchSlots, upgradeIds: [],
         };
         const state = Rules.startBattle(setup, `${runId}_battle_1`, carry);
-        save.run = { runId, seed, rngState: seed, encounterIndex: 0, phase: "battle",
+        save.run = { runId, seed, rngState, encounterIndex: 0, phase: "battle",
             loot: [], upgradeIds: [], pendingUpgradeChoices: [], settled: false, battle: state,
             report: ExpeditionStatsUtils.create({ runId, seed, battle: state }),
             allowedUpgradeIds: this.config.upgrades.filter(row => !row.requiredCollectionId ||
-                profile.collectionIds.includes(row.requiredCollectionId)).map(row => row.id) };
+                profile.collectionIds.includes(row.requiredCollectionId)).map(row => row.id), build };
         profile.pouchSlots = [null, null, null, null, null];
         this.commit(save);
         this.battle.restore(setup, state);
         return this.battle.state!;
+    }
+
+    chooseStartingSkill(skillId: number): void {
+        const save = this.requireSave(), run = save.run;
+        if (!run || !run.build || run.phase !== "battle" || run.battle.revision !== 0)
+            throw new Error("当前不是起始借法阶段");
+        run.build = ExpeditionBuildUtils.chooseStartingSkill(run.build, skillId, this.config.build!);
+        this.commit(save);
+        this.battle.restore(this.setup, run.battle);
+    }
+
+    borrowActive(skillId: number): void {
+        const save = this.requireSave(), run = save.run;
+        if (!run?.build || run.settled) throw new Error("当前没有可用构筑");
+        run.build = ExpeditionBuildUtils.borrowActive(run.build, skillId, this.config.build!);
+        this.commit(save);
+        this.battle.restore(this.setup, run.battle);
+    }
+
+    activeCandidates(): number[] {
+        const save = this.requireSave(), run = save.run;
+        if (!run?.build || run.settled) throw new Error("当前没有可用构筑");
+        if (run.build.pendingActiveCandidateIds.length) return run.build.pendingActiveCandidateIds.slice();
+        const candidates = ExpeditionBuildUtils.activeCandidates(run.build, this.config.build!, () => {
+            run.rngState = (Math.imul(run.rngState, 1664525) + 1013904223) >>> 0;
+            return run.rngState / 0x100000000;
+        });
+        run.build = { ...run.build, pendingActiveCandidateIds: candidates };
+        this.commit(save);
+        return candidates.slice();
+    }
+
+    claimActiveCandidate(skillId: number): void {
+        const save = this.requireSave(), run = save.run;
+        if (!run?.build || run.settled || !run.build.pendingActiveCandidateIds.includes(skillId))
+            throw new Error("该主动不在当前借法候选中");
+        run.build = {
+            ...ExpeditionBuildUtils.borrowActive(run.build, skillId, this.config.build!),
+            pendingActiveCandidateIds: [],
+        };
+        this.commit(save);
+        this.battle.restore(this.setup, run.battle);
+    }
+
+    replaceActive(oldSkillId: number, newSkillId: number): void {
+        const save = this.requireSave(), run = save.run;
+        if (!run?.build || run.settled) throw new Error("当前没有可用构筑");
+        if (!run.build.pendingActiveCandidateIds.includes(newSkillId))
+            throw new Error("该主动不在当前借法候选中");
+        run.build = ExpeditionBuildUtils.replaceActive(run.build, oldSkillId, newSkillId, this.config.build!);
+        run.build.pendingActiveCandidateIds = [];
+        this.commit(save);
+        this.battle.restore(this.setup, run.battle);
+    }
+
+    skipActiveChoice(): void {
+        const save = this.requireSave(), run = save.run;
+        if (!run?.build || run.settled) throw new Error("当前没有可用构筑");
+        run.build = ExpeditionBuildUtils.skipActiveChoice(run.build);
+        this.commit(save);
+    }
+
+    strengthenActive(skillId: number): void {
+        const save = this.requireSave(), run = save.run;
+        if (!run?.build || run.settled) throw new Error("当前没有可用构筑");
+        run.build = ExpeditionBuildUtils.strengthen(run.build, skillId, this.config.build!);
+        this.commit(save);
+        this.battle.restore(this.setup, run.battle);
+    }
+
+    awardDaoyun(amount: number): void {
+        const save = this.requireSave(), run = save.run;
+        if (!run?.build || run.settled) throw new Error("当前没有可用构筑");
+        run.build = ExpeditionBuildUtils.awardDaoyun(run.build, amount, this.config.build!);
+        this.commit(save);
+    }
+
+    passiveCandidates(): number[] {
+        const save = this.requireSave(), run = save.run;
+        if (!run?.build || run.settled) throw new Error("当前没有可用构筑");
+        if (run.build.pendingPassiveCandidateIds.length) return run.build.pendingPassiveCandidateIds.slice();
+        const next = ExpeditionBuildUtils.passiveCandidates(run.build, this.config.build!, () => {
+            run.rngState = (Math.imul(run.rngState, 1664525) + 1013904223) >>> 0;
+            return run.rngState / 0x100000000;
+        });
+        run.build = { ...run.build, pendingPassiveCandidateIds: next };
+        this.commit(save);
+        return next.slice();
+    }
+
+    claimPassive(passiveId: number): void {
+        const save = this.requireSave(), run = save.run;
+        if (!run?.build || run.settled) throw new Error("当前没有可用构筑");
+        run.build = ExpeditionBuildUtils.claimPassive(run.build, passiveId, this.config.build!);
+        this.commit(save);
     }
 
     chooseUpgrade(upgradeId: number): void {
@@ -151,6 +261,7 @@ export class ExpeditionManager {
         const save = this.requireSave(), run = save.run;
         if (!run || run.settled || run.phase !== "battle" || run.battle.battleId !== state.battleId ||
             run.battle.revision + 1 !== state.revision) throw new Error("战斗与秘境存档不同步，请重新载入");
+        if (run.build && !run.build.activeSkills.length) throw new Error("请先完成起始借法选择");
         run.battle = Rules.cloneState(state);
         run.report.battles[run.report.battles.length - 1].actions.push({ ...action });
         if (state.phase === "defeat") this.settle(save, false);
@@ -195,6 +306,21 @@ export class ExpeditionManager {
         run.loot = [];
         run.upgradeIds = [];
         run.pendingUpgradeChoices = [];
+        if (run.build) {
+            run.build = {
+                ...run.build,
+                schools: run.build.schools,
+                startCandidates: [],
+                activeSkills: [],
+                pendingActiveCandidateIds: [],
+                passiveIds: [],
+                skillPoints: 0,
+                daoyun: 0,
+                nextDaoyunThresholdIndex: 0,
+                pendingPassiveChoices: 0,
+                pendingPassiveCandidateIds: [],
+            };
+        }
         run.phase = success ? "extracted" : "failed";
         run.settled = true;
         profile.settledRunIds.push(run.runId);

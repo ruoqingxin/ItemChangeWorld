@@ -20,6 +20,21 @@ async function main() {
             page.on("response", response => { if (response.status() >= 400) failed.push(response.url()); });
             const ready = () => page.waitForFunction(() => !!window.__skillBattlePreview);
             await page.goto(url); await ready();
+            const prefabBinding = await page.evaluate(() => {
+                const { view, panel } = window.__skillBattlePreview;
+                const required = ["result", "newRun", "reset", "warehouse0", "report", "resultTitle", "reportBody"];
+                const excluded = ["enemy", "player", "numbers", "skill1", "pouch0", "enemyHpBar"];
+                return {
+                    rootMatchesView: panel.root === view.view,
+                    missing: required.filter(name => !view.getElement(name, false)),
+                    duplicatedPageNodes: excluded.filter(name => view.getElement(name, false)),
+                    hasDynamicPanelChild: view.view.getChildIndex(panel) >= 0,
+                };
+            });
+            assert.equal(prefabBinding.rootMatchesView, true, "Controller must bind the UIManager prefab root");
+            assert.deepEqual(prefabBinding.missing, [], "All controls must exist in the authored prefab");
+            assert.deepEqual(prefabBinding.duplicatedPageNodes, [], "Start View must omit battle-only nodes");
+            assert.equal(prefabBinding.hasDynamicPanelChild, false, "No runtime panel may be attached to the prefab");
             const read = () => page.evaluate(() => {
                 const { panel, manager, expedition } = window.__skillBattlePreview;
                 return { state: manager.state, save: expedition.snapshot, busy: panel.presenter.busy,
@@ -180,7 +195,7 @@ async function main() {
             assert.equal(r.save.profile.weaponDurability, 40);
             assert.equal(r.save.profile.pouchSlots.filter(Boolean).length, 1);
             assert.deepEqual(r.save.run.upgradeIds, []); checks += 5;
-            await click("hub"); await screenshot("warehouse");
+            await screenshot("warehouse");
             await click("warehouse0", 2);
             assert.equal((await read()).save.profile.currency, 15);
             assert.equal((await read()).save.profile.warehouse.length, 0); checks += 2;

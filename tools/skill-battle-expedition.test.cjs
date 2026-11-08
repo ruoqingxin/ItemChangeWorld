@@ -61,6 +61,56 @@ module.exports = ({ assert, test, setups, tables, Config, Rules, Manager, Presen
         assert.equal(c.store.value, raw);
     };
 
+    test("F: phase two build state persists schools, start choices, strengthening and daoyun", () => {
+        const buildConfig = {
+            schools: ["sword", "earth", "universal"],
+            skills: [
+                { id: 101, name: "剑一", school: "sword" },
+                { id: 102, name: "剑二", school: "sword" },
+                { id: 103, name: "剑三", school: "sword" },
+                { id: 201, name: "土一", school: "earth" },
+                { id: 202, name: "土二", school: "earth" },
+                { id: 203, name: "土三", school: "earth" },
+            ],
+            passives: [
+                { id: 301, name: "厚垒", school: "earth" },
+                { id: 302, name: "砾锋", school: "earth" },
+                { id: 303, name: "剑心", school: "sword" },
+                { id: 304, name: "通用韧性", school: "universal" },
+            ],
+        };
+        const cfg = { ...config, build: buildConfig };
+        const c = create(storage(), cfg);
+        c.expedition.startNew(42);
+        const first = c.expedition.build;
+        assert.ok(first && first.schools.length === 2);
+        assert.equal(first.startCandidates.length, 3);
+        const selected = first.startCandidates[0];
+        c.expedition.chooseStartingSkill(selected);
+        assert.ok(c.expedition.setup.skills.length > 0);
+        c.expedition.borrowActive(first.startCandidates[1]);
+        const skipped = c.expedition.activeCandidates();
+        assert.ok(skipped.length);
+        c.expedition.skipActiveChoice();
+        assert.throws(() => c.expedition.skipActiveChoice());
+        c.expedition.strengthenActive(selected);
+        const replacement = c.expedition.activeCandidates()[0];
+        c.expedition.replaceActive(selected, replacement);
+        assert.throws(() => c.expedition.replaceActive(replacement, first.startCandidates[2]));
+        c.expedition.awardDaoyun(70);
+        assert.equal(c.expedition.build.activeSkills.length, 2);
+        assert.equal(c.expedition.build.activeSkills.find(skill => skill.skillId === replacement).level, 1);
+        assert.equal(c.expedition.build.daoyun, 0);
+        assert.equal(c.expedition.build.pendingPassiveChoices, 2);
+        const passiveCandidates = c.expedition.passiveCandidates();
+        assert.ok(passiveCandidates.length >= 1 && passiveCandidates.length <= 3);
+        c.expedition.claimPassive(passiveCandidates[0]);
+        assert.equal(c.expedition.build.passiveIds.length, 1);
+        const saved = c.expedition.build;
+        const restored = reload(c).expedition.build;
+        assert.deepEqual(restored, saved);
+    });
+
     test("D: exported upgrades, reward groups and loot values exactly match the route", () => {
         assert.deepEqual(config.upgrades.map(r => [r.id, r.value, r.requiredCollectionId]),
             [[1, 3, 0], [2, 4, 0], [3, 1, 1], [4, 6, 1], [5, 11, 0], [6, 1, 0]]);
@@ -208,9 +258,18 @@ module.exports = ({ assert, test, setups, tables, Config, Rules, Manager, Presen
         const loaded = reload(c);
         assert.deepEqual(loaded.battle.state, c.battle.state);
         assert.equal(loaded.battle.state.pouchSlots[0], null);
-        assert.equal(loaded.battle.state.weaponDurability, 45);
+        assert.equal(loaded.battle.state.weaponDurability, 44);
         p.finishPlayback();
         assert.deepEqual(p.display, loaded.battle.state);
+    });
+    test("D: reopening the start screen restores setup before displaying an active battle", () => {
+        const c = create(); c.expedition.startNew(42);
+        const resumed = reload(c);
+        const p = new Presenter(resumed.battle, resumed.expedition);
+        p.open(resumed.expedition.setup);
+        p.finishPlayback();
+        assert.equal(p.setup.enemy.id, setups[0].enemy.id);
+        assert.deepEqual(p.display, resumed.battle.state);
     });
     test("D: victory saves loot and actual candidates before any result animation finishes", () => {
         const c = create(); c.expedition.startNew(42);
@@ -281,7 +340,7 @@ module.exports = ({ assert, test, setups, tables, Config, Rules, Manager, Presen
         const save = c.expedition.snapshot;
         assert.deepEqual(save.profile.warehouse, loot);
         assert.deepEqual(save.profile.pouchSlots, pouch);
-        assert.equal(save.profile.weaponDurability, 45);
+        assert.equal(save.profile.weaponDurability, 42);
         assert.equal(save.profile.currency, 0);
         assert.equal(save.profile.settledRunIds.length, 1);
         assert.deepEqual(save.run.upgradeIds, []);
@@ -341,14 +400,14 @@ module.exports = ({ assert, test, setups, tables, Config, Rules, Manager, Presen
         assert.equal(save.run.loot.length, 0);
         assert.equal(save.profile.warehouse.length, 0);
         assert.equal(save.profile.weaponId, 1);
-        assert.equal(save.profile.weaponDurability, 45);
+        assert.equal(save.profile.weaponDurability, 11);
         assert.deepEqual(save.profile.pouchSlots, [null, null, null, null, null]);
         assert.equal(save.profile.settledRunIds.length, 1);
         assert.equal(c.expedition.extract(), false);
         assert.deepEqual(reload(c).expedition.snapshot, save);
         const next = c.expedition.startNew(43);
         assert.equal(next.player.hp, 50);
-        assert.equal(next.weaponDurability, 45);
+        assert.equal(next.weaponDurability, 11);
         assert.equal(next.pouchSlots.filter(Boolean).length, 0);
         assert.deepEqual(next.upgradeIds, []);
     });
@@ -564,7 +623,7 @@ module.exports = ({ assert, test, setups, tables, Config, Rules, Manager, Presen
         assert.equal(c.battle.confirmAction(skill(1), result.preview.token).ok, false);
         const s = stats(c)[0];
         assert.equal(s.rounds, 1); assert.deepEqual(s.skillUses, [1, 0, 0, 0]);
-        assert.equal(s.stonesUsed, 1); assert.equal(s.durabilitySpent, 5);
+        assert.equal(s.stonesUsed, 1); assert.equal(s.durabilitySpent, 6);
         assert.equal(s.burnDamage, result.preview.burnDamage);
         assert.equal(s.damage, 6 + result.preview.enchantHpLoss + result.preview.burnDamage);
         assert.equal(s.qiGenerated, 1); assert.equal(s.qiSpent, 0);

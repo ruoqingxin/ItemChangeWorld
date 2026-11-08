@@ -21,16 +21,43 @@ async function main() {
             window.__acceptancePanel = window.Laya?.stage && find(Laya.stage);
             return !!window.__acceptancePanel?.resultTitle.text;
         });
-        const read = () => page.evaluate(() => ({
-            save: window.__acceptancePanel.expedition.snapshot,
-            state: window.__acceptancePanel.presenter.display,
-            busy: window.__acceptancePanel.presenter.busy,
-            title: window.__acceptancePanel.resultTitle.text,
-        }));
+        const prefabBinding = await page.evaluate(() => {
+            const root = window.__acceptancePanel;
+            const controller = root.skillBattleController;
+            const required = ["result", "newRun", "reset", "warehouse0", "reportBody", "resultTitle"];
+            const excluded = ["enemy", "player", "numbers", "skill1", "pouch0"];
+            return {
+                rootMatchesController: controller?.root === root,
+                missing: required.filter(name => !root.findChild(name)),
+                duplicatedPageNodes: excluded.filter(name => root.findChild(name)),
+            };
+        });
+        assert.equal(prefabBinding.rootMatchesController, true, "Acceptance entry must use the authored View root");
+        assert.deepEqual(prefabBinding.missing, [], "Acceptance entry must resolve controls from the prefab");
+        assert.deepEqual(prefabBinding.duplicatedPageNodes, [], "Start View must not include battle-only nodes");
+        const read = () => page.evaluate(() => {
+            const find = node => {
+                if (node.skillBattleController && node.visible) return node.skillBattleController;
+                for (let i = 0; i < node.numChildren; i++) {
+                    const result = find(node.getChildAt(i));
+                    if (result) return result;
+                }
+            };
+            const panel = find(Laya.stage);
+            return { save: panel.expedition.snapshot, state: panel.presenter.display,
+                busy: panel.presenter.busy, title: panel.resultTitle.text };
+        });
         const click = async key => {
             await page.waitForTimeout(270);
             const pos = await page.evaluate(key => {
-                const b = window.__acceptancePanel.buttons[key];
+                const find = node => {
+                    if (node.skillBattleController && node.visible) return node.skillBattleController;
+                    for (let i = 0; i < node.numChildren; i++) {
+                        const result = find(node.getChildAt(i));
+                        if (result) return result;
+                    }
+                };
+                const b = find(Laya.stage).buttons[key];
                 if (!b?.visible || !b.mouseEnabled) throw new Error(`Unavailable: ${key}`);
                 const p = b.localToGlobal(new Laya.Point(b.width / 2, b.height / 2));
                 const rect = document.querySelector("canvas").getBoundingClientRect();
@@ -41,7 +68,16 @@ async function main() {
         };
         const act = async id => {
             await click(`skill${id}`); await click("confirm"); await click("skip");
-            await page.waitForFunction(() => !window.__acceptancePanel.presenter.busy);
+            await page.waitForFunction(() => {
+                const find = node => {
+                    if (node.skillBattleController && node.visible) return node.skillBattleController;
+                    for (let i = 0; i < node.numChildren; i++) {
+                        const result = find(node.getChildAt(i));
+                        if (result) return result;
+                    }
+                };
+                return !find(Laya.stage).presenter.busy;
+            });
         };
         assert.equal((await read()).title, "散修据点");
         await click("newRun");

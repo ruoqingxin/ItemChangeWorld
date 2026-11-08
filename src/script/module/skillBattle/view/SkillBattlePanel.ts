@@ -5,20 +5,48 @@ import { SkillBattleFormulaUtils } from "../utils/SkillBattleFormulaUtils";
 import { ExpeditionManager } from "../../expedition/manager/ExpeditionManager";
 import type { IExpeditionConfig } from "../../expedition/types/ExpeditionTypes";
 import { ExpeditionStatsUtils } from "../../expedition/utils/ExpeditionStatsUtils";
+import type { UIBaseView } from "../../../games/ui/UIBaseView";
 
-const C = { bg: "#171d1b", surface: "#232b27", line: "#526054", text: "#e3e8de",
-    muted: "#a3afa5", jade: "#9ac8ae", red: "#d58c80", gold: "#d4bc7e" };
+const C = { bg: "#111713", surface: "#17221c",
+    line: "#637060", text: "#ece9dc", muted: "#aab4a7", jade: "#8fc7ae",
+    red: "#d69884", gold: "#d8bd7c", ink: "#080d0b" };
+type SkillBattleScreen = "start" | "battle" | "settlement";
+const OVERLAY_LABELS = [
+    "overlayBrand", "currency", "resultTitle", "resultDetail", "section", "overlayMessage",
+    "choiceTitle", "reportBody", "page",
+];
+const BATTLE_LABELS = [
+    "brand", "round", "upgrades", "enemyName", "enemyBlock", "enemyHp", "intent", "interrupt",
+    "event", "playerName", "durability", "playerHp", "playerBlock", "qi", "previewTitle", "preview",
+];
+const BATTLE_BUTTONS = [
+    "battleReport", "loot", "skip", "cancel", "confirm", "previousPage", "nextPage",
+    "continue", "extract", "hub", "lootClose",
+    "report", "summary", "actions", "olderReport", "newerReport", "reportClose",
+    ...Array.from({ length: 4 }, (_, i) => `skill${i + 1}`),
+    ...Array.from({ length: 5 }, (_, i) => `pouch${i}`),
+    ...Array.from({ length: 3 }, (_, i) => `upgrade${i}`),
+];
+const START_BUTTONS = [
+    "previousPage", "nextPage", "newRun", "reset", "resetYes", "resetNo",
+    "report", "summary", "actions", "olderReport", "newerReport", "reportClose",
+    ...Array.from({ length: 6 }, (_, i) => `warehouse${i}`),
+];
+const SETTLEMENT_BUTTONS = [
+    "lootClose", "hub", "report", "summary", "actions", "olderReport", "newerReport",
+    "reportClose", "previousPage", "nextPage",
+];
 
-/** A native Laya surface shared by the game form and the browser acceptance runner. */
-export class SkillBattlePanel extends Laya.GWidget {
+/** Binds the skill-battle logic to nodes authored in the active Laya prefab. */
+export class SkillBattlePanel {
     readonly presenter: SkillBattlePresenter;
     readonly expedition: ExpeditionManager;
     private labels: { [key: string]: Laya.GTextField } = {};
     private buttons: { [key: string]: Laya.GWidget } = {};
-    private player = new Laya.Sprite();
-    private enemy = new Laya.Sprite();
-    private numbers = new Laya.GTextField();
-    private result = new Laya.GWidget();
+    private player: Laya.GWidget;
+    private enemy: Laya.GWidget;
+    private numbers: Laya.GTextField;
+    private result: Laya.GWidget;
     private resultTitle: Laya.GTextField;
     private resultDetail: Laya.GTextField;
     private queue: SkillBattleEvent[] = [];
@@ -36,73 +64,89 @@ export class SkillBattlePanel extends Laya.GWidget {
     private reportPage = 0;
     private reportIndex = 0;
 
-    constructor(config: IExpeditionConfig) {
-        super();
-        this.expedition = new ExpeditionManager(config);
+    private root: Laya.GWidget;
+
+    constructor(view: UIBaseView, config: IExpeditionConfig, expedition?: ExpeditionManager,
+        private readonly navigate?: (destination: SkillBattleScreen) => void,
+        private readonly screen: SkillBattleScreen = "battle") {
+        this.root = view.view;
+        this.expedition = expedition || new ExpeditionManager(config);
         this.presenter = new SkillBattlePresenter(SkillBattleManager.ins(), this.expedition);
         this.showHub = !this.expedition.active;
-        this.size(720, 1280);
-        this.mouseThrough = false;
-        this.drawScene();
-        this.addLabel("brand", "末法寻仙", 30, 20, 330, 46, 32);
-        this.addLabel("round", "", 430, 24, 260, 38, 23, C.muted, "right");
-        this.addLabel("upgrades", "", 30, 84, 300, 48, 21, C.gold);
-        this.button("battleReport", "战斗记录", 350, 84, 160, 48, () => this.openReport());
-        this.button("loot", "战利品", 530, 84, 160, 48, () => {
-            if (!this.presenter.busy) { this.showLoot = true; this.refresh(); }
-        });
-        this.addLabel("enemyName", "", 30, 156, 440, 42, 30);
-        this.addLabel("enemyBlock", "", 470, 164, 220, 32, 21, C.gold, "right");
-        this.addLabel("enemyHp", "", 30, 218, 660, 32, 21, C.text, "center");
-        this.addLabel("intent", "", 30, 266, 660, 38, 26, C.red, "center");
-        this.addLabel("interrupt", "", 30, 308, 660, 30, 20, C.muted, "center");
-        this.enemy.pos(360, 455);
-        this.player.pos(360, 608);
-        this.addChild(this.enemy);
-        this.addChild(this.player);
-        this.addLabel("event", "", 30, 556, 236, 30, 20, C.gold);
-        this.addLabel("playerName", "散修", 30, 704, 220, 42, 28);
-        this.addLabel("durability", "", 250, 710, 440, 28, 21, C.muted, "right");
-        this.addLabel("playerHp", "", 30, 765, 350, 30, 22);
-        this.addLabel("playerBlock", "", 430, 765, 260, 30, 22, C.gold, "right");
-        this.addLabel("qi", "", 30, 806, 660, 30, 23, C.jade);
-        this.button("skip", "跳过动画", 506, 804, 184, 36, () => this.skip());
-        ["剑击", "守势", "贯虹", "破势"].forEach((name, i) => {
-            const button = this.button(`skill${i + 1}`, "", 30 + i * 169, 852, 153, 76,
-                () => { this.presenter.select(i + 1); this.refresh(); });
-            const label = button.getChildAt(0) as Laya.GTextField;
-            label.pos(40, 0); label.size(110, 76); label.fontSize = 22;
-            const icon = new Laya.GImage();
-            icon.pos(10, 23); icon.size(30, 30); icon.autoSize = false;
-            icon.src = `ui/texture/skillBattle/skill-${i + 1}.png`;
-            icon.mouseEnabled = false;
-            button.addChild(icon);
-        });
-        for (let i = 0; i < 5; i++) {
-            const button = this.button(`pouch${i}`, "", 30 + i * 134, 946, 124, 62,
-                () => { this.presenter.selectPouch(i); this.refresh(); });
-            const label = button.getChildAt(0) as Laya.GTextField;
-            label.pos(34, 0); label.size(88, 62); label.fontSize = 20;
-            const icon = new Laya.GImage();
-            icon.pos(8, 19); icon.size(26, 26); icon.autoSize = false; icon.mouseEnabled = false;
-            button.addChild(icon);
-            this.pouchIcons.push(icon);
+        const element = <T extends Laya.Sprite>(name: string) => view.getElement<T>(name, false);
+        const labelNames = (this.screen === "battle" ? BATTLE_LABELS.concat(OVERLAY_LABELS) : OVERLAY_LABELS)
+            .concat(this.screen !== "start" ? Array.from({ length: 6 }, (_, i) => `lootSlot${i}`) : []);
+        const labelColors: { [key: string]: string } = {
+            round: C.muted, upgrades: C.gold, enemyBlock: C.gold, enemyHp: C.text, intent: C.red,
+            interrupt: C.muted, event: C.gold, durability: C.muted, playerBlock: C.gold, qi: C.jade,
+            previewTitle: C.jade, currency: C.gold, resultTitle: C.gold, resultDetail: C.text,
+            section: C.jade, overlayMessage: C.red, choiceTitle: C.jade, reportBody: C.text, page: C.muted,
+        };
+        for (const name of labelNames) {
+            const label = this.labels[name] = element<Laya.GTextField>(name);
+            if (!label) throw new Error(`${this.screen} 预制缺少文本节点: ${name}`);
+            label.color = labelColors[name] || C.text;
+            label.textIns.color = label.color;
+            label.textIns.bgColor = null as any;
+            label.textIns.borderColor = null as any;
         }
-        this.addLabel("previewTitle", "", 30, 1018, 660, 32, 24, C.jade);
-        const preview = this.addLabel("preview", "", 30, 1060, 660, 124, 21);
-        preview.wordWrap = true;
-        preview.leading = 5;
-        this.button("cancel", "取消", 30, 1190, 180, 60, () => {
-            this.presenter.cancel(); this.refresh();
+        this.resultTitle = this.labels.resultTitle;
+        this.resultDetail = this.labels.resultDetail;
+        this.result = element<Laya.GWidget>("result");
+        if (!this.result) throw new Error(`${this.screen} 预制缺少 result 节点`);
+        if (this.screen === "battle") {
+            this.player = element<Laya.GWidget>("player");
+            this.enemy = element<Laya.GWidget>("enemy");
+            this.numbers = element<Laya.GTextField>("numbers");
+            if (!this.player || !this.enemy || !this.numbers) throw new Error("battle 预制缺少战斗场景节点");
+            this.labels.brand.text = "末法寻仙";
+            this.labels.playerName.text = "散修";
+        }
+        this.labels.overlayBrand.text = "末法寻仙";
+        const buttonText: { [key: string]: string } = {
+            battleReport: "战斗记录", loot: "战利品", skip: "跳过动画", cancel: "取消", confirm: "确认行动",
+            continue: "继续深入", extract: "带上战利品撤离", hub: "返回据点", newRun: "开始新一局",
+            lootClose: "返回据点", reset: "重置测试档", resetYes: "确认清空并补发测试物资",
+            resetNo: "取消", report: "战斗记录", summary: "统计", actions: "行动日志",
+            olderReport: "上一局", newerReport: "下一局", reportClose: "返回",
+        };
+
+        const buttonNames = this.screen === "battle" ? BATTLE_BUTTONS
+            : this.screen === "start" ? START_BUTTONS : SETTLEMENT_BUTTONS;
+        for (const name of buttonNames) {
+            this.buttons[name] = element<Laya.GWidget>(name);
+            if (!this.buttons[name]) throw new Error(`${this.screen} 预制缺少按钮节点: ${name}`);
+        }
+        for (const name of buttonNames) {
+            const text = this.buttons[name].getChildAt(0) as Laya.GTextField;
+            if (!text) continue;
+            if (buttonText[name]) text.text = buttonText[name];
+            this.styleButton(this.buttons[name], false, true);
+        }
+        this.overlayButtons = buttonNames.filter(name => !["battleReport", "skip", "cancel", "confirm",
+            "skill1", "skill2", "skill3", "skill4", "pouch0", "pouch1", "pouch2", "pouch3", "pouch4"].includes(name));
+        this.overlayButtons.forEach(name => this.buttons[name].visible = false);
+        if (this.buttons.cancel) this.buttons.cancel.visible = false;
+        if (this.buttons.skip) this.buttons.skip.visible = false;
+        OVERLAY_LABELS.forEach(name => this.labels[name].visible = false);
+        for (let i = 0; i < 6; i++) if (this.labels[`lootSlot${i}`]) this.labels[`lootSlot${i}`].visible = false;
+        if (this.screen === "battle")
+            for (let i = 0; i < 5; i++) this.pouchIcons.push(element<Laya.GImage>(`pouchIcon${i}`));
+
+        const bind = (key: string, click: () => void) => this.buttons[key]?.on(Laya.Event.CLICK, this, click);
+        bind("battleReport", () => this.openReport());
+        bind("loot", () => { if (!this.presenter.busy) { this.showLoot = true; this.refresh(); } });
+        bind("skip", () => this.skip());
+        bind("cancel", () => { this.presenter.cancel(); this.refresh(); });
+        bind("confirm", () => this.confirm());
+        for (let i = 0; i < 4; i++) bind(`skill${i + 1}`, () => { this.presenter.select(i + 1); this.refresh(); });
+        for (let i = 0; i < 5; i++) bind(`pouch${i}`, () => { this.presenter.selectPouch(i); this.refresh(); });
+        this.bindResultActions(bind);
+        Object.assign(this.root as any, {
+            skillBattleController: this, presenter: this.presenter, expedition: this.expedition,
+            buttons: this.buttons, resultTitle: this.resultTitle,
         });
-        this.button("confirm", "确认行动", 226, 1190, 464, 60, () => this.confirm());
-        this.numbers.size(214, 68);
-        this.numbers.fontSize = 32;
-        this.numbers.bold = true;
-        this.numbers.align = "center";
-        this.numbers.mouseEnabled = false;
-        this.addChild(this.numbers);
-        this.createResult();
+        if (this.buttons.confirm) this.styleButton(this.buttons.confirm, true, true);
     }
 
     openEncounter(): void {
@@ -111,6 +155,44 @@ export class SkillBattlePanel extends Laya.GWidget {
         this.lastEvent = "";
         this.drawActors(this.expedition.setup.encounterId);
         this.refresh();
+    }
+
+    openHubScreen(): void {
+        this.stopEffects();
+        this.presenter.open(this.expedition.setup);
+        this.presenter.finishPlayback();
+        this.showHub = true;
+        this.showLoot = false;
+        this.showReport = false;
+        this.refresh();
+    }
+
+    startRun(): void {
+        this.runCommand(() => {
+            if (!this.expedition.active) this.expedition.startNew();
+            this.navigate?.("battle");
+        });
+    }
+
+    returnToStart(): void {
+        this.navigate?.("start");
+    }
+
+    openSettlementScreen(): void {
+        this.stopEffects();
+        this.presenter.finishPlayback();
+        this.showHub = false;
+        this.showLoot = true;
+        this.showReport = false;
+        this.refresh();
+    }
+
+    resizeTo(view: Laya.GWidget): void {
+        // UIBaseView keeps the root tied to its parent size. The stage handles
+        // 1280x720 letterboxing, so the prefab root itself must stay at scale 1.
+        this.root.pos(0, 0);
+        this.root.scaleX = 1;
+        this.root.scaleY = 1;
     }
 
     private continueNext(): void {
@@ -151,6 +233,8 @@ export class SkillBattlePanel extends Laya.GWidget {
             this.lastEvent = "";
             this.resetActors();
             this.refresh();
+            const phase = this.expedition.run?.phase;
+            if (phase === "extracted" || phase === "failed") this.navigate?.("settlement");
             return;
         }
         this.presenter.applyEvent(event);
@@ -196,6 +280,14 @@ export class SkillBattlePanel extends Laya.GWidget {
                 this.showNumber(`灼烧 -${event.hpLoss}`, this.enemy, C.red);
                 delay = 340;
                 break;
+            case "keen_changed":
+                this.lastEvent = event.active ? `锋意生成 · 兑现伤害 ${event.damage}` : "锋意已兑现";
+                delay = 260;
+                break;
+            case "passive_triggered":
+                this.lastEvent = `被动触发 · ${event.name}`;
+                delay = 260;
+                break;
             case "battle_ended":
                 Laya.Tween.to(event.result === "victory" ? this.enemy : this.player, { alpha: 0 }, 280);
                 delay = 340;
@@ -206,8 +298,12 @@ export class SkillBattlePanel extends Laya.GWidget {
     }
 
     private refresh(): void {
+        if (this.screen !== "battle") {
+            this.refreshResult();
+            return;
+        }
         const p = this.presenter, s = p.display;
-        if (!s) { this.refreshResult(); return; }
+        if (!s || !p.setup?.enemy) { this.refreshResult(); return; }
         const intent = p.setup.enemy.intents[s.enemyIntentIndex];
         const terminal = s.phase === "victory" || s.phase === "defeat";
         this.labels.round.text = `${p.setup.order} / 3 战 · ${s.round} 回合`;
@@ -225,14 +321,15 @@ export class SkillBattlePanel extends Laya.GWidget {
         this.labels.playerHp.text = `生命 ${s.player.hp} / ${s.player.maxHp}`;
         this.labels.playerBlock.text = `护盾 ${s.player.block}`;
         this.labels.durability.text = `破旧铁剑  ·  耐久 ${s.weaponDurability} / ${p.setup.weaponDurability}`;
-        this.labels.qi.text = `剑势  ${"◆ ".repeat(s.swordQi)}${"◇ ".repeat(s.swordQiMax - s.swordQi)} ${s.swordQi}/${s.swordQiMax}`;
+        this.labels.qi.text = `剑势  ${"◆ ".repeat(s.swordQi)}${"◇ ".repeat(s.swordQiMax - s.swordQi)} ${s.swordQi}/${s.swordQiMax}`
+            + (s.keen ? "  ·  锋意" : "");
         this.labels.event.text = this.lastEvent;
-        this.bar(30, 204, 660, s.enemy.hp / s.enemy.maxHp, C.red);
-        this.bar(30, 750, 660, s.player.hp / s.player.maxHp, C.jade);
+        this.bar(720, 226, 430, s.enemy.hp / s.enemy.maxHp, C.red);
+        this.bar(30, 516, 390, s.player.hp / s.player.maxHp, C.jade);
         p.setup.skills.forEach(skill => {
             const b = this.buttons[`skill${skill.id}`];
             const cost = SkillBattleFormulaUtils.qiCost(p.setup, s, skill.id);
-            (b.getChildAt(0) as Laya.GTextField).text = `${skill.name}\n${cost} 剑势`;
+            this.setButtonText(b, `${skill.name}\n${cost} 剑势`);
             const available = s.swordQi >= cost;
             this.styleButton(b, p.selectedId === skill.id, !p.busy && !terminal && available);
             // Resource-short skills remain inspectable and return the exact rule error.
@@ -249,14 +346,15 @@ export class SkillBattlePanel extends Laya.GWidget {
                     !!p.setup.skills.find(skill => skill.id === p.selectedId)?.canEnchant);
             this.styleButton(button, active, !p.busy && !terminal && available);
             button.mouseEnabled = !!instance && !p.busy && !terminal;
-            (button.getChildAt(0) as Laya.GTextField).text = item
+            this.setButtonText(button, item
                 ? `${item.useType === "heal" ? "疗伤丹" : item.useType === "fire_stone" ? "火石" : "土石"}\n${active ? (item.useType === "heal" ? "待用药" : "待附带") : item.useType === "heal" ? `恢复${item.healValue}` : "注灵"}`
-                : p.setup.items.some(row => row.initialSlot === i + 1) ? "已消耗" : "空";
+                : p.setup.items.some(row => row.initialSlot === i + 1) ? "已消耗" : "空");
             const icon = this.pouchIcons[i];
             icon.visible = !!item;
             if (item) icon.src = `ui/texture/skillBattle/${item.useType}.png`;
         });
         this.buttons.skip.visible = p.busy;
+        this.buttons.cancel.visible = !p.busy && !!p.selection;
         this.styleButton(this.buttons.confirm, true, !p.busy && !!p.selection?.ok);
         this.styleButton(this.buttons.cancel, false, !p.busy && !!p.selection);
         const selected = p.setup.skills.find(skill => skill.id === p.selectedId);
@@ -270,10 +368,9 @@ export class SkillBattlePanel extends Laya.GWidget {
             : p.selectedAction?.type === "use_item" ? "疗伤丹" : terminal ? "此战已决" : "待出招";
         this.labels.preview.text = p.busy ? this.lastEvent : p.message || (preview
             ? `${p.selectedAction?.type === "use_item" ? `恢复生命 ${preview.healAmount} · 占用本回合行动`
-                : `基础 ${preview.baseDamage} · 注灵 ${preview.enchantDamage} · 吸收 ${preview.blockAbsorbed + preview.enchantBlockAbsorbed} · 失血 ${preview.enemyHpLoss + preview.enchantHpLoss}`}\n`
-                + `施加灼烧 ${preview.burnApplied} · 随后灼烧失血 ${preview.burnDamage}\n`
-                + `${preview.interrupted ? "打断意图" : `承受伤害 ${preview.playerHpLoss}`} · 护盾 ${preview.blockGained} · 反击 ${preview.counterHpLoss} · 剑势 ${preview.qiAfterAction}\n`
-                + `剑势消耗 ${preview.qiCost} · 耐久消耗 ${preview.durabilityCost} · 物品消耗 ${preview.consumedItemUid ? 1 : 0}`
+                : `伤害 ${preview.baseDamage}/${preview.enchantDamage} · 吸收 ${preview.blockAbsorbed + preview.enchantBlockAbsorbed} · 失血 ${preview.enemyHpLoss + preview.enchantHpLoss} · 灼烧 ${preview.burnApplied}/${preview.burnDamage}`}\n`
+                + `${preview.interrupted ? "打断意图" : `受伤 ${preview.playerHpLoss}`} · 护盾 ${preview.blockGained} · 反击 ${preview.counterHpLoss} · 剑势 ${preview.qiAfterAction}/${preview.qiCost}\n`
+                + `耐久 -${preview.durabilityCost} · 物品 -${preview.consumedItemUid ? 1 : 0}`
             : "");
         this.refreshResult();
         if (!p.busy) {
@@ -282,41 +379,15 @@ export class SkillBattlePanel extends Laya.GWidget {
         }
     }
 
-    private createResult(): void {
-        this.result.size(720, 1280);
-        this.result.graphics.drawRect(0, 0, 720, 1280, C.bg);
-        this.result.mouseThrough = false;
-        this.addChild(this.result);
-        this.addLabel("overlayBrand", "末法寻仙", 30, 32, 400, 46, 32, C.text, "left", this.result);
-        this.addLabel("currency", "", 430, 40, 260, 36, 24, C.gold, "right", this.result);
-        this.resultTitle = this.addLabel("resultTitle", "", 30, 150, 660, 64, 36, C.gold, "left", this.result);
-        this.resultDetail = this.addLabel("resultDetail", "", 30, 230, 660, 110, 23, C.text, "left", this.result);
-        this.resultDetail.wordWrap = true; this.resultDetail.leading = 8;
-        this.addLabel("section", "", 30, 350, 660, 36, 24, C.jade, "left", this.result);
-        this.addLabel("overlayMessage", "", 30, 1110, 660, 66, 21, C.red, "left", this.result).wordWrap = true;
-        this.addLabel("choiceTitle", "", 30, 554, 660, 36, 24, C.jade, "left", this.result);
-        const body = this.addLabel("reportBody", "", 30, 404, 660, 480, 21, C.text, "left", this.result);
-        body.leading = 8; body.valign = "top";
-        const button = (key: string, text: string, x: number, y: number, w: number, h: number, click: () => void) => {
-            this.overlayButtons.push(key);
-            return this.button(key, text, x, y, w, h, () => {
-                const now = Date.now();
-                if (now - this.overlayCommandAt < 250) return;
-                this.overlayCommandAt = now;
-                click();
-            }, this.result);
-        };
+    private bindResultActions(bind: (key: string, click: () => void) => void): void {
         for (let i = 0; i < 3; i++) {
-            const b = button(`upgrade${i}`, "", 30, 610 + i * 100, 660, 82, () => this.runCommand(() => {
+            bind(`upgrade${i}`, () => this.runOverlayCommand(() => this.runCommand(() => {
                 const id = this.expedition.run.pendingUpgradeChoices[i];
                 this.expedition.chooseUpgrade(id);
-            }));
-            (b.getChildAt(0) as Laya.GTextField).fontSize = 22;
+            })));
         }
         for (let i = 0; i < 6; i++) {
-            this.addLabel(`lootSlot${i}`, "", 30 + (i % 3) * 224, 404 + Math.floor(i / 3) * 64,
-                212, 58, 20, C.text, "left", this.result);
-            const b = button(`warehouse${i}`, "", 30, 404 + i * 78, 660, 64, () => this.runCommand(() => {
+            bind(`warehouse${i}`, () => this.runOverlayCommand(() => this.runCommand(() => {
                 const item = this.expedition.snapshot.profile.warehouse[this.warehousePage * 6 + i];
                 if (!item) return;
                 const loot = this.expedition.configuration.loot.find(row => row.itemId === item.itemId);
@@ -324,47 +395,62 @@ export class SkillBattlePanel extends Laya.GWidget {
                     this.expedition.collectLoot(item.itemUid);
                     this.notice = "收藏成功：后续新局开放余势、破绽";
                 } else this.notice = `打开获得 ${this.expedition.openLoot(item.itemUid)} 灵石`;
-            }));
-            (b.getChildAt(0) as Laya.GTextField).fontSize = 22;
+            })));
         }
-        button("previousPage", "<", 30, 900, 70, 48, () => {
+        bind("previousPage", () => {
             if (this.showReport) this.reportPage--; else this.warehousePage--;
             this.refresh();
         });
-        button("nextPage", ">", 620, 900, 70, 48, () => {
+        bind("nextPage", () => {
             if (this.showReport) this.reportPage++; else this.warehousePage++;
             this.refresh();
         });
-        this.addLabel("page", "", 130, 900, 460, 48, 22, C.muted, "center", this.result);
-        button("continue", "继续深入", 30, 954, 660, 60, () => this.continueNext());
-        button("extract", "带上战利品撤离", 30, 1030, 660, 60, () => this.runCommand(() => this.expedition.extract()));
-        button("hub", "返回据点", 30, 1010, 660, 64, () => {
-            this.showHub = true; this.notice = ""; this.refresh();
+        bind("continue", () => {
+            this.continueNext();
+            if (this.expedition.run?.phase === "battle") this.navigate?.("battle");
         });
-        button("newRun", "开始新一局", 30, 1010, 660, 64, () => this.runCommand(() => {
-            this.expedition.startNew(); this.showHub = false; this.notice = ""; this.openEncounter();
-        }));
-        button("lootClose", "返回战斗", 30, 1010, 660, 64, () => { this.showLoot = false; this.refresh(); });
-        button("reset", "重置测试档", 30, 1190, 660, 54, () => { this.resetConfirm = true; this.refresh(); });
-        button("resetYes", "确认清空并补发测试物资", 30, 1010, 660, 64, () => this.runCommand(() => {
+        bind("extract", () => this.runOverlayCommand(() => this.runCommand(() => {
+            this.expedition.extract();
+            this.navigate?.("start");
+        })));
+        bind("hub", () => {
+            this.showHub = true; this.notice = ""; this.refresh(); this.navigate?.("start");
+        });
+        bind("newRun", () => this.runOverlayCommand(() => this.runCommand(() => {
+            if (!this.expedition.active) this.expedition.startNew();
+            this.showHub = false; this.notice = ""; this.navigate?.("battle");
+        })));
+        bind("lootClose", () => {
+            this.showLoot = false; this.refresh();
+            if (this.screen === "settlement") this.navigate?.("start");
+        });
+        bind("reset", () => { this.resetConfirm = true; this.refresh(); });
+        bind("resetYes", () => this.runOverlayCommand(() => this.runCommand(() => {
             this.expedition.resetTestProfile();
-            this.resetConfirm = false; this.showHub = true; this.notice = ""; this.openEncounter();
-        }));
-        button("resetNo", "取消", 30, 1190, 660, 54, () => { this.resetConfirm = false; this.refresh(); });
-        button("report", "战斗记录", 530, 96, 160, 48, () => this.openReport());
-        button("summary", "统计", 30, 350, 320, 42, () => {
+            this.resetConfirm = false; this.showHub = true; this.notice = ""; this.navigate?.("start");
+        })));
+        bind("resetNo", () => { this.resetConfirm = false; this.refresh(); });
+        bind("report", () => this.openReport());
+        bind("summary", () => {
             this.reportMode = "summary"; this.reportPage = 0; this.refresh();
         });
-        button("actions", "行动日志", 370, 350, 320, 42, () => {
+        bind("actions", () => {
             this.reportMode = "actions"; this.reportPage = 0; this.refresh();
         });
-        button("olderReport", "上一局", 30, 954, 320, 48, () => {
+        bind("olderReport", () => {
             this.reportIndex--; this.reportPage = 0; this.refresh();
         });
-        button("newerReport", "下一局", 370, 954, 320, 48, () => {
+        bind("newerReport", () => {
             this.reportIndex++; this.reportPage = 0; this.refresh();
         });
-        button("reportClose", "返回", 30, 1010, 660, 64, () => { this.showReport = false; this.refresh(); });
+        bind("reportClose", () => { this.showReport = false; this.refresh(); });
+    }
+
+    private runOverlayCommand(command: () => void): void {
+        const now = Date.now();
+        if (now - this.overlayCommandAt < 250) return;
+        this.overlayCommandAt = now;
+        command();
     }
 
     private openReport(): void {
@@ -433,27 +519,40 @@ export class SkillBattlePanel extends Laya.GWidget {
 
     private refreshResult(): void {
         const run = this.expedition.run, save = this.expedition.snapshot, config = this.expedition.configuration;
-        this.result.visible = !this.presenter.busy && (this.showHub || this.showLoot || this.showReport ||
+        const resultVisible = !this.presenter.busy && (this.showHub || this.showLoot || this.showReport ||
             !!this.expedition.error || !run || run.phase !== "battle");
+        this.result.visible = resultVisible;
+        ["overlayBrand", "currency", "resultTitle", "resultDetail", "section", "overlayMessage", "choiceTitle", "page"]
+            .forEach(key => this.labels[key].visible = this.result.visible);
+        if (this.screen === "battle") this.setCombatChromeVisible(!resultVisible);
         if (!this.result.visible) return;
         this.overlayButtons.forEach(key => this.buttons[key].visible = false);
-        for (let i = 0; i < 6; i++) this.labels[`lootSlot${i}`].visible = false;
+        for (let i = 0; i < 6; i++) if (this.labels[`lootSlot${i}`]) this.labels[`lootSlot${i}`].visible = false;
         this.labels.choiceTitle.text = ""; this.labels.page.text = "";
         this.labels.reportBody.visible = false;
         this.labels.overlayMessage.text = this.notice;
         this.labels.currency.text = `灵石 ${save?.profile.currency || 0}`;
         this.labels.section.text = "";
-        const show = (key: string) => { this.buttons[key].visible = true; };
+        const show = (key: string) => {
+            const button = this.buttons[key];
+            if (button) button.visible = true;
+        };
         if (this.resetConfirm) {
             this.resultTitle.text = "确认重置测试档";
             this.resultDetail.text = "将清空秘境、灵石、入库物品和收藏标记。\n恢复铁剑耐久，并补发火石、土石、疗伤丹各一件。";
             show("resetYes"); show("resetNo"); return;
         }
-        if (this.expedition.error) {
+        if (this.expedition.error && this.screen === "start") {
             this.resultTitle.text = "存档无法载入";
             this.resultDetail.text = "原存档已保留。";
             this.labels.overlayMessage.text = this.expedition.error;
             show("reset"); return;
+        }
+        if (this.expedition.error) {
+            this.resultTitle.text = "存档无法载入";
+            this.resultDetail.text = "原存档已保留，请返回据点处理。";
+            this.labels.overlayMessage.text = this.expedition.error;
+            show("hub"); return;
         }
         if (this.showReport) { this.refreshReport(); return; }
         show("report");
@@ -473,9 +572,9 @@ export class SkillBattlePanel extends Laya.GWidget {
                 if (!item) continue;
                 const loot = config.loot.find(row => row.itemId === item.itemId);
                 const b = this.buttons[`warehouse${i}`];
-                (b.getChildAt(0) as Laya.GTextField).text = `${loot.name}   ${loot.useType === "currency"
+            this.setButtonText(b, `${loot.name}   ${loot.useType === "currency"
                     ? `${loot.currencyValue} 灵石   打开` : profile.collectionIds.includes(loot.collectionId)
-                        ? "已收藏 · 重复残卷留存" : "收藏"}`;
+                        ? "已收藏 · 重复残卷留存" : "收藏"}`);
                 this.styleButton(b, false, true);
                 show(`warehouse${i}`);
             }
@@ -487,6 +586,7 @@ export class SkillBattlePanel extends Laya.GWidget {
             }
             show("newRun"); show("reset"); return;
         }
+        show("loot");
         const s = run.battle;
         this.resultTitle.text = this.showLoot ? "本局战利品" : run.phase === "reward" ? "此战告捷"
             : run.phase === "decision" ? "去留之间" : run.phase === "extracted" ? "平安归来" : "力竭落败";
@@ -511,7 +611,7 @@ export class SkillBattlePanel extends Laya.GWidget {
                     guard_block: `守势获得 ${upgrade.value} 护盾`,
                     fire_burn: `火石施加的灼烧 +${upgrade.value}`,
                 };
-                (this.buttons[`upgrade${i}`].getChildAt(0) as Laya.GTextField).text = `${upgrade.name}\n${descriptions[upgrade.effect]}`;
+                this.setButtonText(this.buttons[`upgrade${i}`], `${upgrade.name}\n${descriptions[upgrade.effect]}`);
                 show(`upgrade${i}`);
             });
         } else if (run.phase === "decision") {
@@ -520,64 +620,67 @@ export class SkillBattlePanel extends Laya.GWidget {
         } else if (run.settled) show("hub");
     }
 
-    private addLabel(key: string, text: string, x: number, y: number, w: number, h: number,
-        size: number, color = C.text, align = "left", parent: Laya.GWidget = this): Laya.GTextField {
-        const t = new Laya.GTextField();
-        t.name = key;
-        t.pos(x, y); t.size(w, h);
-        t.font = "Microsoft YaHei";
-        t.fontSize = size; t.color = color; t.align = align; t.valign = "middle";
-        t.text = text; t.mouseEnabled = false;
-        parent.addChild(t);
-        this.labels[key] = t;
-        return t;
-    }
+    private setCombatChromeVisible(visible: boolean): void {
+        BATTLE_LABELS.forEach(key => {
+            if (this.labels[key]) this.labels[key].visible = visible;
+        });
+        [this.player, this.enemy].forEach(node => {
+            if (node) node.visible = visible;
+        });
+        if (this.numbers) this.numbers.visible = visible;
+        Object.values(this.bars).forEach(bar => {
+            if (bar) bar.visible = visible;
+        });
 
-    private button(key: string, text: string, x: number, y: number, w: number, h: number,
-        click: () => void, parent: Laya.GWidget = this): Laya.GWidget {
-        const b = new Laya.GWidget();
-        b.name = key; b.pos(x, y); b.size(w, h);
-        b.mouseThrough = false;
-        parent.addChild(b);
-        this.addLabel(`${key}Text`, text, 0, 0, w, h, 23, C.text, "center", b);
-        b.on(Laya.Event.CLICK, this, click);
-        this.buttons[key] = b;
-        this.styleButton(b, false, true);
-        return b;
+        const combatButtons = ["battleReport", "confirm",
+            ...Array.from({ length: 4 }, (_, i) => `skill${i + 1}`),
+            ...Array.from({ length: 5 }, (_, i) => `pouch${i}`)];
+        combatButtons.forEach(key => {
+            if (this.buttons[key]) this.buttons[key].visible = visible;
+        });
+        if (!visible) {
+            if (this.buttons.skip) this.buttons.skip.visible = false;
+            if (this.buttons.cancel) this.buttons.cancel.visible = false;
+        } else {
+            if (this.buttons.skip) this.buttons.skip.visible = this.presenter.busy;
+            if (this.buttons.cancel) this.buttons.cancel.visible = !this.presenter.busy && !!this.presenter.selection;
+        }
     }
 
     private styleButton(b: Laya.GWidget, selected: boolean, enabled: boolean): void {
         b.graphics.clear();
-        b.graphics.drawRect(0, 0, b.width, b.height, selected ? "#35483b" : C.surface,
-            selected ? C.jade : C.line, selected ? 2 : 1);
+        const cut = Math.min(8, b.width * 0.08, b.height * 0.2);
+        const fill = selected ? "#263c31" : (enabled ? C.surface : "#202824");
+        const border = selected ? C.jade : (enabled ? C.line : "#3c463f");
+        b.graphics.drawPoly(0, 0, [
+            cut, 0, b.width - cut, 0, b.width, cut,
+            b.width, b.height - cut, b.width - cut, b.height,
+            cut, b.height, 0, b.height - cut, 0, cut,
+        ], fill, border, selected ? 2 : 1);
+        b.graphics.drawLine(10, 1, b.width - 10, 1, selected ? C.gold : (enabled ? "#31483b" : "#303a33"), 1);
+        b.graphics.drawRect(0, cut + 3, 3, b.height - cut * 2 - 6,
+            selected ? C.gold : (enabled ? "#466858" : "#343e37"));
         b.alpha = enabled ? 1 : 0.45;
         b.mouseEnabled = enabled;
     }
 
-    private bars: { [key: string]: Laya.Sprite } = {};
-    private bar(x: number, y: number, w: number, ratio: number, color: string): void {
-        const bar = this.bars[y] || (this.bars[y] = this.addChildAt(new Laya.Sprite(), 0));
-        bar.graphics.clear();
-        bar.graphics.drawRect(x, y, w, 8, "#39443c");
-        if (ratio > 0) bar.graphics.drawRect(x, y, w * Math.min(1, ratio), 8, color);
+    private setButtonText(button: Laya.GWidget, value: string): void {
+        const label = button?.getChildAt(0) as Laya.GTextField;
+        if (!label) {
+            console.warn(`button text node missing: ${button?.name}`);
+            return;
+        }
+        label.text = value;
     }
 
-    private drawScene(): void {
-        const g = this.graphics;
-        g.drawRect(0, 0, 720, 1280, C.bg);
-        g.drawRect(0, 136, 720, 620, "#202922");
-        g.drawPoly(0, 0, [0, 390, 150, 345, 322, 380, 480, 330, 720, 372, 720, 760, 0, 760], "#28332b");
-        g.drawPoly(0, 0, [0, 508, 240, 454, 465, 484, 720, 444, 720, 760, 0, 760], "#303930");
-        for (let i = 0; i < 7; i++) {
-            const y = 385 + i * 54;
-            g.drawLine(0, y, 720, y + 28, "#3a4438", 1);
-        }
-        for (let i = 0; i < 6; i++) g.drawLine(i * 150 - 80, 360, i * 180 - 150, 760, "#3a4438", 1);
-        g.drawLine(64, 462, 113, 484, "#17201a", 3);
-        g.drawLine(113, 484, 101, 501, "#17201a", 3);
-        g.drawLine(545, 651, 590, 629, "#17201a", 3);
-        g.drawRect(0, 694, 720, 586, C.bg);
-        g.drawLine(30, 844, 690, 844, C.line, 1);
+    private bars: { [key: string]: Laya.GWidget } = {};
+    private bar(x: number, y: number, w: number, ratio: number, color: string): void {
+        const key = y < 400 ? "enemyHpBar" : "playerHpBar";
+        const bar = this.bars[key] || (this.bars[key] = this.root.findChild(key) as Laya.GWidget);
+        if (!bar) return;
+        bar.graphics.clear();
+        bar.graphics.drawRect(0, 0, w, 8, "#39443c");
+        if (ratio > 0) bar.graphics.drawRect(0, 0, w * Math.min(1, ratio), 8, color);
     }
 
     private drawActors(encounterId: number): void {
@@ -618,28 +721,29 @@ export class SkillBattlePanel extends Laya.GWidget {
     }
 
     private lunge(actor: Laya.Sprite, dy: number): void {
-        const y = actor === this.player ? 608 : 455;
-        Laya.Tween.to(actor, { y: y + dy }, 100, null,
-            Laya.Handler.create(this, () => Laya.Tween.to(actor, { y }, 110)));
+        const x = actor === this.player ? 250 : 970;
+        Laya.Tween.to(actor, { x: x + dy }, 100, null,
+            Laya.Handler.create(this, () => Laya.Tween.to(actor, { x }, 110)));
     }
 
     private showNumber(text: string, actor: Laya.Sprite, color: string): void {
         Laya.Tween.clearAll(this.numbers);
         this.numbers.text = text; this.numbers.color = color;
-        this.numbers.pos(466, actor.y - 55); this.numbers.alpha = 1;
-        Laya.Tween.to(this.numbers, { y: actor.y - 85, alpha: 0 }, 360);
+        this.numbers.pos(actor.x - 30, actor.y - 105); this.numbers.alpha = 1;
+        Laya.Tween.to(this.numbers, { y: actor.y - 135, alpha: 0 }, 360);
     }
 
     private resetActors(): void {
-        this.player.pos(360, 608); this.enemy.pos(360, 455);
+        if (!this.player || !this.enemy) return;
+        this.player.pos(250, 350); this.enemy.pos(970, 370);
         this.player.alpha = this.enemy.alpha = 1;
     }
 
     private stopEffects(): void {
         Laya.timer.clearAll(this);
-        [this.player, this.enemy, this.numbers].forEach(node => Laya.Tween.clearAll(node));
+        [this.player, this.enemy, this.numbers].filter(Boolean).forEach(node => Laya.Tween.clearAll(node));
         this.queue = [];
-        this.numbers.text = "";
+        if (this.numbers) this.numbers.text = "";
         this.resetActors();
     }
 }

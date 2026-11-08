@@ -139,7 +139,17 @@ export class UIManager extends Laya.EventDispatcher {
         const autoSize = () => {
             let designWidth = Laya.stage.designWidth;
             let designHeight = Laya.stage.designHeight;
-            if (Laya.stage.width / Laya.stage.height > designWidth / designHeight) {
+            const matchesDesignCanvas =
+                Math.abs(Laya.stage.width - designWidth) <= 2 &&
+                Math.abs(Laya.stage.height - designHeight) <= 2;
+            if (matchesDesignCanvas) {
+                this._uiRoot.pos(0, 0);
+                this._uiRoot.size(designWidth, designHeight);
+                UIUtils.setActive(leftMask, false);
+                UIUtils.setActive(rightMask, false);
+                this._isAdapterMaskActive = false;
+            }
+            else if (Laya.stage.width / Laya.stage.height > designWidth / designHeight) {
                 this._uiRoot.height = Laya.stage.height;
                 this._uiRoot.width = (designWidth / designHeight) * Laya.stage.height;
                 const widthOffset = (Laya.stage.width - this._uiRoot.width) / 2;

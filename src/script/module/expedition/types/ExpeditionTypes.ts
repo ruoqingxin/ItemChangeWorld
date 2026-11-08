@@ -1,4 +1,5 @@
 import type { ISkillBattleAction, ISkillBattleSetup, ISkillBattleState, ISkillItemInstance, ISkillUpgradeConfig } from "../../skillBattle/types/SkillBattleTypes";
+import type { IExpeditionBuildConfig, IExpeditionBuildState } from "./ExpeditionBuildTypes";
 
 export interface IExpeditionReport {
     runId: string;
@@ -26,6 +27,7 @@ export interface IExpeditionConfig {
     upgrades: ISkillUpgradeConfig[];
     loot: IExpeditionLootConfig[];
     rewards: number[][];
+    build?: IExpeditionBuildConfig;
 }
 
 export interface IExpeditionProfile {
@@ -53,6 +55,7 @@ export interface IExpeditionState {
     settled: boolean;
     battle: ISkillBattleState;
     report: IExpeditionReport;
+    build?: IExpeditionBuildState;
 }
 
 export interface IExpeditionSave {

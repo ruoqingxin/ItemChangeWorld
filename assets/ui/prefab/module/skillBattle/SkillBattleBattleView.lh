@@ -1,0 +1,2034 @@
+{
+  "_$ver": 1,
+  "_$id": "sbr107root",
+  "_$type": "GWidget",
+  "name": "SkillBattleBattleView",
+  "width": 1280,
+  "height": 720,
+  "_$comp": [
+    {
+      "_$type": "3593fc26-337e-42e3-92dc-1b9c2bb8f988",
+      "scriptPath": "../src/script/games/ui/components/ElementMapper.ts",
+      "adapter": null,
+      "elements": [
+        {
+          "_$ref": "sbr001res"
+        },
+        {
+          "_$ref": "sbr002lbl"
+        },
+        {
+          "_$ref": "sbr003lbl"
+        },
+        {
+          "_$ref": "sbr004lbl"
+        },
+        {
+          "_$ref": "sbr005lbl"
+        },
+        {
+          "_$ref": "sbr006lbl"
+        },
+        {
+          "_$ref": "sbr007lbl"
+        },
+        {
+          "_$ref": "sbr008lbl"
+        },
+        {
+          "_$ref": "sbr009lbl"
+        },
+        {
+          "_$ref": "sbr010lbl"
+        },
+        {
+          "_$ref": "sbr011lbl"
+        },
+        {
+          "_$ref": "sbr012lbl"
+        },
+        {
+          "_$ref": "sbr013lbl"
+        },
+        {
+          "_$ref": "sbr014lbl"
+        },
+        {
+          "_$ref": "sbr015lbl"
+        },
+        {
+          "_$ref": "sbr016lbl"
+        },
+        {
+          "_$ref": "sbr017lbl"
+        },
+        {
+          "_$ref": "sbr018lbl"
+        },
+        {
+          "_$ref": "sbr019lbl"
+        },
+        {
+          "_$ref": "sbr020lbl"
+        },
+        {
+          "_$ref": "sbr021lbl"
+        },
+        {
+          "_$ref": "sbr022lbl"
+        },
+        {
+          "_$ref": "sbr023lbl"
+        },
+        {
+          "_$ref": "sbr024lbl"
+        },
+        {
+          "_$ref": "sbr025lbl"
+        },
+        {
+          "_$ref": "sbr026lbl"
+        },
+        {
+          "_$ref": "sbr027lbl"
+        },
+        {
+          "_$ref": "sbr028lbl"
+        },
+        {
+          "_$ref": "sbr029lbl"
+        },
+        {
+          "_$ref": "sbr030lbl"
+        },
+        {
+          "_$ref": "sbr031lbl"
+        },
+        {
+          "_$ref": "sbr032lbl"
+        },
+        {
+          "_$ref": "sbr033actor"
+        },
+        {
+          "_$ref": "sbr034actor"
+        },
+        {
+          "_$ref": "sbr035num"
+        },
+        {
+          "_$ref": "sbr036bar"
+        },
+        {
+          "_$ref": "sbr037bar"
+        },
+        {
+          "_$ref": "sbr038ico"
+        },
+        {
+          "_$ref": "sbr039ico"
+        },
+        {
+          "_$ref": "sbr040ico"
+        },
+        {
+          "_$ref": "sbr041ico"
+        },
+        {
+          "_$ref": "sbr042ico"
+        },
+        {
+          "_$ref": "sbr044btn"
+        },
+        {
+          "_$ref": "sbr043txt"
+        },
+        {
+          "_$ref": "sbr046btn"
+        },
+        {
+          "_$ref": "sbr045txt"
+        },
+        {
+          "_$ref": "sbr048btn"
+        },
+        {
+          "_$ref": "sbr047txt"
+        },
+        {
+          "_$ref": "sbr050btn"
+        },
+        {
+          "_$ref": "sbr049txt"
+        },
+        {
+          "_$ref": "sbr052btn"
+        },
+        {
+          "_$ref": "sbr051txt"
+        },
+        {
+          "_$ref": "sbr054btn"
+        },
+        {
+          "_$ref": "sbr053txt"
+        },
+        {
+          "_$ref": "sbr056btn"
+        },
+        {
+          "_$ref": "sbr055txt"
+        },
+        {
+          "_$ref": "sbr058btn"
+        },
+        {
+          "_$ref": "sbr057txt"
+        },
+        {
+          "_$ref": "sbr060btn"
+        },
+        {
+          "_$ref": "sbr059txt"
+        },
+        {
+          "_$ref": "sbr062btn"
+        },
+        {
+          "_$ref": "sbr061txt"
+        },
+        {
+          "_$ref": "sbr064btn"
+        },
+        {
+          "_$ref": "sbr063txt"
+        },
+        {
+          "_$ref": "sbr066btn"
+        },
+        {
+          "_$ref": "sbr065txt"
+        },
+        {
+          "_$ref": "sbr068btn"
+        },
+        {
+          "_$ref": "sbr067txt"
+        },
+        {
+          "_$ref": "sbr070btn"
+        },
+        {
+          "_$ref": "sbr069txt"
+        },
+        {
+          "_$ref": "sbr072btn"
+        },
+        {
+          "_$ref": "sbr071txt"
+        },
+        {
+          "_$ref": "sbr074btn"
+        },
+        {
+          "_$ref": "sbr073txt"
+        },
+        {
+          "_$ref": "sbr076btn"
+        },
+        {
+          "_$ref": "sbr075txt"
+        },
+        {
+          "_$ref": "sbr078btn"
+        },
+        {
+          "_$ref": "sbr077txt"
+        },
+        {
+          "_$ref": "sbr080btn"
+        },
+        {
+          "_$ref": "sbr079txt"
+        },
+        {
+          "_$ref": "sbr082btn"
+        },
+        {
+          "_$ref": "sbr081txt"
+        },
+        {
+          "_$ref": "sbr084btn"
+        },
+        {
+          "_$ref": "sbr083txt"
+        },
+        {
+          "_$ref": "sbr086btn"
+        },
+        {
+          "_$ref": "sbr085txt"
+        },
+        {
+          "_$ref": "sbr088btn"
+        },
+        {
+          "_$ref": "sbr087txt"
+        },
+        {
+          "_$ref": "sbr090btn"
+        },
+        {
+          "_$ref": "sbr089txt"
+        },
+        {
+          "_$ref": "sbr092btn"
+        },
+        {
+          "_$ref": "sbr091txt"
+        },
+        {
+          "_$ref": "sbr094btn"
+        },
+        {
+          "_$ref": "sbr093txt"
+        },
+        {
+          "_$ref": "sbr096btn"
+        },
+        {
+          "_$ref": "sbr095txt"
+        },
+        {
+          "_$ref": "sbr098btn"
+        },
+        {
+          "_$ref": "sbr097txt"
+        },
+        {
+          "_$ref": "sbr100btn"
+        },
+        {
+          "_$ref": "sbr099txt"
+        }
+      ],
+      "mapperType": 2
+    }
+  ],
+  "_$child": [
+    {
+      "_$id": "battle_background_layer",
+      "_$type": "GWidget",
+      "name": "BackgroundLayer",
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 720,
+      "_$child": [
+        {
+          "_$id": "battle_bg_image",
+          "_$type": "GImage",
+          "name": "battleBackdrop",
+          "x": -140,
+          "y": 0,
+          "width": 1560,
+          "height": 720,
+          "src": "res://488d6082-d8b6-468c-b57d-1e3aae58cea8",
+          "autoSize": false
+        },
+        {
+          "_$id": "battle_chrome_image",
+          "_$type": "GImage",
+          "name": "battleChrome",
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720,
+          "src": "res://a53a10a0-808b-4fe3-8700-82353ec448b9",
+          "autoSize": false
+        }
+      ]
+    },
+    {
+      "_$id": "battle_combat_layer",
+      "_$type": "GWidget",
+      "name": "CombatLayer",
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 720,
+      "_$child": [
+        {
+          "_$id": "battle_combat_hud",
+          "_$type": "GWidget",
+          "name": "CombatHud",
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720,
+          "_$child": [
+            {
+              "_$id": "battle_preview_panel",
+              "_$type": "GImage",
+              "name": "previewPanel",
+              "x": 360,
+              "y": 366,
+              "width": 700,
+              "height": 76,
+              "src": "res://c99a5758-c508-4d3e-be29-61786d777d6b",
+              "autoSize": false
+            },
+            {
+              "_$id": "sbr002lbl",
+              "_$type": "GTextField",
+              "name": "brand",
+              "x": 64,
+              "y": 10,
+              "width": 300,
+              "height": 48,
+              "text": "",
+              "fontSize": 26,
+              "color": "#e3e8de",
+              "align": "left",
+              "valign": "middle",
+              "wordWrap": true,
+              "bold": true,
+              "font": "KaiTi"
+            },
+            {
+              "_$id": "sbr003lbl",
+              "_$type": "GTextField",
+              "name": "round",
+              "x": 420,
+              "y": 16,
+              "width": 270,
+              "height": 46,
+              "text": "",
+              "fontSize": 20,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "bold": true,
+              "font": "Microsoft YaHei"
+            },
+            {
+              "_$id": "sbr004lbl",
+              "_$type": "GTextField",
+              "name": "upgrades",
+              "x": 704,
+              "y": 16,
+              "width": 300,
+              "height": 46,
+              "text": "",
+              "fontSize": 20,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "bold": true,
+              "font": "Microsoft YaHei"
+            },
+            {
+              "_$id": "sbr005lbl",
+              "_$type": "GTextField",
+              "name": "enemyName",
+              "x": 720,
+              "y": 128,
+              "width": 430,
+              "height": 50,
+              "text": "",
+              "fontSize": 26,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "bold": true,
+              "font": "KaiTi"
+            },
+            {
+              "_$id": "sbr006lbl",
+              "_$type": "GTextField",
+              "name": "enemyBlock",
+              "x": 900,
+              "y": 184,
+              "width": 220,
+              "height": 42,
+              "text": "",
+              "fontSize": 20,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "bold": true,
+              "font": "Microsoft YaHei"
+            },
+            {
+              "_$id": "sbr007lbl",
+              "_$type": "GTextField",
+              "name": "enemyHp",
+              "x": 720,
+              "y": 224,
+              "width": 430,
+              "height": 42,
+              "text": "",
+              "fontSize": 22,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "bold": true,
+              "font": "Microsoft YaHei"
+            },
+            {
+              "_$id": "sbr008lbl",
+              "_$type": "GTextField",
+              "name": "intent",
+              "x": 410,
+              "y": 232,
+              "width": 280,
+              "height": 46,
+              "text": "",
+              "fontSize": 20,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "bold": true,
+              "font": "Microsoft YaHei"
+            },
+            {
+              "_$id": "sbr009lbl",
+              "_$type": "GTextField",
+              "name": "interrupt",
+              "x": 410,
+              "y": 280,
+              "width": 280,
+              "height": 42,
+              "text": "",
+              "fontSize": 20,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "bold": false,
+              "font": "Microsoft YaHei"
+            },
+            {
+              "_$id": "sbr010lbl",
+              "_$type": "GTextField",
+              "name": "event",
+              "x": 390,
+              "y": 342,
+              "width": 500,
+              "height": 44,
+              "text": "",
+              "fontSize": 20,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "bold": true,
+              "font": "Microsoft YaHei"
+            },
+            {
+              "_$id": "sbr011lbl",
+              "_$type": "GTextField",
+              "name": "playerName",
+              "x": 120,
+              "y": 412,
+              "width": 430,
+              "height": 46,
+              "text": "",
+              "fontSize": 24,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "bold": true,
+              "font": "KaiTi"
+            },
+            {
+              "_$id": "sbr012lbl",
+              "_$type": "GTextField",
+              "name": "durability",
+              "x": 30,
+              "y": 476,
+              "width": 390,
+              "height": 40,
+              "text": "",
+              "fontSize": 20,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "bold": false,
+              "font": "Microsoft YaHei"
+            },
+            {
+              "_$id": "sbr013lbl",
+              "_$type": "GTextField",
+              "name": "playerHp",
+              "x": 30,
+              "y": 516,
+              "width": 390,
+              "height": 40,
+              "text": "",
+              "fontSize": 22,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "bold": true,
+              "font": "Microsoft YaHei"
+            },
+            {
+              "_$id": "sbr014lbl",
+              "_$type": "GTextField",
+              "name": "playerBlock",
+              "x": 30,
+              "y": 554,
+              "width": 390,
+              "height": 38,
+              "text": "",
+              "fontSize": 20,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "bold": true,
+              "font": "Microsoft YaHei"
+            },
+            {
+              "_$id": "sbr015lbl",
+              "_$type": "GTextField",
+              "name": "qi",
+              "x": 30,
+              "y": 594,
+              "width": 390,
+              "height": 38,
+              "text": "",
+              "fontSize": 20,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "bold": true,
+              "font": "Microsoft YaHei"
+            },
+            {
+              "_$id": "sbr016lbl",
+              "_$type": "GTextField",
+              "name": "previewTitle",
+              "x": 390,
+              "y": 370,
+              "width": 500,
+              "height": 30,
+              "text": "",
+              "fontSize": 18,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "bold": true,
+              "font": "KaiTi"
+            },
+            {
+              "_$id": "sbr017lbl",
+              "_$type": "GTextField",
+              "name": "preview",
+              "x": 368,
+              "y": 391,
+              "width": 684,
+              "height": 52,
+              "text": "",
+              "fontSize": 13,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "bold": false,
+              "font": "Microsoft YaHei"
+            },
+            {
+              "_$id": "sbr033actor",
+              "_$type": "GWidget",
+              "name": "player",
+              "x": 250,
+              "y": 350,
+              "width": 1,
+              "height": 1
+            },
+            {
+              "_$id": "sbr034actor",
+              "_$type": "GWidget",
+              "name": "enemy",
+              "x": 970,
+              "y": 370,
+              "width": 1,
+              "height": 1
+            },
+            {
+              "_$id": "sbr035num",
+              "_$type": "GTextField",
+              "name": "numbers",
+              "x": 770,
+              "y": 260,
+              "width": 220,
+              "height": 60,
+              "text": "",
+              "fontSize": 28
+            },
+            {
+              "_$id": "sbr036bar",
+              "_$type": "GWidget",
+              "name": "enemyHpBar",
+              "x": 720,
+              "y": 226,
+              "width": 430,
+              "height": 8
+            },
+            {
+              "_$id": "sbr037bar",
+              "_$type": "GWidget",
+              "name": "playerHpBar",
+              "x": 30,
+              "y": 516,
+              "width": 430,
+              "height": 8
+            },
+            {
+              "_$id": "sbr038ico",
+              "_$type": "GImage",
+              "name": "pouchIcon0",
+              "x": 462,
+              "y": 551,
+              "width": 24,
+              "height": 24,
+              "autoSize": false
+            },
+            {
+              "_$id": "sbr039ico",
+              "_$type": "GImage",
+              "name": "pouchIcon1",
+              "x": 584,
+              "y": 551,
+              "width": 24,
+              "height": 24,
+              "autoSize": false
+            },
+            {
+              "_$id": "sbr040ico",
+              "_$type": "GImage",
+              "name": "pouchIcon2",
+              "x": 706,
+              "y": 551,
+              "width": 24,
+              "height": 24,
+              "autoSize": false
+            },
+            {
+              "_$id": "sbr041ico",
+              "_$type": "GImage",
+              "name": "pouchIcon3",
+              "x": 828,
+              "y": 551,
+              "width": 24,
+              "height": 24,
+              "autoSize": false
+            },
+            {
+              "_$id": "sbr042ico",
+              "_$type": "GImage",
+              "name": "pouchIcon4",
+              "x": 950,
+              "y": 551,
+              "width": 24,
+              "height": 24,
+              "autoSize": false
+            }
+          ]
+        },
+        {
+          "_$id": "battle_combat_actions",
+          "_$type": "GWidget",
+          "name": "CombatActions",
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720,
+          "_$child": [
+            {
+              "_$id": "sbr044btn",
+              "_$type": "GWidget",
+              "name": "battleReport",
+              "x": 1034,
+              "y": 24,
+              "width": 176,
+              "height": 54,
+              "_$child": [
+                {
+                  "_$id": "sbr043txt",
+                  "_$type": "GTextField",
+                  "name": "battleReportText",
+                  "x": 38,
+                  "y": 0,
+                  "width": 130,
+                  "height": 54,
+                  "text": "",
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": false,
+                  "font": "Microsoft YaHei"
+                },
+                {
+                  "_$id": "battleReport_icon_img",
+                  "_$type": "GImage",
+                  "name": "buttonIcon",
+                  "x": 9,
+                  "y": 15,
+                  "width": 24,
+                  "height": 24,
+                  "src": "res://dced7154-88a6-4ac7-8cc7-df76ee5ff892",
+                  "autoSize": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr046btn",
+              "_$type": "GWidget",
+              "name": "loot",
+              "x": 1034,
+              "y": 88,
+              "width": 176,
+              "height": 54,
+              "_$child": [
+                {
+                  "_$id": "sbr045txt",
+                  "_$type": "GTextField",
+                  "name": "lootText",
+                  "x": 38,
+                  "y": 0,
+                  "width": 130,
+                  "height": 54,
+                  "text": "",
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": false,
+                  "font": "Microsoft YaHei"
+                },
+                {
+                  "_$id": "loot_icon_img",
+                  "_$type": "GImage",
+                  "name": "buttonIcon",
+                  "x": 9,
+                  "y": 15,
+                  "width": 24,
+                  "height": 24,
+                  "src": "res://47bbfedb-98a8-4de2-8ae5-6f10115bb21a",
+                  "autoSize": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr048btn",
+              "_$type": "GWidget",
+              "name": "skip",
+              "x": 1034,
+              "y": 152,
+              "width": 176,
+              "height": 54,
+              "_$child": [
+                {
+                  "_$id": "sbr047txt",
+                  "_$type": "GTextField",
+                  "name": "skipText",
+                  "x": 38,
+                  "y": 0,
+                  "width": 130,
+                  "height": 54,
+                  "text": "",
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": false,
+                  "font": "Microsoft YaHei"
+                },
+                {
+                  "_$id": "skip_icon_img",
+                  "_$type": "GImage",
+                  "name": "buttonIcon",
+                  "x": 9,
+                  "y": 15,
+                  "width": 24,
+                  "height": 24,
+                  "src": "res://fc1cedbf-4d72-4c46-9e32-cc3d5a5f4194",
+                  "autoSize": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr050btn",
+              "_$type": "GWidget",
+              "name": "cancel",
+              "x": 1060,
+              "y": 530,
+              "width": 176,
+              "height": 54,
+              "_$child": [
+                {
+                  "_$id": "sbr049txt",
+                  "_$type": "GTextField",
+                  "name": "cancelText",
+                  "x": 38,
+                  "y": 0,
+                  "width": 130,
+                  "height": 54,
+                  "text": "",
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": false,
+                  "font": "Microsoft YaHei"
+                },
+                {
+                  "_$id": "cancel_icon_img",
+                  "_$type": "GImage",
+                  "name": "buttonIcon",
+                  "x": 9,
+                  "y": 15,
+                  "width": 24,
+                  "height": 24,
+                  "src": "res://7dbbe214-d8c5-44d9-b97d-eaca505a2830",
+                  "autoSize": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr052btn",
+              "_$type": "GWidget",
+              "name": "confirm",
+              "x": 1060,
+              "y": 530,
+              "width": 176,
+              "height": 54,
+              "_$child": [
+                {
+                  "_$id": "sbr051txt",
+                  "_$type": "GTextField",
+                  "name": "confirmText",
+                  "x": 38,
+                  "y": 0,
+                  "width": 130,
+                  "height": 54,
+                  "text": "",
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": false,
+                  "font": "Microsoft YaHei"
+                },
+                {
+                  "_$id": "confirm_icon_img",
+                  "_$type": "GImage",
+                  "name": "buttonIcon",
+                  "x": 9,
+                  "y": 15,
+                  "width": 24,
+                  "height": 24,
+                  "src": "res://4ad22c6a-7fb4-4d7d-a28a-ea9f695d20db",
+                  "autoSize": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr078btn",
+              "_$type": "GWidget",
+              "name": "skill1",
+              "x": 454,
+              "y": 614,
+              "width": 180,
+              "height": 76,
+              "_$child": [
+                {
+                  "_$id": "sbr077txt",
+                  "_$type": "GTextField",
+                  "name": "skill1Text",
+                  "x": 0,
+                  "y": 0,
+                  "width": 180,
+                  "height": 76,
+                  "text": "",
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true
+                }
+              ]
+            },
+            {
+              "_$id": "sbr080btn",
+              "_$type": "GWidget",
+              "name": "skill2",
+              "x": 644,
+              "y": 614,
+              "width": 180,
+              "height": 76,
+              "_$child": [
+                {
+                  "_$id": "sbr079txt",
+                  "_$type": "GTextField",
+                  "name": "skill2Text",
+                  "x": 0,
+                  "y": 0,
+                  "width": 180,
+                  "height": 76,
+                  "text": "",
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true
+                }
+              ]
+            },
+            {
+              "_$id": "sbr082btn",
+              "_$type": "GWidget",
+              "name": "skill3",
+              "x": 834,
+              "y": 614,
+              "width": 180,
+              "height": 76,
+              "_$child": [
+                {
+                  "_$id": "sbr081txt",
+                  "_$type": "GTextField",
+                  "name": "skill3Text",
+                  "x": 0,
+                  "y": 0,
+                  "width": 180,
+                  "height": 76,
+                  "text": "",
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true
+                }
+              ]
+            },
+            {
+              "_$id": "sbr084btn",
+              "_$type": "GWidget",
+              "name": "skill4",
+              "x": 1024,
+              "y": 614,
+              "width": 180,
+              "height": 76,
+              "_$child": [
+                {
+                  "_$id": "sbr083txt",
+                  "_$type": "GTextField",
+                  "name": "skill4Text",
+                  "x": 0,
+                  "y": 0,
+                  "width": 180,
+                  "height": 76,
+                  "text": "",
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true
+                }
+              ]
+            },
+            {
+              "_$id": "sbr086btn",
+              "_$type": "GWidget",
+              "name": "pouch0",
+              "x": 454,
+              "y": 530,
+              "width": 112,
+              "height": 68,
+              "_$child": [
+                {
+                  "_$id": "sbr085txt",
+                  "_$type": "GTextField",
+                  "name": "pouch0Text",
+                  "x": 32,
+                  "y": 0,
+                  "width": 76,
+                  "height": 68,
+                  "text": "",
+                  "fontSize": 18,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true
+                }
+              ]
+            },
+            {
+              "_$id": "sbr088btn",
+              "_$type": "GWidget",
+              "name": "pouch1",
+              "x": 576,
+              "y": 530,
+              "width": 112,
+              "height": 68,
+              "_$child": [
+                {
+                  "_$id": "sbr087txt",
+                  "_$type": "GTextField",
+                  "name": "pouch1Text",
+                  "x": 32,
+                  "y": 0,
+                  "width": 76,
+                  "height": 68,
+                  "text": "",
+                  "fontSize": 18,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true
+                }
+              ]
+            },
+            {
+              "_$id": "sbr090btn",
+              "_$type": "GWidget",
+              "name": "pouch2",
+              "x": 698,
+              "y": 530,
+              "width": 112,
+              "height": 68,
+              "_$child": [
+                {
+                  "_$id": "sbr089txt",
+                  "_$type": "GTextField",
+                  "name": "pouch2Text",
+                  "x": 32,
+                  "y": 0,
+                  "width": 76,
+                  "height": 68,
+                  "text": "",
+                  "fontSize": 18,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true
+                }
+              ]
+            },
+            {
+              "_$id": "sbr092btn",
+              "_$type": "GWidget",
+              "name": "pouch3",
+              "x": 820,
+              "y": 530,
+              "width": 112,
+              "height": 68,
+              "_$child": [
+                {
+                  "_$id": "sbr091txt",
+                  "_$type": "GTextField",
+                  "name": "pouch3Text",
+                  "x": 32,
+                  "y": 0,
+                  "width": 76,
+                  "height": 68,
+                  "text": "",
+                  "fontSize": 18,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true
+                }
+              ]
+            },
+            {
+              "_$id": "sbr094btn",
+              "_$type": "GWidget",
+              "name": "pouch4",
+              "x": 942,
+              "y": 530,
+              "width": 112,
+              "height": 68,
+              "_$child": [
+                {
+                  "_$id": "sbr093txt",
+                  "_$type": "GTextField",
+                  "name": "pouch4Text",
+                  "x": 32,
+                  "y": 0,
+                  "width": 76,
+                  "height": 68,
+                  "text": "",
+                  "fontSize": 18,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "_$id": "sbr001res",
+      "_$type": "GWidget",
+      "name": "result",
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 720,
+      "visible": false,
+      "_$child": [
+        {
+          "_$id": "battle_result_hub_bg",
+          "_$type": "GImage",
+          "name": "hubBackdrop",
+          "x": -140,
+          "y": 0,
+          "width": 1560,
+          "height": 720,
+          "src": "res://11f50566-ae9c-4212-8b50-2bbedae37bc0",
+          "autoSize": false
+        },
+        {
+          "_$id": "battle_result_hub_scrim",
+          "_$type": "GImage",
+          "name": "hubScrim",
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720,
+          "src": "res://5767d5d4-1b64-4abd-a4f5-e197bfdf9d4d",
+          "autoSize": false
+        },
+        {
+          "_$id": "battle_result_hub_chrome",
+          "_$type": "GImage",
+          "name": "hubChrome",
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720,
+          "src": "res://ee8babeb-9ecf-4d22-97e3-d5c69d9760e4",
+          "autoSize": false
+        },
+        {
+          "_$id": "battle_result_copy",
+          "_$type": "GWidget",
+          "name": "ResultCopy",
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720,
+          "_$child": [
+            {
+              "_$id": "sbr018lbl",
+              "_$type": "GTextField",
+              "name": "overlayBrand",
+              "x": 48,
+              "y": 20,
+              "width": 430,
+              "height": 48,
+              "text": "",
+              "fontSize": 26,
+              "color": "#e3e8de",
+              "align": "left",
+              "valign": "middle",
+              "wordWrap": true,
+              "bold": true,
+              "font": "Microsoft YaHei"
+            },
+            {
+              "_$id": "sbr019lbl",
+              "_$type": "GTextField",
+              "name": "currency",
+              "x": 930,
+              "y": 22,
+              "width": 302,
+              "height": 38,
+              "text": "",
+              "fontSize": 20,
+              "color": "#e3e8de",
+              "align": "right",
+              "valign": "middle",
+              "wordWrap": true,
+              "bold": true,
+              "font": "Microsoft YaHei"
+            },
+            {
+              "_$id": "sbr020lbl",
+              "_$type": "GTextField",
+              "name": "resultTitle",
+              "x": 0,
+              "y": 58,
+              "width": 1280,
+              "height": 64,
+              "text": "",
+              "fontSize": 42,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "bold": true,
+              "font": "KaiTi"
+            },
+            {
+              "_$id": "sbr021lbl",
+              "_$type": "GTextField",
+              "name": "resultDetail",
+              "x": 140,
+              "y": 124,
+              "width": 1000,
+              "height": 104,
+              "text": "",
+              "fontSize": 22,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "bold": false,
+              "font": "Microsoft YaHei"
+            },
+            {
+              "_$id": "sbr022lbl",
+              "_$type": "GTextField",
+              "name": "section",
+              "x": 150,
+              "y": 278,
+              "width": 980,
+              "height": 38,
+              "text": "",
+              "fontSize": 22,
+              "color": "#e3e8de",
+              "align": "left",
+              "valign": "middle",
+              "wordWrap": true,
+              "bold": true,
+              "font": "Microsoft YaHei"
+            },
+            {
+              "_$id": "sbr023lbl",
+              "_$type": "GTextField",
+              "name": "overlayMessage",
+              "x": 190,
+              "y": 490,
+              "width": 900,
+              "height": 40,
+              "text": "",
+              "fontSize": 20,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "bold": false,
+              "font": "Microsoft YaHei"
+            },
+            {
+              "_$id": "sbr024lbl",
+              "_$type": "GTextField",
+              "name": "choiceTitle",
+              "x": 250,
+              "y": 354,
+              "width": 780,
+              "height": 48,
+              "text": "",
+              "fontSize": 24,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "bold": true,
+              "font": "KaiTi"
+            },
+            {
+              "_$id": "sbr025lbl",
+              "_$type": "GTextField",
+              "name": "reportBody",
+              "x": 240,
+              "y": 190,
+              "width": 800,
+              "height": 280,
+              "text": "",
+              "fontSize": 20,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "bold": false,
+              "font": "Microsoft YaHei"
+            },
+            {
+              "_$id": "sbr026lbl",
+              "_$type": "GTextField",
+              "name": "page",
+              "x": 570,
+              "y": 530,
+              "width": 140,
+              "height": 38,
+              "text": "",
+              "fontSize": 20,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "bold": false,
+              "font": "Microsoft YaHei"
+            },
+            {
+              "_$id": "sbr027lbl",
+              "_$type": "GTextField",
+              "name": "lootSlot0",
+              "x": 220,
+              "y": 390,
+              "width": 130,
+              "height": 84,
+              "text": "",
+              "fontSize": 22,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true
+            },
+            {
+              "_$id": "sbr028lbl",
+              "_$type": "GTextField",
+              "name": "lootSlot1",
+              "x": 365,
+              "y": 390,
+              "width": 130,
+              "height": 84,
+              "text": "",
+              "fontSize": 22,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true
+            },
+            {
+              "_$id": "sbr029lbl",
+              "_$type": "GTextField",
+              "name": "lootSlot2",
+              "x": 510,
+              "y": 390,
+              "width": 130,
+              "height": 84,
+              "text": "",
+              "fontSize": 22,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true
+            },
+            {
+              "_$id": "sbr030lbl",
+              "_$type": "GTextField",
+              "name": "lootSlot3",
+              "x": 655,
+              "y": 390,
+              "width": 130,
+              "height": 84,
+              "text": "",
+              "fontSize": 22,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true
+            },
+            {
+              "_$id": "sbr031lbl",
+              "_$type": "GTextField",
+              "name": "lootSlot4",
+              "x": 800,
+              "y": 390,
+              "width": 130,
+              "height": 84,
+              "text": "",
+              "fontSize": 22,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true
+            },
+            {
+              "_$id": "sbr032lbl",
+              "_$type": "GTextField",
+              "name": "lootSlot5",
+              "x": 945,
+              "y": 390,
+              "width": 130,
+              "height": 84,
+              "text": "",
+              "fontSize": 22,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true
+            }
+          ]
+        },
+        {
+          "_$id": "battle_result_actions",
+          "_$type": "GWidget",
+          "name": "ResultActions",
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720,
+          "_$child": [
+            {
+              "_$id": "sbr054btn",
+              "_$type": "GWidget",
+              "name": "continue",
+              "x": 800,
+              "y": 530,
+              "width": 176,
+              "height": 54,
+              "_$child": [
+                {
+                  "_$id": "sbr053txt",
+                  "_$type": "GTextField",
+                  "name": "continueText",
+                  "x": 38,
+                  "y": 0,
+                  "width": 130,
+                  "height": 54,
+                  "text": "",
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": false,
+                  "font": "Microsoft YaHei"
+                },
+                {
+                  "_$id": "continue_icon_img",
+                  "_$type": "GImage",
+                  "name": "buttonIcon",
+                  "x": 9,
+                  "y": 15,
+                  "width": 24,
+                  "height": 24,
+                  "src": "res://fc1cedbf-4d72-4c46-9e32-cc3d5a5f4194",
+                  "autoSize": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr056btn",
+              "_$type": "GWidget",
+              "name": "extract",
+              "x": 1000,
+              "y": 530,
+              "width": 176,
+              "height": 54,
+              "_$child": [
+                {
+                  "_$id": "sbr055txt",
+                  "_$type": "GTextField",
+                  "name": "extractText",
+                  "x": 38,
+                  "y": 0,
+                  "width": 130,
+                  "height": 54,
+                  "text": "",
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": false,
+                  "font": "Microsoft YaHei"
+                },
+                {
+                  "_$id": "extract_icon_img",
+                  "_$type": "GImage",
+                  "name": "buttonIcon",
+                  "x": 9,
+                  "y": 15,
+                  "width": 24,
+                  "height": 24,
+                  "src": "res://434f2bac-5049-4653-a7c3-9920e1714c8d",
+                  "autoSize": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr058btn",
+              "_$type": "GWidget",
+              "name": "hub",
+              "x": 800,
+              "y": 614,
+              "width": 176,
+              "height": 54,
+              "_$child": [
+                {
+                  "_$id": "sbr057txt",
+                  "_$type": "GTextField",
+                  "name": "hubText",
+                  "x": 38,
+                  "y": 0,
+                  "width": 130,
+                  "height": 54,
+                  "text": "",
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": false,
+                  "font": "Microsoft YaHei"
+                },
+                {
+                  "_$id": "hub_icon_img",
+                  "_$type": "GImage",
+                  "name": "buttonIcon",
+                  "x": 9,
+                  "y": 15,
+                  "width": 24,
+                  "height": 24,
+                  "src": "res://b5cdb8ac-ea30-4668-895b-94849767f59b",
+                  "autoSize": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr060btn",
+              "_$type": "GWidget",
+              "name": "lootClose",
+              "x": 1000,
+              "y": 614,
+              "width": 176,
+              "height": 54,
+              "_$child": [
+                {
+                  "_$id": "sbr059txt",
+                  "_$type": "GTextField",
+                  "name": "lootCloseText",
+                  "x": 38,
+                  "y": 0,
+                  "width": 130,
+                  "height": 54,
+                  "text": "",
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": false,
+                  "font": "Microsoft YaHei"
+                },
+                {
+                  "_$id": "lootClose_icon_img",
+                  "_$type": "GImage",
+                  "name": "buttonIcon",
+                  "x": 9,
+                  "y": 15,
+                  "width": 24,
+                  "height": 24,
+                  "src": "res://8d2bed56-0905-4210-87e2-33c86f8eb038",
+                  "autoSize": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr062btn",
+              "_$type": "GWidget",
+              "name": "report",
+              "x": 80,
+              "y": 560,
+              "width": 176,
+              "height": 54,
+              "_$child": [
+                {
+                  "_$id": "sbr061txt",
+                  "_$type": "GTextField",
+                  "name": "reportText",
+                  "x": 38,
+                  "y": 0,
+                  "width": 130,
+                  "height": 54,
+                  "text": "",
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": false,
+                  "font": "Microsoft YaHei"
+                },
+                {
+                  "_$id": "report_icon_img",
+                  "_$type": "GImage",
+                  "name": "buttonIcon",
+                  "x": 9,
+                  "y": 15,
+                  "width": 24,
+                  "height": 24,
+                  "src": "res://dced7154-88a6-4ac7-8cc7-df76ee5ff892",
+                  "autoSize": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr064btn",
+              "_$type": "GWidget",
+              "name": "summary",
+              "x": 420,
+              "y": 560,
+              "width": 176,
+              "height": 54,
+              "_$child": [
+                {
+                  "_$id": "sbr063txt",
+                  "_$type": "GTextField",
+                  "name": "summaryText",
+                  "x": 38,
+                  "y": 0,
+                  "width": 130,
+                  "height": 54,
+                  "text": "",
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": false,
+                  "font": "Microsoft YaHei"
+                },
+                {
+                  "_$id": "summary_icon_img",
+                  "_$type": "GImage",
+                  "name": "buttonIcon",
+                  "x": 9,
+                  "y": 15,
+                  "width": 24,
+                  "height": 24,
+                  "src": "res://3cf62d8f-fddd-4ac4-b934-07aba6f265e9",
+                  "autoSize": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr066btn",
+              "_$type": "GWidget",
+              "name": "actions",
+              "x": 610,
+              "y": 560,
+              "width": 176,
+              "height": 54,
+              "_$child": [
+                {
+                  "_$id": "sbr065txt",
+                  "_$type": "GTextField",
+                  "name": "actionsText",
+                  "x": 38,
+                  "y": 0,
+                  "width": 130,
+                  "height": 54,
+                  "text": "",
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": false,
+                  "font": "Microsoft YaHei"
+                },
+                {
+                  "_$id": "actions_icon_img",
+                  "_$type": "GImage",
+                  "name": "buttonIcon",
+                  "x": 9,
+                  "y": 15,
+                  "width": 24,
+                  "height": 24,
+                  "src": "res://cfd4be1f-3d89-4189-bc68-804ebbe3d65a",
+                  "autoSize": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr068btn",
+              "_$type": "GWidget",
+              "name": "olderReport",
+              "x": 80,
+              "y": 614,
+              "width": 176,
+              "height": 54,
+              "_$child": [
+                {
+                  "_$id": "sbr067txt",
+                  "_$type": "GTextField",
+                  "name": "olderReportText",
+                  "x": 38,
+                  "y": 0,
+                  "width": 130,
+                  "height": 54,
+                  "text": "",
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": false,
+                  "font": "Microsoft YaHei"
+                },
+                {
+                  "_$id": "olderReport_icon_img",
+                  "_$type": "GImage",
+                  "name": "buttonIcon",
+                  "x": 9,
+                  "y": 15,
+                  "width": 24,
+                  "height": 24,
+                  "src": "res://01e0f924-5b4d-44e2-9d56-7e0fa9d42a56",
+                  "autoSize": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr070btn",
+              "_$type": "GWidget",
+              "name": "newerReport",
+              "x": 270,
+              "y": 614,
+              "width": 176,
+              "height": 54,
+              "_$child": [
+                {
+                  "_$id": "sbr069txt",
+                  "_$type": "GTextField",
+                  "name": "newerReportText",
+                  "x": 38,
+                  "y": 0,
+                  "width": 130,
+                  "height": 54,
+                  "text": "",
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": false,
+                  "font": "Microsoft YaHei"
+                },
+                {
+                  "_$id": "newerReport_icon_img",
+                  "_$type": "GImage",
+                  "name": "buttonIcon",
+                  "x": 9,
+                  "y": 15,
+                  "width": 24,
+                  "height": 24,
+                  "src": "res://24e3b62b-b254-4d2c-8dc0-afe9a56c226c",
+                  "autoSize": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr072btn",
+              "_$type": "GWidget",
+              "name": "reportClose",
+              "x": 1034,
+              "y": 614,
+              "width": 176,
+              "height": 54,
+              "_$child": [
+                {
+                  "_$id": "sbr071txt",
+                  "_$type": "GTextField",
+                  "name": "reportCloseText",
+                  "x": 38,
+                  "y": 0,
+                  "width": 130,
+                  "height": 54,
+                  "text": "",
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": false,
+                  "font": "Microsoft YaHei"
+                },
+                {
+                  "_$id": "reportClose_icon_img",
+                  "_$type": "GImage",
+                  "name": "buttonIcon",
+                  "x": 9,
+                  "y": 15,
+                  "width": 24,
+                  "height": 24,
+                  "src": "res://8d2bed56-0905-4210-87e2-33c86f8eb038",
+                  "autoSize": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr074btn",
+              "_$type": "GWidget",
+              "name": "previousPage",
+              "x": 340,
+              "y": 568,
+              "width": 176,
+              "height": 54,
+              "_$child": [
+                {
+                  "_$id": "sbr073txt",
+                  "_$type": "GTextField",
+                  "name": "previousPageText",
+                  "x": 38,
+                  "y": 0,
+                  "width": 130,
+                  "height": 54,
+                  "text": "",
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": false,
+                  "font": "Microsoft YaHei"
+                },
+                {
+                  "_$id": "previousPage_icon_img",
+                  "_$type": "GImage",
+                  "name": "buttonIcon",
+                  "x": 9,
+                  "y": 15,
+                  "width": 24,
+                  "height": 24,
+                  "src": "res://01e0f924-5b4d-44e2-9d56-7e0fa9d42a56",
+                  "autoSize": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr076btn",
+              "_$type": "GWidget",
+              "name": "nextPage",
+              "x": 540,
+              "y": 568,
+              "width": 176,
+              "height": 54,
+              "_$child": [
+                {
+                  "_$id": "sbr075txt",
+                  "_$type": "GTextField",
+                  "name": "nextPageText",
+                  "x": 38,
+                  "y": 0,
+                  "width": 130,
+                  "height": 54,
+                  "text": "",
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": false,
+                  "font": "Microsoft YaHei"
+                },
+                {
+                  "_$id": "nextPage_icon_img",
+                  "_$type": "GImage",
+                  "name": "buttonIcon",
+                  "x": 9,
+                  "y": 15,
+                  "width": 24,
+                  "height": 24,
+                  "src": "res://24e3b62b-b254-4d2c-8dc0-afe9a56c226c",
+                  "autoSize": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr096btn",
+              "_$type": "GWidget",
+              "name": "upgrade0",
+              "x": 70,
+              "y": 396,
+              "width": 360,
+              "height": 84,
+              "_$child": [
+                {
+                  "_$id": "sbr095txt",
+                  "_$type": "GTextField",
+                  "name": "upgrade0Text",
+                  "x": 0,
+                  "y": 0,
+                  "width": 360,
+                  "height": 84,
+                  "text": "",
+                  "fontSize": 19,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true
+                }
+              ]
+            },
+            {
+              "_$id": "sbr098btn",
+              "_$type": "GWidget",
+              "name": "upgrade1",
+              "x": 470,
+              "y": 396,
+              "width": 360,
+              "height": 84,
+              "_$child": [
+                {
+                  "_$id": "sbr097txt",
+                  "_$type": "GTextField",
+                  "name": "upgrade1Text",
+                  "x": 0,
+                  "y": 0,
+                  "width": 360,
+                  "height": 84,
+                  "text": "",
+                  "fontSize": 19,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true
+                }
+              ]
+            },
+            {
+              "_$id": "sbr100btn",
+              "_$type": "GWidget",
+              "name": "upgrade2",
+              "x": 870,
+              "y": 396,
+              "width": 360,
+              "height": 84,
+              "_$child": [
+                {
+                  "_$id": "sbr099txt",
+                  "_$type": "GTextField",
+                  "name": "upgrade2Text",
+                  "x": 0,
+                  "y": 0,
+                  "width": 360,
+                  "height": 84,
+                  "text": "",
+                  "fontSize": 19,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

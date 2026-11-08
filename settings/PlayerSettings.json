@@ -1,7 +1,7 @@
 {
   "resolution": {
-    "designWidth": 720,
-    "designHeight": 1280,
+    "designWidth": 1280,
+    "designHeight": 720,
     "backgroundColor": "#303030"
   },
   "2D": {

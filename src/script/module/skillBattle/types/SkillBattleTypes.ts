@@ -106,10 +106,11 @@ export interface ISkillBattleState {
     pouchSlots: Array<ISkillItemInstance | null>;
     upgradeIds: number[];
     nextSlashBonus: number;
+    keen: boolean;
 }
 
 export type ISkillBattleAction =
-    | { type: "skill"; skillId: number; stoneItemUid?: string }
+    | { type: "skill"; skillId: number; stoneItemUid?: string; itemUid?: string }
     | { type: "use_item"; itemUid: string };
 
 /** A confirmation applies only to the exact snapshot that was previewed. */
@@ -128,6 +129,8 @@ export type SkillBattleEvent =
     | { type: "intent_executed"; intentId: number; name: string }
     | { type: "round_started"; round: number; intentId: number; name: string }
     | { type: "battle_ended"; result: "victory" | "defeat" }
+    | { type: "keen_changed"; active: boolean; damage: number }
+    | { type: "passive_triggered"; id: number; name: string; value: number }
     | SkillSupplyEvent;
 
 export type SkillSupplyEvent =
@@ -160,6 +163,7 @@ export interface ISkillActionPreview {
     consumedItemUid: string | null;
     counterDamage: number;
     counterHpLoss: number;
+    keenDamage: number;
 }
 
 export interface ISkillActionResolution {

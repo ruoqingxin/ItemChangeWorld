@@ -100,7 +100,7 @@ test("generated package contains all 23 tables and loads all table APIs", () => 
     for (const name of Tables.getTableNames()) {
         assert.ok(Array.isArray(tables[name].getDataList()), name);
     }
-    assert.equal(tables.skill.getDataList().length, 4);
+    assert.equal(tables.skill.getDataList().length, 9);
     assert.equal(tables.skill_encounter.getDataList().length, 3);
     assert.equal(tables.skill_enemy_intent.getDataList().length, 8);
     assert.equal(tables.skill_enemy_intent_step.getDataList().length, 10);
@@ -225,23 +225,23 @@ test("a non-attacking player action expires an old enemy shield", () => {
     assert.equal(result.state.enemy.block, 0);
     assert.ok(result.events.some(e => e.type === "block_cleared" && e.target === "enemy" && e.amount === 6));
 });
-test("new enemy block survives its own turn and absorbs the next player attack", () => {
+test("enemy block is cleared at the end of its action round", () => {
     const state = start(3);
     state.enemyIntentIndex = 1;
     const first = runAction(state, 2);
-    assert.equal(first.state.enemy.block, 6);
+    assert.equal(first.state.enemy.block, 0);
     assert.equal(first.state.enemyIntentIndex, 2);
     const second = runAction(first.state, 1);
-    assert.equal(second.state.enemy.hp, 40);
-    assert.equal(second.preview.blockAbsorbed, 6);
+    assert.equal(second.state.enemy.hp, 34);
+    assert.equal(second.preview.blockAbsorbed, 0);
     assert.equal(second.state.enemy.block, 0);
 });
-test("remaining old enemy block is cleared before a new stone armor is granted", () => {
+test("enemy block does not persist into the next round", () => {
     const state = start(3);
     state.enemyIntentIndex = 1;
     state.enemy.block = 20;
     const result = runAction(state, 2);
-    assert.equal(result.state.enemy.block, 6);
+    assert.equal(result.state.enemy.block, 0);
 });
 test("break cancels an interruptible heavy attack and advances past it", () => {
     for (const encounterId of [2, 3]) {
@@ -350,13 +350,13 @@ test("preview and resolve are identical, pure, deterministic and consume no rand
         Math.random = oldRandom;
     }
 });
-test("all skills preserve weapon durability, including at 0 durability", () => {
+test("every active action spends one durability, while zero durability still allows base skills", () => {
     for (const durability of [0, 4, 5, 50]) {
         for (const skillId of [1, 2, 3, 4]) {
             const state = start();
             state.weaponDurability = durability;
             state.swordQi = 2;
-            assert.equal(runAction(state, skillId).state.weaponDurability, durability);
+            assert.equal(runAction(state, skillId).state.weaponDurability, Math.max(0, durability - 1));
         }
     }
 });
@@ -465,7 +465,7 @@ const strategies = [
 const expected = [
     [[4, "victory", 30], [6, "victory", 42], [6, "victory", 42]],
     [[5, "victory", 22], [9, "victory", 30], [9, "victory", 44]],
-    [[7, "defeat", 0], [12, "defeat", 0], [15, "victory", 50]],
+    [[7, "victory", 6], [9, "victory", 22], [9, "victory", 50]],
 ];
 const report = [];
 for (let e = 0; e < setups.length; e++) {
@@ -579,7 +579,7 @@ test("victory, defeat, reopening and encounter restart are independent", () => {
             result.events.forEach(event => p.applyEvent(event));
             p.finishPlayback();
         }
-        assert.equal(p.display.phase, id === 1 ? "victory" : "defeat");
+        assert.equal(p.display.phase, "victory");
         const end = m.state;
         p.open(setups[id - 1]);
         assert.deepEqual(p.display, end);

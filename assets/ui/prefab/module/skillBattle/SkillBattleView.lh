@@ -1,16 +1,84 @@
 {
-  "_$ver": 1,
-  "_$id": "skillbattle-root",
-  "_$type": "GWidget",
-  "name": "SkillBattleView",
-  "width": 720,
-  "height": 1280,
-  "_$comp": [
-    {
-      "_$type": "3593fc26-337e-42e3-92dc-1b9c2bb8f988",
-      "scriptPath": "../src/script/games/ui/components/ElementMapper.ts",
-      "elements": [],
-      "mapperType": 2
-    }
-  ]
+    "_$ver":  1,
+    "_$id":  "skillbattle-root",
+    "_$type":  "GWidget",
+    "name":  "SkillBattleView",
+    "width":  1280,
+    "height":  720,
+    "_$comp":  [
+                   {
+                       "_$type":  "3593fc26-337e-42e3-92dc-1b9c2bb8f988",
+                       "scriptPath":  "../src/script/games/ui/components/ElementMapper.ts",
+                       "adapter":  null,
+                       "elements":  [
+
+                                    ],
+                       "mapperType":  2
+                   }
+               ],
+    "_$child":  [
+                    {
+                        "_$id":  "skillbattle-bg",
+                        "_$type":  "GWidget",
+                        "name":  "battleBackground",
+                        "width":  1280,
+                        "height":  720
+                    },
+                    {
+                        "_$id":  "skillbattle-content",
+                        "_$type":  "GWidget",
+                        "name":  "battleContent",
+                        "width":  1280,
+                        "height":  720,
+                        "mouseThrough":  true,
+                        "_$child":  [
+                                        {
+                                            "_$id":  "skillbattle-header",
+                                            "_$type":  "GWidget",
+                                            "name":  "battleHeader",
+                                            "width":  1280,
+                                            "height":  88,
+                                            "mouseThrough":  true
+                                        },
+                                        {
+                                            "_$id":  "skillbattle-stage",
+                                            "_$type":  "GWidget",
+                                            "name":  "battleStage",
+                                            "x":  0,
+                                            "y":  88,
+                                            "width":  1280,
+                                            "height":  354,
+                                            "mouseThrough":  true
+                                        },
+                                        {
+                                            "_$id":  "skillbattle-status",
+                                            "_$type":  "GWidget",
+                                            "name":  "battleStatus",
+                                            "x":  0,
+                                            "y":  442,
+                                            "width":  1280,
+                                            "height":  178,
+                                            "mouseThrough":  true
+                                        },
+                                        {
+                                            "_$id":  "skillbattle-actions",
+                                            "_$type":  "GWidget",
+                                            "name":  "battleActions",
+                                            "x":  0,
+                                            "y":  620,
+                                            "width":  1280,
+                                            "height":  100,
+                                            "mouseThrough":  true
+                                        }
+                                    ]
+                    },
+                    {
+                        "_$id":  "skillbattle-overlay",
+                        "_$type":  "GWidget",
+                        "name":  "battleOverlay",
+                        "width":  1280,
+                        "height":  720,
+                        "visible":  false
+                    }
+                ]
 }

@@ -60,7 +60,7 @@ module.exports = ({ assert, test, setups, tables, Config, Rules, Manager, Presen
         p.selectPouch(1);
         assert.equal(p.selection.preview.blockGained, 4);
         p.selectPouch(1);
-        assert.equal(p.selection.preview.durabilityCost, 0);
+        assert.equal(p.selection.preview.durabilityCost, 1);
         p.selectPouch(0); p.cancel();
         assert.deepEqual(m.state, before);
         assert.equal(p.selectedAction, null);
@@ -109,7 +109,7 @@ module.exports = ({ assert, test, setups, tables, Config, Rules, Manager, Presen
             assert.ok(result.ok);
             assert.equal(result.preview.baseDamage, 14);
             assert.equal(result.preview.enchantDamage, expected);
-            assert.equal(result.state.weaponDurability, 45);
+            assert.equal(result.state.weaponDurability, 44);
         }
     });
     test("C: base and enchant hits consume one shared shield in order", () => {
@@ -126,7 +126,7 @@ module.exports = ({ assert, test, setups, tables, Config, Rules, Manager, Presen
             const state = start(); state.enemy.hp = 1;
             const result = resolve(state, skill(1, state.pouchSlots[slot].itemUid));
             assert.equal(result.state.phase, "victory");
-            assert.equal(result.state.weaponDurability, 45);
+            assert.equal(result.state.weaponDurability, 44);
             assert.equal(result.state.pouchSlots[slot], null);
             assert.equal(result.preview.enchantDamage, 0);
             assert.equal(result.preview.burnApplied, 0);
@@ -240,7 +240,7 @@ module.exports = ({ assert, test, setups, tables, Config, Rules, Manager, Presen
         assert.equal(manager.state.pouchSlots[3].itemUid, "second-fire");
         play(manager, skill(1, "second-fire"));
         assert.equal(manager.state.pouchSlots[3], null);
-        assert.equal(manager.state.weaponDurability, 40);
+        assert.equal(manager.state.weaponDurability, 38);
     });
     test("C: modified returned pouch snapshots cannot mutate manager-owned instances", () => {
         const manager = new Manager(), initial = manager.start(setup);
@@ -317,7 +317,7 @@ module.exports = ({ assert, test, setups, tables, Config, Rules, Manager, Presen
         choose(expedition);
         const second = expedition.continueNext();
         assert.equal(second.player.hp, first.player.hp);
-        assert.equal(second.weaponDurability, 45);
+        assert.equal(second.weaponDurability, 42);
         assert.deepEqual(second.pouchSlots, first.pouchSlots);
         assert.equal(second.enemyBurn, 0);
         assert.equal(second.swordQi, 0);
@@ -333,7 +333,7 @@ module.exports = ({ assert, test, setups, tables, Config, Rules, Manager, Presen
         choose(expedition);
         const third = expedition.continueNext();
         assert.equal(third.player.hp, beforeThird.player.hp);
-        assert.equal(third.weaponDurability, 40);
+        assert.equal(third.weaponDurability, 34);
         assert.deepEqual(third.pouchSlots, [null, null, null, null, null]);
         assert.equal(manager.confirmAction(skill(1), token).ok, false);
     });
@@ -352,7 +352,7 @@ module.exports = ({ assert, test, setups, tables, Config, Rules, Manager, Presen
         assert.deepEqual(manager.state, result);
         const fresh = expedition.startNew(43);
         assert.equal(fresh.player.hp, 50);
-        assert.equal(fresh.weaponDurability, 50);
+        assert.equal(fresh.weaponDurability, 27);
         assert.equal(fresh.pouchSlots.filter(Boolean).length, 0);
         assert.notEqual(fresh.battleId, result.battleId);
     });
