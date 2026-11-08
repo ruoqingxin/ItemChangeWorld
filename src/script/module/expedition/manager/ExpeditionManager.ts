@@ -1,4 +1,4 @@
-import { SkillBattleManager } from "../../skillBattle/manager/SkillBattleManager";
+﻿import { SkillBattleManager } from "../../skillBattle/manager/SkillBattleManager";
 import { SkillBattleFormulaUtils as Rules } from "../../skillBattle/utils/SkillBattleFormulaUtils";
 import type { ISkillBattleAction, ISkillBattleCarry, ISkillBattleState } from "../../skillBattle/types/SkillBattleTypes";
 import { ExpeditionData, ExpeditionLocalStorage } from "../data/ExpeditionData";
@@ -6,6 +6,8 @@ import type { IExpeditionConfig, IExpeditionSave, IExpeditionState, IExpeditionS
 import { ExpeditionSaveUtils } from "../utils/ExpeditionSaveUtils";
 import { ExpeditionStatsUtils } from "../utils/ExpeditionStatsUtils";
 import { ExpeditionBuildUtils } from "../utils/ExpeditionBuildUtils";
+import { ExpeditionMapUtils } from "../utils/ExpeditionMapUtils";
+import type { IExpeditionMapNode, IExpeditionMapState } from "../types/ExpeditionMapTypes";
 
 /** Owns the run and profile in one transactional local snapshot. */
 export class ExpeditionManager {
@@ -18,6 +20,22 @@ export class ExpeditionManager {
         this.config = ExpeditionData.clone(config);
         this.signature = JSON.stringify(this.config);
         try {
+            if (this.config.map) {
+                ExpeditionMapUtils.validateConfig(this.config.map);
+                for (const node of this.config.map.nodes.filter(node =>
+                    ["battle", "elite", "boss"].includes(node.type))) {
+                    if (!this.config.encounters[node.encounterIndex ?? -1])
+                        throw new Error(`地图战斗节点 ${node.id} 缺少遭遇配置`);
+                }
+            }
+            if (this.config.build) {
+                for (const encounter of this.config.encounters) {
+                    for (const skill of this.config.build.skills) {
+                        if (!encounter.skills.some(row => row.id === skill.id))
+                            throw new Error(`构筑技能 ${skill.id} 在遭遇 ${encounter.encounterId} 中缺少战斗定义`);
+                    }
+                }
+            }
             const raw = storage.read();
             if (raw === null) {
                 this.commit(this.createTestProfile());
@@ -25,7 +43,7 @@ export class ExpeditionManager {
             }
             else {
                 const save = JSON.parse(raw) as IExpeditionSave;
-                ExpeditionSaveUtils.upgradeLegacy(save);
+                ExpeditionSaveUtils.upgradeLegacy(save, this.config, this.signature);
                 ExpeditionSaveUtils.validate(save, this.config, this.signature);
                 this.data.snapshot = save;
                 if (save.run) this.battle.restore(this.setup, save.run.battle);
@@ -46,12 +64,16 @@ export class ExpeditionManager {
         if (!build || !build.activeSkills.length) return setup;
         const activeIds = new Set(build.activeSkills.map(skill => skill.skillId));
         const selected = setup.skills.filter(skill => activeIds.has(skill.id));
-        if (selected.length) setup.skills = selected;
+        if (selected.length !== activeIds.size) throw new Error("已装配技能缺少战斗定义");
+        setup.skills = selected;
         return setup;
     }
     get configuration(): IExpeditionConfig { return ExpeditionData.clone(this.config); }
     get active(): boolean { const run = this.data.snapshot?.run; return !!run && !run.settled; }
     get build() { return this.run?.build ? ExpeditionData.clone(this.run.build) : null; }
+    get map(): IExpeditionMapState | null { return this.run?.map ? ExpeditionData.clone(this.run.map) : null; }
+    get mapConfig() { return this.config.map ? ExpeditionData.clone(this.config.map) : null; }
+    get usesMap(): boolean { return !!this.config.map; }
 
     startNew(seed = (Math.random() * 0x100000000) >>> 0): ISkillBattleState {
         const save = this.requireSave();
@@ -61,20 +83,24 @@ export class ExpeditionManager {
         if (save.run) save.history = save.history.concat(save.run.report).slice(-20);
         const runId = `${profile.profileId}_run_${profile.nextRunIndex++}`;
         let rngState = seed;
-        const build = this.config.build ? ExpeditionBuildUtils.create(this.config.build, () => {
+        const random = () => {
             rngState = (Math.imul(rngState, 1664525) + 1013904223) >>> 0;
             return rngState / 0x100000000;
-        }) : undefined;
+        };
+        const build = this.config.build ? ExpeditionBuildUtils.create(this.config.build, random) : undefined;
+        const map = this.config.map ? ExpeditionMapUtils.createState(this.config.map) : undefined;
         const carry: ISkillBattleCarry = {
             playerHp: setup.playerMaxHp, playerMaxHp: setup.playerMaxHp, weaponId: profile.weaponId,
             weaponDurability: profile.weaponDurability, pouchSlots: profile.pouchSlots, upgradeIds: [],
         };
         const state = Rules.startBattle(setup, `${runId}_battle_1`, carry);
-        save.run = { runId, seed, rngState, encounterIndex: 0, phase: "battle",
+        const report = ExpeditionStatsUtils.create({ runId, seed, battle: state });
+        if (map) report.battles = [];
+        save.run = { runId, seed, rngState, encounterIndex: 0, phase: map ? "map" : "battle",
             loot: [], upgradeIds: [], pendingUpgradeChoices: [], settled: false, battle: state,
-            report: ExpeditionStatsUtils.create({ runId, seed, battle: state }),
+            report,
             allowedUpgradeIds: this.config.upgrades.filter(row => !row.requiredCollectionId ||
-                profile.collectionIds.includes(row.requiredCollectionId)).map(row => row.id), build };
+                profile.collectionIds.includes(row.requiredCollectionId)).map(row => row.id), build, map };
         profile.pouchSlots = [null, null, null, null, null];
         this.commit(save);
         this.battle.restore(setup, state);
@@ -83,7 +109,7 @@ export class ExpeditionManager {
 
     chooseStartingSkill(skillId: number): void {
         const save = this.requireSave(), run = save.run;
-        if (!run || !run.build || run.phase !== "battle" || run.battle.revision !== 0)
+        if (!run || !run.build || !["map", "battle"].includes(run.phase) || run.battle.revision !== 0)
             throw new Error("当前不是起始借法阶段");
         run.build = ExpeditionBuildUtils.chooseStartingSkill(run.build, skillId, this.config.build!);
         this.commit(save);
@@ -191,6 +217,10 @@ export class ExpeditionManager {
 
     continueNext(): ISkillBattleState {
         const save = this.requireSave(), run = save.run;
+        if (run?.map) {
+            this.returnToMap();
+            return this.battle.state!;
+        }
         if (!run || run.phase !== "decision" || run.settled || run.encounterIndex >= 2)
             throw new Error("选择强化后才能进入下一战");
         const previous = run.battle;
@@ -205,6 +235,116 @@ export class ExpeditionManager {
         this.commit(save);
         this.battle.restore(setup, state);
         return this.battle.state!;
+    }
+
+    mapNode(nodeId: string): IExpeditionMapNode | null {
+        if (!this.config.map) return null;
+        return ExpeditionData.clone(ExpeditionMapUtils.node(this.config.map, nodeId));
+    }
+
+    mapCanEnter(nodeId: string): boolean {
+        const run = this.run;
+        if (!run?.map || !this.config.map || run.phase !== "map" || run.settled) return false;
+        return ExpeditionMapUtils.canMove(this.config.map, run.map, nodeId);
+    }
+
+    mapReachableNodes(): string[] {
+        const run = this.run;
+        if (!run?.map || !this.config.map || run.phase !== "map" || run.settled) return [];
+        return this.config.map.nodes.filter(node =>
+            node.id !== run.map!.currentNodeId &&
+            ExpeditionMapUtils.canMove(this.config.map!, run.map!, node.id)).map(node => node.id);
+    }
+
+    mapRemainingMs(now = Date.now()): number {
+        const map = this.run?.map;
+        return map ? Math.max(0, map.deadlineAt - now) : 0;
+    }
+
+    /** Moves to a node and resolves non-combat interactions in one atomic save. */
+    enterMapNode(nodeId: string): "battle" | "extract" | "event" | "move" {
+        const save = this.requireSave(), run = save.run, map = run?.map, config = this.config.map;
+        if (!run || !map || !config || run.settled) throw new Error("当前没有可用地图");
+        if (run.phase !== "map") throw new Error("当前不在战外地图阶段");
+        if (run.build?.pendingActiveCandidateIds.length || run.build?.pendingPassiveCandidateIds.length)
+            throw new Error("请先处理当前借法或参悟候选");
+        const target = ExpeditionMapUtils.node(config, nodeId);
+        ExpeditionMapUtils.requireRevealed(config, map, nodeId);
+        ExpeditionMapUtils.advance(map, nodeId);
+        ExpeditionMapUtils.reveal(map, config, target.stage + 1);
+        const resolved = map.resolvedIds.includes(nodeId);
+        if (["battle", "elite", "boss"].includes(target.type) && !resolved) {
+            this.startMapBattle(save, target, map);
+            return "battle";
+        }
+        if (target.type === "extract") {
+            this.commit(save);
+            return "extract";
+        }
+        if (resolved) {
+            this.commit(save);
+            return "move";
+        }
+        map.resolvedIds.push(nodeId);
+        if (target.type === "borrow" && run.build && this.config.build) {
+            const candidates = ExpeditionBuildUtils.activeCandidates(run.build, this.config.build, () => {
+                run.rngState = (Math.imul(run.rngState, 1664525) + 1013904223) >>> 0;
+                return run.rngState / 0x100000000;
+            });
+            run.build = { ...run.build, pendingActiveCandidateIds: candidates };
+        } else if (target.type === "enlightenment" && run.build && this.config.build) {
+            const available = this.config.build.passives.filter(passive =>
+                !run.build!.passiveIds.includes(passive.id) &&
+                (run.build!.schools.includes(passive.school) || passive.school === "universal"));
+            if (available.length) {
+                run.build = { ...run.build, pendingPassiveChoices: run.build.pendingPassiveChoices + 1 };
+                const candidates = ExpeditionBuildUtils.passiveCandidates(run.build, this.config.build, () => {
+                    run.rngState = (Math.imul(run.rngState, 1664525) + 1013904223) >>> 0;
+                    return run.rngState / 0x100000000;
+                });
+                run.build = { ...run.build, pendingPassiveCandidateIds: candidates };
+            }
+        } else if (target.type === "search" && run.loot.length < 6) {
+            run.rngState = (Math.imul(run.rngState, 1664525) + 1013904223) >>> 0;
+            const loot = this.config.loot[Math.floor(run.rngState / 0x100000000 * this.config.loot.length)];
+            if (loot) run.loot.push({ itemUid: `${run.runId}_search_${nodeId}`, itemId: loot.itemId });
+        } else if (target.type === "recovery") {
+            const maximum = run.battle.player.maxHp;
+            if (run.battle.player.hp >= maximum) throw new Error("生命已满，无需使用恢复点");
+            run.battle.player.hp = Math.min(maximum, run.battle.player.hp +
+                Math.ceil(maximum * config.recoveryRate));
+        }
+        this.commit(save);
+        return "event";
+    }
+
+    returnToMap(): IExpeditionMapState {
+        const save = this.requireSave(), run = save.run;
+        if (!run?.map || run.settled) throw new Error("当前没有进行中的地图");
+        if (run.phase !== "decision") throw new Error("处理完战后奖励后才能返回地图");
+        run.phase = "map";
+        run.map.battleNodeId = null;
+        this.commit(save);
+        return ExpeditionData.clone(run.map);
+    }
+
+    extractMap(nodeId: string): boolean {
+        const save = this.requireSave(), run = save.run, config = this.config.map;
+        if (!run?.map || !config || run.settled) throw new Error("当前没有可撤离的地图");
+        const target = ExpeditionMapUtils.node(config, nodeId);
+        if (target.type !== "extract" || run.map.currentNodeId !== nodeId)
+            throw new Error("只有到达撤离点后才能离境");
+        this.settle(save, true);
+        this.commit(save);
+        return true;
+    }
+
+    expireMap(now = Date.now()): boolean {
+        const save = this.requireSave(), run = save.run;
+        if (!run?.map || run.settled || now < run.map.deadlineAt) return false;
+        this.settle(save, false);
+        this.commit(save);
+        return true;
     }
 
     extract(): boolean {
@@ -261,15 +401,31 @@ export class ExpeditionManager {
         const save = this.requireSave(), run = save.run;
         if (!run || run.settled || run.phase !== "battle" || run.battle.battleId !== state.battleId ||
             run.battle.revision + 1 !== state.revision) throw new Error("战斗与秘境存档不同步，请重新载入");
-        if (run.build && !run.build.activeSkills.length) throw new Error("请先完成起始借法选择");
+        if (this.config.requireBuildSelection && run.build && !run.build.activeSkills.length) throw new Error("请先完成起始借法选择");
         run.battle = Rules.cloneState(state);
         run.report.battles[run.report.battles.length - 1].actions.push({ ...action });
         if (state.phase === "defeat") this.settle(save, false);
         else if (state.phase === "victory") {
-            this.config.rewards[run.encounterIndex].forEach((itemId, index) => run.loot.push({
-                itemUid: `${run.runId}_loot_${run.encounterIndex}_${index}`, itemId,
-            }));
-            if (run.encounterIndex === 2) this.settle(save, true);
+            const reward = this.config.rewards[run.encounterIndex] || [];
+            reward.forEach((itemId, index) => {
+                if (run.loot.length >= 6) return;
+                run.loot.push({
+                    itemUid: `${run.runId}_loot_${run.map ? `map_${run.map.battleCount}` : run.encounterIndex}_${index}`,
+                    itemId,
+                });
+            });
+            if (run.map) {
+                const nodeId = run.map.battleNodeId;
+                const node = nodeId && this.config.map
+                    ? ExpeditionMapUtils.node(this.config.map, nodeId) : null;
+                if (node && !run.map.resolvedIds.includes(node.id)) run.map.resolvedIds.push(node.id);
+                if (node) ExpeditionMapUtils.reveal(run.map, this.config.map!, node.stage + 1);
+                run.pendingUpgradeChoices = this.createChoices(run);
+                run.report.choices.push({ encounterIndex: run.encounterIndex,
+                    battleIndex: run.map.battleCount - 1,
+                    ids: run.pendingUpgradeChoices.slice(), selectedId: null });
+                run.phase = run.pendingUpgradeChoices.length ? "reward" : "decision";
+            } else if (run.encounterIndex === 2) this.settle(save, true);
             else {
                 run.pendingUpgradeChoices = this.createChoices(run);
                 run.report.choices.push({ encounterIndex: run.encounterIndex,
@@ -278,6 +434,24 @@ export class ExpeditionManager {
             }
         }
         this.commit(save);
+    }
+
+    private startMapBattle(save: IExpeditionSave, node: IExpeditionMapNode, map: IExpeditionMapState): void {
+        const run = save.run!, setup = this.config.encounters[node.encounterIndex ?? 0];
+        const previous = run.battle;
+        map.battleNodeId = node.id;
+        map.battleCount++;
+        run.encounterIndex = node.encounterIndex ?? 0;
+        const state = Rules.startBattle(setup, `${run.runId}_map_battle_${map.battleCount}`, {
+            playerHp: previous.player.hp, playerMaxHp: previous.player.maxHp,
+            weaponId: previous.weaponId, weaponDurability: previous.weaponDurability,
+            pouchSlots: previous.pouchSlots, upgradeIds: run.upgradeIds,
+        });
+        run.battle = state;
+        run.report.battles.push({ initial: Rules.cloneState(state), actions: [] });
+        run.phase = "battle";
+        this.commit(save);
+        this.battle.restore(setup, state);
     }
 
     private createChoices(run: IExpeditionState): number[] {
@@ -296,7 +470,7 @@ export class ExpeditionManager {
         if (run.settled || profile.settledRunIds.includes(run.runId)) throw new Error("该秘境已经结算");
         if (success) profile.warehouse.push(...run.loot.map(item => ({ ...item })));
         run.report.outcome = success ? "extracted" : "failed";
-        run.report.exitEncounter = run.encounterIndex + 1;
+        run.report.exitEncounter = run.map ? run.map.battleCount : run.encounterIndex + 1;
         run.report.broughtLoot = success ? run.loot.map(item => ({ ...item })) : [];
         run.report.remainingPouch = success ? run.battle.pouchSlots.map(item => item ? { ...item } : null)
             : [null, null, null, null, null];
@@ -353,3 +527,4 @@ export class ExpeditionManager {
         this.data.snapshot = ExpeditionData.clone(save);
     }
 }
+

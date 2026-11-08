@@ -65,12 +65,10 @@ module.exports = ({ assert, test, setups, tables, Config, Rules, Manager, Presen
         const buildConfig = {
             schools: ["sword", "earth", "universal"],
             skills: [
-                { id: 101, name: "剑一", school: "sword" },
-                { id: 102, name: "剑二", school: "sword" },
-                { id: 103, name: "剑三", school: "sword" },
-                { id: 201, name: "土一", school: "earth" },
-                { id: 202, name: "土二", school: "earth" },
-                { id: 203, name: "土三", school: "earth" },
+                { id: 1, name: "剑一", school: "sword" },
+                { id: 2, name: "剑二", school: "sword" },
+                { id: 3, name: "土一", school: "earth" },
+                { id: 4, name: "土二", school: "earth" },
             ],
             passives: [
                 { id: 301, name: "厚垒", school: "earth" },
@@ -109,6 +107,60 @@ module.exports = ({ assert, test, setups, tables, Config, Rules, Manager, Presen
         const saved = c.expedition.build;
         const restored = reload(c).expedition.build;
         assert.deepEqual(restored, saved);
+    });
+
+    test("F: formal UI config exposes the real build pool and starts with one combat skill", () => {
+        const formal = ExpeditionConfigUtils.read(tables, true);
+        assert.ok(formal.build);
+        assert.deepEqual(formal.build.schools, ["sword", "earth", "universal"]);
+        assert.ok(formal.build.skills.length >= 4);
+        assert.ok(formal.build.skills.some(skill => skill.school === "sword"));
+        assert.ok(formal.build.skills.some(skill => skill.school === "earth"));
+        assert.ok(formal.build.passives.length >= 3);
+        for (const skill of formal.build.skills)
+            assert.ok(formal.encounters.every(encounter => encounter.skills.some(row => row.id === skill.id)));
+        const c = create(storage(), { ...formal, requireBuildSelection: true });
+        c.expedition.startNew(42);
+        const candidates = c.expedition.build.startCandidates;
+        assert.equal(candidates.length, 3);
+        const battleBeforeChoice = c.battle.state;
+        c.expedition.chooseStartingSkill(candidates[0]);
+        assert.deepEqual(c.expedition.setup.skills.map(skill => skill.id), [candidates[0]]);
+        assert.deepEqual(c.battle.state, battleBeforeChoice);
+        assert.equal(c.expedition.build.activeSkills[0].level, 0);
+    });
+
+    test("F: missing build skill definitions block initialization without touching the save", () => {
+        const store = storage();
+        store.value = "existing save";
+        const cfg = { ...config, build: { schools: ["sword", "earth"],
+            skills: [{ id: 99999, name: "missing", school: "sword" }], passives: [] } };
+        const expedition = new ExpeditionManager(cfg, new Manager(), store);
+        assert.match(expedition.error, /缺少战斗定义/);
+        assert.equal(store.value, "existing save");
+        assert.equal(store.writes, 0);
+    });
+
+    test("F: legacy and new-rules local storage namespaces are isolated", () => {
+        const { ExpeditionLocalStorage } = require(path.join(build, "script/module/expedition/data/ExpeditionData.js"));
+        const original = global.window;
+        const values = new Map();
+        global.window = { localStorage: {
+            getItem(key) { return values.has(key) ? values.get(key) : null; },
+            setItem(key, value) { values.set(key, value); },
+        } };
+        try {
+            const legacy = new ExpeditionLocalStorage();
+            const newer = new ExpeditionLocalStorage("new-rules");
+            legacy.write("old");
+            assert.equal(newer.read(), null);
+            newer.write("new");
+            assert.equal(legacy.read(), "old");
+            assert.equal(newer.read(), "new");
+        } finally {
+            if (original === undefined) delete global.window;
+            else global.window = original;
+        }
     });
 
     test("D: exported upgrades, reward groups and loot values exactly match the route", () => {

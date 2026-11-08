@@ -3,14 +3,17 @@ import type { SkillBattleEvent } from "../types/SkillBattleTypes";
 import { SkillBattleManager } from "../manager/SkillBattleManager";
 import { SkillBattleFormulaUtils } from "../utils/SkillBattleFormulaUtils";
 import { ExpeditionManager } from "../../expedition/manager/ExpeditionManager";
-import type { IExpeditionConfig } from "../../expedition/types/ExpeditionTypes";
+import type { IExpeditionConfig, IExpeditionState } from "../../expedition/types/ExpeditionTypes";
+import type { IExpeditionBuildState } from "../../expedition/types/ExpeditionBuildTypes";
 import { ExpeditionStatsUtils } from "../../expedition/utils/ExpeditionStatsUtils";
 import type { UIBaseView } from "../../../games/ui/UIBaseView";
 
 const C = { bg: "#111713", surface: "#17221c",
     line: "#637060", text: "#ece9dc", muted: "#aab4a7", jade: "#8fc7ae",
     red: "#d69884", gold: "#d8bd7c", ink: "#080d0b" };
-type SkillBattleScreen = "start" | "battle" | "settlement";
+const schoolLabel = (school: string): string =>
+    ({ sword: "剑道", earth: "土道", universal: "通用" } as { [key: string]: string })[school] || school;
+type SkillBattleScreen = "start" | "battle" | "map" | "settlement";
 const OVERLAY_LABELS = [
     "overlayBrand", "currency", "resultTitle", "resultDetail", "section", "overlayMessage",
     "choiceTitle", "reportBody", "page",
@@ -21,7 +24,7 @@ const BATTLE_LABELS = [
 ];
 const BATTLE_BUTTONS = [
     "battleReport", "loot", "skip", "cancel", "confirm", "previousPage", "nextPage",
-    "continue", "extract", "hub", "lootClose",
+    "continue", "extract", "hub", "lootClose", "build",
     "report", "summary", "actions", "olderReport", "newerReport", "reportClose",
     ...Array.from({ length: 4 }, (_, i) => `skill${i + 1}`),
     ...Array.from({ length: 5 }, (_, i) => `pouch${i}`),
@@ -29,12 +32,12 @@ const BATTLE_BUTTONS = [
 ];
 const START_BUTTONS = [
     "previousPage", "nextPage", "newRun", "reset", "resetYes", "resetNo",
-    "report", "summary", "actions", "olderReport", "newerReport", "reportClose",
+    "report", "summary", "actions", "olderReport", "newerReport", "reportClose", "build",
     ...Array.from({ length: 6 }, (_, i) => `warehouse${i}`),
 ];
 const SETTLEMENT_BUTTONS = [
     "lootClose", "hub", "report", "summary", "actions", "olderReport", "newerReport",
-    "reportClose", "previousPage", "nextPage",
+    "reportClose", "previousPage", "nextPage", "build",
 ];
 
 /** Binds the skill-battle logic to nodes authored in the active Laya prefab. */
@@ -63,6 +66,8 @@ export class SkillBattlePanel {
     private reportMode: "summary" | "actions" = "summary";
     private reportPage = 0;
     private reportIndex = 0;
+    private showBuild = false;
+    private replacementSkillId = 0;
 
     private root: Laya.GWidget;
 
@@ -86,6 +91,7 @@ export class SkillBattlePanel {
             const label = this.labels[name] = element<Laya.GTextField>(name);
             if (!label) throw new Error(`${this.screen} 预制缺少文本节点: ${name}`);
             label.color = labelColors[name] || C.text;
+            if (name === "preview") label.fontSize = 16;
             label.textIns.color = label.color;
             label.textIns.bgColor = null as any;
             label.textIns.borderColor = null as any;
@@ -108,7 +114,7 @@ export class SkillBattlePanel {
             continue: "继续深入", extract: "带上战利品撤离", hub: "返回据点", newRun: "开始新一局",
             lootClose: "返回据点", reset: "重置测试档", resetYes: "确认清空并补发测试物资",
             resetNo: "取消", report: "战斗记录", summary: "统计", actions: "行动日志",
-            olderReport: "上一局", newerReport: "下一局", reportClose: "返回",
+            olderReport: "上一局", newerReport: "下一局", reportClose: "返回", build: "构筑",
         };
 
         const buttonNames = this.screen === "battle" ? BATTLE_BUTTONS
@@ -135,6 +141,7 @@ export class SkillBattlePanel {
 
         const bind = (key: string, click: () => void) => this.buttons[key]?.on(Laya.Event.CLICK, this, click);
         bind("battleReport", () => this.openReport());
+        bind("build", () => this.openBuild());
         bind("loot", () => { if (!this.presenter.busy) { this.showLoot = true; this.refresh(); } });
         bind("skip", () => this.skip());
         bind("cancel", () => { this.presenter.cancel(); this.refresh(); });
@@ -151,6 +158,8 @@ export class SkillBattlePanel {
 
     openEncounter(): void {
         this.stopEffects();
+        this.showBuild = false;
+        this.replacementSkillId = 0;
         this.presenter.open(this.expedition.setup);
         this.lastEvent = "";
         this.drawActors(this.expedition.setup.encounterId);
@@ -159,6 +168,8 @@ export class SkillBattlePanel {
 
     openHubScreen(): void {
         this.stopEffects();
+        this.showBuild = false;
+        this.replacementSkillId = 0;
         this.presenter.open(this.expedition.setup);
         this.presenter.finishPlayback();
         this.showHub = true;
@@ -169,8 +180,17 @@ export class SkillBattlePanel {
 
     startRun(): void {
         this.runCommand(() => {
-            if (!this.expedition.active) this.expedition.startNew();
-            this.navigate?.("battle");
+            if (!this.expedition.active) {
+                this.expedition.startNew();
+                this.refresh();
+                return;
+            }
+            if (!this.expedition.build?.activeSkills.length) {
+                this.notice = "请先选择起始借法";
+                this.refresh();
+                return;
+            }
+            this.navigate?.(this.expedition.usesMap ? "map" : "battle");
         });
     }
 
@@ -180,6 +200,8 @@ export class SkillBattlePanel {
 
     openSettlementScreen(): void {
         this.stopEffects();
+        this.showBuild = false;
+        this.replacementSkillId = 0;
         this.presenter.finishPlayback();
         this.showHub = false;
         this.showLoot = true;
@@ -368,9 +390,9 @@ export class SkillBattlePanel {
             : p.selectedAction?.type === "use_item" ? "疗伤丹" : terminal ? "此战已决" : "待出招";
         this.labels.preview.text = p.busy ? this.lastEvent : p.message || (preview
             ? `${p.selectedAction?.type === "use_item" ? `恢复生命 ${preview.healAmount} · 占用本回合行动`
-                : `伤害 ${preview.baseDamage}/${preview.enchantDamage} · 吸收 ${preview.blockAbsorbed + preview.enchantBlockAbsorbed} · 失血 ${preview.enemyHpLoss + preview.enchantHpLoss} · 灼烧 ${preview.burnApplied}/${preview.burnDamage}`}\n`
-                + `${preview.interrupted ? "打断意图" : `受伤 ${preview.playerHpLoss}`} · 护盾 ${preview.blockGained} · 反击 ${preview.counterHpLoss} · 剑势 ${preview.qiAfterAction}/${preview.qiCost}\n`
-                + `耐久 -${preview.durabilityCost} · 物品 -${preview.consumedItemUid ? 1 : 0}`
+                : `伤害 ${preview.baseDamage}+${preview.enchantDamage} · 护盾吸收 ${preview.blockAbsorbed + preview.enchantBlockAbsorbed} · 失血 ${preview.enemyHpLoss + preview.enchantHpLoss} · 灼烧 ${preview.burnApplied}/${preview.burnDamage}`}\n`
+                + `${preview.interrupted ? "打断意图" : `受伤 ${preview.playerHpLoss}`} · 护盾 +${preview.blockGained} · 反击 ${preview.counterHpLoss}`
+                + ` · 剑势 ${preview.qiAfterAction}/${preview.qiCost} · 耐久/物品 -${preview.durabilityCost}/-${preview.consumedItemUid ? 1 : 0}`
             : "");
         this.refreshResult();
         if (!p.busy) {
@@ -382,12 +404,28 @@ export class SkillBattlePanel {
     private bindResultActions(bind: (key: string, click: () => void) => void): void {
         for (let i = 0; i < 3; i++) {
             bind(`upgrade${i}`, () => this.runOverlayCommand(() => this.runCommand(() => {
+                const build = this.expedition.run?.build;
+                if (this.showBuild && build) {
+                    this.selectBuildEntry(build, i);
+                    return;
+                }
                 const id = this.expedition.run.pendingUpgradeChoices[i];
                 this.expedition.chooseUpgrade(id);
             })));
         }
         for (let i = 0; i < 6; i++) {
             bind(`warehouse${i}`, () => this.runOverlayCommand(() => this.runCommand(() => {
+                const build = this.expedition.run?.build;
+                if (this.showBuild && build) {
+                    this.selectBuildEntry(build, i);
+                    return;
+                }
+                if (this.screen === "start" && build && !this.expedition.run?.settled &&
+                    !build.activeSkills.length) {
+                    const skillId = build.startCandidates[i];
+                    if (skillId !== undefined) this.expedition.chooseStartingSkill(skillId);
+                    return;
+                }
                 const item = this.expedition.snapshot.profile.warehouse[this.warehousePage * 6 + i];
                 if (!item) return;
                 const loot = this.expedition.configuration.loot.find(row => row.itemId === item.itemId);
@@ -406,6 +444,13 @@ export class SkillBattlePanel {
             this.refresh();
         });
         bind("continue", () => {
+            if (this.expedition.run?.map) {
+                this.runOverlayCommand(() => this.runCommand(() => {
+                    this.expedition.returnToMap();
+                    this.navigate?.("map");
+                }));
+                return;
+            }
             this.continueNext();
             if (this.expedition.run?.phase === "battle") this.navigate?.("battle");
         });
@@ -416,10 +461,16 @@ export class SkillBattlePanel {
         bind("hub", () => {
             this.showHub = true; this.notice = ""; this.refresh(); this.navigate?.("start");
         });
-        bind("newRun", () => this.runOverlayCommand(() => this.runCommand(() => {
-            if (!this.expedition.active) this.expedition.startNew();
-            this.showHub = false; this.notice = ""; this.navigate?.("battle");
-        })));
+        bind("newRun", () => {
+            if (this.screen === "start") {
+                this.startRun();
+                return;
+            }
+            this.runOverlayCommand(() => this.runCommand(() => {
+                if (!this.expedition.active) this.expedition.startNew();
+                this.showHub = false; this.notice = ""; this.navigate?.("battle");
+            }));
+        });
         bind("lootClose", () => {
             this.showLoot = false; this.refresh();
             if (this.screen === "settlement") this.navigate?.("start");
@@ -430,7 +481,19 @@ export class SkillBattlePanel {
             this.resetConfirm = false; this.showHub = true; this.notice = ""; this.navigate?.("start");
         })));
         bind("resetNo", () => { this.resetConfirm = false; this.refresh(); });
-        bind("report", () => this.openReport());
+        bind("report", () => {
+            if (this.showBuild) {
+                const build = this.expedition.run?.build;
+                if (this.replacementSkillId) {
+                    this.replacementSkillId = 0;
+                    this.refresh();
+                } else if (build?.pendingActiveCandidateIds.length) {
+                    this.runOverlayCommand(() => this.runCommand(() => this.expedition.skipActiveChoice()));
+                }
+                return;
+            }
+            this.openReport();
+        });
         bind("summary", () => {
             this.reportMode = "summary"; this.reportPage = 0; this.refresh();
         });
@@ -443,7 +506,74 @@ export class SkillBattlePanel {
         bind("newerReport", () => {
             this.reportIndex++; this.reportPage = 0; this.refresh();
         });
-        bind("reportClose", () => { this.showReport = false; this.refresh(); });
+        bind("reportClose", () => {
+            if (this.showBuild) {
+                if (this.replacementSkillId) this.replacementSkillId = 0;
+                else this.showBuild = false;
+                this.refresh();
+                return;
+            }
+            this.showReport = false; this.refresh();
+        });
+    }
+
+    private openBuild(): void {
+        const run = this.expedition.run;
+        if (this.presenter.busy) return;
+        if (!run?.build || run.settled) {
+            this.notice = "当前没有可查看的局内构筑";
+            this.refresh();
+            return;
+        }
+        this.showBuild = true;
+        this.replacementSkillId = 0;
+        this.notice = "";
+        if (!run.build.pendingActiveCandidateIds.length && run.build.pendingPassiveChoices > 0 &&
+            !run.build.pendingPassiveCandidateIds.length) {
+            try {
+                this.expedition.passiveCandidates();
+            } catch (error) {
+                this.notice = (error as Error).message;
+            }
+        }
+        this.refresh();
+    }
+
+    private selectBuildEntry(build: IExpeditionBuildState, index: number): void {
+        if (!this.canManageBuild()) return;
+        if (this.replacementSkillId) {
+            const oldSkill = build.activeSkills[index];
+            if (!oldSkill) return;
+            this.expedition.replaceActive(oldSkill.skillId, this.replacementSkillId);
+            this.replacementSkillId = 0;
+            this.notice = "替换完成，强化档位已继承";
+            return;
+        }
+        const activeCandidate = build.pendingActiveCandidateIds[index];
+        if (activeCandidate !== undefined) {
+            const slots = this.expedition.configuration.build?.activeSkillSlots ?? 3;
+            if (build.activeSkills.length < slots) {
+                this.expedition.claimActiveCandidate(activeCandidate);
+                this.notice = "借法成功";
+            } else this.replacementSkillId = activeCandidate;
+            return;
+        }
+        const passiveCandidate = build.pendingPassiveCandidateIds[index];
+        if (passiveCandidate !== undefined) {
+            this.expedition.claimPassive(passiveCandidate);
+            this.notice = "参悟成功";
+            return;
+        }
+        const active = build.activeSkills[index];
+        if (active) {
+            this.expedition.strengthenActive(active.skillId);
+            this.notice = "强化成功";
+        }
+    }
+
+    private canManageBuild(): boolean {
+        const run = this.expedition.run;
+        return !!run && !run.settled && (run.phase !== "battle" || this.showHub);
     }
 
     private runOverlayCommand(command: () => void): void {
@@ -455,6 +585,8 @@ export class SkillBattlePanel {
 
     private openReport(): void {
         if (this.presenter.busy) return;
+        this.showBuild = false;
+        this.replacementSkillId = 0;
         this.showReport = true; this.reportMode = "summary"; this.reportPage = 0;
         this.reportIndex = this.expedition.snapshot.history.length;
         this.refresh();
@@ -517,9 +649,90 @@ export class SkillBattlePanel {
         this.refresh();
     }
 
+    private refreshBuild(run: IExpeditionState, config: IExpeditionConfig): void {
+        const build = run.build!;
+        const canManage = this.canManageBuild();
+        const skillName = (id: number) => config.build?.skills.find(row => row.id === id)?.name || `技能 ${id}`;
+        const passiveName = (id: number) => config.build?.passives.find(row => row.id === id)?.name || `被动 ${id}`;
+        const level = (value: number) => value ? `+${value}` : "基础";
+        const buildButton = (index: number) => this.buttons[`${this.screen === "battle" ? "upgrade" : "warehouse"}${index}`];
+        const showBuildButton = (index: number) => this.showButton(
+            `${this.screen === "battle" ? "upgrade" : "warehouse"}${index}`);
+        const thresholds = config.build?.daoyunThresholds || [30, 40];
+        const threshold = build.nextDaoyunThresholdIndex === 0 ? thresholds[0] : thresholds[1] ?? thresholds[0];
+        this.resultTitle.text = "借法构筑";
+        this.resultDetail.text = `本局大道：${build.schools.map(schoolLabel).join(" · ")}\n`
+            + `主动 ${build.activeSkills.length} / ${config.build?.activeSkillSlots ?? 3} · 技能点 ${build.skillPoints}`
+            + ` · 道韵 ${build.daoyun} / ${threshold}\n`
+            + `被动：${build.passiveIds.map(passiveName).join("、") || "无"}`
+            + (build.pendingPassiveChoices ? ` · 待参悟 ${build.pendingPassiveChoices}` : "");
+        this.labels.section.text = build.activeSkills.map(active =>
+            `${skillName(active.skillId)} ${level(active.level)}`).join(" · ") || "尚未装配主动";
+        this.labels.choiceTitle.text = "";
+        this.labels.page.text = "";
+        this.labels.reportBody.visible = false;
+        this.labels.overlayMessage.text = this.notice || (canManage ? "" : "战斗中仅可查看构筑，借法与强化需在战斗外进行");
+        this.setButtonText(this.buttons.reportClose, this.replacementSkillId ? "取消替换" : "返回");
+        this.styleButton(this.buttons.reportClose, false, true);
+        this.showButton("reportClose");
+        if (this.replacementSkillId) {
+            this.labels.choiceTitle.text = `选择要替换的主动 · 新技能 ${skillName(this.replacementSkillId)}`;
+            build.activeSkills.forEach((active, index) => {
+                const button = buildButton(index);
+                this.setButtonText(button, `${skillName(active.skillId)} ${level(active.level)}\n替换并继承档位`);
+                this.styleButton(button, false, canManage);
+                showBuildButton(index);
+            });
+            return;
+        }
+        if (build.pendingActiveCandidateIds.length) {
+            this.labels.choiceTitle.text = build.activeSkills.length >= (config.build?.activeSkillSlots ?? 3)
+                ? "借法台 · 主动已满，选择一项后指定替换对象"
+                : "借法台 · 选择一项主动";
+            build.pendingActiveCandidateIds.forEach((skillId, index) => {
+                const button = buildButton(index);
+                const full = build.activeSkills.length >= (config.build?.activeSkillSlots ?? 3);
+                this.setButtonText(button, `${skillName(skillId)}\n${full ? "更换主动" : "借取主动"}`);
+                this.styleButton(button, false, canManage);
+                showBuildButton(index);
+            });
+            this.setButtonText(this.buttons.report, "放弃本次候选\n获得 2 技能点");
+            this.styleButton(this.buttons.report, false, canManage);
+            this.showButton("report");
+            return;
+        }
+        if (build.pendingPassiveCandidateIds.length) {
+            this.labels.choiceTitle.text = "参悟 · 选择一项被动";
+            build.pendingPassiveCandidateIds.forEach((passiveId, index) => {
+                const button = buildButton(index);
+                this.setButtonText(button, `${passiveName(passiveId)}\n领取被动`);
+                this.styleButton(button, false, canManage);
+                showBuildButton(index);
+            });
+            return;
+        }
+        this.labels.choiceTitle.text = build.pendingPassiveChoices > 0
+            ? "尚有道韵参悟机会待生成"
+            : build.skillPoints > 0 ? "选择主动强化，每点提升一档" : "当前没有待处理构筑选择";
+        build.activeSkills.forEach((active, index) => {
+            const maxLevel = config.build?.maxSkillLevel ?? 5;
+            const canStrengthen = canManage && build.skillPoints > 0 && active.level < maxLevel;
+            const button = buildButton(index);
+            this.setButtonText(button, `${skillName(active.skillId)} ${level(active.level)}\n`
+                + (active.level >= maxLevel ? "已圆满" : canStrengthen ? "消耗 1 技能点强化" : "等待技能点"));
+            this.styleButton(button, false, canStrengthen);
+            showBuildButton(index);
+        });
+    }
+
+    private showButton(key: string): void {
+        const button = this.buttons[key];
+        if (button) button.visible = true;
+    }
+
     private refreshResult(): void {
         const run = this.expedition.run, save = this.expedition.snapshot, config = this.expedition.configuration;
-        const resultVisible = !this.presenter.busy && (this.showHub || this.showLoot || this.showReport ||
+        const resultVisible = !this.presenter.busy && (this.showHub || this.showLoot || this.showReport || this.showBuild ||
             !!this.expedition.error || !run || run.phase !== "battle");
         this.result.visible = resultVisible;
         ["overlayBrand", "currency", "resultTitle", "resultDetail", "section", "overlayMessage", "choiceTitle", "page"]
@@ -533,6 +746,8 @@ export class SkillBattlePanel {
         this.labels.overlayMessage.text = this.notice;
         this.labels.currency.text = `灵石 ${save?.profile.currency || 0}`;
         this.labels.section.text = "";
+        this.setButtonText(this.buttons.report, "战斗记录");
+        this.setButtonText(this.buttons.reportClose, "返回");
         const show = (key: string) => {
             const button = this.buttons[key];
             if (button) button.visible = true;
@@ -554,10 +769,43 @@ export class SkillBattlePanel {
             this.labels.overlayMessage.text = this.expedition.error;
             show("hub"); return;
         }
+        if (this.showBuild && run?.build) { this.refreshBuild(run, config); return; }
         if (this.showReport) { this.refreshReport(); return; }
         show("report");
         if (this.showHub || !run) {
             const profile = save.profile;
+            if (run?.build && !run.settled && !run.build.activeSkills.length) {
+                this.resultTitle.text = "起始借法";
+                this.resultDetail.text = `本局大道：${run.build.schools.map(schoolLabel).join(" · ")}\n请选择一项主动，选择后才能入战。`;
+                this.labels.section.text = "三选一";
+                run.build.startCandidates.forEach((skillId, i) => {
+                    const skill = config.encounters[0].skills.find(row => row.id === skillId);
+                    const button = this.buttons[`warehouse${i}`];
+                    this.setButtonText(button, skill ? `${skill.name}\n选择` : "候选无效");
+                    this.styleButton(button, false, !!skill);
+                    show(`warehouse${i}`);
+                });
+                this.setButtonText(this.buttons.newRun, "确认入战");
+                this.styleButton(this.buttons.newRun, false, !!run.build.activeSkills.length);
+                show("newRun");
+                show("reset");
+                return;
+            }
+            if (run?.map && config.map) {
+                const currentNode = config.map.nodes.find(node => node.id === run.map!.currentNodeId);
+                this.resultTitle.text = "局内整备";
+                this.resultDetail.text = `当前位置：${currentNode?.name || "未知节点"}\n`
+                    + `生命 ${run.battle.player.hp} / ${run.battle.player.maxHp} · 耐久 ${run.battle.weaponDurability}\n`
+                    + `主动 ${run.build?.activeSkills.length || 0} / 3 · 技能点 ${run.build?.skillPoints || 0} · 道韵 ${run.build?.daoyun || 0}`;
+                this.labels.section.text = run.build?.activeSkills.map(active => {
+                    const skill = config.build?.skills.find(row => row.id === active.skillId);
+                    return `${skill?.name || active.skillId} ${active.level ? `+${active.level}` : "基础"}`;
+                }).join(" · ") || "尚未装配主动";
+                this.setButtonText(this.buttons.newRun, "返回地图");
+                this.styleButton(this.buttons.newRun, false, true);
+                show("newRun"); show("build");
+                return;
+            }
             this.resultTitle.text = "散修据点";
             this.resultDetail.text = `破旧铁剑 · 耐久 ${profile.weaponDurability} / ${config.encounters[0].weaponDurability}\n`
                 + `法囊：${profile.pouchSlots.filter(Boolean).map(item => {
@@ -584,7 +832,12 @@ export class SkillBattlePanel {
                 this.styleButton(this.buttons.previousPage, false, this.warehousePage > 0);
                 this.styleButton(this.buttons.nextPage, false, this.warehousePage + 1 < pages);
             }
-            show("newRun"); show("reset"); return;
+            this.setButtonText(this.buttons.newRun,
+                run?.build?.activeSkills.length ? (run.map ? "返回地图" : "进入探索") : "开始新一局");
+            this.styleButton(this.buttons.newRun, false, true);
+            show("newRun"); show("reset");
+            if (run?.build) show("build");
+            return;
         }
         show("loot");
         const s = run.battle;
@@ -614,13 +867,20 @@ export class SkillBattlePanel {
                 this.setButtonText(this.buttons[`upgrade${i}`], `${upgrade.name}\n${descriptions[upgrade.effect]}`);
                 show(`upgrade${i}`);
             });
+            if (run.build) show("build");
         } else if (run.phase === "decision") {
             this.labels.choiceTitle.text = `本局强化：${run.upgradeIds.map(id => config.upgrades.find(row => row.id === id).name).join(" · ") || "无"}`;
-            show("continue"); show("extract");
+            this.setButtonText(this.buttons.continue, run.map ? "返回地图" : "继续深入");
+            show("continue");
+            if (!run.map) show("extract");
+            if (run.build) show("build");
         } else if (run.settled) show("hub");
     }
 
     private setCombatChromeVisible(visible: boolean): void {
+        if (visible) this.overlayButtons.forEach(key => {
+            if (key !== "loot" && key !== "build") this.buttons[key].visible = false;
+        });
         BATTLE_LABELS.forEach(key => {
             if (this.labels[key]) this.labels[key].visible = visible;
         });
@@ -632,7 +892,7 @@ export class SkillBattlePanel {
             if (bar) bar.visible = visible;
         });
 
-        const combatButtons = ["battleReport", "confirm",
+        const combatButtons = ["battleReport", "loot", "build", "confirm",
             ...Array.from({ length: 4 }, (_, i) => `skill${i + 1}`),
             ...Array.from({ length: 5 }, (_, i) => `pouch${i}`)];
         combatButtons.forEach(key => {

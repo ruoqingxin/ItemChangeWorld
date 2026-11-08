@@ -18,13 +18,14 @@ const labels = {
 };
 const buttonGroups = {
     start: ["previousPage", "nextPage", "newRun", "reset", "resetYes", "resetNo", "report", "summary",
-        "actions", "olderReport", "newerReport", "reportClose", ...Array.from({ length: 6 }, (_, i) => `warehouse${i}`)],
+        "actions", "olderReport", "newerReport", "reportClose", "build",
+        ...Array.from({ length: 6 }, (_, i) => `warehouse${i}`)],
     battle: ["battleReport", "loot", "skip", "cancel", "confirm", "continue", "extract", "hub", "lootClose",
-        "report", "summary", "actions", "olderReport", "newerReport", "reportClose", "previousPage", "nextPage",
+        "report", "summary", "actions", "olderReport", "newerReport", "reportClose", "previousPage", "nextPage", "build",
         ...Array.from({ length: 4 }, (_, i) => `skill${i + 1}`), ...Array.from({ length: 5 }, (_, i) => `pouch${i}`),
         ...Array.from({ length: 3 }, (_, i) => `upgrade${i}`)],
     settlement: ["lootClose", "hub", "report", "summary", "actions", "olderReport", "newerReport", "reportClose",
-        "previousPage", "nextPage"],
+        "previousPage", "nextPage", "build"],
 };
 
 function text(name, x = 30, y = 0, width = 660, height = 56) {
@@ -54,8 +55,8 @@ function buttonPosition(name, index) {
         return { x: 170 + (i % 3) * 320, y: 366 + Math.floor(i / 3) * 100, width: 290, height: 76 };
     }
     const positions = {
-        battleReport: [1034, 24], loot: [1034, 88], skip: [1034, 152],
-        cancel: [1060, 530], confirm: [1060, 530],
+        battleReport: [1034, 24], loot: [1034, 88], skip: [1034, 152], build: [1034, 216],
+        cancel: [1034, 466], confirm: [1034, 530],
         continue: [800, 530], extract: [1000, 530], hub: [800, 614],
         lootClose: [1000, 614], newRun: [450, 560], reset: [650, 560],
         resetYes: [440, 560], resetNo: [640, 560],
@@ -78,7 +79,7 @@ function label(name, index, role) {
             event: [390, 342, 500, 44], playerName: [120, 412, 430, 46],
             durability: [30, 476, 390, 40], playerHp: [30, 516, 390, 40],
             playerBlock: [30, 554, 390, 38], qi: [30, 594, 390, 38],
-            previewTitle: [454, 466, 500, 36], preview: [454, 486, 500, 42],
+            previewTitle: [454, 446, 500, 28], preview: [454, 476, 500, 50],
         };
         [x, y, width, height] = positions[name] || [30, y, 660, 44];
     } else if (isOverlay) {

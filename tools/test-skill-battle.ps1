@@ -14,6 +14,7 @@ $sources = @(
     (Join-Path $root "src/script/module/skillBattle/manager/SkillBattleManager.ts"),
     (Join-Path $root "src/script/module/skillBattle/debug/SkillBattleDebug.ts"),
     (Join-Path $root "src/script/module/skillBattle/view/SkillBattlePresenter.ts"),
+    (Join-Path $root "src/script/module/skillBattle/newRules/NewBattleCore.ts"),
     (Join-Path $root "src/script/module/expedition/utils/ExpeditionConfigUtils.ts"),
     (Join-Path $root "engine/types/LayaAir.d.ts")
 )
@@ -25,5 +26,7 @@ $arguments = @((Join-Path $PSScriptRoot "skill-battle.test.cjs"), $build)
 if ($ShowBattleLog) { $arguments += "--show-battle-log" }
 & node @arguments
 if ($LASTEXITCODE -ne 0) { throw "Skill battle tests failed." }
+& node (Join-Path $PSScriptRoot "new-battle-core.test.cjs") $build
+if ($LASTEXITCODE -ne 0) { throw "New battle core tests failed." }
 & node (Join-Path $PSScriptRoot "skill-battle-prefab.test.cjs")
 if ($LASTEXITCODE -ne 0) { throw "Skill battle prefab tests failed." }

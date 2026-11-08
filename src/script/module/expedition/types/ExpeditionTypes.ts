@@ -1,12 +1,13 @@
 import type { ISkillBattleAction, ISkillBattleSetup, ISkillBattleState, ISkillItemInstance, ISkillUpgradeConfig } from "../../skillBattle/types/SkillBattleTypes";
 import type { IExpeditionBuildConfig, IExpeditionBuildState } from "./ExpeditionBuildTypes";
+import type { IExpeditionMapConfig, IExpeditionMapState } from "./ExpeditionMapTypes";
 
 export interface IExpeditionReport {
     runId: string;
     seed: number;
     partial: boolean;
     battles: Array<{ initial: ISkillBattleState; actions: ISkillBattleAction[] }>;
-    choices: Array<{ encounterIndex: number; ids: number[]; selectedId: number | null }>;
+    choices: Array<{ encounterIndex: number; battleIndex?: number; ids: number[]; selectedId: number | null }>;
     outcome: "extracted" | "failed" | null;
     exitEncounter: number | null;
     broughtLoot: ISkillItemInstance[];
@@ -28,6 +29,8 @@ export interface IExpeditionConfig {
     loot: IExpeditionLootConfig[];
     rewards: number[][];
     build?: IExpeditionBuildConfig;
+    map?: IExpeditionMapConfig;
+    requireBuildSelection?: boolean;
 }
 
 export interface IExpeditionProfile {
@@ -47,7 +50,7 @@ export interface IExpeditionState {
     seed: number;
     rngState: number;
     encounterIndex: number;
-    phase: "battle" | "reward" | "decision" | "extracted" | "failed";
+    phase: "map" | "battle" | "reward" | "decision" | "extracted" | "failed";
     loot: ISkillItemInstance[];
     upgradeIds: number[];
     allowedUpgradeIds: number[];
@@ -56,6 +59,7 @@ export interface IExpeditionState {
     battle: ISkillBattleState;
     report: IExpeditionReport;
     build?: IExpeditionBuildState;
+    map?: IExpeditionMapState;
 }
 
 export interface IExpeditionSave {

@@ -7,7 +7,7 @@ const views = {
     "SkillBattleStartView.lh": {
         required: ["result", "newRun", "reset", "warehouse0", "report", "reportBody", "resultTitle"],
         buttons: ["newRun", "reset", "resetYes", "resetNo", "report", "summary", "actions",
-            "olderReport", "newerReport", "reportClose", "previousPage", "nextPage",
+            "olderReport", "newerReport", "reportClose", "previousPage", "nextPage", "build",
             ...Array.from({ length: 6 }, (_, i) => `warehouse${i}`)],
         excluded: ["enemy", "player", "numbers", "skill1", "pouch0", "enemyHpBar", "lootSlot0"],
     },
@@ -16,14 +16,14 @@ const views = {
             "battleReport", "enemyHpBar", "playerHpBar", "upgrade0", "continue", "extract", "lootSlot0"],
         buttons: ["battleReport", "loot", "skip", "cancel", "confirm", "continue", "extract", "hub",
             "lootClose", "report", "summary", "actions", "olderReport", "newerReport", "reportClose",
-            "previousPage", "nextPage", ...Array.from({ length: 4 }, (_, i) => `skill${i + 1}`),
+            "previousPage", "nextPage", "build", ...Array.from({ length: 4 }, (_, i) => `skill${i + 1}`),
             ...Array.from({ length: 5 }, (_, i) => `pouch${i}`), ...Array.from({ length: 3 }, (_, i) => `upgrade${i}`)],
         excluded: ["newRun", "warehouse0", "reset"],
     },
     "SkillBattleSettlementView.lh": {
         required: ["result", "lootClose", "hub", "lootSlot0", "report", "reportBody", "resultTitle"],
         buttons: ["lootClose", "hub", "report", "summary", "actions", "olderReport", "newerReport",
-            "reportClose", "previousPage", "nextPage"],
+            "reportClose", "previousPage", "nextPage", "build"],
         excluded: ["enemy", "player", "numbers", "skill1", "pouch0", "enemyHpBar", "warehouse0", "newRun"],
     },
 };
@@ -103,6 +103,12 @@ for (const file of allFiles) {
         assert.ok(!names.has(name), `${file} must not contain unused node ${name}`);
     for (const name of expectations.buttons)
         assert.ok(nodes.get(name)?._$child?.length > 0, `${file} button ${name} must retain its prefab label child`);
+    if (file === "SkillBattleBattleView.lh") {
+        const cancel = nodes.get("cancel"), confirm = nodes.get("confirm");
+        assert.notDeepEqual([cancel.x, cancel.y, cancel.width, cancel.height],
+            [confirm.x, confirm.y, confirm.width, confirm.height],
+            "cancel and confirm must not occupy the same hit area");
+    }
     viewNames.push([...names].sort().join("|"));
 }
 
@@ -113,5 +119,59 @@ const resizeBlock = panelSource.slice(panelSource.indexOf("resizeTo("), panelSou
 assert.doesNotMatch(resizeBlock, /this\.root\.scale\(/, "runtime layout must not scale the SkillBattle root");
 assert.match(resizeBlock, /this\.root\.scaleX\s*=\s*1/, "runtime layout must pin root scaleX to 1");
 assert.match(resizeBlock, /this\.root\.scaleY\s*=\s*1/, "runtime layout must pin root scaleY to 1");
+assert.match(panelSource, /bind\("build", \(\) => this\.openBuild\(\)\)/,
+    "every role view must bind the authored build button");
+assert.match(panelSource, /combatButtons = \["battleReport", "loot", "build"/,
+    "loot and build must remain visible in the combat action chrome");
+for (const action of ["claimActiveCandidate", "skipActiveChoice", "replaceActive", "strengthenActive", "claimPassive"])
+    assert.match(panelSource, new RegExp(`this\\.expedition\\.${action}\\(`),
+        `build panel must wire ${action}`);
+
+const mapDirectory = path.join(__dirname, "../assets/ui/prefab/module/expedition");
+const mapPrefab = JSON.parse(fs.readFileSync(path.join(mapDirectory, "SkillBattleMapView.lh"), "utf8"));
+const mapNames = new Set(), mapIds = new Set(), mapRefs = [], mapOutOfBounds = [];
+const visitMap = (node, parentWidth = mapPrefab.width, parentHeight = mapPrefab.height) => {
+    if (!node || typeof node !== "object") return;
+    if (node.name) mapNames.add(node.name);
+    if (node._$id) {
+        assert.ok(!mapIds.has(node._$id), `Map prefab has duplicate node ID ${node._$id}`);
+        mapIds.add(node._$id);
+    }
+    if (node._$ref) mapRefs.push(node._$ref);
+    if (node.name && node.name !== "SkillBattleMapView") {
+        const x = node.x ?? 0, y = node.y ?? 0, width = node.width ?? 0, height = node.height ?? 0;
+        if (x < 0 || y < 0 || x + width > parentWidth || y + height > parentHeight)
+            mapOutOfBounds.push(node.name);
+    }
+    for (const child of node._$child || []) visitMap(child, node.width || parentWidth, node.height || parentHeight);
+};
+visitMap(mapPrefab);
+assert.equal(mapPrefab.width, 1280);
+assert.equal(mapPrefab.height, 720);
+assert.deepEqual(mapOutOfBounds, []);
+for (const name of ["mapBackground", "mapTint", "mapTopBar", "mapStatusPanel", "mapArea", "mapEdges",
+    "mapNodes", "mapInfoPanel", "mapTitle", "mapTimer", "mapLife", "mapDurability", "mapBuild",
+    "mapSupplies", "mapProgress", "nodeType", "nodeTitle", "nodeDetail", "nodeHint", "mapNotice",
+    "mapLegend", "mapConfirm", "mapCancel", "mapBuildButton"])
+    assert.ok(mapNames.has(name), `Map prefab is missing ${name}`);
+for (const name of ["mapConfirm", "mapCancel", "mapBuildButton"]) {
+    const node = (() => {
+        let found;
+        const find = value => {
+            if (value?.name === name) found = value;
+            for (const child of value?._$child || []) find(child);
+        };
+        find(mapPrefab);
+        return found;
+    })();
+    assert.ok(node?._$child?.length > 0, `Map button ${name} must retain its label child`);
+}
+for (const ref of mapRefs) assert.ok(mapIds.has(ref), `Map prefab has unresolved ref ${ref}`);
+const mapPanelSource = fs.readFileSync(path.join(__dirname,
+    "../src/script/module/expedition/view/SkillBattleMapPanel.ts"), "utf8");
+for (const action of ["enterMapNode", "extractMap", "expireMap", "mapCanEnter"])
+    assert.match(mapPanelSource, new RegExp(`this\\.expedition\\.${action}\\(`),
+        `Map panel must wire ${action}`);
+assert.match(mapPanelSource, /dashedLine\(/, "Map routes must use the authored dashed route style");
 console.log(`Skill battle prefabs: distinct role-based nodes verified (${Object.entries(viewNodeCounts)
-    .map(([file, count]) => `${file}: ${count}`).join(", ")}).`);
+    .map(([file, count]) => `${file}: ${count}`).join(", ")}, SkillBattleMapView: ${mapNames.size}).`);

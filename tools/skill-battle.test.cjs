@@ -594,4 +594,7 @@ require("./skill-battle-supplies.test.cjs")({
 require("./skill-battle-expedition.test.cjs")({
     assert, test, setups, tables, Config, Rules, Manager, Presenter, copy, freeze, withTables, build,
 });
+require("./skill-map.test.cjs")({
+    assert, test, setups, tables, Config, Rules, Manager, Presenter, copy, freeze, withTables, build,
+});
 console.log(`\n${passed} tests passed; real config, battle rules, supplies, expedition and persistence verified.`);

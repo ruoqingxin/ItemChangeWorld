@@ -6,6 +6,7 @@ import { SkillBattleSettlementView } from "../src/script/module/skillBattle/view
 import { SkillBattleUISession } from "../src/script/module/skillBattle/view/SkillBattleUISession";
 import { currentSkillBattleView, openSkillBattleScreen } from "../src/script/module/skillBattle/view/SkillBattleUINavigation";
 import { SkillBattleManager } from "../src/script/module/skillBattle/manager/SkillBattleManager";
+import { SkillBattleMapView } from "../src/script/module/expedition/view/SkillBattleMapView";
 
 async function main(): Promise<void> {
     Laya.PlayerConfig.UI = { alwaysIncludeDefaultSkin: false } as any;
@@ -24,10 +25,13 @@ async function main(): Promise<void> {
     // Use the same UIManager/GRoot path as the actual game. The preview must
     // not place a second hand-built panel directly on the stage.
     UIManager.ins().init();
+    if (new URLSearchParams(location.search).has("legacy"))
+        SkillBattleUISession.setMapEnabled(false);
     const expedition = SkillBattleUISession.getExpedition();
     const run = expedition.run;
     const initialScreen = run && !run.settled
-        ? run.phase === "battle" || run.phase === "reward" || run.phase === "decision" ? "battle" : "settlement"
+        ? run.phase === "map" ? "map"
+            : run.phase === "battle" || run.phase === "reward" || run.phase === "decision" ? "battle" : "settlement"
         : "start";
     openSkillBattleScreen(initialScreen);
     const initialView = currentSkillBattleView;
@@ -38,10 +42,15 @@ async function main(): Promise<void> {
         close: () => {
             UIManager.ins().closeForm(SkillBattleStartView);
             UIManager.ins().closeForm(SkillBattleBattleView);
+            UIManager.ins().closeForm(SkillBattleMapView);
             UIManager.ins().closeForm(SkillBattleSettlementView);
         },
         reopen: () => {
             const currentRun = expedition.run;
+            if (currentRun && !currentRun.settled && currentRun.phase === "map") {
+                openSkillBattleScreen("map");
+                return;
+            }
             if (currentRun && !currentRun.settled &&
                 (currentRun.phase === "battle" || currentRun.phase === "reward" || currentRun.phase === "decision"))
                 openSkillBattleScreen("battle");

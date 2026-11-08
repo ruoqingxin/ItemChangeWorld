@@ -1,10 +1,17 @@
 import type { ISkillBattleSetup, ISkillBattleState, ISkillItemInstance } from "../../skillBattle/types/SkillBattleTypes";
-import type { IExpeditionConfig, IExpeditionSave, IExpeditionReport } from "../types/ExpeditionTypes";
+import type {
+    IExpeditionConfig,
+    IExpeditionSave,
+    IExpeditionReport,
+    IExpeditionState,
+} from "../types/ExpeditionTypes";
 import { ExpeditionStatsUtils } from "./ExpeditionStatsUtils";
+import { ExpeditionMapUtils } from "./ExpeditionMapUtils";
 import type { IExpeditionBuildState } from "../types/ExpeditionBuildTypes";
+import type { IExpeditionMapConfig, IExpeditionMapState } from "../types/ExpeditionMapTypes";
 
 export class ExpeditionSaveUtils {
-    static upgradeLegacy(save: IExpeditionSave): void {
+    static upgradeLegacy(save: IExpeditionSave, config?: IExpeditionConfig, signature?: string): void {
         if (!save || save.version !== 1) return;
         if (save.history === undefined) save.history = [];
         if (save.run && save.run.report === undefined) {
@@ -20,6 +27,13 @@ export class ExpeditionSaveUtils {
             }
             run.report = report;
         }
+        if (!config || !signature || !this.isConfigCompatible(save.configSignature, config)) return;
+        if (config.map && save.run && save.run.map === undefined) {
+            save.run.map = this.migrateLinearMap(save.run, config.map);
+        }
+        // Map presentation and layout data are not part of the durable run contract.
+        // Rewrite old signatures on the next commit without invalidating the save.
+        save.configSignature = signature;
     }
 
     static validate(save: IExpeditionSave, config: IExpeditionConfig, signature: string): void {
@@ -27,7 +41,7 @@ export class ExpeditionSaveUtils {
         const integer = (value: number, min = 0, max = Number.MAX_SAFE_INTEGER) =>
             Number.isSafeInteger(value) && value >= min && value <= max;
         const unique = (values: unknown[]) => Array.isArray(values) && new Set(values).size === values.length;
-        check(!!save && save.version === 1 && save.configSignature === signature && !!save.profile);
+        check(!!save && save.version === 1 && this.isConfigCompatible(save.configSignature, config) && !!save.profile);
         const p = save.profile, base = config.encounters[0];
         check(typeof p.profileId === "string" && !!p.profileId && integer(p.nextRunIndex, 1) && integer(p.currency));
         check(p.weaponId === base.weaponId && integer(p.weaponDurability, 0, base.weaponDurability));
@@ -69,9 +83,11 @@ export class ExpeditionSaveUtils {
             integer(r.seed, 0, 0xffffffff) && integer(r.rngState, 0, 0xffffffff));
         if (config.build) this.validateBuild(r.build, config.build);
         else check(r.build === undefined);
-        check(["battle", "reward", "decision", "extracted", "failed"].includes(r.phase) &&
+        check(["map", "battle", "reward", "decision", "extracted", "failed"].includes(r.phase) &&
             typeof r.settled === "boolean" && r.settled === ["extracted", "failed"].includes(r.phase) &&
             r.settled === p.settledRunIds.includes(r.runId));
+        if (config.map) this.validateMap(r.map, config);
+        else check(r.map === undefined);
         const allowed = config.upgrades.filter(row => !row.requiredCollectionId ||
             p.collectionIds.includes(row.requiredCollectionId)).map(row => row.id);
         check(unique(r.allowedUpgradeIds) && r.allowedUpgradeIds.every(id => allowed.includes(id)) &&
@@ -87,23 +103,39 @@ export class ExpeditionSaveUtils {
         this.validateBattle(b, setup);
         const reportState = this.validateReport(r.report, config);
         check(r.report.runId === r.runId && r.report.seed === r.seed &&
-            JSON.stringify(reportState) === JSON.stringify(b) &&
+            (reportState === null || JSON.stringify(reportState) === JSON.stringify(b)) &&
             r.report.outcome === (r.settled ? r.phase : null) &&
-            r.report.exitEncounter === (r.settled ? r.encounterIndex + 1 : null) &&
+            r.report.exitEncounter === (r.settled
+                ? (r.map ? r.map.battleCount : r.encounterIndex + 1) : null) &&
             !save.history.some(report => report.runId === r.runId));
         if (r.phase === "reward") {
             const choice = r.report.choices[r.report.choices.length - 1];
             check(!!choice && choice.encounterIndex === r.encounterIndex && choice.selectedId === null &&
                 JSON.stringify(choice.ids) === JSON.stringify(r.pendingUpgradeChoices));
         }
-        check(b.battleId === `${r.runId}_battle_${r.encounterIndex + 1}`);
+        check(config.map ? (r.map?.battleCount === 0
+            ? b.battleId === `${r.runId}_battle_1`
+            : b.battleId.startsWith(`${r.runId}_map_battle_`))
+            : b.battleId === `${r.runId}_battle_${r.encounterIndex + 1}`);
         pouch(b.pouchSlots, !r.settled);
         if (r.settled) {
             check(r.loot.length === 0 && r.upgradeIds.length === 0 && r.pendingUpgradeChoices.length === 0 &&
                 p.weaponDurability === b.weaponDurability &&
-                b.phase === (r.phase === "failed" ? "defeat" : "victory"));
+                (r.map?.battleCount === 0 && r.phase === "failed"
+                    ? b.phase === "player_input" : b.phase === (r.phase === "failed" ? "defeat" : "victory")));
             check(r.phase === "failed" ? p.pouchSlots.every(item => item === null)
                 : JSON.stringify(p.pouchSlots) === JSON.stringify(b.pouchSlots));
+        } else if (config.map) {
+            check(p.pouchSlots.every(item => item === null));
+            if (r.map && r.map.battleCount === 0)
+                check(r.phase === "map" && b.phase === "player_input");
+            else check(b.phase === (r.phase === "battle" ? "player_input" : "victory"));
+            check(r.phase === "reward" ? (() => {
+                const choice = r.report.choices[r.report.choices.length - 1];
+                return !!choice && choice.selectedId === null &&
+                    JSON.stringify(choice.ids) === JSON.stringify(r.pendingUpgradeChoices);
+            })() : r.pendingUpgradeChoices.length === 0);
+            check(b.upgradeIds.every(id => r.upgradeIds.includes(id)));
         } else {
             check(p.pouchSlots.every(item => item === null));
             check(b.phase === (r.phase === "battle" ? "player_input" : "victory"));
@@ -117,6 +149,111 @@ export class ExpeditionSaveUtils {
             const expected = config.rewards.slice(0, won).reduce<number[]>((all, values) => all.concat(values), []);
             check(JSON.stringify(r.loot.map(item => item.itemId)) === JSON.stringify(expected));
         }
+    }
+
+    private static isConfigCompatible(savedSignature: string, config: IExpeditionConfig): boolean {
+        if (typeof savedSignature !== "string" || !savedSignature) return false;
+        try {
+            const saved = JSON.parse(savedSignature);
+            const expected = JSON.parse(JSON.stringify(config));
+            if (!saved || typeof saved !== "object" || Array.isArray(saved)) return false;
+            delete saved.map;
+            delete expected.map;
+            return this.canonical(saved) === this.canonical(expected);
+        } catch {
+            return false;
+        }
+    }
+
+    private static canonical(value: unknown): string {
+        if (Array.isArray(value)) return `[${value.map(item => this.canonical(item)).join(",")}]`;
+        if (value && typeof value === "object") {
+            const row = value as Record<string, unknown>;
+            return `{${Object.keys(row).sort().map(key =>
+                `${JSON.stringify(key)}:${this.canonical(row[key])}`).join(",")}}`;
+        }
+        return JSON.stringify(value);
+    }
+
+    private static migrateLinearMap(run: IExpeditionState, config: IExpeditionMapConfig): IExpeditionMapState {
+        const map = ExpeditionMapUtils.createState(config);
+        const battleTypes = ["battle", "elite", "boss"];
+        const battleNodes = config.nodes.filter(node =>
+            node.main && battleTypes.includes(node.type)).slice().sort((a, b) => a.stage - b.stage);
+        const used = new Set<string>();
+        const route: string[] = [config.startNodeId];
+        const records = run.report.battles;
+        for (let index = 0; index < records.length; index++) {
+            const encounterIndex = index;
+            const node = battleNodes.find(candidate =>
+                !used.has(candidate.id) && candidate.encounterIndex === encounterIndex) ||
+                battleNodes.find(candidate => !used.has(candidate.id));
+            if (!node) break;
+            used.add(node.id);
+            this.appendShortestPath(route, config, node.id);
+            records[index].initial.battleId = `${run.runId}_map_battle_${index + 1}`;
+        }
+        const currentId = route[route.length - 1];
+        const current = ExpeditionMapUtils.node(config, currentId);
+        map.currentNodeId = currentId;
+        map.visitedIds = route.filter((id, index) => route.indexOf(id) === index);
+        map.resolvedIds = [config.startNodeId];
+        for (let index = 1; index < map.visitedIds.length; index++) {
+            const id = map.visitedIds[index];
+            const isCurrentBattle = id === currentId && run.phase === "battle";
+            if (!isCurrentBattle) map.resolvedIds.push(id);
+        }
+        map.revealStage = Math.max(config.initialRevealStage, current.stage);
+        map.battleCount = Math.max(1, records.length);
+        map.battleNodeId = current.id;
+        ExpeditionMapUtils.reveal(map, config, current.stage + 1);
+        run.battle.battleId = `${run.runId}_map_battle_${map.battleCount}`;
+        return map;
+    }
+
+    private static appendShortestPath(path: string[], config: IExpeditionMapConfig, targetId: string): void {
+        const start = path[path.length - 1];
+        if (start === targetId) return;
+        const previous = new Map<string, string>();
+        const queue = [start];
+        const seen = new Set(queue);
+        while (queue.length && !seen.has(targetId)) {
+            const from = queue.shift()!;
+            for (const edge of config.edges) {
+                const next = edge.from === from ? edge.to : edge.to === from ? edge.from : null;
+                if (!next || seen.has(next)) continue;
+                seen.add(next);
+                previous.set(next, from);
+                queue.push(next);
+            }
+        }
+        if (!seen.has(targetId)) return;
+        const segment: string[] = [];
+        for (let at = targetId; at !== start; at = previous.get(at)!) segment.push(at);
+        path.push(...segment.reverse());
+    }
+
+    private static validateMap(map: IExpeditionMapState | undefined, config: IExpeditionConfig): void {
+        const check = (ok: boolean) => { if (!ok) throw new Error("地图存档结构或状态无效"); };
+        const route = config.map!;
+        const ids = new Set(route.nodes.map(node => node.id));
+        check(!!map && map.templateId === route.id && ids.has(map.currentNodeId));
+        const uniqueValid = (values: string[]) => Array.isArray(values) &&
+            new Set(values).size === values.length && values.every(id => ids.has(id));
+        check(uniqueValid(map.revealedIds) && uniqueValid(map.visitedIds) && uniqueValid(map.resolvedIds));
+        check(map.revealedIds.includes(route.startNodeId) && map.visitedIds.includes(route.startNodeId) &&
+            map.resolvedIds.includes(route.startNodeId) && map.visitedIds.includes(map.currentNodeId));
+        check(map.resolvedIds.every(id => map.visitedIds.includes(id)));
+        check(Number.isSafeInteger(map.revealStage) && map.revealStage >= route.initialRevealStage);
+        check(map.revealedIds.every(id => {
+            const node = route.nodes.find(value => value.id === id)!;
+            return node.stage <= map.revealStage;
+        }));
+        check(Number.isSafeInteger(map.battleCount) && map.battleCount >= 0 && map.battleCount <= 15);
+        check(map.battleNodeId === null || route.nodes.some(node => node.id === map.battleNodeId &&
+            ["battle", "elite", "boss"].includes(node.type)));
+        check(Number.isSafeInteger(map.startedAt) && map.startedAt > 0 &&
+            Number.isSafeInteger(map.deadlineAt) && map.deadlineAt > map.startedAt);
     }
 
     private static validateBuild(build: IExpeditionBuildState | undefined, config: NonNullable<IExpeditionConfig["build"]>): void {
@@ -153,32 +290,37 @@ export class ExpeditionSaveUtils {
             (build.pendingPassiveChoices > 0 || build.pendingPassiveCandidateIds.length === 0));
     }
 
-    private static validateReport(report: IExpeditionReport, config: IExpeditionConfig): ISkillBattleState {
+    private static validateReport(report: IExpeditionReport, config: IExpeditionConfig): ISkillBattleState | null {
         const check = (ok: boolean) => { if (!ok) throw new Error("行动记录或统计存档无效"); };
+        const mapMode = !!config.map;
         check(!!report && typeof report.runId === "string" && !!report.runId &&
             Number.isSafeInteger(report.seed) && report.seed >= 0 && report.seed <= 0xffffffff &&
             typeof report.partial === "boolean" && Array.isArray(report.battles) &&
-            report.battles.length > 0 && report.battles.length <= 3 &&
+            (mapMode ? report.battles.length <= 15 : report.battles.length > 0 && report.battles.length <= 3) &&
             [null, "extracted", "failed"].includes(report.outcome));
-        let state: ISkillBattleState;
+        let state: ISkillBattleState | null = null;
         let previousOrder = 0;
         for (const record of report.battles) {
             check(!!record && !!record.initial && Array.isArray(record.actions));
             const setup = config.encounters.find(row => row.encounterId === record.initial.encounterId);
-            check(!!setup && setup.order > previousOrder &&
-                record.initial.battleId === `${report.runId}_battle_${setup.order}`);
+            check(!!setup && (mapMode
+                ? record.initial.battleId.startsWith(`${report.runId}_map_battle_`)
+                : setup.order > previousOrder && record.initial.battleId === `${report.runId}_battle_${setup.order}`));
             this.validateBattle(record.initial, setup);
-            if (!report.partial) check(record.initial.revision === 0 && setup.order === previousOrder + 1);
-            if (previousOrder) check(state.phase === "victory" &&
+            if (!report.partial) check(record.initial.revision === 0 &&
+                (mapMode || setup.order === previousOrder + 1));
+            if (previousOrder && !mapMode) check(state?.phase === "victory" &&
                 state.player.hp === record.initial.player.hp &&
                 state.weaponDurability === record.initial.weaponDurability &&
                 JSON.stringify(state.pouchSlots) === JSON.stringify(record.initial.pouchSlots));
             state = ExpeditionStatsUtils.battle(record, setup).state;
             previousOrder = setup.order;
         }
-        check(Array.isArray(report.choices) && report.choices.length <= 2 &&
-            new Set(report.choices.map(choice => choice.encounterIndex)).size === report.choices.length);
-        for (const choice of report.choices) check(!!choice && [0, 1].includes(choice.encounterIndex) &&
+        check(Array.isArray(report.choices) && report.choices.length <= (mapMode ? 15 : 2) &&
+            new Set(report.choices.map(choice => mapMode ? choice.battleIndex : choice.encounterIndex)).size
+                === report.choices.length);
+        for (const choice of report.choices) check(!!choice && [0, 1, 2].includes(choice.encounterIndex) &&
+            (!mapMode || Number.isSafeInteger(choice.battleIndex) && choice.battleIndex >= 0 && choice.battleIndex < 15) &&
             Array.isArray(choice.ids) && choice.ids.length <= 3 && new Set(choice.ids).size === choice.ids.length &&
             choice.ids.every(id => config.upgrades.some(row => row.id === id)) &&
             (choice.selectedId === null || choice.ids.includes(choice.selectedId)));
@@ -192,8 +334,15 @@ export class ExpeditionSaveUtils {
         check(Array.isArray(report.remainingPouch));
         if (report.outcome === null) check(report.exitEncounter === null && report.broughtLoot.length === 0 &&
             report.remainingPouch.length === 0 && report.collectionUnlockIds.length === 0);
+        else if (mapMode && report.battles.length === 0) {
+            check(report.outcome === "failed" && report.exitEncounter === 0 &&
+                report.remainingPouch.length === 5 && report.remainingPouch.every(item => item === null) &&
+                report.broughtLoot.length === 0 && report.collectionUnlockIds.length === 0);
+        }
         else {
-            check(report.exitEncounter === previousOrder && report.remainingPouch.length === 5 &&
+            check((mapMode ? Number.isSafeInteger(report.exitEncounter) && report.exitEncounter >= 0 &&
+                report.exitEncounter <= 15 : report.exitEncounter === previousOrder) &&
+                report.remainingPouch.length === 5 && !!state &&
                 state.phase === (report.outcome === "extracted" ? "victory" : "defeat"));
             if (report.outcome === "failed") check(report.broughtLoot.length === 0 &&
                 report.remainingPouch.every(item => item === null) && report.collectionUnlockIds.length === 0);

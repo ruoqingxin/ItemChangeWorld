@@ -1,9 +1,11 @@
 import type { Tables } from "../../../config/schema";
 import { SkillBattleConfigUtils } from "../../skillBattle/utils/SkillBattleConfigUtils";
 import type { IExpeditionConfig, IExpeditionLootConfig } from "../types/ExpeditionTypes";
+import type { IExpeditionBuildConfig, ExpeditionSchool } from "../types/ExpeditionBuildTypes";
+import { ExpeditionMapUtils } from "./ExpeditionMapUtils";
 
 export class ExpeditionConfigUtils {
-    static read(tables: Tables): IExpeditionConfig {
+    static read(tables: Tables, includeBuild = false, includeMap = false): IExpeditionConfig {
         const encounters = tables.skill_encounter.getDataList().filter(row => row.enabled === 1)
             .slice().sort((a, b) => a.order - b.order);
         if (encounters.length !== 3 || encounters.some((row, i) => row.order !== i + 1))
@@ -30,7 +32,36 @@ export class ExpeditionConfigUtils {
         });
         if (rewards.reduce((sum, rows) => sum + rows.length, 0) > 6)
             throw new Error("[Expedition] 路线奖励超过六格战利品袋");
-        return { encounters: encounters.map(row => SkillBattleConfigUtils.readEncounter(tables, row.encounter_id)),
-            upgrades: SkillBattleConfigUtils.readUpgrades(tables), loot, rewards };
+        const setups = encounters.map(row => SkillBattleConfigUtils.readEncounter(tables, row.encounter_id));
+        let build: IExpeditionBuildConfig | undefined;
+        if (includeBuild) {
+            const commonSkills = setups[0].skills.filter(skill =>
+                setups.every(setup => setup.skills.some(candidate => candidate.id === skill.id)));
+            const split = Math.max(1, Math.ceil(commonSkills.length / 2));
+            build = {
+                schools: ["sword", "earth", "universal"],
+                skills: commonSkills.map((skill, index) => ({
+                    id: skill.id, name: skill.name,
+                    school: (index < split ? "sword" : "earth") as ExpeditionSchool,
+                })),
+                passives: [
+                    { id: 9101, name: "初照", school: "sword" },
+                    { id: 9102, name: "厚垒", school: "earth" },
+                    { id: 9103, name: "先机", school: "universal" },
+                ],
+                startCandidateCount: 3, startSkillSlots: 1, activeSkillSlots: 3,
+                maxSkillLevel: 5, daoyunThresholds: [30, 40],
+            };
+            if (build.skills.length < 3) throw new Error("[Expedition] 正式构筑池不足三个跨战斗主动");
+        }
+        return {
+            encounters: setups,
+            upgrades: SkillBattleConfigUtils.readUpgrades(tables),
+            loot,
+            rewards,
+            requireBuildSelection: false,
+            ...(build ? { build } : {}),
+            ...(includeMap ? { map: ExpeditionMapUtils.createFirstMap() } : {}),
+        };
     }
 }
