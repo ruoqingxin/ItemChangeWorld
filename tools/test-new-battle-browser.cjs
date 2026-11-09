@@ -3,7 +3,7 @@ const assert = require("node:assert/strict");
 const sharp = require("sharp");
 const fs = require("node:fs/promises");
 const path = require("node:path");
-const url = process.env.SKILL_BATTLE_URL || "http://127.0.0.1:18120";
+const url = `${process.env.SKILL_BATTLE_URL || "http://127.0.0.1:18120"}/?stage=1`;
 const key = "nowchange.stage1-battle.v1";
 const screenshots = path.join(__dirname, "../bin/stage1-browser");
 

@@ -1,6 +1,6 @@
 import type {
     NewBattleAction, NewBattleCarry, NewBattleEvent, NewBattlePreview, NewBattleResult,
-    NewBattleSetup, NewBattleState, NewDamagePart, NewSwordPassive,
+    NewBattleSetup, NewBattleState, NewDamagePart, NewPassiveKind,
 } from "./NewBattleTypes";
 
 /** Resource values use integer hundredths. This module never touches scenes, clocks or storage. */
@@ -23,6 +23,19 @@ export class NewBattleCore {
         return Number(result);
     }
 
+    /** Keep conditional body multipliers in one rational product, with one final rounding. */
+    static product(value: number, ...percents: number[]): number {
+        if (![value, ...percents].every(n => Number.isSafeInteger(n) && n >= 0))
+            throw new Error("战斗倍率无效");
+        const denominator = percents.reduce(d => d * BigInt(100), BigInt(1));
+        const numerator = percents.reduce((n, p) => n * BigInt(p), BigInt(value));
+        const result = (numerator + denominator / BigInt(2)) / denominator;
+        if (result > BigInt(Number.MAX_SAFE_INTEGER)) throw new Error("战斗数值超过安全范围");
+        return Number(result);
+    }
+
+    static attacking(kind: string): boolean { return !["ningfeng", "yanjia", "fanzhen"].includes(kind); }
+
     static start(setup: NewBattleSetup, battleId: string, carry?: NewBattleCarry): NewBattleState {
         this.validateSetup(setup);
         if (!battleId) throw new Error("战斗标识无效");
@@ -36,6 +49,10 @@ export class NewBattleCore {
             sword: { momentum: 0, keen: false, enhancement: 100, firstBasicUsed: false,
                 xifeng: false, previousAttack: null, mark: null },
         };
+        if (setup.earthRules) {
+            state.earth = { power: false, gumai: false, potionSeen: false };
+            state.common = { firstAttack: false, firstGuard: false, rescueUsed: false, potionSeen: false };
+        }
         this.validateState(setup, state);
         return state;
     }
@@ -66,12 +83,14 @@ export class NewBattleCore {
             !setup.enemy || !int(setup.enemy.id, 1) || !int(setup.enemy.maxHp, 1) ||
             !Array.isArray(setup.enemy.intents) || !setup.enemy.intents.length)
             throw new Error("新版战斗配置无效");
-        const skills = ["dianxing", "liejia", "huilan", "liuhen", "ningfeng"];
-        const passives = ["chuzhao", "xifeng", "difeng", "bengjia", "lianmang", "guanxi"];
+        const skills = ["dianxing", "liejia", "huilan", "liuhen", "ningfeng", "feiyan", "yanjia", "hanyue", "xiandi", "fanzhen"];
+        const passives = ["chuzhao", "xifeng", "difeng", "bengjia", "lianmang", "guanxi",
+            "houlei", "lifeng", "yingxian", "zhongyue", "jieshan", "gumai", "xianji", "gushou", "huming", "yaoyin"];
         if (new Set(setup.skills.map(row => row.kind)).size !== setup.skills.length ||
             new Set(setup.passives.map(row => row.kind)).size !== setup.passives.length ||
             setup.skills.some(row => !int(row.id, 1) || !row.name || !skills.includes(row.kind) ||
                 ![row.mpCost, row.damagePercent, row.shieldPercent, row.shredPercent, row.markPercent].every(n => int(n)) ||
+                ![row.conditionalPercent ?? 0, row.reductionPercent ?? 0, row.counterPercent ?? 0].every(n => int(n)) ||
                 !row.school) ||
             setup.passives.some(row => !int(row.id, 1) || !row.name || !passives.includes(row.kind) || !int(row.value)) ||
             setup.build.actives.some(row => !int(row.level) || row.level > 5 ||
@@ -83,6 +102,9 @@ export class NewBattleCore {
                 !int(row.block) || typeof row.charging !== "boolean"))
             throw new Error("新版技能、物品或意图配置无效");
         if (setup.weapon) this.validateWeapon(setup.weapon);
+        if (setup.earthRules && (!int(setup.earthRules.powerPercent, 100) ||
+            !int(setup.earthRules.lowHpPercent, 1) || setup.earthRules.lowHpPercent > 100))
+            throw new Error("土道或通用规则无效");
     }
 
     private static validateWeapon(weapon: NonNullable<NewBattleState["weapon"]>): void {
@@ -107,7 +129,7 @@ export class NewBattleCore {
             typeof state.potionUsed !== "boolean" || !int(s.momentum, 3) || typeof s.keen !== "boolean" ||
             s.keen !== (s.momentum === 3) || ![100, 110, 120, 130, 140].includes(s.enhancement) ||
             typeof s.firstBasicUsed !== "boolean" || typeof s.xifeng !== "boolean" ||
-            (s.previousAttack !== null && !setup.skills.some(row => row.id === s.previousAttack && row.kind !== "ningfeng")) ||
+            (s.previousAttack !== null && !setup.skills.some(row => row.id === s.previousAttack && this.attacking(row.kind))) ||
             (s.mark !== null && (!int(s.mark.damage) || !int(s.mark.ticks, 2) || s.mark.ticks < 1)) ||
             !Array.isArray(state.pouch) || state.pouch.length !== 5 ||
             new Set(state.pouch.filter(Boolean).map(row => row!.itemUid)).size !== state.pouch.filter(Boolean).length ||
@@ -129,6 +151,15 @@ export class NewBattleCore {
         if (!setup.build.schools.includes("sword") &&
             (s.momentum || s.keen || s.enhancement !== 100 || s.xifeng))
             throw new Error("未借剑道不能养锋");
+        if (setup.earthRules) {
+            const earth = state.earth, common = state.common;
+            if (!earth || !common ||
+                ![earth.power, earth.gumai, earth.potionSeen, common.firstAttack, common.firstGuard,
+                    common.rescueUsed, common.potionSeen].every(value => typeof value === "boolean") ||
+                (!setup.build.schools.includes("earth") && (earth.power || earth.gumai)) ||
+                (state.phase !== "player_input" && (earth.power || earth.gumai)))
+                throw new Error("土道或通用战内标记无效");
+        } else if (state.earth || state.common) throw new Error("本战斗没有扩展道性规则");
     }
 
     static resolve(setup: NewBattleSetup, snapshot: NewBattleState, action: NewBattleAction): NewBattleResult {
@@ -144,6 +175,14 @@ export class NewBattleCore {
         if (skill && snapshot.player.mp < skill.mpCost) return reject(`灵力不足，需要 ${this.format(skill.mpCost)}`);
         if (skill?.kind === "ningfeng" && snapshot.sword.momentum >= 3) return reject("剑势已满，凝锋无实际收益");
         const state = this.clone(snapshot), events: NewBattleEvent[] = [];
+        const passive = (kind: NewPassiveKind) => setup.passives.find(row => row.kind === kind &&
+            setup.build.passiveIds.includes(row.id) &&
+            ((row.school || "sword") === "common" || setup.build.schools.includes(row.school || "sword")));
+        const trigger = (kind: NewPassiveKind): number => {
+            const row = passive(kind);
+            if (row) events.push({ type: "passive", id: row.id, name: row.name });
+            return row?.value || 0;
+        };
         const preview: NewBattlePreview = {
             token: { battleId: state.battleId, revision: state.revision },
             name: skill?.name || (action.type === "basic" ? "普攻" : action.type === "guard" ? "防御" : "用药"),
@@ -171,18 +210,23 @@ export class NewBattleCore {
             events.push({ type: "action", name: potion.name },
                 { type: "potion", itemUid: action.itemUid, itemId: potion.itemId, slot },
                 { type: "resource", resource: potion.resource, before, after });
+            if (state.earth && !state.earth.potionSeen) {
+                state.earth.potionSeen = true;
+                if (passive("gumai")) { trigger("gumai"); state.earth.gumai = true; }
+            }
+            if (state.common && !state.common.potionSeen) {
+                state.common.potionSeen = true;
+                if (passive("yaoyin")) {
+                    const amount = this.scale(this.attributes(setup, snapshot).defense, trigger("yaoyin"));
+                    state.player.block += amount; preview.shield += amount;
+                    events.push({ type: "shield", target: "player", amount, source: "药引" });
+                }
+            }
             return result();
         }
         const { attack, defense } = this.attributes(setup, snapshot);
         const level = active?.level || 0, sword = state.sword;
         const hasSword = setup.build.schools.includes("sword");
-        const passive = (kind: NewSwordPassive) => hasSword
-            ? setup.passives.find(row => row.kind === kind && setup.build.passiveIds.includes(row.id)) : undefined;
-        const trigger = (kind: NewSwordPassive): number => {
-            const row = passive(kind);
-            if (row) events.push({ type: "passive", id: row.id, name: row.name });
-            return row?.value || 0;
-        };
         const shield = (amount: number, source: string) => {
             if (amount <= 0) return;
             state.player.block += amount; preview.shield += amount;
@@ -196,9 +240,17 @@ export class NewBattleCore {
             state.phase = phase; clear("player"); clear("enemy");
             state.sword = { momentum: 0, keen: false, enhancement: 100, firstBasicUsed: false,
                 xifeng: false, previousAttack: null, mark: null };
+            if (state.earth) { state.earth.power = false; state.earth.gumai = false; }
             events.push({ type: "ended", result: phase });
         };
-        const damagingSkill = !!skill && skill.kind !== "ningfeng";
+        const damagingSkill = !!skill && this.attacking(skill.kind);
+        const attacking = action.type === "basic" || damagingSkill;
+        const power = !!state.earth?.power;
+        const gumai = !!state.earth?.gumai;
+        const firstAttack = !!state.common && !state.common.firstAttack && attacking;
+        const firstGuard = !!state.common && !state.common.firstGuard && action.type === "guard";
+        const rescue = !!state.common && !state.common.rescueUsed &&
+            state.player.hp * 100 <= state.player.maxHp * (setup.earthRules?.lowHpPercent || 30) && !!passive("huming");
         let broke = false;
         const breakShield = (before: number) => {
             if (damagingSkill && !broke && before > 0 && state.enemy.block === 0 && state.enemy.hp > 0 && passive("bengjia")) {
@@ -217,6 +269,15 @@ export class NewBattleCore {
         };
         events.push({ type: "action", name: preview.name });
         state.revision++; state.mainActions++;
+        if (state.earth) {
+            state.earth.power = false; state.earth.gumai = false;
+            if (power) events.push({ type: "earth_power", active: false });
+        }
+        if (state.common) {
+            if (attacking) state.common.firstAttack = true;
+            if (action.type === "guard") state.common.firstGuard = true;
+            if (rescue) state.common.rescueUsed = true;
+        }
         preview.mpCost = skill?.mpCost || 0;
         if (preview.mpCost) {
             const before = state.player.mp;
@@ -238,23 +299,47 @@ export class NewBattleCore {
             preview.shred = Math.min(before, this.scale(attack, skill.shredPercent, this.sub[level]));
             state.enemy.block -= preview.shred; breakShield(before);
         }
-        preview.body = action.type === "basic" ? attack : skill
-            ? this.scale(attack, skill.damagePercent,
-                skill.kind === "dianxing" ? this.point[level] : skill.kind === "liuhen" ? this.sub[level] : this.main[level]) : 0;
+        const bodyStrength = skill && ["dianxing", "feiyan"].includes(skill.kind) ? this.point[level] :
+            skill?.kind === "liuhen" ? this.sub[level] : this.main[level];
+        const bodyFactors = [skill ? skill.damagePercent : action.type === "basic" ? 100 : 0,
+            skill ? bodyStrength : 100, power && attacking ? setup.earthRules!.powerPercent : 100];
+        if (skill?.kind === "hanyue" && power)
+            bodyFactors.push(skill.conditionalPercent || 125, this.sub[level]);
+        preview.body = this.product(attack, ...bodyFactors);
+        if (power && attacking) preview.powerUsed = true;
         if (preview.body && damage("enemy", preview.body, "body", true)) return result();
         if (action.type === "guard") shield(this.scale(defense, 150), "防御");
-        if (skill?.shieldPercent) shield(this.scale(defense, skill.shieldPercent, this.sub[level]), skill.name);
+        if (skill?.shieldPercent) shield(this.scale(defense, skill.shieldPercent,
+            skill.kind === "yanjia" ? this.point[level] : this.sub[level]), skill.name);
+        if (skill && ["yanjia", "fanzhen"].includes(skill.kind)) {
+            if (passive("houlei")) shield(this.scale(defense, trigger("houlei")), "厚垒");
+            if (gumai && passive("gumai")) shield(this.scale(defense, trigger("gumai")), "固脉");
+        }
+        const intent = setup.enemy.intents[state.enemy.intentIndex];
+        if (damagingSkill && intent.charging && passive("yingxian"))
+            shield(this.scale(defense, trigger("yingxian")), "迎险");
+        if (firstGuard && passive("gushou")) shield(this.scale(defense, trigger("gushou")), "固守");
+        if (rescue) shield(this.scale(defense, trigger("huming")), "护命");
         if (cashKeen) {
             preview.keen = keenDamage;
             if (damage("enemy", keenDamage, "keen", true)) return result();
             if (passive("lianmang")) shield(this.scale(defense, trigger("lianmang")), "敛芒");
             if (passive("xifeng")) { trigger("xifeng"); sword.xifeng = true; }
         }
+        if (firstAttack && passive("xianji")) {
+            preview.commonBonus = this.scale(setup.player.baseAttack, trigger("xianji"));
+            if (damage("enemy", preview.commonBonus, "xianji")) return result();
+        }
+        const earthKind: NewPassiveKind | null = !power ? null : action.type === "basic" ? "lifeng" :
+            damagingSkill ? skill!.school === "earth" ? "zhongyue" : "jieshan" : null;
+        if (earthKind && passive(earthKind)) {
+            preview.earthBonus = this.scale(setup.player.baseAttack, trigger(earthKind));
+            if (damage("enemy", preview.earthBonus, earthKind as NewDamagePart)) return result();
+        }
         if (damagingSkill && sword.previousAttack !== null && sword.previousAttack !== skill!.id && passive("difeng")) {
             preview.difeng = this.scale(setup.player.baseAttack, trigger("difeng"));
             if (damage("enemy", preview.difeng, "difeng")) return result();
         }
-        const intent = setup.enemy.intents[state.enemy.intentIndex];
         if (damagingSkill && skill!.school === "sword" && intent.charging && passive("guanxi")) {
             preview.guanxi = this.scale(setup.player.baseAttack, trigger("guanxi"));
             if (damage("enemy", preview.guanxi, "guanxi")) return result();
@@ -289,10 +374,21 @@ export class NewBattleCore {
         sword.previousAttack = damagingSkill ? skill!.id : null;
         clear("enemy");
         events.push({ type: "intent", id: intent.id, name: intent.name });
-        if (intent.damage && damage("player", intent.damage, "enemy")) return result();
+        const reduction = skill?.reductionPercent ? Math.min(intent.damage,
+            this.scale(defense, skill.reductionPercent, this.sub[level])) : 0;
+        if (reduction) { preview.reduction = reduction; events.push({ type: "reduction", amount: reduction }); }
+        const absorbed = Math.min(state.player.block, intent.damage - reduction);
+        if (intent.damage - reduction > 0 && damage("player", intent.damage - reduction, "enemy")) return result();
         if (intent.block) {
             state.enemy.block += intent.block;
             events.push({ type: "shield", target: "enemy", amount: intent.block, source: intent.name });
+        }
+        if (absorbed > 0 && state.earth && setup.build.schools.includes("earth")) {
+            state.earth.power = true; events.push({ type: "earth_power", active: true });
+        }
+        if (skill?.counterPercent && absorbed > 0) {
+            preview.counter = this.scale(attack, skill.counterPercent, this.main[level]);
+            if (damage("enemy", preview.counter, "counter")) return result();
         }
         if (sword.mark) {
             const mark = sword.mark;

@@ -34,6 +34,7 @@ export class NewBattleSession {
         manager.beforeNewCommit = (state, action) => this.commitAction(state, action);
     }
     get snapshot(): NewTrialSave | null { return NewBattleCore.clone(this.save); }
+    get records(): NewTrialRecord[] { return this.snapshot?.battles || []; }
     get record(): NewTrialRecord | null {
         return this.save ? NewBattleCore.clone(this.save.battles[this.save.battles.length - 1]) : null;
     }

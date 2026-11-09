@@ -11,8 +11,7 @@ export class SkillBattleBattleView extends UIBaseView {
     protected panel: NewBattlePanel;
 
     protected onConstruct(): void {
-        this.panel = new NewBattlePanel(this, SkillBattleUISession.getTrial(), SkillBattleUISession.trialOptions,
-            screen => openSkillBattleScreen(screen), "battle");
+        this.panel = SkillBattleUISession.createPanel(this, "battle", screen => openSkillBattleScreen(screen));
         this.view.on(Laya.Event.RESIZE, this, this.resize);
     }
 

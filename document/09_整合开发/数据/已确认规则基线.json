@@ -173,10 +173,33 @@
       "fieldRepairDurability": 20,
       "fieldRepairStage1Distribution": false,
       "eventOrderAuthority": "../02_战斗资源与结算规则.md#8-获准事件顺序"
+    },
+    "stage2BuildApproval": {
+      "approvedOn": "2026-11-09",
+      "source": "阶段2_双道与构筑确认包 R04/R05，用户明确全部按推荐继续下阶段",
+      "earth": {
+        "name": "承岳",
+        "token": "磐劲",
+        "maxTokens": 1,
+        "bodyMultiplier": 1.2,
+        "requiresActualShieldAbsorptionAndSurvival": true,
+        "expiresOnNextLegalMainAction": true,
+        "skills": [
+          { "name": "飞岩术", "default": true, "mp": 3, "damageAttackRatio": 0.85 },
+          { "name": "岩甲诀", "default": true, "mp": 4, "shieldDefenseRatio": 2 },
+          { "name": "撼岳击", "default": false, "mp": 5, "damageAttackRatio": 1.1, "powerConditionalMultiplier": 1.25 },
+          { "name": "陷地术", "default": false, "mp": 4, "damageAttackRatio": 0.55, "intentReductionDefenseRatio": 0.5 },
+          { "name": "返震印", "default": false, "mp": 4, "shieldDefenseRatio": 1, "counterAttackRatio": 0.7 }
+        ],
+        "passiveRatios": { "houleiDefense": 0.25, "lifengBaseAttack": 0.2, "yingxianDefense": 0.25,
+          "zhongyueBaseAttack": 0.2, "jieshanBaseAttack": 0.2, "gumaiDefense": 0.5 }
+      },
+      "common": { "xianjiBaseAttack": 0.2, "gushouDefense": 0.5, "humingHpRatio": 0.3,
+        "humingDefense": 1, "yaoyinDefense": 0.5, "usesPerBattle": 1 },
+      "testFixtureIsNotPermanentLearningOrOfficialMap": true
     }
   },
   "notApproved": [
-    "土道承岳磐劲及具体技能被动强化和数值",
     "纳虚器尺寸档数及物品拼图完整表",
     "首领道韵与具体掉落表",
     "商店价格刷新时刻初赠数量",

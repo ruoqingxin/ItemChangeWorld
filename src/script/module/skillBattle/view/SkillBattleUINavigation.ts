@@ -10,6 +10,7 @@ export type SkillBattleScreen = "start" | "battle" | "map" | "settlement";
 export let currentSkillBattleView: UIBaseView;
 
 export function openSkillBattleScreen(screen: SkillBattleScreen): void {
+    if (!SkillBattleUISession.previewSingleTrial && screen === "settlement") screen = "start";
     SkillBattleUISession.onExpired = () => openSkillBattleScreen("settlement");
     SkillBattleUISession.onTrialExpired = () => openSkillBattleScreen("settlement");
     const ui = UIManager.ins();

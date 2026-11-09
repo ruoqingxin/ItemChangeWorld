@@ -11,8 +11,7 @@ export class SkillBattleStartView extends UIBaseView {
     private panel: NewBattlePanel;
 
     protected onConstruct(): void {
-        this.panel = new NewBattlePanel(this, SkillBattleUISession.getTrial(), SkillBattleUISession.trialOptions,
-            screen => openSkillBattleScreen(screen), "start");
+        this.panel = SkillBattleUISession.createPanel(this, "start", screen => openSkillBattleScreen(screen));
     }
 
     onOpen(): void {

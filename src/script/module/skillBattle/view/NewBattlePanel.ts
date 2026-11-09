@@ -4,8 +4,12 @@ import { NewBattleCore } from "../newRules/NewBattleCore";
 import { NewBattleConfigUtils, NewTrialOptions } from "../newRules/NewBattleConfigUtils";
 import { NewBattleSession } from "../newRules/NewBattleSession";
 import type { NewBattleAction, NewBattleEvent, NewBattleResult } from "../newRules/NewBattleTypes";
+import type { NewTrialRecord } from "../newRules/NewBattleSession";
 
 type Screen = "start" | "battle" | "settlement";
+export type NewBattlePanelSession = Pick<NewBattleSession, "error" | "outcome" | "state" | "record" |
+    "remainingMs" | "expire" | "preview" | "confirm" | "resetConfirmed"> &
+    { readonly snapshot: unknown; readonly records: NewTrialRecord[] };
 const f = (n: number) => NewBattleCore.format(n);
 const colors = { text: "#ecefe7", muted: "#bac3b6", gold: "#e3c98c", jade: "#a1d7ba",
     red: "#efa797", blue: "#9ec9ec", fill: "#1c2924", line: "#7a8876" };
@@ -14,22 +18,22 @@ const colors = { text: "#ecefe7", muted: "#bac3b6", gold: "#e3c98c", jade: "#a1d
 export class NewBattlePanel {
     readonly buttons: { [key: string]: Laya.GWidget } = {};
     readonly labels: { [key: string]: Laya.GTextField } = {};
-    private selected: NewBattleAction | null = null;
-    private selection: NewBattleResult | null = null;
-    private notice = "";
-    private opened = false;
-    private busy = false;
+    protected selected: NewBattleAction | null = null;
+    protected selection: NewBattleResult | null = null;
+    protected notice = "";
+    protected opened = false;
+    protected busy = false;
     private mode: "actives" | "passives" | "environment" = "actives";
     private selectedSkill = 1;
-    private resetConfirm = false;
-    private overlay: "log" | "build" | null = null;
+    protected resetConfirm = false;
+    protected overlay: "log" | "build" | null = null;
     private logPage = 0;
     private reportIndex = 0;
     private queue: NewBattleEvent[] = [];
-    private root: Laya.GWidget;
-    private elements: { [key: string]: Laya.GWidget } = {};
-    constructor(view: UIBaseView, readonly session: NewBattleSession, readonly options: NewTrialOptions,
-        private readonly navigate: (screen: Screen) => void, readonly screen: Screen) {
+    protected root: Laya.GWidget;
+    protected elements: { [key: string]: Laya.GWidget } = {};
+    constructor(view: UIBaseView, readonly session: NewBattlePanelSession, readonly options: NewTrialOptions,
+        protected readonly navigate: (screen: Screen) => void, readonly screen: Screen) {
         this.root = view.view;
         for (let i = 0; i < this.root.numChildren; i++) {
             const child = this.root.getChildAt(i) as Laya.GWidget;
@@ -64,7 +68,7 @@ export class NewBattlePanel {
         this.run(() => {
             if (this.session.outcome === "active") { this.navigate("battle"); return; }
             const setup = NewBattleConfigUtils.read(ConfigUtil.Tables, this.options);
-            this.session.start(setup, this.options.emptyPouch);
+            (this.session as NewBattleSession).start(setup, this.options.emptyPouch);
             this.navigate("battle");
         });
     }
@@ -86,7 +90,7 @@ export class NewBattlePanel {
             }
         }, false);
     }
-    private run(fn: () => void, refresh = true): void {
+    protected run(fn: () => void, refresh = true): void {
         try { fn(); }
         catch (error) {
             this.notice = (error as Error).message;
@@ -94,7 +98,7 @@ export class NewBattlePanel {
         }
         if (this.opened && refresh) this.refresh();
     }
-    private command(key: string): void {
+    protected command(key: string): void {
         this.run(() => {
             if (this.busy) return;
             if (this.resetConfirm) {
@@ -113,10 +117,10 @@ export class NewBattlePanel {
             if (key === "reset") { this.resetConfirm = true; return; }
             if (key === "newRun") { this.startRun(); return; }
             if (key === "hub" || key === "loot") { this.navigate("start"); return; }
-            if (key === "lootClose") { this.session.continueBattle(); this.navigate("battle"); return; }
+            if (key === "lootClose") { (this.session as NewBattleSession).continueBattle(); this.navigate("battle"); return; }
             if (key === "battleReport" || (key === "report" && this.screen !== "start")) {
                 this.overlay = "log"; this.logPage = 0;
-                this.reportIndex = Math.max(0, (this.session.snapshot?.battles.length || 1) - 1); return;
+                this.reportIndex = Math.max(0, this.session.records.length - 1); return;
             }
             if (key === "build" && this.screen !== "start") { this.overlay = "build"; return; }
             if (this.screen === "start") { this.configure(key); return; }
@@ -209,7 +213,7 @@ export class NewBattlePanel {
         else if (this.screen === "battle") this.renderBattle();
         else this.renderSettlement();
     }
-    private text(key: string, value: string, x: number, y: number, w: number, h: number,
+    protected text(key: string, value: string, x: number, y: number, w: number, h: number,
         fontSize = 20, color: string = colors.text): void {
         const label = this.labels[key];
         if (!label) throw new Error(`预制缺少文本 ${key}`);
@@ -217,7 +221,7 @@ export class NewBattlePanel {
         label.text = value; label.fontSize = fontSize; label.color = color;
         label.textIns.color = color; label.textIns.wordWrap = true;
     }
-    private button(key: string, value: string, x: number, y: number, w: number, h = 54,
+    protected button(key: string, value: string, x: number, y: number, w: number, h = 54,
         enabled = true, selected = false): void {
         const button = this.buttons[key];
         if (!button) throw new Error(`预制缺少按钮 ${key}`);
@@ -231,17 +235,17 @@ export class NewBattlePanel {
         label.color = selected ? colors.gold : colors.text;
         label.textIns.color = label.color; label.textIns.wordWrap = true;
     }
-    private backdrop(): void {
+    protected backdrop(): void {
         const result = this.elements.result;
         result.visible = true; result.graphics.clear();
         result.graphics.drawRect(0, 0, 1280, 720, "rgba(12,20,16,0.88)");
     }
-    private timeText(): string {
+    protected timeText(): string {
         if (!this.session.snapshot) return "单场试炼";
         const s = Math.ceil(this.session.remainingMs / 1000);
         return `${Math.floor(s / 60).toString().padStart(2, "0")}:${(s % 60).toString().padStart(2, "0")}`;
     }
-    private renderStart(): void {
+    protected renderStart(): void {
         this.backdrop();
         this.text("overlayBrand", "末法寻仙", 32, 20, 420, 44, 26, colors.gold);
         this.text("currency", this.timeText(), 1000, 24, 248, 40, 20, colors.muted);
@@ -283,11 +287,11 @@ export class NewBattlePanel {
         this.button("newRun", active ? "继续试炼" : "开始试炼", 810, 628, 290, 54, readable);
         this.button("reset", active ? "放弃试炼" : "清除试炼档", 170, 628, 290);
     }
-    private renderBattle(): void {
+    protected renderBattle(): void {
         const record = this.session.record;
         if (!record) { this.navigate("start"); return; }
         const s = record.state, setup = record.setup, a = NewBattleCore.attributes(setup, s);
-        this.text("brand", "末法寻仙 · 剑道试炼", 24, 12, 380, 52, 26, colors.gold);
+        this.text("brand", setup.earthRules ? "末法寻仙 · 双道试炼" : "末法寻仙 · 剑道试炼", 24, 12, 380, 52, 26, colors.gold);
         this.text("round", `第 ${s.round} 回合`, 420, 16, 250, 46, 24);
         this.text("upgrades", this.timeText(), 750, 16, 250, 46, 20, colors.muted);
         this.text("enemyName", setup.enemy.name, 720, 110, 284, 44, 26);
@@ -303,7 +307,7 @@ export class NewBattlePanel {
             : `无武器  攻 ${f(a.attack)} / 防 ${f(a.defense)}`, 30, 460, 390, 40, 18, colors.muted);
         this.text("playerHp", `生命 ${f(s.player.hp)} / ${f(s.player.maxHp)}`, 30, 504, 390, 40, 22, colors.jade);
         this.text("playerBlock", `灵力 ${f(s.player.mp)} / ${f(s.player.maxMp)}`, 30, 554, 390, 40, 22, colors.blue);
-        this.text("qi", `剑势 ${s.sword.momentum}/3${s.sword.keen ? " · 锋意" : ""}\n药品机会：${s.potionUsed ? "已使用" : "可用"}`,
+        this.text("qi", `剑势 ${s.sword.momentum}/3${s.sword.keen ? " · 锋意" : ""}${s.earth?.power ? " · 磐劲" : ""}\n药品机会：${s.potionUsed ? "已使用" : "可用"}`,
             30, 604, 390, 72, 20, colors.gold);
         this.bar("enemyHpBar", s.enemy.hp / s.enemy.maxHp, 720, 244, 284, colors.red);
         this.bar("playerHpBar", s.player.hp / s.player.maxHp, 30, 546, 370, colors.jade);
@@ -311,7 +315,7 @@ export class NewBattlePanel {
         const p = this.selection?.ok ? this.selection.preview : null;
         this.text("previewTitle", p ? p.name : "行动预览", 454, 396, 550, 28, 20, colors.jade);
         let detail = this.notice;
-        if (p?.potion) detail = `恢复${p.resource === "hp" ? "生命" : "灵力"} ${f(p.recovery)}\n不占主行动`;
+        if (p?.potion) detail = `恢复${p.resource === "hp" ? "生命" : "灵力"} ${f(p.recovery)}${p.shield ? ` · 得盾 ${f(p.shield)}` : ""}\n不占主行动`;
         else if (p) {
             const lines: string[] = [], action = this.selected;
             const ningfeng = action?.type === "skill" &&
@@ -320,12 +324,15 @@ export class NewBattlePanel {
                 lines.push(`本体 ${f(p.body)} · 削盾 ${f(p.shred)} · 得盾 ${f(p.shield)}`);
             if (p.keen || p.difeng || p.guanxi)
                 lines.push(`锋意 ${f(p.keen)} · 递锋 ${f(p.difeng)} · 贯隙 ${f(p.guanxi)}`);
+            if (p.earthBonus || p.commonBonus || p.powerUsed)
+                lines.push(`磐劲${p.powerUsed ? "已计入本体" : "未兑现"} · 土道附伤 ${f(p.earthBonus || 0)} · 先机 ${f(p.commonBonus || 0)}`);
+            if (p.counter || p.reduction) lines.push(`存活吸盾后反击 ${f(p.counter || 0)} · 本次减伤 ${f(p.reduction || 0)}`);
             if (p.momentumGain) lines.push(`剑势 +${p.momentumGain}${ningfeng ? ` · 本轮锋意 ${p.keenEnhancement}%` : ""}`);
             if (p.mark) lines.push(`剑痕 ${f(p.mark)} × ${p.markTicks}（阶段末）`);
             lines.push(`灵力 -${f(p.mpCost)} · 耐久 -${p.durabilityCost} · 本次承伤 ${f(p.playerHpLoss)}`);
             detail = lines.join("\n");
         }
-        this.text("preview", detail, 454, 428, 550, 104, 17, colors.text);
+        this.text("preview", detail, 454, 418, 550, 114, 16, colors.text);
         const enabled = !this.busy && this.session.outcome === "active";
         ["skill1", "skill2", "skill3", "skill4", "upgrade0"].forEach((key, i) => {
             const active = setup.build.actives[i - 2], skill = active && setup.skills.find(row => row.id === active.skillId);
@@ -350,7 +357,7 @@ export class NewBattlePanel {
         this.button("build", "构筑", 1034, 88, 176);
         this.button("loot", "返回据点", 1034, 152, 176);
     }
-    private renderSettlement(): void {
+    protected renderSettlement(): void {
         this.backdrop();
         const record = this.session.record, s = record?.state;
         this.text("overlayBrand", "末法寻仙", 32, 20, 420, 44, 26, colors.gold);
@@ -358,7 +365,7 @@ export class NewBattlePanel {
             active: "试炼进行中", empty: "暂无试炼" }[this.session.outcome], 290, 88, 700, 58, 32, colors.gold);
         this.text("resultDetail", s ? `生命 ${f(s.player.hp)}/${f(s.player.maxHp)}    灵力 ${f(s.player.mp)}/${f(s.player.maxMp)}\n耐久 ${s.weapon ? `${s.weapon.durability}/${s.weapon.maxDurability}` : "无武器"}    主行动 ${s.mainActions}    用药 ${record!.actions.filter(row => row.action.type === "potion").length}`
             : "", 200, 190, 880, 110, 24);
-        this.text("section", record ? `${record.setup.enemy.name}    第 ${this.session.snapshot!.battles.length} 场` : "",
+        this.text("section", record ? `${record.setup.enemy.name}    第 ${this.session.records.length} 场` : "",
             170, 340, 940, 40, 22, colors.jade);
         this.text("overlayMessage", this.notice, 170, 470, 940, 70, 18, colors.red);
         this.button("report", "战斗记录", 170, 600, 240, 54, !!record);
@@ -366,7 +373,7 @@ export class NewBattlePanel {
             this.session.outcome === "victory" && this.session.remainingMs > 0);
         this.button("hub", "返回据点", 860, 600, 240);
     }
-    private renderReset(): void {
+    protected renderReset(): void {
         this.backdrop();
         this.text("currency", this.timeText(), 1000, 24, 248, 40, 20, colors.muted);
         this.text("resultTitle", "清除本次试炼？", 240, 190, 800, 60, 30, colors.gold);
@@ -375,16 +382,16 @@ export class NewBattlePanel {
         this.button("resetYes", "确认清除", 350, 540, 250);
         this.button("resetNo", "取消", 680, 540, 250);
     }
-    private renderOverlay(): void {
+    protected renderOverlay(): void {
         this.backdrop();
-        const records = this.session.snapshot?.battles || [];
+        const records = this.session.records;
         this.reportIndex = Math.min(this.reportIndex, Math.max(0, records.length - 1));
         const record = this.overlay === "build" ? this.session.record : records[this.reportIndex];
         this.text("currency", this.timeText(), 1000, 24, 248, 40, 20, colors.muted);
         this.text("resultTitle", this.overlay === "build" ? "当前构筑" : "战斗记录", 240, 70, 800, 60, 30, colors.gold);
         let lines: string[] = [];
         if (record && this.overlay === "build") {
-            lines = ["剑道", ...record.setup.build.actives.map(a =>
+            lines = [record.setup.build.schools.map(s => s === "earth" ? "土道 · 承岳" : "剑道 · 养锋").join(" / "), ...record.setup.build.actives.map(a =>
                 `${record.setup.skills.find(s => s.id === a.skillId)!.name} +${a.level}`),
             record.setup.build.passiveIds.map(id => record.setup.passives.find(row => row.id === id)!.name).join(" / ") || "无被动"];
             if (!record.setup.build.schools.length) lines = ["未借剑道"];
@@ -415,7 +422,7 @@ export class NewBattlePanel {
     }
     private eventText(event: NewBattleEvent): string {
         if (event.type === "damage") return `${{ body: "本体", keen: "锋意", difeng: "递锋", guanxi: "贯隙",
-            mark: "剑痕", enemy: "敌方" }[event.part]}  ${f(event.amount)}    抵盾 ${f(event.absorbed)}    扣血 ${f(event.hpLoss)}`;
+            mark: "剑痕", enemy: "敌方", xianji: "先机", lifeng: "砾锋", zhongyue: "重岳", jieshan: "借山", counter: "返震" }[event.part]}  ${f(event.amount)}    抵盾 ${f(event.absorbed)}    扣血 ${f(event.hpLoss)}`;
         if (event.type === "passive") return event.name;
         return "";
     }

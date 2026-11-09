@@ -1,6 +1,6 @@
 const { chromium } = require("playwright");
 const assert = require("node:assert/strict");
-const url = process.env.SKILL_BATTLE_URL || "http://127.0.0.1:18094";
+const url = `${process.env.SKILL_BATTLE_URL || "http://127.0.0.1:18120"}/?stage=1`;
 const key = "nowchange.stage1-battle.v1";
 
 async function main() {

@@ -25,7 +25,8 @@ async function main(): Promise<void> {
     // Use the same UIManager/GRoot path as the actual game. The preview must
     // not place a second hand-built panel directly on the stage.
     UIManager.ins().init();
-    const trial = SkillBattleUISession.getTrial();
+    SkillBattleUISession.previewSingleTrial = new URLSearchParams(window.location.search).get("stage") === "1";
+    const trial = SkillBattleUISession.getActive();
     openSkillBattleScreen(trial.screen);
     const initialView = currentSkillBattleView;
     const preview = {

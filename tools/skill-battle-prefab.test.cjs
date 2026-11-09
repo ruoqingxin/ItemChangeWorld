@@ -114,9 +114,17 @@ assert.equal(new Set(viewNames).size, Object.keys(views).length, "each view must
 for (const role of ["Start", "Battle", "Settlement"]) {
     const source = fs.readFileSync(path.join(__dirname,
         `../src/script/module/skillBattle/view/SkillBattle${role}View.ts`), "utf8");
-    assert.match(source, /new NewBattlePanel\(/, `${role} production view must use the new kernel panel`);
+    assert.match(source, /SkillBattleUISession\.createPanel\(/, `${role} production view must use the shared new-kernel panel factory`);
     assert.doesNotMatch(source, /getExpedition\(/, `${role} must not initialize the legacy save or rules`);
 }
+const sessionSource = fs.readFileSync(path.join(__dirname,
+    "../src/script/module/skillBattle/view/SkillBattleUISession.ts"), "utf8");
+assert.match(sessionSource, /new NewBuildPanel\(/, "default factory must use the new construction panel");
+assert.match(sessionSource, /static previewSingleTrial = false/, "production entry must default to stage two");
+const buildPanel = fs.readFileSync(path.join(__dirname,
+    "../src/script/module/skillBattle/view/NewBuildPanel.ts"), "utf8");
+assert.match(buildPanel, /extends NewBattlePanel/, "construction must retain the existing battle projection");
+assert.doesNotMatch(buildPanel, /SkillBattleFormulaUtils|ExpeditionManager|stoneItemUid/);
 const newPanel = fs.readFileSync(path.join(__dirname,
     "../src/script/module/skillBattle/view/NewBattlePanel.ts"), "utf8");
 assert.doesNotMatch(newPanel, /SkillBattleFormulaUtils|ExpeditionManager|stoneItemUid/);

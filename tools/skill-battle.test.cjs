@@ -95,8 +95,8 @@ function rejectWithoutMutation(state, input) {
     assert.equal(result.preview, null);
 }
 
-test("generated source package contains 29 tables including six approved new battle tables", () => {
-    assert.equal(buffers.size, 29);
+test("generated source package contains 32 tables including nine approved battle/build tables", () => {
+    assert.equal(buffers.size, 32);
     for (const name of Tables.getTableNames()) {
         assert.ok(Array.isArray(tables[name].getDataList()), name);
     }

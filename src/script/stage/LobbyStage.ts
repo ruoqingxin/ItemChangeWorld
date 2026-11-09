@@ -43,7 +43,7 @@ export class LobbyStage extends asgard.stage.BaseStage {
 
         asgard.events.EventsDispatcher.init(GameConst.appName);
 
-        openSkillBattleScreen(SkillBattleUISession.getTrial().screen);
+        openSkillBattleScreen(SkillBattleUISession.getActive().screen);
     }
 
     onExit(): void {

@@ -1,6 +1,9 @@
 export type NewBattlePhase = "player_input" | "victory" | "defeat";
 export type NewSwordSkill = "dianxing" | "liejia" | "huilan" | "liuhen" | "ningfeng";
 export type NewSwordPassive = "chuzhao" | "xifeng" | "difeng" | "bengjia" | "lianmang" | "guanxi";
+export type NewSkillKind = NewSwordSkill | "feiyan" | "yanjia" | "hanyue" | "xiandi" | "fanzhen";
+export type NewPassiveKind = NewSwordPassive | "houlei" | "lifeng" | "yingxian" | "zhongyue" | "jieshan" |
+    "gumai" | "xianji" | "gushou" | "huming" | "yaoyin";
 export type NewBattleAction =
     | { type: "basic" | "guard" }
     | { type: "skill"; skillId: number }
@@ -11,13 +14,15 @@ export interface NewBattleWeapon {
     id: number; name: string; attack: number; defense: number; durability: number; maxDurability: number;
 }
 export interface NewBattleSkill {
-    id: number; name: string; kind: NewSwordSkill; school: string; mpCost: number;
+    id: number; name: string; kind: NewSkillKind; school: string; mpCost: number;
     damagePercent: number; shieldPercent: number; shredPercent: number; markPercent: number;
+    conditionalPercent?: number; reductionPercent?: number; counterPercent?: number;
 }
-export interface NewBattlePassive { id: number; name: string; kind: NewSwordPassive; value: number; }
+export interface NewBattlePassive { id: number; name: string; kind: NewPassiveKind; value: number; school?: string; }
 export interface NewBattleIntent { id: number; name: string; damage: number; block: number; charging: boolean; }
 export interface NewBattleSetup {
     rulesId: string;
+    earthRules?: { powerPercent: number; lowHpPercent: number };
     player: { maxHp: number; maxMp: number; baseAttack: number; baseDefense: number };
     weapon: NewBattleWeapon | null;
     skills: NewBattleSkill[];
@@ -41,12 +46,15 @@ export interface NewBattleState {
     weapon: NewBattleWeapon | null;
     pouch: Array<NewBattleItem | null>;
     potionUsed: boolean;
+    earth?: { power: boolean; gumai: boolean; potionSeen: boolean };
+    common?: { firstAttack: boolean; firstGuard: boolean; rescueUsed: boolean; potionSeen: boolean };
     sword: {
         momentum: number; keen: boolean; enhancement: number; firstBasicUsed: boolean; xifeng: boolean;
         previousAttack: number | null; mark: { damage: number; ticks: number } | null;
     };
 }
-export type NewDamagePart = "body" | "keen" | "difeng" | "guanxi" | "mark" | "enemy";
+export type NewDamagePart = "body" | "keen" | "difeng" | "guanxi" | "mark" | "enemy" |
+    "xianji" | "lifeng" | "zhongyue" | "jieshan" | "counter";
 export type NewBattleEvent =
     | { type: "action"; name: string }
     | { type: "damage"; part: NewDamagePart; target: "player" | "enemy"; amount: number; absorbed: number; hpLoss: number }
@@ -57,6 +65,8 @@ export type NewBattleEvent =
     | { type: "durability"; before: number; after: number }
     | { type: "momentum"; before: number; after: number }
     | { type: "keen"; active: boolean; amount: number }
+    | { type: "earth_power"; active: boolean }
+    | { type: "reduction"; amount: number }
     | { type: "passive"; id: number; name: string }
     | { type: "mark"; damage: number; ticks: number }
     | { type: "intent"; id: number; name: string }
@@ -68,6 +78,7 @@ export interface NewBattlePreview {
     enemyHpLoss: number; playerHpLoss: number; shield: number; recovery: number;
     resource: "hp" | "mp" | null; potion: boolean;
     momentumGain: number; keenEnhancement: number;
+    earthBonus?: number; commonBonus?: number; counter?: number; reduction?: number; powerUsed?: boolean;
 }
 export type NewBattleResult =
     | { ok: true; state: NewBattleState; events: NewBattleEvent[]; preview: NewBattlePreview }
