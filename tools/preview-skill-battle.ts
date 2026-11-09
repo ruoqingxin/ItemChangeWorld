@@ -25,16 +25,11 @@ async function main(): Promise<void> {
     // Use the same UIManager/GRoot path as the actual game. The preview must
     // not place a second hand-built panel directly on the stage.
     UIManager.ins().init();
-    const expedition = SkillBattleUISession.getExpedition();
-    const run = expedition.run;
-    const initialScreen = run && !run.settled
-        ? run.phase === "map" ? "map"
-            : run.phase === "battle" || run.phase === "reward" || run.phase === "decision" ? "battle" : "settlement"
-        : "start";
-    openSkillBattleScreen(initialScreen);
+    const trial = SkillBattleUISession.getTrial();
+    openSkillBattleScreen(trial.screen);
     const initialView = currentSkillBattleView;
     const preview = {
-        manager: SkillBattleManager.ins(), expedition, ui: UIManager.ins(),
+        manager: SkillBattleManager.ins(), trial, ui: UIManager.ins(),
         get view() { return currentSkillBattleView || initialView; },
         get panel() { return ((currentSkillBattleView || initialView) as any).panel; },
         close: () => {
@@ -44,16 +39,7 @@ async function main(): Promise<void> {
             UIManager.ins().closeForm(SkillBattleSettlementView);
         },
         reopen: () => {
-            const currentRun = expedition.run;
-            if (currentRun && !currentRun.settled && currentRun.phase === "map") {
-                openSkillBattleScreen("map");
-                return;
-            }
-            if (currentRun && !currentRun.settled &&
-                (currentRun.phase === "battle" || currentRun.phase === "reward" || currentRun.phase === "decision"))
-                openSkillBattleScreen("battle");
-            else if (currentRun?.settled) openSkillBattleScreen("settlement");
-            else openSkillBattleScreen("start");
+            openSkillBattleScreen(trial.screen);
         },
     };
     (window as any).__skillBattlePreview = preview;

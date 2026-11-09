@@ -95,12 +95,12 @@ function rejectWithoutMutation(state, input) {
     assert.equal(result.preview, null);
 }
 
-test("generated package contains all 23 tables and loads all table APIs", () => {
-    assert.equal(buffers.size, 23);
+test("generated source package contains 29 tables including six approved new battle tables", () => {
+    assert.equal(buffers.size, 29);
     for (const name of Tables.getTableNames()) {
         assert.ok(Array.isArray(tables[name].getDataList()), name);
     }
-    assert.equal(tables.skill.getDataList().length, 9);
+    assert.equal(tables.skill.getDataList().length, 4, "unapproved client-only skills must not be regenerated");
     assert.equal(tables.skill_encounter.getDataList().length, 3);
     assert.equal(tables.skill_enemy_intent.getDataList().length, 8);
     assert.equal(tables.skill_enemy_intent_step.getDataList().length, 10);

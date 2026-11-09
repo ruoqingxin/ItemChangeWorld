@@ -11,6 +11,7 @@ export let currentSkillBattleView: UIBaseView;
 
 export function openSkillBattleScreen(screen: SkillBattleScreen): void {
     SkillBattleUISession.onExpired = () => openSkillBattleScreen("settlement");
+    SkillBattleUISession.onTrialExpired = () => openSkillBattleScreen("settlement");
     const ui = UIManager.ins();
     ui.closeForm(SkillBattleStartView);
     ui.closeForm(SkillBattleBattleView);

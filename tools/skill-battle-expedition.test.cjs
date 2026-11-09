@@ -109,7 +109,7 @@ module.exports = ({ assert, test, setups, tables, Config, Rules, Manager, Presen
         assert.deepEqual(restored, saved);
     });
 
-    test("F: formal UI config exposes the real build pool and starts with one combat skill", () => {
+    test("F: retained legacy build scaffold starts with one combat skill (not the new trial entry)", () => {
         const formal = ExpeditionConfigUtils.read(tables, true);
         assert.ok(formal.build);
         assert.deepEqual(formal.build.schools, ["sword", "earth", "universal"]);

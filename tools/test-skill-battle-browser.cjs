@@ -1,2 +1,2 @@
-// Keep the established command while exercising the current expedition workflow.
-require("./test-expedition-browser.cjs");
+// Keep the established command pointed at the current default battle entry.
+require("./test-new-battle-browser.cjs");

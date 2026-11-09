@@ -1,2 +1,2 @@
-// The production UI has one map workflow. No legacy query-mode entry remains.
+// Historical map scaffold suite. It is not the stage-1 new-battle acceptance runner.
 require("./test-map-browser.cjs");

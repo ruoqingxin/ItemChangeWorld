@@ -1,6 +1,6 @@
 import { UIBaseView } from "../../../games/ui/UIBaseView";
 import { UILayer } from "../../../games/ui/UILayer";
-import { SkillBattlePanel } from "./SkillBattlePanel";
+import { NewBattlePanel } from "./NewBattlePanel";
 import { SkillBattleUISession } from "./SkillBattleUISession";
 import { openSkillBattleScreen } from "./SkillBattleUINavigation";
 
@@ -8,11 +8,10 @@ import { openSkillBattleScreen } from "./SkillBattleUINavigation";
 export class SkillBattleStartView extends UIBaseView {
     get layer(): UILayer { return UILayer.Second; }
     get path(): string { return "ui/prefab/module/skillBattle/SkillBattleStartView.lh"; }
-    private panel: SkillBattlePanel;
+    private panel: NewBattlePanel;
 
     protected onConstruct(): void {
-        const expedition = SkillBattleUISession.getExpedition();
-        this.panel = new SkillBattlePanel(this, expedition.configuration, expedition,
+        this.panel = new NewBattlePanel(this, SkillBattleUISession.getTrial(), SkillBattleUISession.trialOptions,
             screen => openSkillBattleScreen(screen), "start");
     }
 

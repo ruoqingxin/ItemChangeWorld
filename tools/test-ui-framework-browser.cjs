@@ -1,7 +1,7 @@
 const { chromium } = require("playwright");
 const assert = require("node:assert/strict");
 const url = process.env.SKILL_BATTLE_URL || "http://127.0.0.1:18094";
-const key = "nowchange.skill-expedition.current.v2";
+const key = "nowchange.stage1-battle.v1";
 
 async function main() {
     let browser;
@@ -20,6 +20,7 @@ async function main() {
         await page.evaluate(() => {
             localStorage.setItem("nowchange.skill-expedition.v1", "retired");
             localStorage.setItem("nowchange.skill-expedition.new-rules.v4", "retired");
+            localStorage.setItem("nowchange.skill-expedition.current.v2", "existing-v2");
             localStorage.setItem("another-app", "keep");
         });
         await page.reload();
@@ -28,12 +29,14 @@ async function main() {
             old: localStorage.getItem("nowchange.skill-expedition.v1"),
             oldNewRules: localStorage.getItem("nowchange.skill-expedition.new-rules.v4"),
             other: localStorage.getItem("another-app"),
+            v2: localStorage.getItem("nowchange.skill-expedition.current.v2"),
             save: JSON.parse(localStorage.getItem(key)),
         }), key);
-        assert.equal(storage.old, null);
-        assert.equal(storage.oldNewRules, null);
+        assert.equal(storage.old, "retired");
+        assert.equal(storage.oldNewRules, "retired");
+        assert.equal(storage.v2, "existing-v2");
         assert.equal(storage.other, "keep");
-        assert.equal(storage.save.version, 2);
+        assert.equal(storage.save, null, "the new entry must not initialize a save until a trial starts");
         const uiState = await page.evaluate(() => {
             const view = window.__skillBattlePreview.view;
             // Repeated LobbyManager initialization must not duplicate GRoot children.
@@ -86,47 +89,26 @@ async function main() {
             preview.reopen();
         });
         await page.waitForFunction(() => window.__skillBattlePreview.view.isOpened);
-        await page.evaluate(() => window.__skillBattlePreview.expedition.startNew(42));
-        const runId = await page.evaluate(() => window.__skillBattlePreview.expedition.run.runId);
-        await page.reload();
-        await page.waitForFunction(() => !!window.__skillBattlePreview?.panel);
-        assert.equal(await page.evaluate(() => window.__skillBattlePreview.expedition.run.runId), runId);
-
-        // A run waiting for the starting choice must expire without visiting the map.
-        await page.evaluate(key => {
-            const save = JSON.parse(localStorage.getItem(key));
-            save.run.map.startedAt = Date.now() - 1200000;
-            save.run.map.deadlineAt = Date.now() + 650;
-            localStorage.setItem(key, JSON.stringify(save));
-        }, key);
-        await page.reload();
-        await page.waitForFunction(() => window.__skillBattlePreview?.panel?.screen === "settlement");
-        assert.equal(await page.evaluate(() => window.__skillBattlePreview.expedition.run.report.endReason), "timeout");
-        await page.reload();
-        await page.waitForFunction(() => !!window.__skillBattlePreview?.panel);
-        assert.equal(await page.evaluate(() => window.__skillBattlePreview.expedition.run.phase), "failed");
-
-        // Repeat with an active battle. Combat input must not extend the absolute timer.
-        await page.evaluate(() => {
-            const expedition = window.__skillBattlePreview.expedition;
-            expedition.startNew(42);
-            expedition.chooseStartingSkill(1);
-            expedition.enterMapNode("b1");
-            window.__skillBattlePreview.reopen();
-        });
+        await page.evaluate(() => window.__skillBattlePreview.panel.startRun());
         await page.waitForFunction(() => window.__skillBattlePreview.panel?.screen === "battle");
-        await page.evaluate(key => {
-            const save = JSON.parse(localStorage.getItem(key));
-            save.run.map.startedAt = Date.now() - 1200000;
-            save.run.map.deadlineAt = Date.now() + 650;
-            localStorage.setItem(key, JSON.stringify(save));
-        }, key);
+        const runId = await page.evaluate(() => window.__skillBattlePreview.trial.state.battleId);
         await page.reload();
+        await page.waitForFunction(() => !!window.__skillBattlePreview?.panel);
+        assert.equal(await page.evaluate(() => window.__skillBattlePreview.trial.state.battleId), runId);
+
+        // The shared clock must continue while the player is on the start page.
+        await page.evaluate(() => window.__skillBattlePreview.panel.buttons.loot.event(Laya.Event.CLICK));
+        await page.waitForFunction(() => window.__skillBattlePreview.panel?.screen === "start");
+        await page.evaluate(() => { const actual = Date.now; Date.now = () => actual() + 1200001; });
         await page.waitForFunction(() => window.__skillBattlePreview?.panel?.screen === "settlement");
-        assert.equal(await page.evaluate(() => window.__skillBattlePreview.expedition.run.report.endReason), "timeout");
+        assert.equal(await page.evaluate(() => window.__skillBattlePreview.trial.outcome), "timeout");
+        await page.addInitScript(() => { const actual = Date.now; Date.now = () => actual() + 1200001; });
+        await page.reload();
+        await page.waitForFunction(() => !!window.__skillBattlePreview?.panel);
+        assert.equal(await page.evaluate(() => window.__skillBattlePreview.trial.outcome), "timeout");
         assert.deepEqual(errors, []);
         assert.deepEqual(failed, []);
-        console.log("UI framework browser: save purge/isolation, reload, idempotent init, cache recreation, landscape root, fullscreen stacking and all-page expiry passed.");
+        console.log("UI framework browser: untouched v2/other keys, trial reload, idempotent init, cache recreation, landscape root, fullscreen stacking and start-page expiry passed.");
     } finally { await browser.close(); }
 }
 main().catch(error => { console.error(error); process.exitCode = 1; });

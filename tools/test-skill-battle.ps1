@@ -15,6 +15,8 @@ $sources = @(
     (Join-Path $root "src/script/module/skillBattle/debug/SkillBattleDebug.ts"),
     (Join-Path $root "src/script/module/skillBattle/view/SkillBattlePresenter.ts"),
     (Join-Path $root "src/script/module/skillBattle/newRules/NewBattleCore.ts"),
+    (Join-Path $root "src/script/module/skillBattle/newRules/NewBattleConfigUtils.ts"),
+    (Join-Path $root "src/script/module/skillBattle/newRules/NewBattleSession.ts"),
     (Join-Path $root "src/script/module/expedition/utils/ExpeditionConfigUtils.ts"),
     (Join-Path $root "engine/types/LayaAir.d.ts")
 )

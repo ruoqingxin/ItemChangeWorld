@@ -147,11 +147,36 @@
     "ningfengFinalFengyiRelativeMultiplier": 1.4,
     "swordMarkEnemyPhaseEndTicks": 2,
     "swordMarkRefreshesWithoutStacking": true,
-    "swordMarkImmediateApplicationTick": false
+    "swordMarkImmediateApplicationTick": false,
+    "stage1BattleApproval": {
+      "approvedOn": "2026-11-09",
+      "source": "阶段1_战斗确认包.md R01/R02/R03，用户明确批准推荐接入",
+      "player": { "hp": 60, "mp": 30, "baseAttack": 10, "baseDefense": 6 },
+      "weapon": { "attack": 4, "defense": 2, "maxDurability": 60, "mainActionDurabilityCost": 1 },
+      "basicAttackRatio": 1,
+      "guardDefenseRatio": 1.5,
+      "fengyiBaseAttackRatio": 0.5,
+      "hpPotion": 20,
+      "mpPotion": 10,
+      "resourceIntegerUnit": 100,
+      "rounding": "single-independent-effect-half-up-to-hundredth",
+      "crossZeroUsesActionStartAttributes": true,
+      "skills": [
+        { "name": "点星刺", "mp": 2, "damageAttackRatio": 0.8 },
+        { "name": "裂甲斩", "mp": 4, "damageAttackRatio": 1, "shredAttackRatio": 0.6 },
+        { "name": "回澜剑", "mp": 5, "damageAttackRatio": 0.9, "shieldDefenseRatio": 1 },
+        { "name": "留痕剑", "mp": 5, "damageAttackRatio": 0.45, "markAttackRatio": 0.4 },
+        { "name": "凝锋诀", "mp": 2 }
+      ],
+      "passiveRatios": { "difengBaseAttack": 0.2, "guanxiBaseAttack": 0.2,
+        "bengjiaDefense": 0.5, "lianmangDefense": 0.5 },
+      "fieldRepairDurability": 20,
+      "fieldRepairStage1Distribution": false,
+      "eventOrderAuthority": "../02_战斗资源与结算规则.md#8-获准事件顺序"
+    }
   },
   "notApproved": [
     "土道承岳磐劲及具体技能被动强化和数值",
-    "角色战斗整表与统一事件顺序精度舍入",
     "纳虚器尺寸档数及物品拼图完整表",
     "首领道韵与具体掉落表",
     "商店价格刷新时刻初赠数量",

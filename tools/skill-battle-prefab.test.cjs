@@ -111,6 +111,17 @@ for (const file of allFiles) {
 }
 
 assert.equal(new Set(viewNames).size, Object.keys(views).length, "each view must have a distinct node tree");
+for (const role of ["Start", "Battle", "Settlement"]) {
+    const source = fs.readFileSync(path.join(__dirname,
+        `../src/script/module/skillBattle/view/SkillBattle${role}View.ts`), "utf8");
+    assert.match(source, /new NewBattlePanel\(/, `${role} production view must use the new kernel panel`);
+    assert.doesNotMatch(source, /getExpedition\(/, `${role} must not initialize the legacy save or rules`);
+}
+const newPanel = fs.readFileSync(path.join(__dirname,
+    "../src/script/module/skillBattle/view/NewBattlePanel.ts"), "utf8");
+assert.doesNotMatch(newPanel, /SkillBattleFormulaUtils|ExpeditionManager|stoneItemUid/);
+assert.match(newPanel, /"skill1", "skill2", "skill3", "skill4", "upgrade0"/,
+    "two universal actions and three borrowed active slots must remain distinct");
 const panelSource = fs.readFileSync(path.join(__dirname,
     "../src/script/module/skillBattle/view/SkillBattlePanel.ts"), "utf8");
 const resizeBlock = panelSource.slice(panelSource.indexOf("resizeTo("), panelSource.indexOf("private continueNext"));
