@@ -77,6 +77,20 @@ for (const file of allFiles) {
     };
     visit(prefab);
     validateBounds(prefab);
+    if (nodes.has("inventoryRoot")) {
+        const cells = [...nodes].filter(([name]) => /^inv(?:EquipCell_(?:weapon|container)_\d+|SourceCell\d+|Cell_(?:battle|safe|bag)_\d+)$/.test(name));
+        for (const [name,node] of cells)
+            assert.deepEqual([node.width,node.height],[48,48],`${file} ${name} must use the shared 50px pitch`);
+        for (const [space,key,rows] of [["weapon","invWeapon",3],["container","invContainer",2]]) {
+            const slot = nodes.get(key);
+            assert.deepEqual([slot.width,slot.height],[98,rows*50-2],`${file} ${space} actual footprint`);
+            for (let i=0;i<2*rows;i++) {
+                const cell = nodes.get(`invEquipCell_${space}_${i}`);
+                assert.deepEqual([cell.x,cell.y],[slot.x+i%2*50,slot.y+Math.floor(i/2)*50],
+                    `${file} ${space} cell ${i}`);
+            }
+        }
+    }
 
     assert.equal(prefab.width, 1280, `${file} design width`);
     assert.equal(prefab.height, 720, `${file} design height`);

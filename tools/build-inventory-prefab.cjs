@@ -8,6 +8,7 @@ const reference=path.join(root,"art/reference/cultivation");
 const sourceRoot=process.env.INVENTORY_SOURCE_ROOT||"E:/资源/修仙宗门搜打撤/extracted_assets/images";
 const panels=new Set(["warehouse-body","backpack-body","topbar","tooltip"]);
 const runtimePath=name=>`ui/${panels.has(name)?"texture/inventory":"atlas/module/inventory"}/${name}.png`;
+const cellSize=50;
 const provenance=[];
 function copy(source,name,note=""){
     const dest=path.join(assets,runtimePath(name)),old=path.join(out,name+".png");
@@ -75,18 +76,20 @@ for(const view of ["SkillBattleStartView","SkillBattleSettlementView"]){
     children.push(image("invRightPanel","warehouse-body",784,72,480,524));
     for(const [name,x,y,w,h,size]of[
         ["invTitle",24,14,590,46,26],["invClock",1080,16,174,40,22],
-        ["invEquipTitle",34,88,272,28,18],["invBattleTitle",34,248,272,28,18],
-        ["invSafeTitle",34,354,272,28,18],["invProtection",34,466,272,108,18],
+        ["invEquipTitle",34,88,272,28,18],["invBattleTitle",34,350,272,28,18],
+        ["invSafeTitle",34,454,272,28,18],["invProtection",150,486,156,88,16],
         ["invBagTitle",350,80,414,30,20],["invSourceTitle",804,88,436,30,20],
         ["invDetail",350,440,414,146,18],["invNotice",24,600,1228,32,18],
-        ["invPage",956,552,148,32,17],["invWeaponName",112,128,192,56,17],
-        ["invContainerName",112,192,192,56,17],["invEmptyBag",364,192,382,120,22],
+        ["invPage",956,552,148,32,17],["invWeaponName",34,280,132,60,17],
+        ["invContainerName",184,230,124,80,17],["invEmptyBag",364,192,382,120,22],
     ])children.push(text(name,x,y,w,h,size));
-    for(const [name,x,y]of[["invWeapon",34,124],["invContainer",34,188]]){
-        const n=button(name,x,y,60,60,"","equipment-cell");
-        n._$child.push(image(name+"Icon","gold-sword",7,7,46,46));children.push(n);
+    for(const [space,name,x,y,rows]of[["weapon","invWeapon",34,124,3],["container","invContainer",184,124,2]]){
+        for(let i=0;i<2*rows;i++)
+            children.push(image(`invEquipCell_${space}_${i}`,"cell",x+i%2*cellSize,y+Math.floor(i/2)*cellSize,cellSize-2,cellSize-2));
+        const n=button(name,x,y,2*cellSize-2,rows*cellSize-2,"","item-frame");
+        n._$child.push(image(name+"Icon","gold-sword",6,6,n.width-12,n.height-12));children.push(n);
     }
-    for(const [space,num,x,y,size]of[["battle",5,34,282,52],["safe",2,34,388,64],["bag",48,350,120,50]]){
+    for(const [space,num,x,y,size]of[["battle",5,34,386,cellSize],["safe",2,34,490,cellSize],["bag",48,350,120,cellSize]]){
         for(let i=0;i<num;i++){
             const cols=space==="bag"?8:num;
             children.push(button(`invCell_${space}_${i}`,x+i%cols*size,y+Math.floor(i/cols)*size,size-2,size-2,"","cell"));
@@ -99,10 +102,12 @@ for(const view of ["SkillBattleStartView","SkillBattleSettlementView"]){
         children.push(item);
     }
     const ghost=image("invGhost","item-frame-selected",0,0,48,48,{visible:false,alpha:0.5});children.push(ghost);
-    for(let i=0;i<8;i++){
-        const n=button(`invList${i}`,804,146+i*49,436,46);
-        n._$child[1].x=56;n._$child[1].width=370;
-        n._$child.push(image(`invList${i}Icon`,"herb-sprig",7,4,38,38));children.push(n);
+    for(let i=0;i<56;i++)
+        children.push(image(`invSourceCell${i}`,"cell",804+i%8*cellSize,146+Math.floor(i/8)*cellSize,cellSize-2,cellSize-2));
+    for(let i=0;i<56;i++){
+        const n=button(`invList${i}`,804,146,cellSize-2,cellSize-2,"","item-frame");
+        n._$child.push(image(`invList${i}Icon`,"herb-sprig",6,6,cellSize-14,cellSize-14));
+        n._$child.push(text(`invList${i}Caption`,2,26,cellSize-6,20,12));children.push(n);
     }
     for(const [name,x,y,w,h]of[
         ["invAll",804,118,100,28],["invMedicine",908,118,100,28],["invMaterials",1012,118,100,28],["invEquipment",1116,118,124,28],
@@ -114,7 +119,13 @@ for(const view of ["SkillBattleStartView","SkillBattleSettlementView"]){
     ])children.push(button(name,x,y,w,h));
     const rotate=children.find(n=>n.name==="invRotate");
     rotate._$child.push(image("invRotateIcon","arrow",17,12,22,30,{rotation:90}));
-    children.push(image("invLock","lock",268,354,28,28));
+    for(let i=0;i<48;i++)children.push(image(`invDragCell${i}`,"item-frame-selected",0,0,48,48,
+        {visible:false,alpha:0.65}));
+    const held=node("invHeld","GWidget",0,0,48,48,{visible:false,mouseEnabled:false,mouseThrough:true,alpha:0.95,
+        _$child:[image("invHeldBg","item-frame-selected",0,0,48,48),text("invHeldText",0,0,48,48),
+            image("invHeldIcon","herb-sprig",6,6,36,36),text("invHeldCaption",2,28,44,20,12)]});
+    children.push(held);
+    children.push(image("invLock","lock",268,454,28,28));
     prefab._$child.push(panel);
     // The tab remains accessible while the construction panel is visible.
     const toggle=node("invToggle","GWidget",24,78,128,48,{visible:false,_$child:[

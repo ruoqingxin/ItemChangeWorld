@@ -222,7 +222,26 @@ $checks = @(
     (($baseline.acceptedAdjustableTestStartingPoints.stage3InventoryApproval.bagTiers[0] -join ",") -eq "6,5"),
     (($baseline.acceptedAdjustableTestStartingPoints.stage3InventoryApproval.bagTiers[1] -join ",") -eq "8,6"),
     ($baseline.acceptedAdjustableTestStartingPoints.stage3InventoryApproval.repairCurrentEquippedWeaponOnly -eq 20),
-    ($baseline.acceptedAdjustableTestStartingPoints.stage3InventoryApproval.oneAtomicSaveForInventoryBuildBattleAndSettlement -eq $true)
+    ($baseline.acceptedAdjustableTestStartingPoints.stage3InventoryApproval.oneAtomicSaveForInventoryBuildBattleAndSettlement -eq $true),
+    ($baseline.acceptedAdjustableTestStartingPoints.stage3InventoryApproval.primaryInventoryInteraction -eq "drag-and-release-with-synchronous-image-rotation"),
+    ($baseline.acceptedAdjustableTestStartingPoints.stage3InventoryApproval.ordinaryMoveRequiresExtraConfirmation -eq $false),
+    ($baseline.acceptedAdjustableTestStartingPoints.stage3InventoryApproval.automaticRotationWhenOnlyOtherOrientationFits -eq $true),
+    ($baseline.acceptedAdjustableTestStartingPoints.stage3InventoryApproval.automaticRotationHoverMs -eq 400),
+    ($baseline.confirmed.inventory.allWeaponsEntityCells -eq 6),
+    ($baseline.confirmed.inventory.allContainersEntityCells -eq 4),
+    ($baseline.confirmed.inventory.equipmentUsesActualCellFootprint -eq $true),
+    ($baseline.confirmed.inventory.uniformCellSizeAcrossInventoryRegions -eq $true),
+    (($baseline.acceptedAdjustableTestStartingPoints.stage3InventoryApproval.rectangularShapes.weapon -join ",") -eq "2,3"),
+    ($baseline.acceptedAdjustableTestStartingPoints.stage3InventoryApproval.inventoryCellPitchPixels -eq 50),
+    ($baseline.confirmed.inventory.equipmentDragRequiresExtraConfirmation -eq $false),
+    ($baseline.confirmed.inventory.containerSwapAutomaticallyRepacks -eq $true),
+    ($baseline.confirmed.inventory.containerSwapPreparationOverflow -eq "warehouse"),
+    ($baseline.confirmed.inventory.containerSwapActiveOverflow -eq "current-revealed-ground"),
+    ($baseline.confirmed.inventory.weaponSwapOldDestination -eq "incoming-weapon-source"),
+    ($baseline.acceptedAdjustableTestStartingPoints.stage3InventoryApproval.containerContentsStillUseAtomicPlanConfirmation -eq $false),
+    ($baseline.acceptedAdjustableTestStartingPoints.stage3InventoryApproval.containerContentsStillUseAtomicTransaction -eq $true),
+    ($baseline.acceptedAdjustableTestStartingPoints.stage3InventoryApproval.containerSwapOverflowRejectsWholeTransaction -eq $false),
+    ($baseline.acceptedAdjustableTestStartingPoints.stage3InventoryApproval.invalidContainerSwapPlanRejectsWholeTransaction -eq $true)
 )
 if ($checks -contains $false) { throw "Confirmed baseline assertions failed." }
 $projectRoot = Split-Path -Parent $documentRoot

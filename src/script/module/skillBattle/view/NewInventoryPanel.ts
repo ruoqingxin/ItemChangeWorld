@@ -6,43 +6,71 @@ import { NewInventoryConfigUtils } from "../newRules/NewInventoryConfigUtils";
 import { NewInventoryRules as Rules } from "../newRules/NewInventoryRules";
 import { NewInventorySession } from "../newRules/NewInventorySession";
 import type { NewBuildToken } from "../newRules/NewBuildTypes";
-import type { InventoryCommand, InventoryItem, InventoryLocation, InventorySpace, InventoryState } from "../newRules/NewInventoryTypes";
+import type { InventoryCommand, InventoryConfig, InventoryItem, InventoryLocation, InventorySpace, InventoryState } from "../newRules/NewInventoryTypes";
 import { NewBuildPanel } from "./NewBuildPanel";
+import { NewInventoryDragController } from "./NewInventoryDragController";
+
+interface InventorySelection {
+    uid: string; rotated: boolean; draft: InventoryCommand | null; token: NewBuildToken | null;
+    error: string; notice: string;
+}
+interface HeldInventoryItem {
+    key: string; uid: string; point: Laya.Point; grabX: number; grabY: number; rotated: boolean;
+    previous: InventorySelection; token: NewBuildToken; target: InventoryLocation | null;
+    candidate: InventoryCommand | null; error: string; valid: boolean;
+    hover: { key: string; point: Laya.Point; blocked: boolean } | null;
+}
 
 /** Image-backed inventory projection; all accepted changes pass through the single saved reducer. */
 export class NewInventoryPanel extends NewBuildPanel {
+    private static readonly AUTO_ROTATE_DELAY = 400;
+    private static readonly HOVER_TOLERANCE = 6;
     private inventoryMode: "storage" | "build" = "storage";
     private uid = "";
     private rotated = false;
     private draft: InventoryCommand | null = null;
     private draftToken: NewBuildToken | null = null;
     private draftError = "";
-    private oldWeaponUid = "";
     private inventoryPage = 0;
     private filter = "all";
     private nodes: { [key: string]: Laya.GWidget } = {};
     private visibleItems: InventoryItem[] = [];
     private gridItems: InventoryItem[] = [];
+    private dragController: NewInventoryDragController;
+    private held: HeldInventoryItem | null = null;
     constructor(view: UIBaseView, readonly inventorySession: NewInventorySession,
         navigate: (screen: "start" | "battle" | "settlement") => void, screen: "start" | "battle" | "settlement") {
         super(view,inventorySession,navigate,screen);
         const root = view.getElement<Laya.GWidget>("inventoryRoot",false);
         if (screen === "battle") return;
         if (!root) throw new Error("储物预制未绑定");
+        this.dragController = new NewInventoryDragController(this.root,{
+            begin: (key,point) => this.beginDrag(key,point),
+            move: point => this.moveDrag(point),
+            release: () => this.releaseDrag(),
+            cancel: () => this.cancelDrag(),
+            rotate: () => this.rotateDrag(),
+        });
         this.nodes.inventoryRoot = root;
         for (let i = 0; i < root.numChildren; i++) {
             const n = root.getChildAt(i) as Laya.GWidget;
             const bound = view.getElement<Laya.GWidget>(n.name,false);
             if (!bound) throw new Error(`储物节点未绑定：${n.name}`);
             this.nodes[n.name] = bound;
-            if (!(n instanceof Laya.GTextField) && !(n instanceof Laya.GImage) && n.numChildren) {
+            if (!(n instanceof Laya.GTextField) && !(n instanceof Laya.GImage) && n.numChildren && n.mouseEnabled) {
                 this.buttons[n.name] = n;
                 n.on(Laya.Event.CLICK,this,() => this.command(n.name));
                 n.on(Laya.Event.MOUSE_OVER,this,() => {
                     if (n.name === "invRotate") this.label("invNotice","旋转 90 度",18,"#d5dce4");
                 });
+                if (/^inv(List\d+|Item\d+|Weapon|Container)$/.test(n.name))
+                    n.on(Laya.Event.MOUSE_DOWN,this,(event: Laya.Event) => this.dragController.arm(n.name,event));
             }
         }
+    }
+    suspend(): void {
+        super.suspend();
+        this.dragController?.cancel();
     }
     refresh(): void {
         if (this.nodes) for (const key of Object.keys(this.nodes)) this.nodes[key].visible = false;
@@ -79,6 +107,12 @@ export class NewInventoryPanel extends NewBuildPanel {
         });
     }
     protected command(key: string): void {
+        if (this.held) {
+            if (key === "invRotate") this.rotateDrag();
+            else if (key === "invCancel") this.dragController.cancel();
+            return;
+        }
+        if (this.dragController?.suppressClick()) return;
         if (key === "invToggle") {
             this.run(() => { this.inventoryMode = this.inventoryMode === "storage" ? "build" : "storage"; this.clearSelection(); }); return;
         }
@@ -146,9 +180,8 @@ export class NewInventoryPanel extends NewBuildPanel {
             const i = Rules.item(state,this.uid), t = Rules.template(session.archive!.config,i);
             if (t.kind !== space) throw new Error(space === "weapon" ? "请选择一件武器" : "请选择一个纳虚器本体");
             if (space === "weapon") {
-                if (equipped && equipped.uid !== i.uid) {
-                    this.oldWeaponUid = equipped.uid; this.notice = "请选择原武器的合法去向，再确认换装";
-                } else this.stage({ type: "equipWeapon", uid: i.uid, from: i.location });
+                session.inventoryCommand(Rules.weaponPlan(session.archive!.config,state,i.uid));
+                this.clearSelection();
             } else this.stageContainer(i);
             return;
         }
@@ -174,12 +207,12 @@ export class NewInventoryPanel extends NewBuildPanel {
         }
     }
     private selectItem(item: InventoryItem): void {
-        this.uid = item.uid; this.rotated = !!item.location.rotated; this.notice = ""; this.oldWeaponUid = "";
-        if (this.draft?.type !== "equipContainer") { this.draft = null; this.draftToken = null; this.draftError = ""; }
+        this.uid = item.uid; this.rotated = !!item.location.rotated; this.notice = "";
+        this.draft = null; this.draftToken = null; this.draftError = "";
     }
     private clearSelection(): void {
         this.uid = ""; this.draft = null; this.draftToken = null; this.draftError = "";
-        this.oldWeaponUid = ""; this.notice = "";
+        this.notice = "";
     }
     private stage(command: InventoryCommand): void {
         this.draft = command; this.draftToken = this.inventorySession.token; this.checkDraft();
@@ -190,27 +223,15 @@ export class NewInventoryPanel extends NewBuildPanel {
         catch (error) { this.draftError = (error as Error).message; }
     }
     private stageContainer(item: InventoryItem | null): void {
-        const state = this.inventorySession.inventory!, old = state.items.find(i => i.location.space === "container");
-        this.stage({ type: "equipContainer", uid: item?.uid || null, from: item?.location,
-            oldTo: old ? state.phase === "preparation" ? { space: "warehouse" } : { space: "ground", node: state.node } : undefined,
-            contents: state.items.filter(i => i.location.space === "bag").map(i => ({
-                uid: i.uid, from: i.location, to: Core.clone(i.location),
-            })) });
-        this.uid = "";
+        this.inventorySession.inventoryCommand(this.containerPlan(item));
+        this.clearSelection();
     }
     private target(to: InventoryLocation): void {
         if (!this.uid) throw new Error("尚未选中物品");
         const state = this.inventorySession.inventory!, item = Rules.item(state,this.uid);
-        if (this.oldWeaponUid) {
-            this.stage({ type: "equipWeapon", uid: item.uid, from: item.location, oldTo: to }); return;
-        }
-        if (this.draft?.type === "equipContainer") {
-            const m = this.draft.contents.find(m => m.uid === item.uid);
-            if (!m) throw new Error("换匣预览中只能安排原纳虚器内容");
-            m.to = to; this.checkDraft(); return;
-        }
         if (item.location.space === "weapon") {
-            this.stage({ type: "equipWeapon", uid: null, oldTo: to }); return;
+            this.inventorySession.inventoryCommand({ type: "equipWeapon", uid: null, oldTo: to });
+            this.clearSelection(); return;
         }
         if (item.location.space === "container") {
             this.stageContainer(null); return;
@@ -222,13 +243,7 @@ export class NewInventoryPanel extends NewBuildPanel {
         this.stage({ type: "move", move: { uid: i.uid, from: i.location, to } });
     }
     private projection(): InventoryState | null {
-        const s = this.inventorySession.inventory;
-        if (!s || this.draft?.type !== "equipContainer") return s;
-        const command = this.draft, old = s.items.find(i => i.location.space === "container");
-        if (old) old.location = command.oldTo!;
-        if (command.uid) Rules.item(s,command.uid).location = { space: "container" };
-        for (const m of command.contents) Rules.item(s,m.uid).location = Core.clone(m.to);
-        return s;
+        return this.inventorySession.inventory;
     }
     protected renderStart(): void {
         if (this.inventorySession.inventory?.phase === "active" && this.inventoryMode === "build") {
@@ -257,7 +272,7 @@ export class NewInventoryPanel extends NewBuildPanel {
     private control(key: string, text: string, enabled = true, selected = false): void {
         const n = this.nodes[key]; n.visible = true; n.mouseEnabled = enabled; n.alpha = enabled ? 1 : 0.4;
         const l = n.getChildAt(1) as Laya.GTextField;
-        l.text = text; l.fontSize = n.height <= 32 ? 16 : 18;
+        l.text = text; l.fontSize = key === "invRotate" ? 30 : n.height <= 32 ? 16 : 18;
         l.y = 0; l.height = n.height; l.color = selected ? "#ffd879" : "#e8edf0"; l.textIns.color = l.color;
         l.textIns.wordWrap = true; l.align = key.startsWith("invList") ? "left" : "center"; l.valign = "middle";
         (n.getChildAt(0) as Laya.GImage).alpha = selected ? 0.55 : 0.95;
@@ -269,16 +284,21 @@ export class NewInventoryPanel extends NewBuildPanel {
             label.fontSize--; label.textIns.typeset(true);
         }
     }
-    private icon(n: Laya.GWidget, src: string, width: number, height: number, x = 6, y = 6): void {
+    private icon(n: Laya.GWidget, src: string, width: number, height: number, x = 6, y = 6, rotated = false): void {
         const image = n.getChildAt(2) as Laya.GImage;
         image.src = src; image.visible = true;
         const texture = Laya.loader.getRes(src) as Laya.Texture;
-        const ratio = Math.min(width / (texture?.width || width),height / (texture?.height || height));
-        const w = (texture?.width || width) * ratio, h = (texture?.height || height) * ratio;
-        image.pos(x + (width - w) / 2,y + (height - h) / 2); image.size(w,h);
+        const tw = texture?.width || width, th = texture?.height || height;
+        const ratio = Math.min(width / (rotated ? th : tw),height / (rotated ? tw : th));
+        const w = tw * ratio, h = th * ratio;
+        image.rotation = rotated ? 90 : 0;
+        image.pos(x + (width - (rotated ? h : w)) / 2 + (rotated ? h : 0),
+            y + (height - (rotated ? w : h)) / 2); image.size(w,h);
     }
     private renderInventory(): void {
-        const session = this.inventorySession, save = session.archive, actual = save?.state, state = this.projection();
+        const session = this.inventorySession, save = session.archive, actual = save?.state;
+        if (actual?.phase === "ended" && this.draft) this.clearSelection();
+        const state = this.projection();
         this.backdrop();
         const root = this.nodes.inventoryRoot; root.visible = true;
         for (const key of Object.keys(this.nodes)) if (key !== "inventoryRoot") this.nodes[key].visible = false;
@@ -288,7 +308,7 @@ export class NewInventoryPanel extends NewBuildPanel {
         this.label("invEquipTitle","装备",18,"#c2dbdd");
         this.label("invBattleTitle","斗法匣 · 5 格",18,"#e3c98c");
         this.label("invSafeTitle","归真匣 · 2 格",18,"#a5d8b9");
-        this.label("invProtection","归真匣保护非装备。\n装备、斗法匣与纳虚器\n在失败时损失。",18,"#bbcbd0");
+        this.label("invProtection","归真匣保护非装备。\n其余携带物失败损失。",16,"#bbcbd0");
         this.label("invBagTitle","纳虚器",20,"#c2dbdd");
         this.label("invSourceTitle",actual?.phase === "active" ? `节点 ${actual.node + 1} · 地面来源` :
             actual?.phase === "ended" ? "结算账本" : "统一库存 · 演练物品",20,"#e3c98c");
@@ -300,19 +320,21 @@ export class NewInventoryPanel extends NewBuildPanel {
         const editable = state.phase !== "ended" && state.flow?.phase !== "battle";
         for (const space of ["weapon","container"] as const) {
             const key = space === "weapon" ? "invWeapon" : "invContainer", item = state.items.find(i => i.location.space === space);
-            this.control(key,"",editable && this.draft?.type !== "equipContainer");
+            this.control(key,"",editable);
+            const n = this.nodes[key], cols = 2, rows = space === "weapon" ? 3 : 2;
+            for (let i = 0; i < cols * rows; i++) this.nodes[`invEquipCell_${space}_${i}`].visible = true;
+            (n.getChildAt(0) as Laya.GImage).alpha = item ? 0.22 : 0.1;
             const icon = this.nodes[key].getChildAt(2) as Laya.GImage; icon.visible = !!item;
-            if (item) this.icon(this.nodes[key],Rules.template(save.config,item).icon,46,46,7,7);
-            this.label(key+"Name",item ? `${Rules.template(save.config,item).name}${space === "weapon" ?
-                `\n耐久 ${item.durability}/${save.config.build.setup.weapon!.maxDurability}` : ""}` :
-                space === "weapon" ? "未装备武器" : "未装备纳虚器",17);
+            if (item) this.icon(n,Rules.template(save.config,item).icon,n.width - 12,n.height - 12);
+            this.label(key+"Name",`${item ? Rules.template(save.config,item).name :
+                space === "weapon" ? "未装备武器" : "未装备纳虚器"}\n${cols}×${rows}${item && space === "weapon" ?
+                ` · 耐久 ${item.durability}/${save.config.build.setup.weapon!.maxDurability}` : ""}`,17);
         }
         let count = 0;
         for (const space of ["battle","safe","bag"] as const) {
-            const [cols,rows] = Rules.size(save.config,state,space), size = space === "bag" ? 50 : space === "battle" ? 52 : 64;
-            const startX = space === "bag" ? 350 : 34, startY = space === "bag" ? 120 : space === "battle" ? 282 : 388;
+            const { cols,rows,size,x: startX,y: startY } = this.gridGeometry(space);
             if (space === "bag") {
-                this.label("invBagTitle",`纳虚器${cols ? ` · ${cols}×${rows}` : ""}${this.draft?.type === "equipContainer" ? " · 换匣预览" : ""}`,20);
+                this.label("invBagTitle",`纳虚器${cols ? ` · ${cols}×${rows}` : ""}`,20);
                 if (!cols) this.label("invEmptyBag","未装备纳虚器",22,"#c2cbcf");
             }
             for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
@@ -326,7 +348,7 @@ export class NewInventoryPanel extends NewBuildPanel {
                 n.pos(startX + item.location.x! * size,startY + item.location.y! * size); n.size(w * size - 2,h * size - 2);
                 const bg = n.getChildAt(0) as Laya.GImage; bg.size(n.width,n.height);
                 bg.src = `ui/atlas/module/inventory/${item.uid === this.uid ? "item-frame-selected" : "item-frame"}.png`;
-                this.icon(n,t.icon,n.width - 12,n.height - 12);
+                this.icon(n,t.icon,n.width - 12,n.height - 12,6,6,!!item.location.rotated);
                 const caption = n.getChildAt(3) as Laya.GTextField;
                 caption.text = `${w}×${h}`; caption.pos(3,n.height - 22); caption.size(n.width - 6,22);
                 caption.color = "#ffffff"; caption.fontSize = 12;
@@ -339,8 +361,7 @@ export class NewInventoryPanel extends NewBuildPanel {
         if (this.draft?.type === "move") {
             const to = this.draft.move.to;
             if (["battle","safe","bag"].includes(to.space)) {
-                const size = to.space === "bag" ? 50 : to.space === "battle" ? 52 : 64;
-                const x = to.space === "bag" ? 350 : 34, y = to.space === "bag" ? 120 : to.space === "battle" ? 282 : 388;
+                const { size,x,y } = this.gridGeometry(to.space);
                 const item = Rules.item(actual!,this.draft.move.uid), [w,h] = Rules.dimensions(Rules.template(save.config,item),to);
                 const ghost = this.nodes.invGhost; ghost.pos(x + to.x! * size,y + to.y! * size);
                 ghost.size(w * size - 2,h * size - 2); ghost.visible = true;
@@ -357,13 +378,21 @@ export class NewInventoryPanel extends NewBuildPanel {
                 this.filter === "materials" && ["material","book"].includes(t.kind) ||
                 this.filter === "equipment" && ["weapon","container"].includes(t.kind);
         });
-        const pages = Math.max(1,Math.ceil(list.length / 8)); this.inventoryPage = Math.min(this.inventoryPage,pages - 1);
-        this.visibleItems = list.slice(this.inventoryPage * 8,this.inventoryPage * 8 + 8);
-        this.visibleItems.forEach((item,i) => {
+        const sourcePages = this.packSource(list,save.config);
+        const pages = sourcePages.length; this.inventoryPage = Math.min(this.inventoryPage,pages - 1);
+        const sourcePage = sourcePages[this.inventoryPage];
+        this.visibleItems = sourcePage.map(p => p.item);
+        for (let i = 0; i < 56; i++) this.nodes[`invSourceCell${i}`].visible = true;
+        sourcePage.forEach(({item,x,y},i) => {
             const key = `invList${i}`, t = Rules.template(save.config,item);
-            this.control(key,`${t.name} · ${t.width}×${t.height}${item.durability !== null ? ` · 耐久 ${item.durability}` : ""}`,
-                editable || state.phase === "ended",item.uid === this.uid);
-            this.icon(this.nodes[key],t.icon,38,38,7,4);
+            const n = this.nodes[key], origin = this.nodes.invSourceCell0, size = origin.width + 2;
+            this.control(key,"",editable || state.phase === "ended",item.uid === this.uid);
+            n.pos(origin.x + x * size,origin.y + y * size); n.size(t.width * size - 2,t.height * size - 2);
+            (n.getChildAt(0) as Laya.GImage).size(n.width,n.height);
+            this.icon(n,t.icon,n.width - 12,n.height - 12);
+            const caption = n.getChildAt(3) as Laya.GTextField;
+            caption.text = item.durability !== null ? `${item.durability}` : `${t.width}×${t.height}`;
+            caption.pos(3,n.height - 22); caption.size(n.width - 6,22); caption.fontSize = 12; caption.color = "#ffffff";
         });
         const filters = state.phase === "ended" ? [["invAll","库存"],["invMedicine","实际带回"],["invMaterials","实际损失"],["invEquipment","已消耗"]] :
             [["invAll","全部"],["invMedicine","药与修补"],["invMaterials","书与材料"],["invEquipment","装备"]];
@@ -376,19 +405,14 @@ export class NewInventoryPanel extends NewBuildPanel {
         this.label("invPage",`${list.length} 件 · ${this.inventoryPage + 1}/${pages}`,17,"#b9c9cf");
         const selected = actual!.items.find(i => i.uid === this.uid);
         let detail = selected ? this.describeItem(selected) : `生命 ${Core.format(state.hp)} / ${Core.format(save.config.build.setup.player.maxHp)}\n灵力 ${Core.format(state.mp)} / ${Core.format(save.config.build.setup.player.maxMp)}`;
-        if (this.draft?.type === "equipContainer") {
-            const old = actual!.items.find(i => i.location.space === "container");
-            const next = this.draft.uid && Rules.item(actual!,this.draft.uid);
-            detail = `换匣：${old ? Rules.template(save.config,old).name : "无"} → ${next ? Rules.template(save.config,next).name : "无"}\n原内容 ${this.draft.contents.length} 件 · 旧本体${state.phase === "preparation" ? "回仓库" : "落当前地面"}${selected ? `\n${this.describeItem(selected)}` : ""}`;
-        } else if (this.draft?.type === "equipWeapon") detail += `\n原武器去向：${this.locationName(this.draft.oldTo)}`;
-        else if (this.draft?.type === "extract") detail = "确认撤离\n仅带回当前携带物，地面物品清局。";
+        if (this.draft?.type === "extract") detail = "确认撤离\n仅带回当前携带物，地面物品清局。";
         else if (this.draft?.type === "abandon") detail = "确认放弃\n只保留归真匣，所有携带装备及其他内容损失。";
         if (state.phase === "ended") detail = `${{extract:"撤离成功",defeat:"战斗失败",abandon:"已主动放弃",timeout:"演练超时"}[state.result!]}\n带回 ${state.returned.length} 件 · 损失 ${state.lost.length} 件\n已消耗 ${state.consumed.length} 件${selected ? `\n${Rules.template(save.config,selected).name}` : ""}`;
         this.label("invDetail",detail,18,"#d9e1e5");
         this.label("invNotice",session.error || this.draftError || this.notice ||
             (this.draft ? "预览未提交" : ""),18,this.draftError ? "#ffb4a8" : "#c2d1d8");
-        this.control("invRotate","",editable && !!selected && Rules.template(save.config,selected).rotate);
-        (this.nodes.invRotate.getChildAt(2) as Laya.GImage).visible = true;
+        this.control("invRotate","\u21bb",editable && !!selected && Rules.template(save.config,selected).rotate);
+        (this.nodes.invRotate.getChildAt(2) as Laya.GImage).visible = false;
         this.control("invCancel","取消",!!this.uid || !!this.draft);
         this.control("invConfirm","确认提交",!!this.draft && !this.draftError);
         this.control("invUse","使用",editable && state.phase === "active" && !!selected && !this.draft &&
@@ -403,6 +427,269 @@ export class NewInventoryPanel extends NewBuildPanel {
             this.control("invNodeNext",">",editable && state.node < victories && !state.flow?.pending && !this.draft);
             this.button("invToggle","构筑",630,16,128,46,editable && !this.draft);
         }
+        if (this.held) this.renderHeld();
+    }
+    private packSource(items: InventoryItem[], config: InventoryConfig) {
+        const pages: Array<Array<{ item: InventoryItem; x: number; y: number }>> = [[]];
+        let occupied = new Set<number>();
+        for (const item of items) {
+            const t = Rules.template(config,item);
+            let position = -1;
+            while (position < 0) {
+                for (let y = 0; y <= 7 - t.height && position < 0; y++) for (let x = 0; x <= 8 - t.width; x++) {
+                    let free = true;
+                    for (let dy = 0; dy < t.height; dy++) for (let dx = 0; dx < t.width; dx++)
+                        if (occupied.has((y + dy) * 8 + x + dx)) free = false;
+                    if (free) { position = y * 8 + x; break; }
+                }
+                if (position < 0) { pages.push([]); occupied = new Set(); }
+            }
+            const x = position % 8, y = Math.floor(position / 8);
+            for (let dy = 0; dy < t.height; dy++) for (let dx = 0; dx < t.width; dx++)
+                occupied.add((y + dy) * 8 + x + dx);
+            pages[pages.length - 1].push({ item, x, y });
+        }
+        return pages;
+    }
+    private beginDrag(key: string, point: Laya.Point): boolean {
+        const state = this.inventorySession.inventory;
+        if (!this.opened || this.busy || this.overlay || this.resetConfirm || !state ||
+            state.phase === "ended" || state.flow?.phase === "battle") return false;
+        const source = /^invList(\d+)$/.exec(key), grid = /^invItem(\d+)$/.exec(key);
+        const item = source ? this.visibleItems[+source[1]] : grid ? this.gridItems[+grid[1]] :
+            state.items.find(i => i.location.space === (key === "invWeapon" ? "weapon" : "container"));
+        if (!item) return false;
+        const n = this.nodes[key], previous: InventorySelection = {
+            uid: this.uid, rotated: this.rotated, draft: Core.clone(this.draft), token: Core.clone(this.draftToken),
+            error: this.draftError, notice: this.notice,
+        };
+        this.selectItem(Rules.item(state,item.uid));
+        this.rotated = !!item.location.rotated;
+        this.held = { key, uid: item.uid, point, grabX: Math.max(0,Math.min(1,(point.x - n.x) / n.width)),
+            grabY: Math.max(0,Math.min(1,(point.y - n.y) / n.height)), rotated: this.rotated, previous,
+            token: this.inventorySession.token,
+            target: null, candidate: null, error: "", valid: false, hover: null };
+        this.refresh();
+        return true;
+    }
+    private gridGeometry(space: InventorySpace) {
+        const [cols,rows] = Rules.size(this.inventorySession.archive!.config,this.projection()!,space);
+        const cell = this.nodes[`invCell_${space}_0`];
+        return { x: cell.x, y: cell.y, size: cell.width + 2, cols, rows };
+    }
+    private hitDrag(point: Laya.Point, h: Pick<HeldInventoryItem,"uid" | "rotated" | "grabX" | "grabY"> = this.held!): InventoryLocation | null {
+        const state = this.projection()!, config = this.inventorySession.archive!.config;
+        const t = Rules.template(config,Rules.item(state,h.uid)), [w,height] = Rules.dimensions(t,{ space: "bag", rotated: h.rotated });
+        for (const space of ["battle","safe","bag"] as const) {
+            const g = this.gridGeometry(space);
+            if (point.x >= g.x && point.x < g.x + g.cols * g.size && point.y >= g.y && point.y < g.y + g.rows * g.size)
+                return { space, x: Math.round((point.x - h.grabX * w * g.size - g.x) / g.size),
+                    y: Math.round((point.y - h.grabY * height * g.size - g.y) / g.size), rotated: h.rotated };
+        }
+        for (const [space,key] of [["weapon","invWeapon"],["container","invContainer"]] as const) {
+            const n = this.nodes[key];
+            if (point.x >= n.x && point.x < n.x + n.width && point.y >= n.y && point.y < n.y + n.height) return { space };
+        }
+        const source = this.nodes.invSourceCell0, size = source.width + 2;
+        if (point.x >= source.x && point.x < source.x + 8 * size && point.y >= source.y && point.y < source.y + 7 * size)
+            return state.phase === "preparation" ? { space: "warehouse" } : { space: "ground", node: state.node };
+        return null;
+    }
+    private containerPlan(item: InventoryItem | null): Extract<InventoryCommand,{ type: "equipContainer" }> {
+        return Rules.containerPlan(this.inventorySession.archive!.config,this.inventorySession.inventory!,item?.uid || null);
+    }
+    private moveDrag(point: Laya.Point): void {
+        const h = this.held;
+        if (!h) return;
+        try {
+            if (this.inventorySession.expire() || this.inventorySession.inventory?.phase === "ended") {
+                this.dragController.cancel(); return;
+            }
+        } catch (error) {
+            this.clearAutoRotation();
+            h.valid = false; h.error = (error as Error).message; this.renderHeld(); return;
+        }
+        h.point = point; h.target = this.hitDrag(point); h.candidate = null;
+        h.valid = false; h.error = "";
+        const state = this.inventorySession.inventory!, config = this.inventorySession.archive!.config;
+        const item = Rules.item(state,h.uid), t = Rules.template(config,item), to = h.target;
+        try {
+            if (!to) throw new Error("落点不在储物区域");
+            if (to.space === "weapon") {
+                if (t.kind !== "weapon") throw new Error("武器位只能放武器");
+                const old = state.items.find(i => i.location.space === "weapon");
+                if (old?.uid === item.uid) { this.clearAutoRotation(); this.renderHeld(); return; }
+                h.candidate = Rules.weaponPlan(config,state,item.uid);
+            } else if (to.space === "container") {
+                if (t.kind !== "container") throw new Error("纳虚器位只能放纳虚器");
+                if (item.location.space === "container") { this.clearAutoRotation(); this.renderHeld(); return; }
+                if (item.location.space !== (state.phase === "preparation" ? "warehouse" : "ground"))
+                    throw new Error("新纳虚器须来自仓库或当前已揭示地面");
+                h.candidate = this.containerPlan(item);
+            } else if (item.location.space === "weapon") {
+                h.candidate = { type: "equipWeapon", uid: null, oldTo: to };
+            } else if (item.location.space === "container") {
+                const expected: InventoryLocation = state.phase === "preparation" ? { space: "warehouse" } : { space: "ground", node: state.node };
+                if (!Rules.same(to,expected)) throw new Error("纳虚器本体只能卸回仓库或当前地面");
+                h.candidate = this.containerPlan(null);
+            } else {
+                if (Rules.same(item.location,to)) { this.clearAutoRotation(); this.renderHeld(); return; }
+                h.candidate = { type: "move", move: { uid: item.uid, from: item.location, to } };
+            }
+            if (h.candidate) this.inventorySession.previewMove(h.candidate,h.token);
+            h.valid = true;
+        } catch (error) { h.error = (error as Error).message; }
+        if (this.inventorySession.archive?.state.phase === "ended") {
+            this.dragController.cancel();
+            return;
+        }
+        this.renderHeld();
+        this.updateAutoRotation();
+    }
+    private validatePlanDrop(item: InventoryItem, to: InventoryLocation): void {
+        const state = this.projection()!, config = this.inventorySession.archive!.config, t = Rules.template(config,item);
+        if (["warehouse","ground"].includes(to.space)) {
+            if (to.space === "warehouse" ? state.phase !== "preparation" :
+                state.phase !== "active" || to.node !== state.node || !state.revealed.includes(state.node))
+                throw new Error("不能放到该来源");
+            return;
+        }
+        if (!["battle","safe","bag"].includes(to.space)) throw new Error("原内容必须安排到合法空间");
+        if (to.space === "battle" && !t.battle) throw new Error("斗法匣只收药品与修补工具");
+        if (to.space === "safe" && !t.safe) throw new Error("归真匣禁止装备与纳虚器");
+        const [w,h] = Rules.dimensions(t,to), [cols,rows] = Rules.size(config,state,to.space);
+        if (to.x! < 0 || to.y! < 0 || to.x! + w > cols || to.y! + h > rows) throw new Error("尺寸不足或落点超出边界");
+        for (const other of state.items.filter(i => i.uid !== item.uid && i.location.space === to.space)) {
+            const l = other.location, [ow,oh] = Rules.dimensions(Rules.template(config,other),l);
+            if (to.x! < l.x! + ow && to.x! + w > l.x! && to.y! < l.y! + oh && to.y! + h > l.y!)
+                throw new Error("落点与现有物品相交");
+        }
+    }
+    private rotatedGrip(h: HeldInventoryItem) {
+        return { uid: h.uid, rotated: !h.rotated,
+            grabX: h.rotated ? h.grabY : 1 - h.grabY, grabY: h.rotated ? 1 - h.grabX : h.grabX };
+    }
+    private hoverKey(h: HeldInventoryItem): string {
+        const to = h.target;
+        if (!to || !["battle","safe","bag"].includes(to.space)) return "";
+        const g = this.gridGeometry(to.space);
+        return `${to.space}:${Math.floor((h.point.x - g.x) / g.size)}:${Math.floor((h.point.y - g.y) / g.size)}`;
+    }
+    private canAutoRotate(h: HeldInventoryItem): boolean {
+        const item = Rules.item(this.inventorySession.inventory!,h.uid);
+        const t = Rules.template(this.inventorySession.archive!.config,item);
+        if (h.valid || !this.hoverKey(h) || !t.rotate || t.width === t.height) return false;
+        const to = this.hitDrag(h.point,this.rotatedGrip(h));
+        if (to?.space !== h.target!.space || this.fitsDragGrid(item,h.target!)) return false;
+        return this.fitsDragGrid(item,to);
+    }
+    private fitsDragGrid(item: InventoryItem, to: InventoryLocation): boolean {
+        try { this.validatePlanDrop(item,to); return true; }
+        catch { return false; }
+    }
+    private clearAutoRotation(): void {
+        Laya.timer.clear(this,this.autoRotateDrag);
+        if (this.held) this.held.hover = null;
+    }
+    private updateAutoRotation(): void {
+        const h = this.held!, key = this.hoverKey(h), hover = h.hover;
+        if (hover && hover.key === key &&
+            Math.hypot(h.point.x - hover.point.x,h.point.y - hover.point.y) <= NewInventoryPanel.HOVER_TOLERANCE) {
+            if (hover.blocked || !h.valid) return;
+        }
+        this.clearAutoRotation();
+        if (!this.canAutoRotate(h)) return;
+        h.hover = { key, point: new Laya.Point(h.point.x,h.point.y), blocked: false };
+        Laya.timer.once(NewInventoryPanel.AUTO_ROTATE_DELAY,this,this.autoRotateDrag);
+    }
+    private autoRotateDrag(): void {
+        const h = this.held;
+        if (!h || !h.hover || h.hover.blocked) return;
+        // Recheck expiry and the authoritative candidate after the stationary dwell.
+        this.moveDrag(h.point);
+        if (this.held === h && h.hover && !h.hover.blocked && this.canAutoRotate(h)) this.rotateDrag();
+    }
+    private rotateDrag(): void {
+        const h = this.held;
+        if (!h || !Rules.template(this.inventorySession.archive!.config,Rules.item(this.inventorySession.inventory!,h.uid)).rotate) return;
+        this.clearAutoRotation();
+        h.hover = { key: this.hoverKey(h), point: new Laya.Point(h.point.x,h.point.y), blocked: true };
+        Object.assign(h,this.rotatedGrip(h)); this.rotated = h.rotated;
+        this.moveDrag(h.point);
+    }
+    private restoreSelection(previous: InventorySelection): void {
+        this.uid = previous.uid; this.rotated = previous.rotated; this.draft = previous.draft; this.draftToken = previous.token;
+        this.draftError = previous.error; this.notice = previous.notice;
+    }
+    private releaseDrag(): void {
+        const h = this.held;
+        if (!h) return;
+        this.clearAutoRotation();
+        this.held = null;
+        this.restoreSelection(h.previous);
+        this.run(() => {
+            if (!h.valid) { this.notice = h.error; return; }
+            if (h.candidate) {
+                this.inventorySession.inventoryCommand(h.candidate,h.token);
+                this.clearSelection();
+                if (h.candidate.type === "equipContainer") {
+                    const contents = h.candidate.contents, inside = contents.filter(m => m.to.space === "bag").length;
+                    this.notice = `包内 ${inside} 件 · ${this.inventorySession.inventory!.phase === "preparation" ?
+                        "退回仓库" : "放到地面"} ${contents.length - inside} 件`;
+                }
+            }
+        });
+    }
+    private cancelDrag(): void {
+        this.clearAutoRotation();
+        if (!this.held) return;
+        const previous = this.held.previous;
+        this.held = null;
+        if (this.inventorySession.inventory?.phase === "ended") this.clearSelection();
+        else this.restoreSelection(previous);
+        if (this.opened) this.refresh();
+    }
+    private renderHeld(): void {
+        const h = this.held;
+        if (!h) return;
+        const config = this.inventorySession.archive!.config, t = Rules.template(config,Rules.item(this.inventorySession.inventory!,h.uid));
+        const [w,height] = Rules.dimensions(t,{ space: "bag", rotated: h.rotated });
+        const to = h.target, equipment = to && ["weapon","container"].includes(to.space) ?
+            this.nodes[to.space === "weapon" ? "invWeapon" : "invContainer"] : null;
+        const grid = equipment ? { x: equipment.x, y: equipment.y, size: this.nodes.invSourceCell0.width + 2,
+            cols: 2, rows: to!.space === "weapon" ? 3 : 2 } :
+            to && ["battle","safe","bag"].includes(to.space) ? this.gridGeometry(to.space) : null;
+        const size = grid?.size || 50;
+        this.nodes[h.key].alpha = 0.16;
+        this.nodes.invGhost.visible = false;
+        for (let i = 0; i < 48; i++) this.nodes[`invDragCell${i}`].visible = false;
+        if (grid) {
+            let index = 0;
+            for (let y = 0; y < (equipment ? grid.rows : height); y++) for (let x = 0; x < (equipment ? grid.cols : w); x++) {
+                const cx = equipment ? x : to!.x! + x, cy = equipment ? y : to!.y! + y;
+                if (cx < 0 || cy < 0 || cx >= grid.cols || cy >= grid.rows) continue;
+                const cell = this.nodes[`invDragCell${index++}`] as Laya.GImage;
+                cell.pos(grid.x + cx * grid.size,grid.y + cy * grid.size);
+                cell.size(grid.size - 2,grid.size - 2); cell.color = h.valid ? "#76ffad" : "#ff6262"; cell.visible = true;
+            }
+        }
+        const n = this.nodes.invHeld;
+        n.visible = true; n.pos(h.point.x - h.grabX * w * size,h.point.y - h.grabY * height * size);
+        n.size(w * size - 2,height * size - 2);
+        const bg = n.getChildAt(0) as Laya.GImage;
+        bg.size(n.width,n.height); bg.color = !h.target || h.valid ? "#b9e9d5" : "#ff9d8c";
+        this.icon(n,t.icon,n.width - 12,n.height - 12,6,6,h.rotated);
+        const caption = n.getChildAt(3) as Laya.GTextField;
+        caption.text = `${w}×${height}`; caption.pos(3,n.height - 22); caption.size(n.width - 6,22);
+        caption.fontSize = 12; caption.color = "#ffffff";
+        for (const key of ["invPrimary","invDrop","invUse","invConfirm","invExtract","invToggle","invAbandon",
+            "invNodePrev","invNodeNext","invAll","invMedicine","invMaterials","invEquipment","invPrev","invNext","invReveal"]) {
+            const control = this.buttons[key];
+            if (control?.visible) { control.mouseEnabled = false; control.alpha = 0.4; }
+        }
+        this.control("invRotate","\u21bb",t.rotate);
+        this.label("invDetail",this.describeItem(Rules.item(this.inventorySession.inventory!,h.uid)),18,"#d9e1e5");
+        this.label("invNotice",h.error || "",18,h.valid ? "#a7e5bf" : "#ffb4a8");
     }
     protected renderBattle(): void {
         super.renderBattle();
@@ -422,7 +709,8 @@ export class NewInventoryPanel extends NewBuildPanel {
     }
     private describeItem(item: InventoryItem): string {
         const t = Rules.template(this.inventorySession.archive!.config,item);
-        return `${t.name} · ${t.width}×${t.height}${this.rotated ? " · 旋转" : ""}\n${this.locationName(item.location)}${item.durability !== null ?
+        const [w,h] = Rules.dimensions(t,{ ...item.location, rotated: this.rotated });
+        return `${t.name} · ${w}×${h}${this.rotated ? " · 旋转" : ""}\n${this.locationName(item.location)}${item.durability !== null ?
             ` · 耐久 ${item.durability}` : ""}\n${t.safe ? "归真匣合规，仍需尺寸适配" : "禁止归真匣"}${t.kind === "book" ? "\n书籍本阶段仅携入带出，不学习" : ""}`;
     }
 }

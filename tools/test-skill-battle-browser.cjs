@@ -1,2 +1,6 @@
-// Keep the established command pointed at the current default battle entry.
-require("./test-new-inventory-browser.cjs");
+const {spawnSync}=require("node:child_process");
+const path=require("node:path");
+for(const script of ["test-inventory-drag-browser.cjs","test-new-inventory-browser.cjs"]){
+    const result=spawnSync(process.execPath,[path.join(__dirname,script)],{stdio:"inherit",env:process.env});
+    if(result.status!==0)process.exit(result.status||1);
+}

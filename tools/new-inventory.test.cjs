@@ -51,6 +51,27 @@ test("configuration has 35 tables; approved grids, shapes, instance counts",()=>
     assert.deepEqual(R.size(config,f.s.inventory,"bag"),[8,6]);
     assert.equal(f.s.inventory.items.length,config.fixtures.reduce((n,r)=>n+r.count,0));
     assert.equal(new Set(f.s.inventory.items.map(i=>i.uid)).size,f.s.inventory.items.length);
+    for(const t of config.templates.filter(t=>t.kind==="weapon"))assert.deepEqual([t.width,t.height],[2,3]);
+    for(const t of config.templates.filter(t=>t.kind==="container"))assert.deepEqual([t.width,t.height],[2,2]);
+});
+test("all weapons occupy six cells, containers four; rotation and full-footprint collision survive restore",()=>{
+    const f=fixture();equip(f);
+    const sword=items(f,9)[0];move(f,sword,at("bag",4,0));
+    unchanged(f,()=>move(f,items(f,1)[0],at("bag",5,2)),/相交/);
+    move(f,items(f,9,"bag")[0],at("bag",3,3,true));
+    unchanged(f,()=>move(f,items(f,1)[0],at("bag",5,4)),/相交/);
+    unchanged(f,()=>move(f,items(f,9,"bag")[0],at("bag",4,3,true)),/尺寸/);
+    assert.deepEqual(new Session(new Manager(),f.storage,f.now,config).inventory,f.s.inventory);
+    for(const [id,w,h]of[[9,1,3],[10,1,2],[11,3,2]]){
+        const c=JSON.parse(JSON.stringify(config)),t=c.templates.find(t=>t.id===id);
+        t.width=w;t.height=h;
+        assert.throws(()=>R.validateConfig(c,B.profile(c.build)),/武器实体须/);
+    }
+    const old=f.s.archive;old.config.templates.find(t=>t.kind==="weapon").width=1;
+    const raw=JSON.stringify(old);f.data.set(Session.key,raw);
+    const incompatible=new Session(new Manager(),f.storage,f.now,config);
+    assert.equal(incompatible.inventory,null);assert.match(incompatible.error,/原档已保留/);
+    assert.equal(f.data.get(Session.key),raw);assert.equal(f.data.get("other"),"keep");
 });
 test("preparation does not start countdown; no container required",()=>{
     const f=fixture();f.setNow(99999999);assert.equal(f.s.expire(),false);enter(f);
@@ -85,12 +106,129 @@ test("container cannot nest; explicit plans and overflow reject atomically",()=>
     unchanged(f,()=>move(f,items(f,11)[0],at("bag",2)),/换装/);
     assert.deepEqual(R.size(config,f.s.inventory,"bag"),[6,5]);
 });
+test("automatic downsize repacks fragmented out-of-bounds contents without touching live state",()=>{
+    const f=fixture();equip(f,11);
+    move(f,items(f,7)[0],at("bag",6,4));move(f,items(f,9)[0],at("bag",2,2));
+    move(f,items(f,6)[0],at("bag",4,0,true));
+    const before=f.s.archive,small=items(f,10)[0],plan=R.containerPlan(config,f.s.inventory,small.uid);
+    assert.deepEqual(R.containerPlan(config,f.s.inventory,small.uid),plan,"Deterministic layout");
+    assert.equal(plan.contents.length,3);assert.ok(plan.contents.every(m=>m.to.space==="bag"));
+    const preview=f.s.previewMove(plan);assert.deepEqual(f.s.archive,before,"Preview/cancel leaves original untouched");
+    assert.deepEqual(R.size(config,preview.state,"bag"),[6,5]);cmd(f,plan);
+    assert.deepEqual(f.s.inventory,preview.state);
+    assert.deepEqual(new Session(new Manager(),f.storage,f.now,config).inventory,f.s.inventory);
+    const upgrade=R.containerPlan(config,f.s.inventory,items(f,11)[0].uid);
+    assert.ok(upgrade.contents.every(m=>R.same(m.from,m.to)),"Already legal layouts are preserved");
+});
+function fullBag(groundSmall=false){
+    const c=structuredClone(config);
+    c.fixtures=[{id:900,templateId:10,count:1,node:0,durability:0},
+        {id:901,templateId:11,count:1,node:0,durability:0},
+        {id:902,templateId:8,count:30,node:0,durability:0},{id:903,templateId:8,count:10,node:0,durability:0}];
+    if(groundSmall)c.fixtures.push({id:904,templateId:10,count:1,node:1,durability:0});
+    const f=fixture(c);equip(f,11);
+    for(let n=0;n<40;n++)move(f,items(f,8)[0],at("bag",n%8,Math.floor(n/8)));
+    return f;
+}
+test("40-cell downsize keeps 30 and returns 10 exact instances to warehouse in one revision",()=>{
+    const f=fullBag(),before=f.s.archive,plan=R.containerPlan(f.c,f.s.inventory,items(f,10)[0].uid);
+    assert.equal(plan.contents.filter(m=>m.to.space==="bag").length,30);
+    assert.equal(plan.contents.filter(m=>m.to.space==="warehouse").length,10);
+    assert.equal(new Set(plan.contents.map(m=>m.uid)).size,40);
+    assert.ok(plan.contents.every(m=>R.same(m.from,R.item(before.state,m.uid).location)));
+    f.s.previewMove(plan);assert.deepEqual(f.s.archive,before);cmd(f,plan);
+    assert.equal(f.s.inventory.revision,before.state.revision+1);
+    assert.equal(items(f,8,"bag").length,30);assert.equal(items(f,8).length,10);
+    assert.deepEqual(f.s.inventory.items.map(i=>[i.uid,i.templateId,i.durability]),
+        before.state.items.map(i=>[i.uid,i.templateId,i.durability]));
+    assert.deepEqual(new Session(new Manager(),f.storage,f.now,f.c).inventory,f.s.inventory);
+});
+test("automatic packing uses full six-cell shapes, allowed rotation and all 30 cells",()=>{
+    const c=structuredClone(config);c.fixtures.find(f=>f.templateId===9&&f.node===0).count=5;
+    const f=fixture(c);equip(f,11);
+    for(const [x,y,r]of[[0,0,false],[2,0,false],[4,0,false],[6,0,false],[0,3,true]])
+        move(f,items(f,9)[0],at("bag",x,y,r));
+    const plan=R.containerPlan(c,f.s.inventory,items(f,10)[0].uid);
+    assert.equal(plan.contents.filter(m=>m.to.space==="bag").length,5);cmd(f,plan);
+    const d=structuredClone(config);d.templates.find(t=>t.id===10).bagWidth=2;d.templates.find(t=>t.id===10).bagHeight=3;
+    const g=fixture(d);equip(g,11);move(g,items(g,9)[0],at("bag",5,4,true));
+    const rotated=R.containerPlan(d,g.s.inventory,items(g,10)[0].uid);
+    assert.deepEqual(rotated.contents[0].to,at("bag"));cmd(g,rotated);
+    const squareConfig=structuredClone(config);squareConfig.fixtures.find(f=>f.templateId===7&&f.node===0).count=7;
+    const h=fixture(squareConfig);equip(h,11);
+    for(const [x,y]of[[0,0],[2,0],[4,0],[6,0],[0,2],[2,2],[4,2]])move(h,items(h,7)[0],at("bag",x,y));
+    const squares=R.containerPlan(squareConfig,h.s.inventory,items(h,10)[0].uid);
+    assert.equal(squares.contents.filter(m=>m.to.space==="bag").length,6,"Area alone does not imply a shape fits");
+    cmd(h,squares);assert.equal(items(h,7).length,1);
+});
+test("automatic unload routes every content outside; no nested or orphaned bag",()=>{
+    const f=fullBag(),plan=R.containerPlan(f.c,f.s.inventory,null);
+    assert.ok(plan.contents.every(m=>R.same(m.to,{space:"warehouse"})));cmd(f,plan);
+    assert.equal(f.s.inventory.items.some(i=>["bag","container"].includes(i.location.space)),false);
+    assert.equal(items(f,8).length,40);
+});
+test("active downsize returns overflow only to current revealed ground, never remote warehouse",()=>{
+    const f=fullBag(true);enter(f);const next=items(f,10,"ground")[0];
+    assert.throws(()=>R.containerPlan(f.c,f.s.inventory,next.uid),/揭示/);cmd(f,{type:"reveal"});
+    const plan=R.containerPlan(f.c,f.s.inventory,next.uid);
+    assert.equal(plan.contents.filter(m=>m.to.space==="ground"&&m.to.node===0).length,10);
+    assert.equal(plan.contents.filter(m=>m.to.space==="warehouse").length,0);cmd(f,plan);
+    assert.equal(items(f,8,"ground").length,10);assert.equal(items(f,8).length,0);
+    assert.deepEqual(new Session(new Manager(),f.storage,f.now,f.c).inventory,f.s.inventory);
+});
+test("automatic swap preserves source access, battle lock and current revealed ground boundary",()=>{
+    const f=fullBag();enter(f);
+    assert.throws(()=>R.containerPlan(f.c,f.s.inventory,items(f,10)[0].uid),/仓库/);
+    assert.throws(()=>R.containerPlan(f.c,f.s.inventory,null),/揭示/);
+    cmd(f,{type:"reveal"});
+    const unload=R.containerPlan(f.c,f.s.inventory,null);
+    assert.ok(unload.contents.every(m=>R.same(m.to,{space:"ground",node:0})));cmd(f,unload);
+    const old=items(f,11,"ground")[0];cmd(f,R.containerPlan(f.c,f.s.inventory,old.uid));
+    battle(f);assert.throws(()=>R.containerPlan(f.c,f.s.inventory,null),/锁定/);
+    const c=structuredClone(config);c.build.encounters.forEach(e=>e.enemy.maxHp=100);
+    const g=fixture(c);equip(g,11);move(g,items(g,7)[0],at("bag",6,4));enter(g);
+    win(g);cmd(g,{type:"visit",node:1});cmd(g,{type:"reveal"});
+    const incoming=items(g,11,"ground")[0];
+    cmd(g,R.containerPlan(g.c,g.s.inventory,incoming.uid));
+    assert.equal(items(g,7,"bag").length,1);
+});
+test("automatic exchange stays atomic on write failure, stale revision, concurrent page and expiry",()=>{
+    const f=fullBag(),plan=R.containerPlan(f.c,f.s.inventory,items(f,10)[0].uid),token=f.s.token;
+    f.s.previewMove(plan);const original=f.storage.setItem;f.storage.setItem=()=>{throw Error("swap quota");};
+    unchanged(f,()=>f.s.inventoryCommand(plan,token),/swap quota/);f.storage.setItem=original;
+    cmd(f,{type:"enter"});unchanged(f,()=>f.s.inventoryCommand(plan,token),/过期/);
+    const g=fullBag(),other=new Session(new Manager(),g.storage,g.now,g.c);
+    const pending=R.containerPlan(g.c,g.s.inventory,items(g,10)[0].uid);
+    other.inventoryCommand({type:"enter"});
+    unchanged(g,()=>cmd(g,pending),/其他页面/);
+    const h=fullBag();enter(h);cmd(h,{type:"reveal"});
+    const expired=R.containerPlan(h.c,h.s.inventory,null);h.setNow(h.s.inventory.deadlineAt);
+    assert.throws(()=>cmd(h,expired),/已结算/);assert.equal(h.s.inventory.result,"timeout");
+    assert.equal(items(h,8,"bag").length,0);assert.equal(items(h,8,"lost").length,40);
+});
 test("weapon swap requires old destination, preserves durability",()=>{
     const f=fixture(),a=items(f,9)[0],b=items(f,9)[1];
     cmd(f,{type:"equipWeapon",uid:a.uid,from:a.location});
     unchanged(f,()=>cmd(f,{type:"equipWeapon",uid:b.uid,from:b.location}),/去向/);
     cmd(f,{type:"equipWeapon",uid:b.uid,from:b.location,oldTo:{space:"warehouse"}});
     assert.equal(items(f,9,"weapon")[0].durability,7);assert.equal(items(f,9)[0].durability,30);
+});
+test("automatic weapon replacement swaps source position and orientation, preserving actual durability",()=>{
+    const f=fixture();equip(f);
+    const first=items(f,9)[0],second=items(f,9)[1];
+    cmd(f,R.weaponPlan(config,f.s.inventory,first.uid));
+    cmd(f,R.weaponPlan(config,f.s.inventory,second.uid));
+    assert.deepEqual(R.item(f.s.inventory,first.uid).location,{space:"warehouse"});
+    move(f,R.item(f.s.inventory,first.uid),at("bag",3,3,true));
+    const plan=R.weaponPlan(config,f.s.inventory,first.uid),before=f.s.archive;
+    f.s.previewMove(plan);assert.deepEqual(f.s.archive,before);
+    const original=f.storage.setItem;f.storage.setItem=()=>{throw Error("weapon quota");};
+    unchanged(f,()=>cmd(f,plan),/weapon quota/);f.storage.setItem=original;cmd(f,plan);
+    assert.deepEqual(R.item(f.s.inventory,second.uid).location,at("bag",3,3,true));
+    assert.equal(R.item(f.s.inventory,second.uid).durability,7);
+    assert.equal(R.item(f.s.inventory,first.uid).durability,30);
+    assert.equal(f.s.inventory.revision,before.state.revision+1);
+    assert.deepEqual(new Session(new Manager(),f.storage,f.now,config).inventory,f.s.inventory);
 });
 test("repair consumes actual carried tool, +20 capped; no weapon no debit",()=>{
     const f=fixture(),tool=items(f,3)[0];move(f,tool,at("battle"));

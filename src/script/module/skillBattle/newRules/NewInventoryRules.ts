@@ -46,6 +46,9 @@ export class NewInventoryRules {
                 if (!config.build.setup.potions.some(p => p.itemId === t.potionId && p.resource === t.kind) ||
                     t.width !== 1 || t.height !== 1) throw new Error("实际药品与新核配置不匹配");
             } else if (t.potionId !== 0) throw new Error("非药品不能借用药品效果");
+            if (t.kind === "weapon" && (t.width !== 2 || t.height !== 3) ||
+                t.kind === "container" && (t.width !== 2 || t.height !== 2))
+                throw new Error("武器实体须为2×3六格，纳虚器本体须为2×2四格");
         }
         if (!config.build.setup.weapon || !Array.isArray(config.fixtures) || !config.fixtures.length ||
             new Set(config.fixtures.map(f => f.id)).size !== config.fixtures.length)
@@ -77,6 +80,84 @@ export class NewInventoryRules {
         const item = state.items.find(i => i.uid === uid);
         if (!item) throw new Error("物品已不存在");
         return item;
+    }
+    static weaponPlan(config: InventoryConfig, state: InventoryState, uid: string):
+        Extract<InventoryCommand,{ type: "equipWeapon" }> {
+        this.movable(state);
+        const next = this.item(state,uid), old = state.items.find(i => i.location.space === "weapon");
+        this.accessible(state,next.location);
+        if (this.template(config,next).kind !== "weapon") throw new Error("只能装备武器");
+        if (old?.uid === uid) throw new Error("已经装备此武器");
+        return { type: "equipWeapon", uid, from: Core.clone(next.location),
+            ...(old ? { oldTo: Core.clone(next.location) } : {}) };
+    }
+    static containerPlan(config: InventoryConfig, state: InventoryState, uid: string | null):
+        Extract<InventoryCommand,{ type: "equipContainer" }> {
+        this.movable(state);
+        const old = state.items.find(i => i.location.space === "container");
+        const next = uid ? this.item(state,uid) : null;
+        if (next) {
+            this.accessible(state,next.location);
+            if (this.template(config,next).kind !== "container" ||
+                next.location.space !== (state.phase === "preparation" ? "warehouse" : "ground"))
+                throw new Error("新纳虚器须来自仓库或当前节点地面");
+        }
+        if (old?.uid === uid) throw new Error("已经装备此纳虚器");
+        if (!old && !next) throw new Error("没有纳虚器可卸下");
+        const outside: InventoryLocation = state.phase === "preparation" ? { space: "warehouse" } :
+            { space: "ground", node: state.node };
+        if (old || state.items.some(i => i.location.space === "bag")) this.accessible(state,outside);
+        const template = next && this.template(config,next), width = template?.bagWidth || 0,
+            height = template?.bagHeight || 0, items = state.items.filter(i => i.location.space === "bag");
+        let targets = new Map<string,InventoryLocation>();
+        // Keep an already legal layout, including user-arranged layouts when upgrading.
+        if (items.every(i => {
+            const [w,h] = this.dimensions(this.template(config,i),i.location);
+            return i.location.x! + w <= width && i.location.y! + h <= height;
+        })) {
+            targets = new Map(items.map(i => [i.uid,Core.clone(i.location)]));
+        } else {
+            const rows = items.map((item,index) => ({ item, index, t: this.template(config,item) }));
+            let bestArea = -1, bestCount = -1;
+            // Try stable large-first orders and both preferred orientations to reduce fragmentation.
+            // This is bounded (at most 16 small-grid passes), not an optimal-packing search.
+            for (const order of ["area","side","width","height"] as const) for (const reverse of [false,true])
+                for (const rotateFirst of [false,true]) {
+                    const score = (t: InventoryTemplate) => order === "area" ? t.width * t.height :
+                        order === "side" ? Math.max(t.width,t.height) : order === "width" ? t.width : t.height;
+                    const sorted = rows.slice().sort((a,b) => score(b.t) - score(a.t) ||
+                        b.t.width * b.t.height - a.t.width * a.t.height ||
+                        (reverse ? b.index - a.index : a.index - b.index));
+                    const occupied = new Set<number>(), packed = new Map<string,InventoryLocation>();
+                    let area = 0;
+                    for (const { item, t } of sorted) {
+                        const preferred = !!item.location.rotated !== rotateFirst;
+                        const rotations = t.rotate && t.width !== t.height ? [preferred,!preferred] : [!!item.location.rotated];
+                        let to: InventoryLocation | null = null;
+                        for (let y = 0; y < height && !to; y++) for (let x = 0; x < width && !to; x++)
+                            for (const rotated of rotations) {
+                                const [w,h] = this.dimensions(t,{ space: "bag", rotated });
+                                if (x + w > width || y + h > height) continue;
+                                let free = true;
+                                for (let dy = 0; dy < h; dy++) for (let dx = 0; dx < w; dx++)
+                                    if (occupied.has((y + dy) * width + x + dx)) free = false;
+                                if (!free) continue;
+                                to = { space: "bag", x, y, rotated };
+                                for (let dy = 0; dy < h; dy++) for (let dx = 0; dx < w; dx++)
+                                    occupied.add((y + dy) * width + x + dx);
+                                break;
+                            }
+                        if (to) { packed.set(item.uid,to); area += t.width * t.height; }
+                    }
+                    if (area > bestArea || area === bestArea && packed.size > bestCount) {
+                        targets = packed; bestArea = area; bestCount = packed.size;
+                    }
+                }
+        }
+        return { type: "equipContainer", uid, ...(next ? { from: Core.clone(next.location) } : {}),
+            ...(old ? { oldTo: Core.clone(outside) } : {}),
+            contents: items.map(i => ({ uid: i.uid, from: Core.clone(i.location),
+                to: Core.clone(targets.get(i.uid) || outside) })) };
     }
     private static accessible(state: InventoryState, location: InventoryLocation): void {
         if (["consumed","lost"].includes(location.space)) throw new Error("该物品已消耗或损失");
