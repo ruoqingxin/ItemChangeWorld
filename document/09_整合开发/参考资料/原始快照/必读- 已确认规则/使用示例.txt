@@ -1,0 +1,185 @@
+一、整体架构分层
+src/script/
+├── module/          ← 业务功能模块（核心）
+├── sfgames/         ← 自研 UI 框架（UIBaseView、UIManager、红点、资源等）
+├── manager/         ← ModuleManager、BaseModule
+├── net/             ← 网络协议收发
+├── config/          ← 配置表、EFuncID 功能 ID
+├── const/           ← 全局常量、Events 事件
+├── stage/           ← 场景阶段（Loading / Lobby / 对局）
+├── start/           ← GameMain 启动逻辑
+└── GameStart.ts     ← 引擎入口
+启动链路：
+
+GameStart → LoadingStage → GameMain.Init()
+  → ModuleManager.init()        // 各模块 onRegisterView + onInit
+  → NetService.Init() → 登录
+  → ModuleManager.onLogin()     // 各模块 onLogin
+  → ModuleManager.onAfterLogin() // 各模块 onAfterLogin
+二、标准功能模块目录结构
+大部分功能模块遵循同一套划分（不用 *Model.ts，数据层统一为 *Data.ts）：
+
+module/<featureName>/
+├── <Feature>Module.ts         # 模块入口（必须）
+├── <Feature>Const.ts          # 模块常量（可选）
+├── <Feature>Manager.ts        # 跨界面业务编排（可选）
+├── <Feature>RedDot.ts         # 红点逻辑（可选）
+├── <Feature>EntryCtrl.ts      # 大厅功能入口按钮（可选）
+├── <Feature>PageManager.ts    # 分页/Tab 管理（可选）
+├── data/
+│   └── <Feature>Data.ts       # 数据单例（常用）
+├── view/
+│   └── UI<Feature>View.ts     # UI 视图，对应 .lh prefab
+├── ctrl/
+│   └── <Name>Ctrl.ts          # 列表项/子控件控制器
+├── utils/
+│   ├── <Feature>Utils.ts      # 业务工具函数
+│   └── <Feature>ProtoUtils.ts # 网络发包封装
+├── enum/                      # 枚举（可选）
+└── types/                     # 类型定义（可选）
+轻量示例（签到 sign）：
+
+sign/
+├── SignModule.ts
+├── SignInEntryCtrl.ts
+├── SignRedDot.ts
+├── ctrl/SignRewardListCtrl.ts
+├── data/SignData.ts
+├── utils/SignProtoUtils.ts, SignUtils.ts
+└── view/UISignView.ts
+三、各层职责
+层级	文件	基类	职责
+Module
+*Module.ts
+BaseModule
+模块边界：注册 UI、协议、红点、入口；响应登录/跨天
+Data
+*Data.ts
+BaseDataClass
+运行时数据缓存，单例 XxxData.ins()
+View
+UI*View.ts
+UIBaseView
+绑定 .lh prefab，处理界面开闭与交互
+Ctrl
+*Ctrl.ts
+ListItemCtrl 等
+列表项、聊天块、小控件逻辑
+Manager
+*Manager.ts
+BaseClass
+跨 View 流程（购买、房间、分页等）
+ProtoUtils
+*ProtoUtils.ts
+—
+封装 cmd.*_c2s 发包
+Utils
+*Utils.ts
+—
+纯函数/辅助逻辑
+RedDot
+*RedDot.ts
+RedDotBase
+红点计算
+EntryCtrl
+*EntryCtrl.ts
+BaseFuncEntryCtrl
+大厅功能按钮
+Module 必须实现的 5 个生命周期
+export abstract class BaseModule {
+    constructor() {
+        ModuleManager.moduleArray.push(this);
+    }
+    abstract onInit();
+    abstract onRegisterView();
+    abstract onLogin(toc: cmd.client_login_toc);
+    abstract onAfterLogin(s2c: cmd.player_data_syn_s2c);
+    abstract onCrossDay(s2c: cmd.player_refresh_data_syn_s2c);
+典型 onInit()：注册红点、入口、协议回调；onRegisterView()：把 View 挂到 EFuncID。
+
+View 必须实现的抽象成员
+layer：UI 层级（First / Second / Base 等）
+path：prefab 路径，如 "ui/prefab/module/sign/UISignView.lh"
+onConstruct()：绑定节点、初始化 List/Ctrl
+onOpen() / onClose()：开闭生命周期
+四、模块内数据流（典型 CRUD 型）
+以签到为例：
+
+1. ModuleManager.onAfterLogin → SignModule 写入 SignData
+2. 用户操作 → SignProtoUtils 发包
+3. sign_s2c 回调 → SignModule 更新 SignData
+4. EventEngine.dispatch(Events.SignChange)
+5. UISignView 监听事件 → 刷新界面
+export class SignModule extends BaseModule {
+    onInit() {
+        // 注册推送、入口、红点、协议
+        FuncEntryManager.ins().registerEntryCtrl(SignInEntryCtrl);
+        RedDotManager.ins().registerRedDot(SignRedDot.ins());
+        this.registerMessage(cmd.sign_s2c, this.sign_s2c);
+    }
+    onRegisterView() {
+        UIManager.ins().registerForm(EFuncID.sign_in, UISignView);
+    }
+跨模块通信： EventEngine + Events.*
+功能跳转： EFuncID + UIManager.openForm() / GameNavigator.gotoByLink()
+
+五、命名约定
+类型	命名	示例
+目录
+camelCase 功能名
+endgameDaily, playerInfoHomePage
+模块入口
+*Module.ts
+ShopModule.ts
+视图
+UI*View.ts
+UISignView.ts
+数据
+*Data.ts
+ShopData.ts
+控制器
+*Ctrl.ts
+SignRewardListCtrl.ts
+管理器
+*Manager.ts
+ChatManager.ts
+发包
+*ProtoUtils.ts
+ShopProtoUtils.ts
+枚举
+E*.ts
+EChatTab.ts
+接口
+I*.ts
+IShopBuyItem.ts
+
+
+七、共享基础设施（无独立 Module）
+被各功能引用的公共能力：
+
+目录	用途
+module/tips/
+弹窗、Loading、错误提示
+module/common/
+公共数据/工具
+module/rule/
+规则说明
+module/time/
+服务器时间
+module/main/
+大厅入口、功能限制等
+八、一句话总结
+一个功能 = 一个 module/<feature>/ 目录，以 *Module.ts 为入口，按 Data（数据）→ View（界面）→ Ctrl（子控件）→ ProtoUtils（发包） 分层；Module 负责注册与收包，Manager 负责跨界面流程，RedDot/EntryCtrl 负责大厅展示，全局由 ModuleManager 在登录生命周期中统一驱动。
+
+
+九、配置表代码使用示例
+```typescript
+import { ConfigUtil } from "src/script/config/ConfigUtil";
+
+// 按 ID 查单条
+const cfg = ConfigUtil.Tables.item_config.get(1101);
+
+// 遍历全表
+const list = ConfigUtil.Tables.item_config.getDataList();
+
+

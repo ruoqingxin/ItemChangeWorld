@@ -1,0 +1,816 @@
+《末法寻仙》第三阶段开发目标与已定规则总结
+一、阶段定位
+第三阶段正式定为：
+
+*.txt
+Plaintext
+第三阶段：局内背包与战斗掉落
+它承接第二阶段已经完成 / 定稿的：
+
+*.txt
+Plaintext
+战斗系统
+注灵系统
+属性石
+临战法囊
+武器耐久
+五行克制
+伤害预览
+简单 BattleView
+第三阶段不直接上完整秘境，而是先补上搜打撤最关键的资源承载闭环：
+
+*.txt
+Plaintext
+战斗胜利
+↓
+根据敌人生成掉落
+↓
+显示掉落列表
+↓
+玩家拾取
+↓
+放入局内背包
+↓
+背包空间不足时产生取舍
+↓
+支持丢弃已有物品释放空间
+一句话目标：
+
+*.txt
+Plaintext
+让玩家在战斗胜利后能获得战利品，并因为背包空间有限而产生取舍。
+二、第三阶段核心开发目标
+1. 新增局内背包 Runtime
+第三阶段要新增一个正式的局内背包系统。
+
+定稿规格：
+
+*.txt
+Plaintext
+背包尺寸：6 × 5
+总格子：30 格
+不支持旋转
+不支持堆叠
+物品按 item.bag_width / item.bag_height 占格
+每个物品都是独立实例
+运行时物品统一采用：
+
+*.txt
+Plaintext
+itemUid + itemId
+含义：
+
+字段	说明
+itemUid	物品实例唯一 ID
+itemId	物品配置 ID
+例如：
+
+*.txt
+Plaintext
+itemUid = loot_herb_001
+itemId = 2301
+即使两个物品同名，也必须是两个实例：
+
+*.txt
+Plaintext
+loot_herb_001 低阶灵草
+loot_herb_002 低阶灵草
+不能写成：
+
+*.txt
+Plaintext
+低阶灵草 ×2
+2. 新增战斗掉落系统
+第三阶段要让当前 enemy.drop_table_id 真正生效。
+
+当前 enemy 表中已有字段：
+
+*.txt
+Plaintext
+drop_table_id
+但目前三个敌人的掉落表 ID 都是：
+
+*.txt
+Plaintext
+0
+第三阶段需要改为：
+
+enemy_id	敌人	drop_table_id
+1	腐化灵鼠	1001
+2	赤眼妖兔	1002
+3	枯藤精	1003
+战斗胜利后，根据敌人的 drop_table_id 生成掉落。
+
+3. 战斗胜利后生成掉落列表
+第三阶段定稿流程：
+
+*.txt
+Plaintext
+战斗胜利
+↓
+根据本场死亡敌人读取 drop_table_id
+↓
+生成掉落物实例
+↓
+进入掉落列表
+↓
+玩家点击拾取
+↓
+系统自动寻找背包可放位置
+↓
+成功放入 / 空间不足提示
+注意：
+
+*.txt
+Plaintext
+掉落物不会自动进入背包。
+必须先显示在掉落列表里，让玩家选择是否拾取。
+
+这样才能形成搜打撤核心取舍感。
+
+4. 支持拾取、丢弃、背包满判断
+第三阶段必须实现：
+
+*.txt
+Plaintext
+拾取掉落
+背包占格判断
+自动寻找可放位置
+背包空间不足提示
+丢弃背包物品
+丢弃后释放格子
+继续拾取
+背包满提示建议：
+
+*.txt
+Plaintext
+背包空间不足
+或者：
+
+*.txt
+Plaintext
+储物袋已满，请丢弃部分物品或放弃拾取。
+三、第三阶段已定规则
+1. 背包规则
+规则	定稿
+背包类型	局内背包
+背包尺寸	6 × 5
+是否旋转	不支持
+是否堆叠	不支持
+是否占格	支持
+占格来源	item.bag_width / item.bag_height
+放入方式	第三阶段先自动找空位
+是否拖拽摆放	暂不做
+是否自动整理	暂不做
+是否可丢弃	支持
+背包满	阻止拾取并提示
+2. 物品实例规则
+第三阶段继承第二阶段定稿：
+
+*.txt
+Plaintext
+所有物品不可堆叠。
+所有物品都使用 itemUid + itemId 管理。
+包括：
+
+*.txt
+Plaintext
+属性石
+丹药
+符箓
+灵石袋
+材料
+装备
+功法残卷
+杂物
+同名物品也不堆叠。
+
+3. 掉落规则
+战斗掉落不直接变成数值资源，而是生成物品实例。
+
+例如：
+
+*.txt
+Plaintext
+低阶灵草掉落 2 个
+实际生成：
+
+*.txt
+Plaintext
+loot_0001 itemId=2301
+loot_0002 itemId=2301
+如果掉落的是灵石相关资源，也不直接加灵石数值，而是掉落：
+
+*.txt
+Plaintext
+灵石袋 / 灵石包 / 灵石匣
+4. 灵石与灵石袋规则
+继承第二阶段定稿：
+
+*.txt
+Plaintext
+灵石是货币数值，不占背包。
+秘境中不直接掉落灵石本体。
+秘境中掉落灵石袋等物品。
+灵石袋占背包格。
+灵石袋不可堆叠。
+灵石袋只能撤离后使用。
+局内不能打开灵石袋变成货币。
+第三阶段因为暂时不做撤离，所以：
+
+*.txt
+Plaintext
+灵石袋可以被拾取到局内背包。
+但不能打开。
+不能转化为灵石数值。
+5. 战斗中背包规则
+继承第二阶段定稿：
+
+*.txt
+Plaintext
+战斗中不能打开正式背包。
+战斗中只能使用临战法囊。
+第三阶段新增的局内背包只在：
+
+*.txt
+Plaintext
+战斗胜利后
+掉落拾取阶段
+使用。
+
+战斗进行中不允许打开背包。
+
+6. 临战法囊规则
+第三阶段继续保持第二阶段规则：
+
+*.txt
+Plaintext
+临战法囊固定 5 格。
+每格只能放 1 个物品实例。
+临战法囊继续使用 Debug 初始化数据。
+第三阶段暂不从背包配置临战法囊。
+第三阶段暂不让局内背包和临战法囊互通。
+当前 Debug 法囊仍然是五种一阶普通属性石：
+
+*.txt
+Plaintext
+金属性石·一阶·普通
+木属性石·一阶·普通
+水属性石·一阶·普通
+火属性石·一阶·普通
+土属性石·一阶·普通
+四、第三阶段新增 / 修改配置表目标
+1. 修改 __enums__.xlsx
+当前枚举已经有：
+
+*.txt
+Plaintext
+EMainType
+ESubType
+ECardType
+EElement
+EEffectOwnerType
+EEffectType
+EEffectTarget
+EIntentType
+EWeaponType
+EDeckType
+EScenarioType
+EBlockClearTiming
+EStatusType
+EStatusStackRule
+EStatusTickTiming
+EStatusRemoveTiming
+EStatusEffectMode
+EQuality
+EPurityGrade
+EFuncID
+第三阶段建议新增：
+
+*.txt
+Plaintext
+ESubType.spirit_stone_bag = 208
+即：
+
+name_cn	name	value	comment	tags
+灵石袋	spirit_stone_bag	208	灵石袋 / 灵石包 / 灵石匣	2
+原因：
+
+*.txt
+Plaintext
+灵石袋是消耗品类物品。
+主类型 item_type = 2 consumable。
+细分类型需要一个独立 sub_type。
+2. 修改 W-物品配置表.xlsx
+当前已有物品：
+
+item_id	名称	类型	子类型	占格
+1101	破旧铁剑	1	101	1×4
+2112	金属性石·一阶·普通	2	202	1×1
+2122	木属性石·一阶·普通	2	202	1×1
+2132	水属性石·一阶·普通	2	202	1×1
+2142	火属性石·一阶·普通	2	202	1×1
+2152	土属性石·一阶·普通	2	202	1×1
+第三阶段建议新增测试物品：
+
+item_id	物品名	主类型	子类型	品质	占格	说明
+2301	低阶灵草	3	301	1	1×1	基础炼丹材料
+2302	青玉灵果	3	302	2	1×1	天材地宝
+2303	赤炎草	3	301	2	1×1	火行灵草
+2601	劣品灵石袋	2	208	1	1×1	撤离后打开获得灵石
+2401	一阶功法残卷	4	401	2	1×1	后续功法系统用
+1102	普通铁剑	1	101	1	1×4	测试武器掉落
+1103	破旧大刀	1	103	1	2×4	测试大件占格压力
+3. 新增 D-掉落配置表.xlsx
+建议新增两个 sheet：
+
+*.txt
+Plaintext
+drop_table
+drop_item
+drop_table
+字段：
+
+*.txt
+Plaintext
+drop_table_id
+name
+roll_count
+enabled
+建议数据：
+
+drop_table_id	name	roll_count	enabled
+1001	腐化灵鼠掉落	1	1
+1002	赤眼妖兔掉落	1	1
+1003	枯藤精掉落	2	1
+drop_item
+字段：
+
+*.txt
+Plaintext
+id
+drop_table_id
+item_id
+weight
+min_count
+max_count
+enabled
+建议数据：
+
+id	drop_table_id	item_id	weight	min_count	max_count	enabled
+1	1001	2301	40	1	1	1
+2	1001	2122	20	1	1	1
+3	1001	2601	20	1	1	1
+4	1001	0	20	0	0	1
+5	1002	2303	35	1	1	1
+6	1002	2142	25	1	1	1
+7	1002	2601	25	1	1	1
+8	1002	0	15	0	0	1
+9	1003	2301	30	1	2	1
+10	1003	2302	20	1	1	1
+11	1003	2122	30	1	1	1
+12	1003	2601	20	1	1	1
+其中：
+
+*.txt
+Plaintext
+item_id = 0 表示空掉落。
+这个方案开发最简单，先不用额外加 drop_rate 字段。
+
+4. 修改 B-战斗配置表.xlsx 的 enemy 表
+当前：
+
+enemy_id	name	drop_table_id
+1	腐化灵鼠	0
+2	赤眼妖兔	0
+3	枯藤精	0
+第三阶段改为：
+
+enemy_id	name	drop_table_id
+1	腐化灵鼠	1001
+2	赤眼妖兔	1002
+3	枯藤精	1003
+五、第三阶段建议代码模块
+1. 新增 inventory 模块
+建议目录：
+
+*.txt
+Plaintext
+module/inventory/
+├── InventoryManager.ts
+├── InventoryData.ts
+├── InventoryTypes.ts
+├── InventoryGridUtils.ts
+└── InventoryDebug.ts
+职责：
+
+文件	职责
+InventoryTypes.ts	定义背包、背包物品、格子结构
+InventoryData.ts	保存局内背包运行时数据
+InventoryManager.ts	对外提供拾取、丢弃、查询等接口
+InventoryGridUtils.ts	处理占格检测、找空位、释放格子
+InventoryDebug.ts	控制台测试入口
+2. 新增 battle reward 模块
+建议目录：
+
+*.txt
+Plaintext
+module/battle/reward/
+├── BattleRewardManager.ts
+└── BattleRewardTypes.ts
+职责：
+
+文件	职责
+BattleRewardTypes.ts	定义掉落运行时数据结构
+BattleRewardManager.ts	根据敌人 drop_table_id 生成战斗奖励
+3. 扩展 BattleData
+当前 BattleData 已经有：
+
+*.ts
+TypeScript
+getEnemy(enemyId)
+getItem(itemId)
+getCombatScenario(scenarioId)
+getScenarioEnemies(scenarioId)
+第三阶段需要补：
+
+*.ts
+TypeScript
+getDropTable(dropTableId)
+getDropItems(dropTableId)
+前提是新增导表：
+
+*.txt
+Plaintext
+drop_table
+drop_item
+4. 扩展 BattleEngine / BattleManager
+当前 BattleEngine.checkBattleEnd() 已经能判断胜利：
+
+*.ts
+TypeScript
+if (!hasAliveEnemy) {
+    state.result = EBattleResult.Win;
+    this.log(state, "战斗胜利：所有敌人已被击败");
+}
+第三阶段可以在胜利后生成奖励。
+
+建议不要直接在 checkBattleEnd() 里塞背包，而是：
+
+*.txt
+Plaintext
+BattleEngine 只负责标记战斗胜利
+BattleManager / BattleRewardManager 负责生成掉落
+InventoryManager 负责拾取进背包
+推荐调用关系：
+
+*.txt
+Plaintext
+BattleEngine.checkBattleEnd()
+↓
+state.result = Win
+↓
+BattleManager 检测战斗胜利
+↓
+BattleRewardManager.generateReward(state)
+↓
+生成 IBattleRewardState
+↓
+InventoryManager.pickDrop(dropUid)
+六、核心运行时数据结构定稿建议
+1. 局内背包状态
+*.ts
+TypeScript
+export interface IInventoryState {
+    /** 背包宽度，例如 6 */
+    width: number;
+ 
+    /** 背包高度，例如 5 */
+    height: number;
+ 
+    /** 背包内物品 */
+    items: IInventoryItemRuntime[];
+}
+2. 背包物品实例
+*.ts
+TypeScript
+export interface IInventoryItemRuntime {
+    /** 物品实例唯一 ID */
+    itemUid: string;
+ 
+    /** 物品配置 ID */
+    itemId: number;
+ 
+    /** 占用起始格 X */
+    x: number;
+ 
+    /** 占用起始格 Y */
+    y: number;
+ 
+    /** 占格宽 */
+    width: number;
+ 
+    /** 占格高 */
+    height: number;
+}
+3. 掉落物实例
+*.ts
+TypeScript
+export interface IDropItemRuntime {
+    /** 掉落实例 ID */
+    dropUid: string;
+ 
+    /** 物品实例唯一 ID */
+    itemUid: string;
+ 
+    /** 物品配置 ID */
+    itemId: number;
+ 
+    /** 是否已拾取 */
+    picked: boolean;
+}
+4. 战斗奖励状态
+*.ts
+TypeScript
+export interface IBattleRewardState {
+    /** 来源战斗场景 ID */
+    scenarioId: number;
+ 
+    /** 掉落物列表 */
+    drops: IDropItemRuntime[];
+}
+七、第三阶段 Debug 验收目标
+第三阶段先以控制台 Debug 验收为主，不急着做完整 UI。
+
+建议 Debug 命令：
+
+*.ts
+TypeScript
+BattleDebug.start(1)
+BattleDebug.play(0, 0)
+BattleDebug.end()
+BattleDebug.reward()
+ 
+InventoryDebug.bag()
+InventoryDebug.pick(0)
+InventoryDebug.drop("itemUid")
+InventoryDebug.clear()
+理想流程：
+
+*.txt
+Plaintext
+1. BattleDebug.start(1)
+2. 正常打赢腐化灵鼠
+3. 战斗胜利后生成掉落
+4. BattleDebug.reward() 查看掉落列表
+5. InventoryDebug.pick(0) 拾取第 0 个掉落
+6. InventoryDebug.bag() 查看局内背包
+7. 背包空间不足时，拾取失败并提示
+8. InventoryDebug.drop(itemUid) 丢弃物品
+9. 丢弃后释放格子
+10. 可以继续拾取其他掉落
+八、第三阶段 UI 范围
+第三阶段 UI 可以做一个简单调试界面，不做复杂背包交互。
+
+建议界面结构：
+
+*.txt
+Plaintext
+左侧：局内背包 6×5
+右侧：战斗掉落列表
+底部：日志 / 操作提示
+基础按钮：
+
+*.txt
+Plaintext
+拾取
+丢弃
+关闭
+刷新
+暂时不做：
+
+*.txt
+Plaintext
+拖拽摆放
+自动整理
+旋转
+右键菜单
+物品详情弹窗
+品质边框
+复杂图标
+第三阶段先做：
+
+*.txt
+Plaintext
+点击拾取 → 系统自动找空位
+后续再做拖拽式背包体验。
+
+九、第三阶段必须通过的验收标准
+第三阶段完成时，必须满足：
+
+*.txt
+Plaintext
+1. 战斗胜利后能根据 enemy.drop_table_id 生成掉落。
+2. 掉落配置从 drop_table / drop_item 读取，不硬编码。
+3. 掉落物必须生成独立 itemUid。
+4. 掉落数量大于 1 时，生成多个独立实例，不堆叠。
+5. 玩家可以查看战斗掉落列表。
+6. 玩家可以点击拾取掉落物。
+7. 拾取时读取 item.bag_width / item.bag_height 判断占格。
+8. 局内背包规格为 6×5。
+9. 系统能自动寻找可放位置。
+10. 背包空间不足时，拾取失败并提示。
+11. 玩家可以丢弃背包中的物品。
+12. 丢弃后释放格子，可以继续拾取。
+13. 战斗中不能打开局内背包。
+14. 临战法囊仍然保持第二阶段 Debug 初始化。
+15. 局内背包和临战法囊第三阶段暂不互通。
+16. 物品名称、类型、占格全部从 item 表读取，不硬编码。
+十、第三阶段明确不做的内容
+为了防止范围膨胀，第三阶段不做：
+
+*.txt
+Plaintext
+正式秘境地图
+房间探索
+采集点
+宝箱房
+撤离点
+撤离结算
+死亡结算
+仓库系统
+局外背包
+局外经济
+灵石袋打开
+丹药使用
+装备穿戴
+物品出售
+自动整理
+背包旋转
+物品堆叠
+功法收藏
+功法借法
+从背包配置临战法囊
+战斗中打开背包
+这些留到后续阶段：
+
+*.txt
+Plaintext
+第四阶段：废弃灵田秘境 + 撤离结算
+第五阶段：成长与炼丹
+第六阶段：功法与借法台
+十一、第三阶段前建议先修的代码问题
+1. EBattleStatusId 与配置表不一致
+当前代码中：
+
+*.ts
+TypeScript
+export enum EBattleStatusId {
+    Power = 1,
+    Weak = 2,
+    Vulnerable = 3,
+    ArmorBreak = 4,
+}
+但当前 status 表实际是：
+
+status_id	状态
+1	力量
+2	虚弱
+3	中毒
+4	灼烧
+5	易伤
+6	破甲
+7	冻结
+所以代码应该修为：
+
+*.ts
+TypeScript
+export enum EBattleStatusId {
+    Power = 1,
+    Weak = 2,
+    Poison = 3,
+    Burn = 4,
+    Vulnerable = 5,
+    ArmorBreak = 6,
+    Freeze = 7,
+}
+否则当前：
+
+*.ts
+TypeScript
+Vulnerable = 3
+ArmorBreak = 4
+会导致：
+
+*.txt
+Plaintext
+易伤误读成中毒
+破甲误读成灼烧
+这会影响基础伤害、注灵测试和第三阶段战斗掉落验收的稳定性。
+
+2. effect_group 当前应按 effect_define.effect_id 解析
+当前配置中：
+
+*.txt
+Plaintext
+card.effect_group
+enemy_intent.effect_group
+element_stone.minor_effect_group
+写的是：
+
+*.txt
+Plaintext
+effect_id,value,target,param
+其中 effect_id 对应的是：
+
+*.txt
+Plaintext
+effect_define.effect_id
+而不是直接等于：
+
+*.txt
+Plaintext
+EEffectType
+当前代码在 executeEffects() 里直接：
+
+*.ts
+TypeScript
+switch (Number(effect.effectId)) {
+    case EEffectType.damage:
+    ...
+}
+短期能跑，是因为：
+
+*.txt
+Plaintext
+effect_id 1 = damage
+effect_id 2 = gain_block
+effect_id 3 = apply_status
+刚好和 EEffectType 对上。
+
+但后面的：
+
+*.txt
+Plaintext
+治疗
+失去生命
+跳过行动
+恢复灵力
+已经出现了错位风险。
+
+建议第三阶段前修成：
+
+*.txt
+Plaintext
+effect_id
+↓
+effect_define
+↓
+effect_type
+↓
+执行逻辑
+这样后续扩展掉落、丹药、功法、事件时不会踩坑。
+
+十二、第三阶段最终定稿版
+最终可以定稿为：
+
+*.txt
+Plaintext
+第三阶段：局内背包与战斗掉落
+开发目标：
+
+*.txt
+Plaintext
+在现有战斗模块基础上，新增局内背包与战斗掉落系统。
+战斗胜利后，根据敌人掉落表生成掉落物实例。
+玩家可以将掉落物拾取到 6×5 局内背包中。
+背包使用物品占格规则，不支持旋转，不支持堆叠。
+背包空间不足时，玩家必须丢弃已有物品或放弃掉落。
+第三阶段暂不做正式秘境、撤离、仓库和局外结算，只验证“战斗后获得资源并因空间产生取舍”的最小闭环。
+已定规则：
+
+*.txt
+Plaintext
+1. 第三阶段名称定为：局内背包与战斗掉落。
+2. 局内背包规格为 6×5。
+3. 所有物品不可堆叠。
+4. 背包不支持旋转。
+5. 第三阶段先不做拖拽摆放，拾取时自动找空位。
+6. 战斗胜利后生成掉落列表，不自动放入背包。
+7. 掉落物生成独立 itemUid。
+8. 多个同名掉落生成多个独立实例。
+9. 拾取时检查 item.bag_width / item.bag_height。
+10. 背包满时拾取失败并提示。
+11. 玩家可以丢弃背包物品。
+12. 丢弃后释放格子。
+13. 灵石不直接掉落，掉落灵石袋。
+14. 灵石袋占格，不堆叠，只能撤离后使用。
+15. 第三阶段暂不做撤离，所以灵石袋只能放入背包，不能打开。
+16. 战斗中不能打开正式背包。
+17. 战斗中仍然只能使用临战法囊。
+18. 临战法囊继续使用 Debug 初始化。
+19. 第三阶段暂不让背包与临战法囊互通。
+20. 掉落表新增 drop_table / drop_item。
+21. enemy.drop_table_id 接入实际掉落表。
+22. 新增一批测试物品：灵草、灵果、赤炎草、灵石袋、功法残卷、普通武器、大刀。
+23. 第三阶段不做仓库、撤离、秘境地图、采集、宝箱、炼丹、功法收藏。

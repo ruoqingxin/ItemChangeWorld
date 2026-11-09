@@ -1,0 +1,9 @@
+1. Laya3.x + TypeScript
+2. Excel 维护，导出 JSON 给程序用
+3. 第一阶段只做纯逻辑 + Debug 控制台测试
+4. 不做 UI、不做背包、不做掉落、不做附魔、不做耐久结算
+5. 普通主表 ID 从 1 开始
+6. ID 只要求本表内唯一，不要求全局唯一
+7. effect_group_id 使用 100xx / 200xx，方便排查来源
+8. 物品表只补“破旧铁剑”这一条
+9. 战斗字段放 weapon/card/effect/enemy 等战斗表，不混入 item 表

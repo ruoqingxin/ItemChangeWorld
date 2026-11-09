@@ -1,0 +1,1072 @@
+《末法寻仙》第二阶段定稿规则
+一、第二阶段目标
+第二阶段目标：
+
+*.txt
+Plaintext
+在第一阶段核心战斗切片基础上，
+补全注灵、属性石、临战法囊、武器耐久、五行克制、真实伤害预览等规则，
+让战斗模块向正式游戏方向靠拢。
+第二阶段暂不接：
+
+*.txt
+Plaintext
+正式背包
+正式掉落
+正式秘境探索
+符箓使用
+丹药战斗使用
+完整局外经济
+第二阶段先使用：
+
+*.txt
+Plaintext
+Debug 战斗数据
+Debug 临战法囊数据
+Debug 武器实例数据
+二、名称定稿
+1. 正式玩法名称
+玩家侧、策划侧、UI 文案统一叫：
+
+*.txt
+Plaintext
+注灵
+临战注灵
+五行注灵
+火灵·剑斩
+金灵·飞剑
+不再使用“附魔”作为玩家侧名称。
+
+2. 代码命名兼容
+当前配置中已有：
+
+*.txt
+Plaintext
+card.can_enchant
+EEffectOwnerType.enchant
+第二阶段可以继续保留代码字段名，避免大范围改动。
+
+但建议注释改成：
+
+*.txt
+Plaintext
+enchant = 注灵
+即：
+
+*.txt
+Plaintext
+代码层可以叫 enchant
+玩家文案必须叫 注灵
+三、战斗中背包规则
+1. 战斗中不能打开背包
+定稿：
+
+*.txt
+Plaintext
+战斗中玩家不能打开背包。
+战斗中玩家只能使用：
+
+*.txt
+Plaintext
+临战法囊
+中的物品。
+
+2. 背包系统第二阶段不接入
+第二阶段：
+
+*.txt
+Plaintext
+不接正式背包。
+不从背包读取物品。
+不处理战斗后拾取。
+不处理背包占格整理。
+临战法囊数据由 Debug 初始化。
+
+四、临战法囊规则
+1. 第二阶段固定 5 格
+定稿：
+
+*.txt
+Plaintext
+第二阶段临战法囊固定为 5 格。
+每格只能放：
+
+*.txt
+Plaintext
+1 个物品实例
+不能放一组物品。
+
+2. 所有物品不可堆叠
+定稿：
+
+*.txt
+Plaintext
+所有物品都不可以堆叠。
+包括：
+
+*.txt
+Plaintext
+属性石
+丹药
+符箓
+灵石袋
+材料
+装备
+功法残卷
+其他所有物品
+同名物品也不堆叠。
+
+例如：
+
+*.txt
+Plaintext
+火属性石·一阶·普通
+火属性石·一阶·普通
+是两个独立实例：
+
+*.txt
+Plaintext
+itemUid = debug_stone_fire_001, itemId = 2142
+itemUid = debug_stone_fire_002, itemId = 2142
+不能写成：
+
+*.txt
+Plaintext
+火属性石·一阶·普通 ×2
+3. 物品实例管理方式
+以后统一使用：
+
+*.txt
+Plaintext
+itemUid + itemId
+含义：
+
+字段	含义
+itemUid	物品实例唯一 ID
+itemId	物品配置 ID
+例如：
+
+*.txt
+Plaintext
+itemUid = debug_stone_fire_001
+itemId = 2142
+表示：
+
+*.txt
+Plaintext
+某一颗具体的火属性石·一阶·普通
+4. 第二阶段临战法囊 Debug 示例
+建议第二阶段先放五种一阶普通属性石，便于测试五行克制：
+
+*.ts
+TypeScript
+[
+    {
+        slotIndex: 0,
+        itemUid: "debug_stone_metal_001",
+        itemId: 2112,
+        mainType: 2,
+        subType: 202,
+    },
+    {
+        slotIndex: 1,
+        itemUid: "debug_stone_wood_001",
+        itemId: 2122,
+        mainType: 2,
+        subType: 202,
+    },
+    {
+        slotIndex: 2,
+        itemUid: "debug_stone_water_001",
+        itemId: 2132,
+        mainType: 2,
+        subType: 202,
+    },
+    {
+        slotIndex: 3,
+        itemUid: "debug_stone_fire_001",
+        itemId: 2142,
+        mainType: 2,
+        subType: 202,
+    },
+    {
+        slotIndex: 4,
+        itemUid: "debug_stone_earth_001",
+        itemId: 2152,
+        mainType: 2,
+        subType: 202,
+    },
+]
+五、属性石物品规则
+1. 属性石进入 item_config
+定稿：
+
+*.txt
+Plaintext
+属性石作为消耗品进入 item_config。
+配置规则：
+
+*.txt
+Plaintext
+main_type = consumable
+sub_type = element_stone
+占格 = 1 × 1
+不可堆叠
+即：
+
+*.txt
+Plaintext
+main_type = 2
+sub_type = 202
+bag_width = 1
+bag_height = 1
+2. 属性石拆成两层配置
+item_config
+只负责物品层：
+
+*.txt
+Plaintext
+物品显示
+物品名称
+图标
+主类型
+子类型
+品质
+占格
+描述
+是否启用
+不负责：
+
+*.txt
+Plaintext
+五行
+等级
+纯度
+damage_rate
+耐久消耗
+注灵效果
+element_stone
+负责战斗规则层：
+
+*.txt
+Plaintext
+五行
+等级
+纯度
+damage_rate
+durability_cost
+minor_effect_group
+注灵效果
+3. 每种五行 + 等级 + 纯度档对应一个独立 item_id
+定稿：
+
+*.txt
+Plaintext
+每种五行 + 等级 + 纯度档 = 一个独立 item_id。
+例如：
+
+*.txt
+Plaintext
+金属性石·一阶·普通
+木属性石·一阶·普通
+水属性石·一阶·普通
+火属性石·一阶·普通
+土属性石·一阶·普通
+分别是不同 item_id。
+
+4. 第二阶段先配置 5 种一阶普通属性石
+第二阶段只配置：
+
+*.txt
+Plaintext
+金属性石·一阶·普通
+木属性石·一阶·普通
+水属性石·一阶·普通
+火属性石·一阶·普通
+土属性石·一阶·普通
+暂不配置：
+
+*.txt
+Plaintext
+劣质
+精纯
+无瑕
+二阶
+三阶
+六、推荐 item_id 定稿
+建议第二阶段使用以下 ID：
+
+item_id	物品名
+2112	金属性石·一阶·普通
+2122	木属性石·一阶·普通
+2132	水属性石·一阶·普通
+2142	火属性石·一阶·普通
+2152	土属性石·一阶·普通
+编码逻辑：
+
+*.txt
+Plaintext
+item_id = 2000 + 等级 * 100 + 五行 * 10 + 纯度档
+其中：
+
+*.txt
+Plaintext
+五行：
+1 = 金
+2 = 木
+3 = 水
+4 = 火
+5 = 土
+纯度：
+1 = 劣质
+2 = 普通
+3 = 精纯
+4 = 无瑕
+如果后续发现和已有 item_config ID 段冲突，只替换数字 ID，不改变规则。
+
+七、item_config 新增属性石配置
+如果按当前推荐字段：
+
+*.txt
+Plaintext
+item_id
+name
+icon
+main_type
+sub_type
+quality
+bag_width
+bag_height
+desc
+enabled
+第二阶段新增 5 条：
+
+*.csv
+CSV
+item_id,name,icon,main_type,sub_type,quality,bag_width,bag_height,desc,enabled
+2112,金属性石·一阶·普通,icon_item_stone_metal_1_normal,2,202,1,1,1,一阶普通金属性石。可拖拽到可注灵武器攻击牌上，注入金行之力。拖拽成功后立即消耗。,1
+2122,木属性石·一阶·普通,icon_item_stone_wood_1_normal,2,202,1,1,1,一阶普通木属性石。可拖拽到可注灵武器攻击牌上，注入木行之力。拖拽成功后立即消耗。,1
+2132,水属性石·一阶·普通,icon_item_stone_water_1_normal,2,202,1,1,1,一阶普通水属性石。可拖拽到可注灵武器攻击牌上，注入水行之力。拖拽成功后立即消耗。,1
+2142,火属性石·一阶·普通,icon_item_stone_fire_1_normal,2,202,1,1,1,一阶普通火属性石。可拖拽到可注灵武器攻击牌上，注入火行之力。拖拽成功后立即消耗。,1
+2152,土属性石·一阶·普通,icon_item_stone_earth_1_normal,2,202,1,1,1,一阶普通土属性石。可拖拽到可注灵武器攻击牌上，注入土行之力。拖拽成功后立即消耗。,1
+注意：
+
+*.txt
+Plaintext
+quality = 物品品质
+purity_grade = 属性石纯度
+二者不能混用。
+
+八、新增枚举 EPurityGrade
+1. 需要新增
+当前 __enums__.xlsx 已经有：
+
+*.txt
+Plaintext
+EMainType
+ESubType
+EElement
+EQuality
+但还缺：
+
+*.txt
+Plaintext
+EPurityGrade
+第二阶段需要新增。
+
+2. 枚举定稿
+*.txt
+Plaintext
+EPurityGrade
+name_cn	name	value	comment
+无	none	0	无纯度
+劣质	poor	1	劣质纯度
+普通	normal	2	普通纯度
+精纯	refined	3	精纯纯度
+无瑕	flawless	4	无瑕纯度
+九、新增 element_stone 表
+1. 表定位
+element_stone 是属性石战斗规则表。
+
+它与 item_config 的关系是：
+
+*.txt
+Plaintext
+item_config.item_id = element_stone.item_id
+2. 字段定稿
+建议新增 sheet：
+
+*.txt
+Plaintext
+element_stone
+字段：
+
+*.txt
+Plaintext
+stone_id
+item_id
+name
+element
+level
+purity_grade
+purity_value
+damage_rate
+durability_cost
+minor_effect_group
+enabled
+字段说明：
+
+字段	说明
+stone_id	属性石规则 ID
+item_id	对应 item_config 的物品 ID
+name	参考中文名，方便策划维护
+element	五行
+level	属性石等级
+purity_grade	纯度档
+purity_value	具体纯度值
+damage_rate	注灵伤害倍率
+durability_cost	注灵消耗武器耐久
+minor_effect_group	五行轻微效果
+enabled	是否启用
+3. 第二阶段配置数据
+*.csv
+CSV
+stone_id,item_id,name,element,level,purity_grade,purity_value,damage_rate,durability_cost,minor_effect_group,enabled
+4112,2112,金属性石·一阶·普通,1,1,2,60,100,5,"3,1,3,6",1
+4122,2122,木属性石·一阶·普通,2,1,2,60,100,5,"3,2,3,3",1
+4132,2132,水属性石·一阶·普通,3,1,2,60,100,5,"3,1,3,2",1
+4142,2142,火属性石·一阶·普通,4,1,2,60,100,5,"3,2,3,4",1
+4152,2152,土属性石·一阶·普通,5,1,2,60,100,5,"2,4,1",1
+十、五行注灵效果定稿
+五行	属性石	轻微效果	effect_group
+金	金属性石·一阶·普通	对目标施加 1 层破甲	3,1,3,6
+木	木属性石·一阶·普通	对目标施加 2 层中毒	3,2,3,3
+水	水属性石·一阶·普通	对目标施加 1 层虚弱	3,1,3,2
+火	火属性石·一阶·普通	对目标施加 2 层灼烧	3,2,3,4
+土	土属性石·一阶·普通	玩家获得 4 点护盾	2,4,1
+依赖现有配置：
+
+*.txt
+Plaintext
+EEffectType.apply_status = 3
+EEffectType.gain_block = 2
+EEffectTarget.self = 1
+EEffectTarget.selected_enemy = 3
+status_id:
+2 = 虚弱
+3 = 中毒
+4 = 灼烧
+6 = 破甲
+十一、注灵触发规则
+1. 操作方式
+定稿：
+
+*.txt
+Plaintext
+玩家将临战法囊中的属性石拖拽到可注灵卡牌上。
+松手后，如果校验通过，立即完成注灵。
+不是：
+
+*.txt
+Plaintext
+出牌时弹窗询问
+也不是：
+
+*.txt
+Plaintext
+点击属性石后自动作用下一张牌
+2. 可注灵条件
+属性石拖到卡牌上时，需要同时满足：
+
+*.txt
+Plaintext
+1. 拖拽物品是属性石。
+2. 卡牌是攻击牌。
+3. card.can_enchant = 1。
+4. 卡牌来源是武器基础牌组 EDeckType.weapon_basic。
+5. 卡牌当前没有注灵状态。
+6. 当前武器耐久足够。
+第二阶段：
+
+*.txt
+Plaintext
+功法牌不可注灵。
+技能牌不可注灵。
+消耗品牌不可注灵。
+防御牌不可注灵。
+十二、注灵消耗规则
+1. 资源消耗时机
+定稿：
+
+*.txt
+Plaintext
+拖拽成功时立即消耗资源。
+不是出牌时消耗。
+
+2. 消耗内容
+拖拽成功后立即消耗：
+
+*.txt
+Plaintext
+属性石实例 ×1
+武器耐久
+例如：
+
+*.txt
+Plaintext
+火属性石·一阶·普通 durability_cost = 5
+则拖拽成功后：
+
+*.txt
+Plaintext
+临战法囊对应格子清空
+当前武器耐久 -5
+卡牌进入火灵注灵态
+3. 普通攻击不消耗武器耐久
+定稿：
+
+*.txt
+Plaintext
+普通攻击不消耗武器耐久。
+普通出牌不消耗武器耐久。
+只有注灵消耗武器耐久。
+即：
+
+*.txt
+Plaintext
+剑斩：不扣耐久
+飞剑：不扣耐久
+火灵·剑斩：拖拽注灵时扣耐久
+金灵·飞剑：拖拽注灵时扣耐久
+4. 耐久不足时不能注灵
+定稿：
+
+*.txt
+Plaintext
+武器耐久不足时，不能注灵。
+武器耐久为 0 时，不能注灵。
+但基础武器牌仍然可以正常使用。
+十三、注灵后限制
+定稿：
+
+*.txt
+Plaintext
+一张卡牌最多只能注灵一次。
+注灵后不允许取消。
+注灵后不允许覆盖。
+注灵后不允许叠加第二颗属性石。
+例如：
+
+*.txt
+Plaintext
+剑斩已经变成 火灵·剑斩
+则不能：
+
+*.txt
+Plaintext
+取消火灵
+改成金灵
+再拖一颗木属性石
+十四、回合结束清除规则
+定稿：
+
+*.txt
+Plaintext
+注灵状态随回合结束清除。
+资源不返还。
+如果玩家本回合拖拽属性石到卡牌上，但没有打出该卡牌：
+
+*.txt
+Plaintext
+回合结束时注灵状态清除。
+属性石不返还。
+武器耐久不返还。
+卡牌恢复普通状态进入弃牌流程。
+这条是硬规则。
+
+十五、卡牌状态规则
+1. 注灵只改变当前手牌实例
+注灵不会修改：
+
+*.txt
+Plaintext
+card 配置表
+卡牌模板
+牌组配置
+武器配置
+它只修改：
+
+*.txt
+Plaintext
+当前战斗中这张手牌实例
+2. 打出后注灵状态结束
+注灵卡牌打出后：
+
+*.txt
+Plaintext
+结算基础效果
+结算注灵伤害
+结算五行轻微效果
+卡牌进入弃牌流程
+注灵状态结束
+下次再抽到同一张配置牌，仍然是普通卡牌。
+
+十六、注灵伤害公式
+1. 不使用固定伤害
+定稿：
+
+*.txt
+Plaintext
+属性石不使用 damage_min / damage_max。
+属性石使用 damage_rate 百分比倍率。
+旧策划里的：
+
+*.txt
+Plaintext
+1级属性石 +5~+10
+2级属性石 +15~+20
+第二阶段废弃，不作为正式规则。
+
+2. 注灵基础伤害
+未选择目标时：
+
+*.txt
+Plaintext
+注灵基础伤害 =
+floor(卡牌基础伤害 × damage_rate / 100)
+例如：
+
+*.txt
+Plaintext
+剑斩基础伤害 = 6
+火属性石 damage_rate = 100
+则：
+
+*.txt
+Plaintext
+注灵基础伤害 = floor(6 × 100 / 100)
+             = 6
+3. 指定目标后的注灵真实伤害
+指定目标后：
+
+*.txt
+Plaintext
+注灵真实伤害 =
+floor(卡牌基础伤害 × damage_rate / 100 × 五行克制倍率)
+4. 五行克制倍率
+定稿：
+
+*.txt
+Plaintext
+金克木
+木克土
+土克水
+水克火
+火克金
+倍率：
+
+关系	倍率
+克制目标	1.2
+被目标克制	0.8
+同属性	0.9
+无关系	1.0
+5. 五行克制只作用于注灵伤害
+定稿：
+
+*.txt
+Plaintext
+五行克制只影响注灵伤害。
+不影响普通基础攻击伤害。
+6. 武器 element 暂不参与公式
+当前 weapon 表中有：
+
+*.txt
+Plaintext
+element
+第二阶段定稿：
+
+*.txt
+Plaintext
+weapon.element 暂不参与注灵公式。
+注灵五行只看 element_stone.element。
+也就是：
+
+*.txt
+Plaintext
+火属性石注灵 = 火行伤害
+金属性石注灵 = 金行伤害
+不看武器本身五行。
+
+十七、基础伤害与注灵伤害分段
+第二阶段建议定稿为：
+
+*.txt
+Plaintext
+基础攻击伤害和注灵伤害分段计算、分段显示。
+1. 基础攻击伤害
+基础攻击伤害受：
+
+*.txt
+Plaintext
+卡牌基础伤害
+敌人防御
+破甲
+易伤
+虚弱
+力量
+护盾
+等影响。
+
+2. 注灵伤害
+注灵伤害受：
+
+*.txt
+Plaintext
+卡牌基础伤害
+属性石 damage_rate
+五行克制倍率
+护盾
+影响。
+
+第二阶段建议：
+
+*.txt
+Plaintext
+注灵伤害不吃敌人普通防御。
+但会被护盾抵挡。
+这样属性石价值更明显，后续如果要限制注灵，可以新增五行抗性系统。
+
+十八、伤害显示规则
+1. 卡牌未选择目标前
+卡牌只显示：
+
+*.txt
+Plaintext
+基础伤害
+注灵基础伤害
+注灵五行
+注灵轻微效果
+例如：
+
+*.txt
+Plaintext
+火灵·剑斩
+造成 6 点伤害。
+注灵：额外造成 6 点火行伤害。
+命中后施加 2 层灼烧。
+此时不显示最终真实伤害。
+
+原因：
+
+*.txt
+Plaintext
+尚未选择敌人，不知道五行克制、防御、护盾、状态。
+2. 指定敌人后
+玩家拖动 / 指向 / 选择敌人后，显示真实伤害预览。
+
+例如目标为金属性敌人：
+
+*.txt
+Plaintext
+预计伤害：
+基础：6
+火灵：7，火克金
+合计：13
+如果目标有护盾：
+
+*.txt
+Plaintext
+预计伤害：
+基础：6
+火灵：7
+护盾吸收：5
+生命损失：8
+3. 预览和真实结算共用同一公式
+定稿：
+
+*.txt
+Plaintext
+伤害预览和真实伤害结算必须使用同一套公式。
+不能出现：
+
+*.txt
+Plaintext
+预览 13，实际 12
+的情况。
+
+十九、多段攻击牌规则
+第二阶段当前实际卡牌只有：
+
+*.txt
+Plaintext
+剑斩
+飞剑
+都是单段伤害。
+
+所以第二阶段暂按：
+
+*.txt
+Plaintext
+取卡牌 effect_group 中的主要 damage 效果作为注灵基准。
+多段攻击牌，例如后续短刃的：
+
+*.txt
+Plaintext
+连环刺：造成 2 点伤害 4 次
+不进入第二阶段实现范围。
+
+多段攻击牌的注灵计算规则后续单独定。
+
+二十、灵石与灵石袋规则
+1. 灵石是货币数值
+定稿：
+
+*.txt
+Plaintext
+灵石作为货币数值，不占背包。
+灵石不是普通背包物品。
+
+2. 秘境中不直接掉落灵石
+定稿：
+
+*.txt
+Plaintext
+秘境中不掉落灵石本体。
+旧策划案中：
+
+*.txt
+Plaintext
+掉落劣品灵石
+改为：
+
+*.txt
+Plaintext
+掉落灵石袋 / 灵石匣 / 灵石包等物品
+3. 灵石袋是物品
+灵石袋规则：
+
+*.txt
+Plaintext
+占背包格
+不可堆叠
+使用后获得灵石数值
+4. 灵石袋只能撤离后使用
+定稿：
+
+*.txt
+Plaintext
+灵石袋只能撤离后使用。
+局内不能打开灵石袋变成货币。
+
+目的：
+
+*.txt
+Plaintext
+必须占格带出。
+必须成功撤离。
+撤离后才能转化为灵石数值。
+二十一、配置表修改清单
+1. __enums__.xlsx
+需要新增：
+
+*.txt
+Plaintext
+EPurityGrade
+建议后续新增：
+
+*.txt
+Plaintext
+ESubType.spirit_stone_bag
+例如：
+
+*.txt
+Plaintext
+spirit_stone_bag = 208
+用于第三阶段灵石袋。
+
+第二阶段暂时不强制。
+
+2. B-战斗配置表.xlsx
+需要新增 sheet：
+
+*.txt
+Plaintext
+element_stone
+第二阶段新增 5 条属性石规则。
+
+3. item_config
+需要新增 5 条属性石物品：
+
+*.txt
+Plaintext
+2112 金属性石·一阶·普通
+2122 木属性石·一阶·普通
+2132 水属性石·一阶·普通
+2142 火属性石·一阶·普通
+2152 土属性石·一阶·普通
+4. card 表
+当前已有：
+
+*.txt
+Plaintext
+can_enchant
+第二阶段暂时够用。
+
+但运行时卡牌需要补：
+
+*.txt
+Plaintext
+sourceDeckType
+sourceWeaponUid
+enchantState
+用于判断：
+
+*.txt
+Plaintext
+只有武器基础攻击牌可以注灵。
+5. weapon 表
+当前字段够用：
+
+*.txt
+Plaintext
+weapon_id
+item_id
+weapon_type
+max_durability
+base_deck_id
+element
+enabled
+但规则上明确：
+
+*.txt
+Plaintext
+weapon.element 第二阶段不参与注灵计算。
+二十二、第二阶段代码结构建议
+结合你上传的项目架构，战斗模块建议按这个结构推进：
+
+*.txt
+Plaintext
+module/battle/
+├── BattleModule.ts
+├── BattleConst.ts
+├── BattleEvent.ts
+├── BattleManager.ts
+├── data/
+│   └── BattleData.ts
+├── types/
+│   └── BattleTypes.ts
+├── utils/
+│   ├── BattleConfigUtils.ts
+│   ├── BattleFormulaUtils.ts
+│   └── BattleDebugUtils.ts
+第二阶段优先落：
+
+*.txt
+Plaintext
+BattleTypes.ts
+BattleData.ts
+BattleFormulaUtils.ts
+BattleConfigUtils.ts
+BattleManager.ts
+二十三、核心运行时数据结构
+1. 临战法囊格子
+*.ts
+TypeScript
+export interface BattleItemSlotRuntime {
+    /** 法囊格子下标，0-4 */
+    slotIndex: number;
+ 
+    /** 物品实例唯一 ID */
+    itemUid?: string;
+ 
+    /** 物品配置 ID */
+    itemId?: number;
+ 
+    /** 主类型 */
+    mainType?: number;
+ 
+    /** 子类型 */
+    subType?: number;
+}
+2. 卡牌注灵状态
+*.ts
+TypeScript
+export interface BattleCardEnchantState {
+    /** 消耗来源法囊格 */
+    sourceSlotIndex: number;
+ 
+    /** 已消耗的物品实例 UID */
+    consumedItemUid: string;
+ 
+    /** 已消耗的物品配置 ID */
+    itemId: number;
+ 
+    /** 属性石配置 ID */
+    stoneId: number;
+ 
+    /** 注灵五行 */
+    element: number;
+ 
+    /** 注灵伤害倍率 */
+    damageRate: number;
+ 
+    /** 注灵消耗的武器耐久 */
+    durabilityCost: number;
+ 
+    /** 注灵附加效果 */
+    minorEffectGroup?: number[][];
+ 
+    /** 是否已正式注灵 */
+    applied: boolean;
+}
+3. 战斗卡牌运行时
+*.ts
+TypeScript
+export interface BattleCardRuntime {
+    uid: string;
+    cardId: number;
+ 
+    /** 来源牌组 */
+    sourceDeckId: number;
+    sourceDeckType: number;
+ 
+    /** 来源武器实例 */
+    sourceWeaponUid?: string;
+ 
+    /** 注灵状态 */
+    enchantState?: BattleCardEnchantState;
+}
+二十四、旧规则废弃清单
+以下上传策划案中的旧内容，以后不再作为当前第二阶段规则：
+
+*.txt
+Plaintext
+五行附魔
+系统提示是否使用属性石
+属性石固定 damage_min / damage_max
+属性石可堆叠
+丹药可堆叠
+灵石袋可堆叠
+灵石直接掉落
+属性石在出牌时才消耗
+注灵后可以取消
+注灵后可以覆盖
+统一替换为：
+
+*.txt
+Plaintext
+五行注灵
+拖拽属性石是货币数值
+秘境掉落灵石袋，不直接掉落灵石
+拖拽成功立即消耗属性石和武器耐久
+注灵后不可，不直接掉落灵石
+拖拽成功立即消耗属性石和武器耐久
+注灵后不可取消、不可覆盖
+回合结束注灵清除，资源不返还
+二十五、最终一句话定稿
+第二阶段最终规则可以概括为：
+
+*.txt
+Plaintext
+第二阶段正式采用“注灵”系统。战斗中玩家不能打开背包，只能使用 5 格临战法囊中的物品。所有物品不可堆叠，每格只能放 1 个物品实例。属性石作为 consumable / element_stone 类型进入 item_config，占 1×1 格；每种五行、等级、纯度档对应独立 item_id。第二阶段先配置五种一阶普通属性石，并在 element_stone 表中用 damage_rate 百分比配置注灵倍率、耐久消耗和五行轻微效果。玩家将属性石拖拽到可注灵的武器基础攻击牌上，拖拽成功后立即消耗属性石实例和武器耐久，卡牌进入注灵态；注灵后不可取消、不可覆盖，若回合结束未打出则注灵清除且资源不返还。注灵伤害根据卡牌基础伤害、damage_rate 和五行克制倍率计算，卡牌未指定目标前只显示基础伤害和注灵基础伤害，指定敌人后显示真实预计伤害。普通攻击不消耗武器耐久，武器耐久只用于承载注灵。灵石作为货币数值不占背包，秘境只掉落灵石袋等物品，灵石袋占格、不可堆叠，并且只能撤离后使用。
+这版可以作为第二阶段正式定稿规则。
