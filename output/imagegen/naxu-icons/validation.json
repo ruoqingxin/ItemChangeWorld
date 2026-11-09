@@ -1,0 +1,246 @@
+{
+  "expected": 12,
+  "completed": 12,
+  "files": [
+    {
+      "id": "naxu-pouch-q1",
+      "name": "素麻纳虚囊",
+      "quality": 1,
+      "family": "pouch",
+      "file": "112/naxu-pouch-q1.png",
+      "size": [
+        112,
+        112
+      ],
+      "visible_bounds": {
+        "left": 13,
+        "top": 8,
+        "width": 86,
+        "height": 96,
+        "transparent": 6785,
+        "partial": 1109
+      },
+      "sha256": "c53065b59ea909854f1d8e7090a605699db0480ea6390f23ec6ccdbd2467db7a"
+    },
+    {
+      "id": "naxu-box-q1",
+      "name": "灰木纳虚匣",
+      "quality": 1,
+      "family": "box",
+      "file": "112/naxu-box-q1.png",
+      "size": [
+        112,
+        112
+      ],
+      "visible_bounds": {
+        "left": 8,
+        "top": 23,
+        "width": 96,
+        "height": 66,
+        "transparent": 7556,
+        "partial": 846
+      },
+      "sha256": "dccfedcb087ececcc465dcaf34c29746ee0ab74b2efdbf99ae41897d71d61cff"
+    },
+    {
+      "id": "naxu-pendant-q2",
+      "name": "青玉纳虚佩",
+      "quality": 2,
+      "family": "pendant",
+      "file": "112/naxu-pendant-q2.png",
+      "size": [
+        112,
+        112
+      ],
+      "visible_bounds": {
+        "left": 14,
+        "top": 8,
+        "width": 83,
+        "height": 96,
+        "transparent": 6500,
+        "partial": 1010
+      },
+      "sha256": "93570cea4b2d27be31cbf80c88fe6829c354345c7ec80018a14b32166d8b5f71"
+    },
+    {
+      "id": "naxu-gourd-q2",
+      "name": "青藤纳虚葫",
+      "quality": 2,
+      "family": "gourd",
+      "file": "112/naxu-gourd-q2.png",
+      "size": [
+        112,
+        112
+      ],
+      "visible_bounds": {
+        "left": 19,
+        "top": 8,
+        "width": 73,
+        "height": 96,
+        "transparent": 8432,
+        "partial": 965
+      },
+      "sha256": "62e4465836901ca2bec5af1cc0802641a4215bf16ee72cd7ebc1ca2410128db6"
+    },
+    {
+      "id": "naxu-box-q3",
+      "name": "玄纹纳虚匣",
+      "quality": 3,
+      "family": "box",
+      "file": "112/naxu-box-q3.png",
+      "size": [
+        112,
+        112
+      ],
+      "visible_bounds": {
+        "left": 8,
+        "top": 21,
+        "width": 96,
+        "height": 69,
+        "transparent": 6512,
+        "partial": 587
+      },
+      "sha256": "c4f672af870f45d30077fd651b147898b63672cb53f18a2483b983a63d244847"
+    },
+    {
+      "id": "naxu-flask-q3",
+      "name": "流纹纳虚瓶",
+      "quality": 3,
+      "family": "flask",
+      "file": "112/naxu-flask-q3.png",
+      "size": [
+        112,
+        112
+      ],
+      "visible_bounds": {
+        "left": 17,
+        "top": 8,
+        "width": 78,
+        "height": 96,
+        "transparent": 6419,
+        "partial": 775
+      },
+      "sha256": "85f570bd5fdad57b441e4a7a34daeea54e354a9e547221f6b86bdb19d93da1e2"
+    },
+    {
+      "id": "naxu-seal-q4",
+      "name": "紫阙纳虚印",
+      "quality": 4,
+      "family": "seal",
+      "file": "112/naxu-seal-q4.png",
+      "size": [
+        112,
+        112
+      ],
+      "visible_bounds": {
+        "left": 8,
+        "top": 9,
+        "width": 96,
+        "height": 93,
+        "transparent": 6704,
+        "partial": 1236
+      },
+      "sha256": "44b2a758c254ba3f6d3de6f728f100f83815ff7b5876374e027d6298b10b8d65"
+    },
+    {
+      "id": "naxu-ring-q4",
+      "name": "紫阙纳虚戒",
+      "quality": 4,
+      "family": "ring",
+      "file": "112/naxu-ring-q4.png",
+      "size": [
+        112,
+        112
+      ],
+      "visible_bounds": {
+        "left": 13,
+        "top": 8,
+        "width": 85,
+        "height": 96,
+        "transparent": 6432,
+        "partial": 1212
+      },
+      "sha256": "c306025e8bb3d253c8e09e0c45b2bb2d025d2eddd7e1d21d06fddc4907186b3d"
+    },
+    {
+      "id": "naxu-gourd-q5",
+      "name": "金阙纳虚葫",
+      "quality": 5,
+      "family": "gourd",
+      "file": "112/naxu-gourd-q5.png",
+      "size": [
+        112,
+        112
+      ],
+      "visible_bounds": {
+        "left": 21,
+        "top": 8,
+        "width": 69,
+        "height": 96,
+        "transparent": 8045,
+        "partial": 888
+      },
+      "sha256": "2f7c0dbfd54251580f13f32b30c68092e54af75fe69403eb81ad644d5501d144"
+    },
+    {
+      "id": "naxu-mirror-q5",
+      "name": "金阙纳虚镜",
+      "quality": 5,
+      "family": "mirror",
+      "file": "112/naxu-mirror-q5.png",
+      "size": [
+        112,
+        112
+      ],
+      "visible_bounds": {
+        "left": 8,
+        "top": 9,
+        "width": 96,
+        "height": 94,
+        "transparent": 5585,
+        "partial": 1374
+      },
+      "sha256": "9dce8fc938e8dd6f3e223aea929ebbcba565b5d485c06621d67c5d109065027f"
+    },
+    {
+      "id": "naxu-orb-q6",
+      "name": "赤霄纳虚珠",
+      "quality": 6,
+      "family": "orb",
+      "file": "112/naxu-orb-q6.png",
+      "size": [
+        112,
+        112
+      ],
+      "visible_bounds": {
+        "left": 8,
+        "top": 9,
+        "width": 96,
+        "height": 93,
+        "transparent": 5425,
+        "partial": 1040
+      },
+      "sha256": "f84c0e63054c0fe7117f466e4af7418e8d294b414be72690498154beaa6e0033"
+    },
+    {
+      "id": "naxu-cauldron-q6",
+      "name": "赤霄纳虚鼎",
+      "quality": 6,
+      "family": "cauldron",
+      "file": "112/naxu-cauldron-q6.png",
+      "size": [
+        112,
+        112
+      ],
+      "visible_bounds": {
+        "left": 8,
+        "top": 10,
+        "width": 96,
+        "height": 91,
+        "transparent": 6762,
+        "partial": 1451
+      },
+      "sha256": "cebfa7e9bf35db6c343ddf33e22658520be08a5cdef0f724cbb623eb57670fab"
+    }
+  ]
+}
