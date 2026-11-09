@@ -234,7 +234,7 @@
         "ore": [2, 2], "smallMaterial": [1, 1], "weapon": [2, 3]
       },
       "quarterTurnRotation": true,
-      "inventoryCellPitchPixels": 50,
+      "inventoryCellPitchPixels": 56,
       "primaryInventoryInteraction": "drag-and-release-with-synchronous-image-rotation",
       "automaticRotationWhenOnlyOtherOrientationFits": true,
       "automaticRotationHoverMs": 400,

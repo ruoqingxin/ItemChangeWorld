@@ -44,6 +44,21 @@ async function capture(p,name){
                 clipped.push({name:n.name,text:n.text,w:n.width,h:n.height,tw:n.textIns.textWidth,th:n.textIns.textHeight});
             for(let i=0;i<n.numChildren;i++)walk(n.getChildAt(i));
         };walk(panel.root);
+        if(panel.screen==="battle"){
+            const v=window.__skillBattlePreview,items=v.trial.inventory.items.filter(i=>i.location.space==="battle");
+            for(let i=0;i<5;i++){
+                const occupied=items.some(item=>item.location.x===i),frame=panel.elements[`pouchQuality${i}`];
+                const image=panel.elements[`pouchIcon${i}`];
+                if(frame.visible!==occupied||image.visible!==occupied)clipped.push({name:`pouchQuality${i}`,reason:"slot visibility"});
+                if(!occupied)continue;
+                const button=panel.buttons[`pouch${i}`],label=button.getChildAt(0);
+                if(frame.src!=="ui/atlas/module/inventory/quality-1.png"||
+                    !frame.graphics.cmds.some(c=>c.cmdID==="Draw9GridTextureCmd"))
+                    clipped.push({name:`pouchQuality${i}`,reason:"nine-slice frame"});
+                if(button.x+label.x<frame.x+frame.width)
+                    clipped.push({name:`pouchQuality${i}`,reason:"icon/text overlap"});
+            }
+        }
         let icon=null;
         if(panel.nodes?.inventoryRoot&&visible(panel.nodes.inventoryRoot)){
             const row=panel.buttons.invList0;

@@ -334,6 +334,21 @@
         },
         {
           "_$ref": "sbr108lbl"
+        },
+        {
+          "_$ref": "inventory_pouch_quality_0"
+        },
+        {
+          "_$ref": "inventory_pouch_quality_1"
+        },
+        {
+          "_$ref": "inventory_pouch_quality_2"
+        },
+        {
+          "_$ref": "inventory_pouch_quality_3"
+        },
+        {
+          "_$ref": "inventory_pouch_quality_4"
         }
       ],
       "mapperType": 4
@@ -914,7 +929,8 @@
       "x": 458,
       "y": 536,
       "width": 24,
-      "height": 24
+      "height": 24,
+      "zOrder": 2
     },
     {
       "_$id": "sbr039ico",
@@ -925,7 +941,8 @@
       "x": 570,
       "y": 536,
       "width": 24,
-      "height": 24
+      "height": 24,
+      "zOrder": 2
     },
     {
       "_$id": "sbr040ico",
@@ -936,7 +953,8 @@
       "x": 682,
       "y": 536,
       "width": 24,
-      "height": 24
+      "height": 24,
+      "zOrder": 2
     },
     {
       "_$id": "sbr041ico",
@@ -947,7 +965,8 @@
       "x": 794,
       "y": 536,
       "width": 24,
-      "height": 24
+      "height": 24,
+      "zOrder": 2
     },
     {
       "_$id": "sbr042ico",
@@ -958,7 +977,8 @@
       "x": 906,
       "y": 536,
       "width": 24,
-      "height": 24
+      "height": 24,
+      "zOrder": 2
     },
     {
       "_$id": "sbr044btn",
@@ -1865,6 +1885,76 @@
       "align": "center",
       "valign": "middle",
       "wordWrap": true
+    },
+    {
+      "_$id": "inventory_pouch_quality_0",
+      "_$type": "GImage",
+      "name": "pouchQuality0",
+      "src": "ui/atlas/module/inventory/quality-1.png",
+      "x": 458,
+      "y": 544,
+      "width": 30,
+      "height": 30,
+      "autoSize": false,
+      "mouseEnabled": false,
+      "visible": false,
+      "zOrder": 1
+    },
+    {
+      "_$id": "inventory_pouch_quality_1",
+      "_$type": "GImage",
+      "name": "pouchQuality1",
+      "src": "ui/atlas/module/inventory/quality-1.png",
+      "x": 570,
+      "y": 544,
+      "width": 30,
+      "height": 30,
+      "autoSize": false,
+      "mouseEnabled": false,
+      "visible": false,
+      "zOrder": 1
+    },
+    {
+      "_$id": "inventory_pouch_quality_2",
+      "_$type": "GImage",
+      "name": "pouchQuality2",
+      "src": "ui/atlas/module/inventory/quality-1.png",
+      "x": 682,
+      "y": 544,
+      "width": 30,
+      "height": 30,
+      "autoSize": false,
+      "mouseEnabled": false,
+      "visible": false,
+      "zOrder": 1
+    },
+    {
+      "_$id": "inventory_pouch_quality_3",
+      "_$type": "GImage",
+      "name": "pouchQuality3",
+      "src": "ui/atlas/module/inventory/quality-1.png",
+      "x": 794,
+      "y": 544,
+      "width": 30,
+      "height": 30,
+      "autoSize": false,
+      "mouseEnabled": false,
+      "visible": false,
+      "zOrder": 1
+    },
+    {
+      "_$id": "inventory_pouch_quality_4",
+      "_$type": "GImage",
+      "name": "pouchQuality4",
+      "src": "ui/atlas/module/inventory/quality-1.png",
+      "x": 906,
+      "y": 544,
+      "width": 30,
+      "height": 30,
+      "autoSize": false,
+      "mouseEnabled": false,
+      "visible": false,
+      "zOrder": 1
     }
   ]
 }

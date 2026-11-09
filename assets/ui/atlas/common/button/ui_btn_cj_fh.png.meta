@@ -1,7 +1,9 @@
 {
   "uuid": "32159e03-8a2b-422e-9e6a-8cb9d1e526aa",
   "importer": {
+    "textureType": 2,
     "sRGB": true,
+    "premultiplyAlpha": true,
     "generateMipmap": true
   }
 }

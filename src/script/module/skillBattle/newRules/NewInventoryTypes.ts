@@ -1,5 +1,6 @@
 import type { NewBattleWeapon } from "./NewBattleTypes";
 import type { NewBuildCommand, NewBuildConfig, NewBuildProfile, NewBuildState } from "./NewBuildTypes";
+import type { EQuality } from "../../../config/schema";
 
 export type InventorySpace = "warehouse" | "battle" | "safe" | "bag" | "weapon" | "container" |
     "ground" | "consumed" | "lost";
@@ -7,7 +8,7 @@ export interface InventoryLocation { space: InventorySpace; x?: number; y?: numb
 export interface InventoryTemplate {
     id: number; name: string; kind: "hp" | "mp" | "repair" | "book" | "material" | "weapon" | "container";
     width: number; height: number; rotate: boolean; battle: boolean; safe: boolean; stack: number;
-    potionId: number; bagWidth: number; bagHeight: number; icon: string;
+    potionId: number; bagWidth: number; bagHeight: number; icon: string; quality?: EQuality;
 }
 export interface InventoryItem { uid: string; templateId: number; location: InventoryLocation; durability: number | null; }
 export interface InventoryConfig {

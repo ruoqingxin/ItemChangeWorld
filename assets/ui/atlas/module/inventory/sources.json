@@ -99,6 +99,42 @@
       "note": ""
     },
     {
+      "file": "ui/atlas/module/inventory/quality-1.png",
+      "source": "E:\\NowChange\\ItemChangeWorld\\art\\reference\\cultivation\\frames\\quality-1.png",
+      "sha256": "93abb6ef8314d46cb4141fc2db4db80e640a61e413a0b4109c5909b523df238f",
+      "note": "用户指定六档品质框，原图不变，九宫拉伸"
+    },
+    {
+      "file": "ui/atlas/module/inventory/quality-2.png",
+      "source": "E:\\NowChange\\ItemChangeWorld\\art\\reference\\cultivation\\frames\\quality-2.png",
+      "sha256": "150bc1d89fcbf0bc0755dbd3139186df9ea54ac87e0ec5e734afef342f18f7ad",
+      "note": "用户指定六档品质框，原图不变，九宫拉伸"
+    },
+    {
+      "file": "ui/atlas/module/inventory/quality-3.png",
+      "source": "E:\\NowChange\\ItemChangeWorld\\art\\reference\\cultivation\\frames\\quality-3.png",
+      "sha256": "8f94ce49b0dc986d7c4f284a01e1571a86a09c6d8cde0d8c288d2b9130782abc",
+      "note": "用户指定六档品质框，原图不变，九宫拉伸"
+    },
+    {
+      "file": "ui/atlas/module/inventory/quality-4.png",
+      "source": "E:\\NowChange\\ItemChangeWorld\\art\\reference\\cultivation\\frames\\quality-4.png",
+      "sha256": "6f5ec75b2d4466e399801a57e3d711739a1df7ec57ce99bdf355cc88c693f17f",
+      "note": "用户指定六档品质框，原图不变，九宫拉伸"
+    },
+    {
+      "file": "ui/atlas/module/inventory/quality-5.png",
+      "source": "E:\\NowChange\\ItemChangeWorld\\art\\reference\\cultivation\\frames\\quality-5.png",
+      "sha256": "68d7ae84863ece715abd65cb5e3774090bf25b988dbaed047bf68295bf330f8b",
+      "note": "用户指定六档品质框，原图不变，九宫拉伸"
+    },
+    {
+      "file": "ui/atlas/module/inventory/quality-6.png",
+      "source": "E:\\NowChange\\ItemChangeWorld\\art\\reference\\cultivation\\frames\\quality-6.png",
+      "sha256": "9148693cd073e9f4a64fb7ed9d10f777f6940c9b8851c6881132bae352cc588a",
+      "note": "用户指定六档品质框，原图不变，九宫拉伸"
+    },
+    {
       "file": "ui/atlas/module/inventory/sword-book.png",
       "source": "E:\\资源\\修仙宗门搜打撤\\extracted_assets\\images\\sprites\\itemui_983e94da1a7aea0ae4d3f64e92b7582a_item_166_1732596632810013890.png",
       "sha256": "ef56006dc8506d1b9b7bc78c5bcd51e1ade5a907ddde22371678fefbb0aa588b",

@@ -9,6 +9,8 @@ const walk = directory => fs.readdirSync(directory, { withFileTypes: true }).fla
     entry.isDirectory() ? walk(path.join(directory, entry.name)) : [path.join(directory, entry.name)]);
 const relative = file => path.relative(assets, file).replaceAll("\\", "/");
 const files = walk(ui), uuidMap = new Map();
+assert.equal(JSON.parse(fs.readFileSync(path.join(root, "settings/EditorSettings.json"), "utf8")).textureType, 2,
+    "New images must default to sprite textures in the IDE");
 for (const file of [...files, ...walk(path.join(root, "src"))].filter(file => file.endsWith(".meta"))) {
     const meta = JSON.parse(fs.readFileSync(file, "utf8"));
     if (!meta.uuid) continue;

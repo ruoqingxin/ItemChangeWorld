@@ -232,7 +232,7 @@ $checks = @(
     ($baseline.confirmed.inventory.equipmentUsesActualCellFootprint -eq $true),
     ($baseline.confirmed.inventory.uniformCellSizeAcrossInventoryRegions -eq $true),
     (($baseline.acceptedAdjustableTestStartingPoints.stage3InventoryApproval.rectangularShapes.weapon -join ",") -eq "2,3"),
-    ($baseline.acceptedAdjustableTestStartingPoints.stage3InventoryApproval.inventoryCellPitchPixels -eq 50),
+    ($baseline.acceptedAdjustableTestStartingPoints.stage3InventoryApproval.inventoryCellPitchPixels -eq 56),
     ($baseline.confirmed.inventory.equipmentDragRequiresExtraConfirmation -eq $false),
     ($baseline.confirmed.inventory.containerSwapAutomaticallyRepacks -eq $true),
     ($baseline.confirmed.inventory.containerSwapPreparationOverflow -eq "warehouse"),

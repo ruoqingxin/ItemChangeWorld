@@ -80,16 +80,43 @@ for (const file of allFiles) {
     if (nodes.has("inventoryRoot")) {
         const cells = [...nodes].filter(([name]) => /^inv(?:EquipCell_(?:weapon|container)_\d+|SourceCell\d+|Cell_(?:battle|safe|bag)_\d+)$/.test(name));
         for (const [name,node] of cells)
-            assert.deepEqual([node.width,node.height],[48,48],`${file} ${name} must use the shared 50px pitch`);
+            assert.deepEqual([node.width,node.height],[54,54],`${file} ${name} must use the shared 56px pitch`);
+        for (const [prefix,count,cols,panelName] of [
+            ["invCell_battle_",5,5,"invLeftPanel"],["invCell_safe_",2,2,"invLeftPanel"],
+            ["invCell_bag_",48,8,"invBagPanel"],["invSourceCell",56,8,"invRightPanel"],
+        ]) {
+            const origin = nodes.get(prefix+"0"), panel = nodes.get(panelName);
+            for (let i=0;i<count;i++) {
+                const cell = nodes.get(prefix+i);
+                assert.deepEqual([cell.x,cell.y],[origin.x+i%cols*56,origin.y+Math.floor(i/cols)*56],
+                    `${file} ${prefix}${i} shared pitch`);
+                assert.ok(cell.x>=panel.x && cell.y>=panel.y &&
+                    cell.x+cell.width<=panel.x+panel.width && cell.y+cell.height<=panel.y+panel.height,
+                    `${file} ${prefix}${i} stays inside its panel`);
+            }
+        }
+        const left = nodes.get("invLeftPanel"), bag = nodes.get("invBagPanel"), right = nodes.get("invRightPanel");
+        assert.ok(left.x+left.width<=bag.x && bag.x+bag.width<=right.x,`${file} storage panels must not overlap`);
         for (const [space,key,rows] of [["weapon","invWeapon",3],["container","invContainer",2]]) {
             const slot = nodes.get(key);
-            assert.deepEqual([slot.width,slot.height],[98,rows*50-2],`${file} ${space} actual footprint`);
+            assert.deepEqual([slot.width,slot.height],[110,rows*56-2],`${file} ${space} actual footprint`);
             for (let i=0;i<2*rows;i++) {
                 const cell = nodes.get(`invEquipCell_${space}_${i}`);
-                assert.deepEqual([cell.x,cell.y],[slot.x+i%2*50,slot.y+Math.floor(i/2)*50],
+                assert.deepEqual([cell.x,cell.y],[slot.x+i%2*56,slot.y+Math.floor(i/2)*56],
                     `${file} ${space} cell ${i}`);
             }
         }
+        for (const key of ["invWeapon","invContainer","invHeld",
+            ...Array.from({length:60},(_,i)=>`invItem${i}`),...Array.from({length:56},(_,i)=>`invList${i}`)]) {
+            const n=nodes.get(key),outline=nodes.get(key+"Selection");
+            assert.ok(outline && outline.mouseEnabled===false,`${file} ${key} independent selection outline`);
+            assert.equal(n._$child[2]._$type,"GImage",`${file} ${key} retains the item icon index`);
+            if (!["invWeapon","invContainer"].includes(key))
+                assert.equal(n._$child[0].src,"ui/atlas/module/inventory/quality-1.png",`${file} ${key} default quality frame`);
+        }
+        for (const key of ["invGhost",...Array.from({length:48},(_,i)=>`invDragCell${i}`)])
+            assert.equal(nodes.get(key).src,"ui/atlas/module/inventory/quality-1.png",
+                `${file} ${key} must not restore the old circular feedback frame`);
     }
 
     assert.equal(prefab.width, 1280, `${file} design width`);
@@ -118,6 +145,9 @@ for (const file of allFiles) {
             "enemy HP bar must not overlap the action toolbar");
         for (let index = 0; index < 5; index++)
             assert.equal(nodes.get(`pouchIcon${index}`).autoSize, false, "icons must keep authored dimensions");
+        for (let index = 0; index < 5; index++)
+            assert.equal(nodes.get(`pouchQuality${index}`).src,"ui/atlas/module/inventory/quality-1.png",
+                "battle item icons retain a quality frame");
         assert.ok(nodes.get("pouch4").x + nodes.get("pouch4").width <= confirm.x,
             "pouch hit areas must not overlap confirm");
     }
@@ -130,6 +160,13 @@ for (const role of ["Start", "Battle", "Settlement"]) {
         `../src/script/module/skillBattle/view/SkillBattle${role}View.ts`), "utf8");
     assert.match(source, /SkillBattleUISession\.createPanel\(/, `${role} production view must use the shared new-kernel panel factory`);
     assert.doesNotMatch(source, /getExpedition\(/, `${role} must not initialize the legacy save or rules`);
+}
+for(let quality=1;quality<=6;quality++){
+    const name=`quality-${quality}.png`,file=path.join(__dirname,"../assets/ui/atlas/module/inventory",name);
+    const reference=path.join(__dirname,"../art/reference/cultivation/frames",name);
+    assert.deepEqual(fs.readFileSync(file),fs.readFileSync(reference),`${name} must use the supplied original PNG`);
+    const meta=JSON.parse(fs.readFileSync(file+".meta","utf8"));
+    assert.deepEqual(meta.importer.sizeGrid,[8,8,8,8,0],`${name} nine-slice borders`);
 }
 const sessionSource = fs.readFileSync(path.join(__dirname,
     "../src/script/module/skillBattle/view/SkillBattleUISession.ts"), "utf8");

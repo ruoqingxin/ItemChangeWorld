@@ -1,12 +1,13 @@
 import type { UIBaseView } from "../../../games/ui/UIBaseView";
 import { ConfigUtil } from "../../../config/ConfigUtil";
+import { EQuality } from "../../../config/schema";
 import { NewBattleCore as Core } from "../newRules/NewBattleCore";
 import { NewBuildConfigUtils } from "../newRules/NewBuildConfigUtils";
 import { NewInventoryConfigUtils } from "../newRules/NewInventoryConfigUtils";
 import { NewInventoryRules as Rules } from "../newRules/NewInventoryRules";
 import { NewInventorySession } from "../newRules/NewInventorySession";
 import type { NewBuildToken } from "../newRules/NewBuildTypes";
-import type { InventoryCommand, InventoryConfig, InventoryItem, InventoryLocation, InventorySpace, InventoryState } from "../newRules/NewInventoryTypes";
+import type { InventoryCommand, InventoryConfig, InventoryItem, InventoryLocation, InventorySpace, InventoryState, InventoryTemplate } from "../newRules/NewInventoryTypes";
 import { NewBuildPanel } from "./NewBuildPanel";
 import { NewInventoryDragController } from "./NewInventoryDragController";
 
@@ -295,6 +296,33 @@ export class NewInventoryPanel extends NewBuildPanel {
         image.pos(x + (width - (rotated ? h : w)) / 2 + (rotated ? h : 0),
             y + (height - (rotated ? w : h)) / 2); image.size(w,h);
     }
+    private quality(t: InventoryTemplate): EQuality {
+        return Number.isInteger(t.quality) && t.quality >= EQuality.normal && t.quality <= EQuality.legendary ?
+            t.quality : EQuality.normal;
+    }
+    private qualityImage(image: Laya.GImage, t: InventoryTemplate): void {
+        image.autoSize = false; image.color = "#ffffff"; image.alpha = 1; image.visible = true;
+        image.off(Laya.Event.LOADED,this,this.qualityLoaded);
+        image.on(Laya.Event.LOADED,this,this.qualityLoaded,[image]);
+        image.src = `ui/atlas/module/inventory/quality-${this.quality(t)}.png`;
+        this.qualityLoaded(image);
+    }
+    private qualityLoaded(image: Laya.GImage): void {
+        const texture = image.texture, grid = [8,8,8,8,0];
+        if (!texture || texture._sizeGrid?.join(",") === grid.join(",") &&
+            image.graphics.cmds.some(cmd => cmd.cmdID === Laya.Draw9GridTextureCmd.ID)) return;
+        // Raw-PNG browser previews do not run the IDE's .meta texture importer.
+        texture._sizeGrid = grid;
+        const src = image.src;
+        image.src = ""; image.src = src;
+    }
+    private qualityFrame(n: Laya.GWidget, t: InventoryTemplate, selected = false, color = "#f4f5e9"): void {
+        const bg = n.getChildAt(0) as Laya.GImage;
+        bg.size(n.width,n.height); this.qualityImage(bg,t);
+        const outline = n.getChildByName(n.name+"Selection") as Laya.GWidget;
+        outline.size(n.width,n.height); outline.visible = selected; outline.graphics.clear();
+        if (selected) outline.graphics.drawRoundRect(1,1,n.width - 2,n.height - 2,6,6,6,6,null,color,2);
+    }
     private renderInventory(): void {
         const session = this.inventorySession, save = session.archive, actual = save?.state;
         if (actual?.phase === "ended" && this.draft) this.clearSelection();
@@ -323,9 +351,14 @@ export class NewInventoryPanel extends NewBuildPanel {
             this.control(key,"",editable);
             const n = this.nodes[key], cols = 2, rows = space === "weapon" ? 3 : 2;
             for (let i = 0; i < cols * rows; i++) this.nodes[`invEquipCell_${space}_${i}`].visible = true;
-            (n.getChildAt(0) as Laya.GImage).alpha = item ? 0.22 : 0.1;
+            (n.getChildAt(0) as Laya.GImage).visible = !!item;
+            n.getChildByName(key+"Selection").visible = false;
             const icon = this.nodes[key].getChildAt(2) as Laya.GImage; icon.visible = !!item;
-            if (item) this.icon(n,Rules.template(save.config,item).icon,n.width - 12,n.height - 12);
+            if (item) {
+                const t = Rules.template(save.config,item);
+                this.qualityFrame(n,t,item.uid === this.uid);
+                this.icon(n,t.icon,n.width - 12,n.height - 12);
+            }
             this.label(key+"Name",`${item ? Rules.template(save.config,item).name :
                 space === "weapon" ? "未装备武器" : "未装备纳虚器"}\n${cols}×${rows}${item && space === "weapon" ?
                 ` · 耐久 ${item.durability}/${save.config.build.setup.weapon!.maxDurability}` : ""}`,17);
@@ -346,12 +379,10 @@ export class NewInventoryPanel extends NewBuildPanel {
                 const [w,h] = Rules.dimensions(t,item.location);
                 this.control(key,"",editable,item.uid === this.uid);
                 n.pos(startX + item.location.x! * size,startY + item.location.y! * size); n.size(w * size - 2,h * size - 2);
-                const bg = n.getChildAt(0) as Laya.GImage; bg.size(n.width,n.height);
-                bg.src = `ui/atlas/module/inventory/${item.uid === this.uid ? "item-frame-selected" : "item-frame"}.png`;
+                this.qualityFrame(n,t,item.uid === this.uid);
                 this.icon(n,t.icon,n.width - 12,n.height - 12,6,6,!!item.location.rotated);
                 const caption = n.getChildAt(3) as Laya.GTextField;
-                caption.text = `${w}×${h}`; caption.pos(3,n.height - 22); caption.size(n.width - 6,22);
-                caption.color = "#ffffff"; caption.fontSize = 12;
+                caption.text = ""; caption.visible = false;
             }
         }
         const gridItems = state.items.filter(i => ["battle","safe","bag"].includes(i.location.space));
@@ -365,6 +396,7 @@ export class NewInventoryPanel extends NewBuildPanel {
                 const item = Rules.item(actual!,this.draft.move.uid), [w,h] = Rules.dimensions(Rules.template(save.config,item),to);
                 const ghost = this.nodes.invGhost; ghost.pos(x + to.x! * size,y + to.y! * size);
                 ghost.size(w * size - 2,h * size - 2); ghost.visible = true;
+                this.qualityLoaded(ghost as Laya.GImage);
             }
         }
         let list = state.items.filter(i => i.location.space === (state.phase === "active" ? "ground" : "warehouse") &&
@@ -388,10 +420,11 @@ export class NewInventoryPanel extends NewBuildPanel {
             const n = this.nodes[key], origin = this.nodes.invSourceCell0, size = origin.width + 2;
             this.control(key,"",editable || state.phase === "ended",item.uid === this.uid);
             n.pos(origin.x + x * size,origin.y + y * size); n.size(t.width * size - 2,t.height * size - 2);
-            (n.getChildAt(0) as Laya.GImage).size(n.width,n.height);
+            this.qualityFrame(n,t,item.uid === this.uid);
             this.icon(n,t.icon,n.width - 12,n.height - 12);
             const caption = n.getChildAt(3) as Laya.GTextField;
-            caption.text = item.durability !== null ? `${item.durability}` : `${t.width}×${t.height}`;
+            caption.text = item.durability !== null ? `${item.durability}` : "";
+            caption.visible = item.durability !== null;
             caption.pos(3,n.height - 22); caption.size(n.width - 6,22); caption.fontSize = 12; caption.color = "#ffffff";
         });
         const filters = state.phase === "ended" ? [["invAll","库存"],["invMedicine","实际带回"],["invMaterials","实际损失"],["invEquipment","已消耗"]] :
@@ -659,7 +692,7 @@ export class NewInventoryPanel extends NewBuildPanel {
         const grid = equipment ? { x: equipment.x, y: equipment.y, size: this.nodes.invSourceCell0.width + 2,
             cols: 2, rows: to!.space === "weapon" ? 3 : 2 } :
             to && ["battle","safe","bag"].includes(to.space) ? this.gridGeometry(to.space) : null;
-        const size = grid?.size || 50;
+        const size = grid?.size || this.nodes.invSourceCell0.width + 2;
         this.nodes[h.key].alpha = 0.16;
         this.nodes.invGhost.visible = false;
         for (let i = 0; i < 48; i++) this.nodes[`invDragCell${i}`].visible = false;
@@ -671,17 +704,16 @@ export class NewInventoryPanel extends NewBuildPanel {
                 const cell = this.nodes[`invDragCell${index++}`] as Laya.GImage;
                 cell.pos(grid.x + cx * grid.size,grid.y + cy * grid.size);
                 cell.size(grid.size - 2,grid.size - 2); cell.color = h.valid ? "#76ffad" : "#ff6262"; cell.visible = true;
+                this.qualityLoaded(cell);
             }
         }
         const n = this.nodes.invHeld;
         n.visible = true; n.pos(h.point.x - h.grabX * w * size,h.point.y - h.grabY * height * size);
         n.size(w * size - 2,height * size - 2);
-        const bg = n.getChildAt(0) as Laya.GImage;
-        bg.size(n.width,n.height); bg.color = !h.target || h.valid ? "#b9e9d5" : "#ff9d8c";
+        this.qualityFrame(n,t,!!h.target,h.valid ? "#76ffad" : "#ff6262");
         this.icon(n,t.icon,n.width - 12,n.height - 12,6,6,h.rotated);
         const caption = n.getChildAt(3) as Laya.GTextField;
-        caption.text = `${w}×${height}`; caption.pos(3,n.height - 22); caption.size(n.width - 6,22);
-        caption.fontSize = 12; caption.color = "#ffffff";
+        caption.text = ""; caption.visible = false;
         for (const key of ["invPrimary","invDrop","invUse","invConfirm","invExtract","invToggle","invAbandon",
             "invNodePrev","invNodeNext","invAll","invMedicine","invMaterials","invEquipment","invPrev","invNext","invReveal"]) {
             const control = this.buttons[key];
@@ -696,10 +728,19 @@ export class NewInventoryPanel extends NewBuildPanel {
         const archive = this.inventorySession.archive;
         if (!archive) return;
         for (const item of archive.state.items.filter(i => i.location.space === "battle")) {
-            if (Rules.template(archive.config,item).kind === "repair") {
-                const index = item.location.y! * archive.config.spaces.battleWidth + item.location.x!;
+            const t = Rules.template(archive.config,item);
+            const index = item.location.y! * archive.config.spaces.battleWidth + item.location.x!;
+            if (t.kind === "repair") {
                 this.button(`pouch${index}`,"修补工具\n战外使用",454 + index * 112,540,102,62,false);
             }
+            const button = this.buttons[`pouch${index}`], frame = this.elements[`pouchQuality${index}`] as Laya.GImage;
+            frame.pos(button.x + 3,button.y + (button.height - 30) / 2); frame.size(30,30);
+            this.qualityImage(frame,t);
+            const icon = this.elements[`pouchIcon${index}`] as Laya.GImage;
+            icon.autoSize = false; icon.src = t.icon; icon.visible = true;
+            icon.pos(frame.x + 3,frame.y + 3); icon.size(24,24);
+            const label = button.getChildAt(0) as Laya.GTextField;
+            label.pos(36,4); label.size(button.width - 40,button.height - 8); this.fit(label,12);
         }
     }
     private locationName(l?: InventoryLocation): string {
@@ -710,7 +751,8 @@ export class NewInventoryPanel extends NewBuildPanel {
     private describeItem(item: InventoryItem): string {
         const t = Rules.template(this.inventorySession.archive!.config,item);
         const [w,h] = Rules.dimensions(t,{ ...item.location, rotated: this.rotated });
-        return `${t.name} · ${w}×${h}${this.rotated ? " · 旋转" : ""}\n${this.locationName(item.location)}${item.durability !== null ?
+        const qualityName = ["","普通","优秀","精良","稀有","史诗","传说"][this.quality(t)];
+        return `${t.name} · ${qualityName} · ${w}×${h}${this.rotated ? " · 旋转" : ""}\n${this.locationName(item.location)}${item.durability !== null ?
             ` · 耐久 ${item.durability}` : ""}\n${t.safe ? "归真匣合规，仍需尺寸适配" : "禁止归真匣"}${t.kind === "book" ? "\n书籍本阶段仅携入带出，不学习" : ""}`;
     }
 }

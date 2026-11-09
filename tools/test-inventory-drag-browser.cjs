@@ -100,10 +100,10 @@ async function capture(p,name){
         const panel=window.__skillBattlePreview.panel,visible=n=>{for(let v=n;v;v=v.parent)if(!v.visible)return false;return true;};
         const errors=[],rects=[];
         for(const [key,n]of Object.entries(panel.nodes)){
-            if(/^inv(EquipCell_|SourceCell|Cell_)/.test(key)&&visible(n)&&(n.width!==48||n.height!==48))
+            if(/^inv(EquipCell_|SourceCell|Cell_)/.test(key)&&visible(n)&&(n.width!==54||n.height!==54))
                 errors.push(`nonuniform cell ${key}: ${n.width}x${n.height}`);
         }
-        for(const [key,w,h]of[["invWeapon",98,148],["invContainer",98,98]]){
+        for(const [key,w,h]of[["invWeapon",110,166],["invContainer",110,110]]){
             const n=panel.nodes[key];
             if(visible(n)&&(n.width!==w||n.height!==h))errors.push(`equipment footprint ${key}`);
         }
@@ -122,6 +122,29 @@ async function capture(p,name){
             if(n instanceof Laya.GTextField&&n.text&&(n.textIns.textWidth>n.width+2||n.textIns.textHeight>n.height+2))errors.push(`text ${n.name}`);
             for(let i=0;i<n.numChildren;i++)walk(n.getChildAt(i));
         };walk(panel.root);
+        for(const [key,n]of Object.entries(panel.nodes)){
+            if(!visible(n)||!/^inv(List\d+|Item\d+|Weapon|Container|Held)$/.test(key))continue;
+            const caption=n.getChildAt(3);
+            if(caption instanceof Laya.GTextField){
+                if(/[×x]/.test(caption.text))errors.push(`footprint caption ${key}`);
+                if(!key.startsWith("invList")&&(caption.visible||caption.text))
+                    errors.push(`grid/drag caption ${key}`);
+            }
+            const outline=n.getChildByName(n.name+"Selection");
+            if(outline?.visible){
+                const commands=outline.graphics.cmds;
+                if(commands.length!==1||commands[0].cmdID!==Laya.DrawRoundRectCmd.ID||
+                    [commands[0].lt,commands[0].rt,commands[0].lb,commands[0].rb].some(r=>r!==6))
+                    errors.push(`rounded highlight ${key}`);
+            }
+            const image=n.getChildAt(0);
+            if(!image.visible)continue;
+            if(image.src!=="ui/atlas/module/inventory/quality-1.png")errors.push(`quality frame ${key}: ${image.src}`);
+            if(image.texture?._sizeGrid?.join(",")!=="8,8,8,8,0")errors.push(`nine-slice ${key}`);
+            if(!image.graphics.cmds.some(c=>c.cmdID==="Draw9GridTextureCmd"))errors.push(`nine-slice draw ${key}`);
+            if(image.width!==n.width||image.height!==n.height)errors.push(`quality footprint ${key}`);
+            if(image.color!=="#ffffff")errors.push(`quality tint changed ${key}`);
+        }
         return{errors,held:panel.held?{valid:panel.held.valid,rotated:panel.held.rotated,error:panel.held.error}:null};
     });
     assert.deepEqual(result.errors,[],`${name} layout`);return result.held;
@@ -156,7 +179,7 @@ async function autoRotationCases(p,tag){
     await start(p,(await itemKey(p,4)).key);await move(p,await grid(p,"bag",0,0,1,2));
     await p.waitForTimeout(550);assert.equal((await held()).rotated,false);assert.equal((await held()).valid,false);
     await cancel(p);
-    await start(p,(await itemKey(p,4)).key);await move(p,await stagePoint(p,400,240));
+    await start(p,(await itemKey(p,4)).key);await move(p,await grid(p,"bag",0.5,1.9));
     await waitRotation(true);
     assert.equal((await held()).valid,true,"Rotation can resolve a collision without moving the pointer");
     await cancel(p);
@@ -180,7 +203,7 @@ async function autoRotationCases(p,tag){
     await p.waitForTimeout(500);assert.equal(await held(),null,"Cancel clears pending rotation");
     const sword=await itemKey(p,9);
     await start(p,sword.key,{x:0.2,y:0.8});await move(p,await stagePoint(p,700,610));await rotate(p);
-    await move(p,await stagePoint(p,570,240));await waitRotation(false);
+    await move(p,await grid(p,"bag",3.9,1.9));await waitRotation(false);
     const vertical=await held();
     assert.equal(vertical.rotated,false);assert.equal(vertical.valid,true);assert.equal(vertical.target.space,"bag");
     assert.equal(vertical.target.x,4);assert.ok(vertical.target.y===0);
@@ -271,7 +294,7 @@ async function main(){
             assert.deepEqual(await p.evaluate(()=>{
                 const panel=window.__skillBattlePreview.panel,n=panel.nodes.invHeld;
                 return{rotation:n.getChildAt(2).rotation,width:n.width,height:n.height,target:panel.held.target};
-            }),{rotation:90,width:98,height:48,target:{space:"safe",x:0,y:0,rotated:true}});
+            }),{rotation:90,width:110,height:54,target:{space:"safe",x:0,y:0,rotated:true}});
             assert.equal(await saved(p),before,"Rotation must not save");await release(p);
             assert.deepEqual((await state(p)).items.find(i=>i.uid===book.uid).location,{space:"safe",x:0,y:0,rotated:true});
             const ore=await itemKey(p,7);await drag(p,ore.key,await grid(p,"bag",0,0,2,2));
@@ -294,6 +317,10 @@ async function main(){
             await cancel(p);
             assert.equal(await saved(p),installed,"Cancelled gesture must never commit");
             await start(p,(await itemKey(p,6,"bag")).key);await move(p,await stagePoint(p,700,610));
+            assert.deepEqual(await p.evaluate(()=>{
+                const panel=window.__skillBattlePreview.panel;
+                return{target:panel.held.target,width:panel.nodes.invHeld.width,height:panel.nodes.invHeld.height};
+            }),{target:null,width:54,height:110},"Outside-grid dragging retains the same enlarged footprint");
             await release(p);assert.equal(await saved(p),installed,"Drop outside must return");
             const sword=await itemKey(p,9);await drag(p,sword.key,await point(p,"invWeapon"));
             assert.equal((await state(p)).items.find(i=>i.uid===sword.uid).durability,30);

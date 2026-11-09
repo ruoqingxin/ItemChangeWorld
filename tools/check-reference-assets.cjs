@@ -57,6 +57,10 @@ if(fs.existsSync(runtimeManifest)){
         const file=inside(path.join(root,"assets"),asset.file);
         assert.equal(hash(file),asset.sha256,`Runtime asset changed: ${asset.file}`);
         assert.ok(fs.existsSync(file+".meta"),`Missing metadata: ${asset.file}`);
+        const meta=JSON.parse(fs.readFileSync(file+".meta","utf8"));
+        assert.equal(meta.importer?.textureType,2,`Must import as a sprite: ${asset.file}`);
+        assert.equal(meta.importer?.sRGB,true,`Must preserve display colors: ${asset.file}`);
+        assert.equal(meta.importer?.premultiplyAlpha,true,`Must preserve 2D transparency: ${asset.file}`);
         if(process.argv.includes("--source"))assert.equal(hash(asset.source),asset.sha256);
     }
     console.log(`PASS: ${seen.size} runtime PNGs, unchanged source hashes and metadata.`);
