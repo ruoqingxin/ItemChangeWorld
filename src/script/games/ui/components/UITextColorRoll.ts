@@ -16,6 +16,13 @@ export class UITextColorRoll extends Laya.Script {
     static create(owner: Laya.GTextField): UITextColorRoll {
         const script = owner.getComponent(UITextColorRoll);
         if (script) {
+            // 如果已经存在组件，并且遮罩文字和当前文本一致，则直接返回组件
+            if (script._maskText && script._maskText.text == owner.text) {
+                if (!script.enabled) {
+                    script.enabled = true;
+                }
+                return script;
+            }
             // 触发刷新
             script.enabled = false;
             script.enabled = true;

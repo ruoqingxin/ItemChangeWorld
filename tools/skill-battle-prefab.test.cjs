@@ -28,7 +28,7 @@ const views = {
     },
 };
 
-const allFiles = ["SkillBattleView.lh", ...Object.keys(views)];
+const allFiles = Object.keys(views);
 const viewNames = [];
 const viewNodeCounts = {};
 for (const file of allFiles) {
@@ -88,14 +88,6 @@ for (const file of allFiles) {
     for (const ref of refs) assert.ok(ids.has(ref), `${file} has an unresolved ElementMapper reference ${ref}`);
     viewNodeCounts[file] = names.size;
 
-    if (file === "SkillBattleView.lh") {
-        for (const name of ["battleBackground", "battleContent", "battleHeader", "battleStage",
-            "battleStatus", "battleActions", "battleOverlay"]) {
-            assert.ok(names.has(name), `${file} is missing layout node ${name}`);
-        }
-        continue;
-    }
-
     const expectations = views[file];
     for (const name of expectations.required)
         assert.ok(names.has(name), `${file} is missing prefab node ${name}`);
@@ -108,6 +100,12 @@ for (const file of allFiles) {
         assert.notDeepEqual([cancel.x, cancel.y, cancel.width, cancel.height],
             [confirm.x, confirm.y, confirm.width, confirm.height],
             "cancel and confirm must not occupy the same hit area");
+        assert.ok(nodes.get("enemyHpBar").x + nodes.get("enemyHpBar").width <= nodes.get("build").x,
+            "enemy HP bar must not overlap the action toolbar");
+        for (let index = 0; index < 5; index++)
+            assert.equal(nodes.get(`pouchIcon${index}`).autoSize, false, "icons must keep authored dimensions");
+        assert.ok(nodes.get("pouch4").x + nodes.get("pouch4").width <= confirm.x,
+            "pouch hit areas must not overlap confirm");
     }
     viewNames.push([...names].sort().join("|"));
 }
@@ -140,7 +138,8 @@ const visitMap = (node, parentWidth = mapPrefab.width, parentHeight = mapPrefab.
     if (node._$ref) mapRefs.push(node._$ref);
     if (node.name && node.name !== "SkillBattleMapView") {
         const x = node.x ?? 0, y = node.y ?? 0, width = node.width ?? 0, height = node.height ?? 0;
-        if (x < 0 || y < 0 || x + width > parentWidth || y + height > parentHeight)
+        const left = x - width * (node.anchorX || 0), top = y - height * (node.anchorY || 0);
+        if (left < 0 || top < 0 || left + width > parentWidth || top + height > parentHeight)
             mapOutOfBounds.push(node.name);
     }
     for (const child of node._$child || []) visitMap(child, node.width || parentWidth, node.height || parentHeight);

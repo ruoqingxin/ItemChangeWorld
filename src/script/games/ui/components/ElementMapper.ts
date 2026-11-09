@@ -1,5 +1,4 @@
-
-import { UIUtils } from "../../utils/UIUtils";
+import { UIUtils } from "src/script/games/utils/UIUtils";
 import { ElementAdapater } from "./ElementAdapater";
 
 const { regClass, classInfo, runInEditor, property } = Laya;
@@ -46,6 +45,7 @@ export class ElementMapper extends Laya.Script {
 
     private v_adapter: Laya.GWidget;
     private h_adapter: Laya.GWidget;
+
     private adapterNodeList: AdapterNode[];
 
     /**
@@ -81,16 +81,52 @@ export class ElementMapper extends Laya.Script {
         this.owner.off(Laya.Event.RESIZE, this, this.autoSize);
     }
 
-    /**
-     * 设置UI方向
-     * @param isHorizontal 是否横向
-     * @param anim 是否过渡动画
-     */
-    setDirection(isHorizontal: boolean, anim: boolean) {
+    /**动态设置横屏部分节点 横屏位置不统一情况*/
+    public setHorizontalNodes(nodes: Laya.GWidget[]) {
         if (!this.v_adapter || !this.h_adapter) {
             return;
         }
-        if (!this.adapterNodeList) {
+        this.SetAdapterNodes();
+        // 遍历子节点进行过渡
+        for (const adapter of this.adapterNodeList) {
+            const info = adapter.hInfo;
+            const targetNode = adapter.targetNode;
+            let node = nodes.find(node => node.name == targetNode.name);
+            if (node == null) {
+                continue;
+            }
+            info.fill(node, targetNode);
+            let parent = node.parent;
+            while (parent != null && parent != this.owner) {
+                info.rotation += parent.rotation;
+                parent = parent.parent;
+            }
+        }
+    }
+
+    /**动态设置竖屏部分节点 节点动态变化情况*/
+    public setVerticalNodeInfos(nodes:{name:string, x:number, y:number}[]) {
+        if (!this.v_adapter || !this.h_adapter) {
+            return;
+        }
+        for (const adapter of this.adapterNodeList) {
+            const info = adapter.vInfo;
+            const targetNode = adapter.targetNode;
+            let node = nodes.find(node => node.name == targetNode.name);
+            if (node == null) {
+                continue;
+            }
+            info.x = node.x;
+            info.y = node.y;
+        }
+    }
+
+    /**设置适配节点*/
+    public SetAdapterNodes(force: boolean = false) {
+        if (!this.v_adapter || !this.h_adapter) {
+            return;
+        }
+        if (!this.adapterNodeList || force) {
             this.h_adapter.pos(0, 0);
             // 默认支持竖屏模式
             const isHorizontal = false;
@@ -98,11 +134,14 @@ export class ElementMapper extends Laya.Script {
             this.v_adapter.active = !isHorizontal;
 
             this.v_adapter.width = this.owner.width;
-            this.v_adapter.height = this.owner.height;
             if (!this.adapter) {
+                //如果没有设置adapter，则使用竖屏adapter并自动适配大小和刘海屏高度、y坐标
                 this.adapter = this.v_adapter;
                 this.autoSize();
+            }else if(this.adapter != this.v_adapter){
+                this.v_adapter.height = this.owner.height;
             }
+
             this.h_adapter.width = this.owner.height;
             this.h_adapter.height = this.owner.width;
 
@@ -129,10 +168,23 @@ export class ElementMapper extends Laya.Script {
                 this.adapterNodeList.push(adapter);
             }
         }
+    }
+
+    /**
+     * 设置UI方向
+     * @param isHorizontal 是否横向
+     * @param anim 是否过渡动画
+     */
+    setDirection(isHorizontal: boolean, anim: boolean) {
+        if (!this.v_adapter || !this.h_adapter) {
+            return;
+        }
+
+        this.SetAdapterNodes();
+
         // 遍历子节点进行过渡
         for (const adapter of this.adapterNodeList) {
             const info = isHorizontal ? adapter.hInfo : adapter.vInfo;
-
             if (anim && !adapter.ignoreAnim) {
                 Laya.Tween.to(adapter.targetNode, {
                     x: info.x,
@@ -173,10 +225,11 @@ export class ElementMapper extends Laya.Script {
 
         }
         else {
-            padding = Math.min(ElementMapper.TOP_PADDING, this.owner.height - designHeight);
+            padding = Math.max(0, Math.min(ElementMapper.TOP_PADDING, this.owner.height - designHeight));
         }
-        this.adapter.y = padding;
+
         this.adapter.height = this.owner.height - padding;
+        this.adapter.y = padding;
     }
 }
 /**

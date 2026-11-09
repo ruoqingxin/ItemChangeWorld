@@ -17,6 +17,11 @@ export abstract class UITabSubView extends UIBaseView {
  * onOpen 的第一个参数必须是页签功能id
  */
 export abstract class UITabView extends UIBaseView {
+    _destroy(): void {
+        this.closeImmediately();
+        this._tabCtrl?.destroy();
+        super._destroy();
+    }
     private _tabCtrl: TabCtrl = new TabCtrl();
     /**
      * 页签控制器

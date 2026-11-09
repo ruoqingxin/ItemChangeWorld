@@ -1,1 +1,56 @@
-{}
+{
+  "ui/prefab/common/button/btn_close.lh": [],
+  "ui/prefab/module/expedition/SkillBattleMapView.lh": [
+    "ui/atlas/module/expedition/back.png",
+    "ui/atlas/module/expedition/battle_active.png",
+    "ui/atlas/module/expedition/battle_inactive.png",
+    "ui/atlas/module/expedition/borrow.png",
+    "ui/atlas/module/expedition/boss_active.png",
+    "ui/atlas/module/expedition/boss_inactive.png",
+    "ui/atlas/module/expedition/durability_fill.png",
+    "ui/atlas/module/expedition/elite_active.png",
+    "ui/atlas/module/expedition/elite_inactive.png",
+    "ui/atlas/module/expedition/enlightenment.png",
+    "ui/atlas/module/expedition/exit.png",
+    "ui/atlas/module/expedition/health_fill.png",
+    "ui/atlas/module/expedition/meter_track.png",
+    "ui/atlas/module/expedition/recovery.png",
+    "ui/atlas/module/expedition/search_active.png",
+    "ui/atlas/module/expedition/search_inactive.png",
+    "ui/atlas/module/expedition/supplies_fill.png",
+    "ui/atlas/module/expedition/timer.png",
+    "ui/texture/common/hub_background.png",
+    "ui/texture/expedition/node_panel.png",
+    "ui/texture/expedition/status_panel.png"
+  ],
+  "ui/prefab/module/skillBattle/SkillBattleBattleView.lh": [
+    "ui/atlas/module/skillBattle/earth_stone.png",
+    "ui/atlas/module/skillBattle/fire_stone.png",
+    "ui/atlas/module/skillBattle/heal.png",
+    "ui/atlas/module/skillBattle/skill-1.png",
+    "ui/atlas/module/skillBattle/skill-2.png",
+    "ui/atlas/module/skillBattle/skill-3.png",
+    "ui/atlas/module/skillBattle/skill-4.png",
+    "ui/texture/skillBattle/battle_background.png"
+  ],
+  "ui/prefab/module/skillBattle/SkillBattleSettlementView.lh": [
+    "ui/atlas/module/skillBattle/earth_stone.png",
+    "ui/atlas/module/skillBattle/fire_stone.png",
+    "ui/atlas/module/skillBattle/heal.png",
+    "ui/atlas/module/skillBattle/skill-1.png",
+    "ui/atlas/module/skillBattle/skill-2.png",
+    "ui/atlas/module/skillBattle/skill-3.png",
+    "ui/atlas/module/skillBattle/skill-4.png",
+    "ui/texture/common/hub_background.png"
+  ],
+  "ui/prefab/module/skillBattle/SkillBattleStartView.lh": [
+    "ui/atlas/module/skillBattle/earth_stone.png",
+    "ui/atlas/module/skillBattle/fire_stone.png",
+    "ui/atlas/module/skillBattle/heal.png",
+    "ui/atlas/module/skillBattle/skill-1.png",
+    "ui/atlas/module/skillBattle/skill-2.png",
+    "ui/atlas/module/skillBattle/skill-3.png",
+    "ui/atlas/module/skillBattle/skill-4.png",
+    "ui/texture/common/hub_background.png"
+  ]
+}

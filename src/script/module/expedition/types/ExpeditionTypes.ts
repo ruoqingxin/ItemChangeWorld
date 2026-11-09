@@ -5,10 +5,11 @@ import type { IExpeditionMapConfig, IExpeditionMapState } from "./ExpeditionMapT
 export interface IExpeditionReport {
     runId: string;
     seed: number;
-    partial: boolean;
     battles: Array<{ initial: ISkillBattleState; actions: ISkillBattleAction[] }>;
     choices: Array<{ encounterIndex: number; battleIndex?: number; ids: number[]; selectedId: number | null }>;
     outcome: "extracted" | "failed" | null;
+    endReason: "extracted" | "defeat" | "timeout" | null;
+    recoveries: Array<{ nodeId: string; battleIndex: number; hpBefore: number; hpAfter: number }>;
     exitEncounter: number | null;
     broughtLoot: ISkillItemInstance[];
     remainingPouch: Array<ISkillItemInstance | null>;
@@ -63,7 +64,7 @@ export interface IExpeditionState {
 }
 
 export interface IExpeditionSave {
-    version: 1;
+    version: 2;
     configSignature: string;
     profile: IExpeditionProfile;
     run: IExpeditionState | null;

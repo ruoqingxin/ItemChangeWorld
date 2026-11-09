@@ -30,3 +30,5 @@ if ($LASTEXITCODE -ne 0) { throw "Skill battle tests failed." }
 if ($LASTEXITCODE -ne 0) { throw "New battle core tests failed." }
 & node (Join-Path $PSScriptRoot "skill-battle-prefab.test.cjs")
 if ($LASTEXITCODE -ne 0) { throw "Skill battle prefab tests failed." }
+& node (Join-Path $PSScriptRoot "ui-assets.cjs")
+if ($LASTEXITCODE -ne 0) { throw "UI resource references or dependency map are invalid." }

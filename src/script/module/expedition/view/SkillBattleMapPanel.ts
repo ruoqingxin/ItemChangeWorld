@@ -12,7 +12,7 @@ const COLORS = {
 };
 
 const NODE_SIZE = 76;
-const NODE_SOURCE_ROOT = "ui/atlas/module/battleMap/";
+const NODE_SOURCE_ROOT = "ui/atlas/module/expedition/";
 
 const TYPE_LABEL: { [key in ExpeditionMapNodeType]: string } = {
     start: "入境处",
@@ -27,15 +27,15 @@ const TYPE_LABEL: { [key in ExpeditionMapNodeType]: string } = {
 };
 
 const NODE_SOURCE: { [key in ExpeditionMapNodeType]: { active: string; inactive: string } } = {
-    start: { active: "segment_012.png", inactive: "segment_012.png" },
-    battle: { active: "segment_007.png", inactive: "segment_006.png" },
-    elite: { active: "segment_009.png", inactive: "segment_015.png" },
-    boss: { active: "segment_011.png", inactive: "segment_010.png" },
-    borrow: { active: "segment_005.png", inactive: "segment_005.png" },
-    enlightenment: { active: "segment_014.png", inactive: "segment_014.png" },
-    search: { active: "segment_004.png", inactive: "segment_008.png" },
-    recovery: { active: "segment_013.png", inactive: "segment_013.png" },
-    extract: { active: "segment_012.png", inactive: "segment_012.png" },
+    start: { active: "exit.png", inactive: "exit.png" },
+    battle: { active: "battle_active.png", inactive: "battle_inactive.png" },
+    elite: { active: "elite_active.png", inactive: "elite_inactive.png" },
+    boss: { active: "boss_active.png", inactive: "boss_inactive.png" },
+    borrow: { active: "borrow.png", inactive: "borrow.png" },
+    enlightenment: { active: "enlightenment.png", inactive: "enlightenment.png" },
+    search: { active: "search_active.png", inactive: "search_inactive.png" },
+    recovery: { active: "recovery.png", inactive: "recovery.png" },
+    extract: { active: "exit.png", inactive: "exit.png" },
 };
 
 export class SkillBattleMapPanel {
@@ -81,14 +81,7 @@ export class SkillBattleMapPanel {
             this.buttons[name] = element<Laya.GWidget>(name);
             const text = this.buttons[name].getChildAt(0) as Laya.GTextField;
             if (text) text.text = name === "mapConfirm" ? "前往节点" : name === "mapCancel" ? "取消" : "局内构筑";
-            if (name === "mapBuildButton") {
-                if (text) text.visible = false;
-                this.buttons[name].graphics.clear();
-                this.buttons[name].alpha = 0.001;
-                this.buttons[name].mouseEnabled = true;
-            } else {
-                this.styleButton(this.buttons[name], false, true);
-            }
+            this.styleButton(this.buttons[name], false, true);
         }
         this.statusPanel = element<Laya.GWidget>("mapStatusPanel");
         this.infoPanel = element<Laya.GWidget>("mapInfoPanel");
@@ -257,6 +250,11 @@ export class SkillBattleMapPanel {
         this.selectedId = node.id;
         this.armedExtract = false;
         this.notice = "";
+        if (["battle", "elite", "boss"].includes(node.type) &&
+            !run.map.resolvedIds.includes(node.id) && this.expedition.mapCanEnter(node.id)) {
+            this.confirmNode();
+            return;
+        }
         this.refresh();
     }
 

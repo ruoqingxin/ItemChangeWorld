@@ -29,10 +29,10 @@ export interface IExpeditionBattleStats {
 
 /** Replays committed actions only; previews and animation events never enter this ledger. */
 export class ExpeditionStatsUtils {
-    static create(run: Pick<IExpeditionState, "runId" | "seed" | "battle">, partial = false): IExpeditionReport {
-        return { runId: run.runId, seed: run.seed, partial,
+    static create(run: Pick<IExpeditionState, "runId" | "seed" | "battle">): IExpeditionReport {
+        return { runId: run.runId, seed: run.seed,
             battles: [{ initial: Rules.cloneState(run.battle), actions: [] }], choices: [],
-            outcome: null, exitEncounter: null, broughtLoot: [], remainingPouch: [],
+            outcome: null, endReason: null, recoveries: [], exitEncounter: null, broughtLoot: [], remainingPouch: [],
             collectionUnlockIds: [] };
     }
 

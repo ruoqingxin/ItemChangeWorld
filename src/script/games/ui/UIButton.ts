@@ -1,5 +1,5 @@
-import { ElemFinder } from "../utils/ElemFinder";
-import { UIUtils } from "../utils/UIUtils";
+import { ElemFinder } from "src/script/games/utils/ElemFinder";
+import { UIUtils } from "src/script/games/utils/UIUtils";
 
 /**
  * 模板式按钮
@@ -75,6 +75,17 @@ export class UIButton {
             if (txt_title) {
                 txt_title.text = value;
             }
+        }
+    }
+
+    /**
+     * 设置红点数量
+     * @param value 数量
+     */
+    setRedDotNum(value: number) {
+        if (this.redDot) {
+            this.setRedDotTitle(value.toString());
+            this.setRedDotVisible(value > 0);
         }
     }
 

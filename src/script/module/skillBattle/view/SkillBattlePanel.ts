@@ -328,7 +328,9 @@ export class SkillBattlePanel {
         if (!s || !p.setup?.enemy) { this.refreshResult(); return; }
         const intent = p.setup.enemy.intents[s.enemyIntentIndex];
         const terminal = s.phase === "victory" || s.phase === "defeat";
-        this.labels.round.text = `${p.setup.order} / 3 战 · ${s.round} 回合`;
+        this.labels.round.text = this.expedition.map
+            ? `第 ${this.expedition.map.battleCount} 战 · ${s.round} 回合`
+            : `${p.setup.order} / 3 战 · ${s.round} 回合`;
         const config = this.expedition.configuration;
         this.labels.upgrades.text = `强化：${s.upgradeIds.map(id => config.upgrades.find(row => row.id === id)?.name).join(" · ") || "无"}`;
         this.styleButton(this.buttons.loot, false, !p.busy);
@@ -346,8 +348,13 @@ export class SkillBattlePanel {
         this.labels.qi.text = `剑势  ${"◆ ".repeat(s.swordQi)}${"◇ ".repeat(s.swordQiMax - s.swordQi)} ${s.swordQi}/${s.swordQiMax}`
             + (s.keen ? "  ·  锋意" : "");
         this.labels.event.text = this.lastEvent;
-        this.bar(720, 226, 430, s.enemy.hp / s.enemy.maxHp, C.red);
-        this.bar(30, 516, 390, s.player.hp / s.player.maxHp, C.jade);
+        this.bar("enemyHpBar", s.enemy.hp / s.enemy.maxHp, C.red);
+        this.bar("playerHpBar", s.player.hp / s.player.maxHp, C.jade);
+        for (let id = 1; id <= 4; id++) {
+            const button = this.buttons[`skill${id}`];
+            button.visible = p.setup.skills.some(skill => skill.id === id);
+            button.mouseEnabled = false;
+        }
         p.setup.skills.forEach(skill => {
             const b = this.buttons[`skill${skill.id}`];
             const cost = SkillBattleFormulaUtils.qiCost(p.setup, s, skill.id);
@@ -373,7 +380,7 @@ export class SkillBattlePanel {
                 : p.setup.items.some(row => row.initialSlot === i + 1) ? "已消耗" : "空");
             const icon = this.pouchIcons[i];
             icon.visible = !!item;
-            if (item) icon.src = `ui/texture/skillBattle/${item.useType}.png`;
+            if (item) icon.src = `ui/atlas/module/skillBattle/${item.useType}.png`;
         });
         this.buttons.skip.visible = p.busy;
         this.buttons.cancel.visible = !p.busy && !!p.selection;
@@ -601,7 +608,8 @@ export class SkillBattlePanel {
         this.resultTitle.text = "战斗记录";
         this.resultDetail.text = report ? `第 ${this.reportIndex + 1} 份记录 · 种子 ${report.seed}\n`
             + `${report.outcome === "extracted" ? `第 ${report.exitEncounter} 战撤离` : report.outcome === "failed"
-                ? `第 ${report.exitEncounter} 战失败` : "秘境进行中"}${report.partial ? " · 旧局记录不完整" : ""}` : "暂无战斗记录";
+                ? report.endReason === "timeout" ? "秘境时间耗尽" : `第 ${report.exitEncounter} 战失败`
+                : "秘境进行中"}` : "暂无战斗记录";
         let lines: string[] = [];
         if (report) {
             if (this.reportMode === "summary") {
@@ -843,7 +851,10 @@ export class SkillBattlePanel {
         const s = run.battle;
         this.resultTitle.text = this.showLoot ? "本局战利品" : run.phase === "reward" ? "此战告捷"
             : run.phase === "decision" ? "去留之间" : run.phase === "extracted" ? "平安归来" : "力竭落败";
-        this.resultDetail.text = `${run.encounterIndex + 1} / 3 战 · 剩余生命 ${s.player.hp} / ${s.player.maxHp}\n`
+        const progress = run.map ? `已历 ${run.map.battleCount} 战` : `${run.encounterIndex + 1} / 3 战`;
+        const failure = run.phase === "failed"
+            ? run.report.endReason === "timeout" ? "秘境时间耗尽 · " : "生命耗尽 · " : "";
+        this.resultDetail.text = `${failure}${progress} · 剩余生命 ${s.player.hp} / ${s.player.maxHp}\n`
             + `铁剑耐久 ${s.weaponDurability} · 法囊 ${run.phase === "failed" ? 0 : s.pouchSlots.filter(Boolean).length} / 5`;
         this.labels.section.text = run.settled ? (run.phase === "failed" ? "战利品与剩余法囊已丢失" : "战利品已入库") : `暂存战利品 · ${run.loot.length} / 6`;
         if (!run.settled) for (let i = 0; i < 6; i++) {
@@ -896,7 +907,9 @@ export class SkillBattlePanel {
             ...Array.from({ length: 4 }, (_, i) => `skill${i + 1}`),
             ...Array.from({ length: 5 }, (_, i) => `pouch${i}`)];
         combatButtons.forEach(key => {
-            if (this.buttons[key]) this.buttons[key].visible = visible;
+            const allowed = !key.startsWith("skill") ||
+                this.presenter.setup.skills.some(skill => key === `skill${skill.id}`);
+            if (this.buttons[key]) this.buttons[key].visible = visible && allowed;
         });
         if (!visible) {
             if (this.buttons.skip) this.buttons.skip.visible = false;
@@ -934,10 +947,10 @@ export class SkillBattlePanel {
     }
 
     private bars: { [key: string]: Laya.GWidget } = {};
-    private bar(x: number, y: number, w: number, ratio: number, color: string): void {
-        const key = y < 400 ? "enemyHpBar" : "playerHpBar";
+    private bar(key: string, ratio: number, color: string): void {
         const bar = this.bars[key] || (this.bars[key] = this.root.findChild(key) as Laya.GWidget);
         if (!bar) return;
+        const w = bar.width;
         bar.graphics.clear();
         bar.graphics.drawRect(0, 0, w, 8, "#39443c");
         if (ratio > 0) bar.graphics.drawRect(0, 0, w * Math.min(1, ratio), 8, color);

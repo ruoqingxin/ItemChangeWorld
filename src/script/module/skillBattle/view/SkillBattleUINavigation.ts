@@ -4,11 +4,13 @@ import { SkillBattleBattleView } from "./SkillBattleBattleView";
 import { SkillBattleSettlementView } from "./SkillBattleSettlementView";
 import type { UIBaseView } from "../../../games/ui/UIBaseView";
 import { SkillBattleMapView } from "../../expedition/view/SkillBattleMapView";
+import { SkillBattleUISession } from "./SkillBattleUISession";
 
 export type SkillBattleScreen = "start" | "battle" | "map" | "settlement";
 export let currentSkillBattleView: UIBaseView;
 
 export function openSkillBattleScreen(screen: SkillBattleScreen): void {
+    SkillBattleUISession.onExpired = () => openSkillBattleScreen("settlement");
     const ui = UIManager.ins();
     ui.closeForm(SkillBattleStartView);
     ui.closeForm(SkillBattleBattleView);

@@ -18,7 +18,8 @@ async function main() {
     }
     let checks = 0;
     try {
-        for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844 }]) {
+        for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844 },
+            { width: 844, height: 390 }, { width: 360, height: 640 }]) {
             const context = await browser.newContext({ viewport });
             const page = await context.newPage(), errors = [], failed = [];
             page.on("pageerror", error => errors.push(error.message));
@@ -151,12 +152,12 @@ async function main() {
             await screenshot("initial");
 
             await click("b1");
-            assert.equal((await read()).selected, "b1");
-            assert.match((await read()).labels.nodeDetail, /普通/);
-            await screenshot("node-info");
-            await click("mapConfirm");
             await page.waitForFunction(() => window.__skillBattlePreview.panel?.screen === "battle");
             assert.equal((await read()).save.run.map.battleCount, 1);
+            assert.equal(await page.evaluate(() => window.__skillBattlePreview.panel.buttons.skill4.visible), false);
+            assert.equal(await page.evaluate(() =>
+                window.__skillBattlePreview.manager.previewAction({ type: "skill", skillId: 4 }).ok), false);
+            await screenshot("battle");
             checks += 2;
 
             await finishBattle();
@@ -168,7 +169,6 @@ async function main() {
 
             if (viewport.width >= 1000) {
                 await click("b2");
-                await click("mapConfirm");
                 await page.waitForFunction(() => window.__skillBattlePreview.panel?.screen === "battle");
                 await finishBattle();
                 await click("borrow1");

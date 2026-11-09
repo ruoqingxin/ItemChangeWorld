@@ -1,681 +1,693 @@
 {
-    "_$ver": 1,
-    "_$id": "sbr039root",
-    "_$type": "GWidget",
-    "name": "SkillBattleSettlementView",
-    "width": 1280,
-    "height": 720,
-    "_$comp": [
+  "_$ver": 1,
+  "_$id": "sbr039root",
+  "_$type": "GWidget",
+  "name": "SkillBattleSettlementView",
+  "width": 1280,
+  "height": 720,
+  "_$comp": [
+    {
+      "_$type": "3593fc26-337e-42e3-92dc-1b9c2bb8f988",
+      "scriptPath": "../src/script/games/ui/components/ElementMapper.ts",
+      "adapter": null,
+      "elements": [
         {
-            "_$type": "3593fc26-337e-42e3-92dc-1b9c2bb8f988",
-            "scriptPath": "../src/script/games/ui/components/ElementMapper.ts",
-            "adapter": null,
-            "elements": [
-                {
-                    "_$ref": "sbr001res"
-                },
-                {
-                    "_$ref": "sbr002lbl"
-                },
-                {
-                    "_$ref": "sbr003lbl"
-                },
-                {
-                    "_$ref": "sbr004lbl"
-                },
-                {
-                    "_$ref": "sbr005lbl"
-                },
-                {
-                    "_$ref": "sbr006lbl"
-                },
-                {
-                    "_$ref": "sbr007lbl"
-                },
-                {
-                    "_$ref": "sbr008lbl"
-                },
-                {
-                    "_$ref": "sbr009lbl"
-                },
-                {
-                    "_$ref": "sbr010lbl"
-                },
-                {
-                    "_$ref": "sbr011lbl"
-                },
-                {
-                    "_$ref": "sbr012lbl"
-                },
-                {
-                    "_$ref": "sbr013lbl"
-                },
-                {
-                    "_$ref": "sbr014lbl"
-                },
-                {
-                    "_$ref": "sbr015lbl"
-                },
-                {
-                    "_$ref": "sbr016lbl"
-                },
-                {
-                    "_$ref": "sbr018btn"
-                },
-                {
-                    "_$ref": "sbr017txt"
-                },
-                {
-                    "_$ref": "sbr020btn"
-                },
-                {
-                    "_$ref": "sbr019txt"
-                },
-                {
-                    "_$ref": "sbr022btn"
-                },
-                {
-                    "_$ref": "sbr021txt"
-                },
-                {
-                    "_$ref": "sbr024btn"
-                },
-                {
-                    "_$ref": "sbr023txt"
-                },
-                {
-                    "_$ref": "sbr026btn"
-                },
-                {
-                    "_$ref": "sbr025txt"
-                },
-                {
-                    "_$ref": "sbr028btn"
-                },
-                {
-                    "_$ref": "sbr027txt"
-                },
-                {
-                    "_$ref": "sbr030btn"
-                },
-                {
-                    "_$ref": "sbr029txt"
-                },
-                {
-                    "_$ref": "sbr032btn"
-                },
-                {
-                    "_$ref": "sbr031txt"
-                },
-                {
-                    "_$ref": "sbr034btn"
-                },
-                {
-                    "_$ref": "sbr033txt"
-                },
-                {
-                    "_$ref": "sbr036btn"
-                },
-                {
-                    "_$ref": "sbr035txt"
-                },
-                {
-                    "_$ref": "sbr038btn"
-                },
-                {
-                    "_$ref": "sbr037txt"
-                }
-            ],
-            "mapperType": 2
+          "_$ref": "sbr001res"
+        },
+        {
+          "_$ref": "sbr002lbl"
+        },
+        {
+          "_$ref": "sbr003lbl"
+        },
+        {
+          "_$ref": "sbr004lbl"
+        },
+        {
+          "_$ref": "sbr005lbl"
+        },
+        {
+          "_$ref": "sbr006lbl"
+        },
+        {
+          "_$ref": "sbr007lbl"
+        },
+        {
+          "_$ref": "sbr008lbl"
+        },
+        {
+          "_$ref": "sbr009lbl"
+        },
+        {
+          "_$ref": "sbr010lbl"
+        },
+        {
+          "_$ref": "sbr011lbl"
+        },
+        {
+          "_$ref": "sbr012lbl"
+        },
+        {
+          "_$ref": "sbr013lbl"
+        },
+        {
+          "_$ref": "sbr014lbl"
+        },
+        {
+          "_$ref": "sbr015lbl"
+        },
+        {
+          "_$ref": "sbr016lbl"
+        },
+        {
+          "_$ref": "sbr018btn"
+        },
+        {
+          "_$ref": "sbr017txt"
+        },
+        {
+          "_$ref": "sbr020btn"
+        },
+        {
+          "_$ref": "sbr019txt"
+        },
+        {
+          "_$ref": "sbr022btn"
+        },
+        {
+          "_$ref": "sbr021txt"
+        },
+        {
+          "_$ref": "sbr024btn"
+        },
+        {
+          "_$ref": "sbr023txt"
+        },
+        {
+          "_$ref": "sbr026btn"
+        },
+        {
+          "_$ref": "sbr025txt"
+        },
+        {
+          "_$ref": "sbr028btn"
+        },
+        {
+          "_$ref": "sbr027txt"
+        },
+        {
+          "_$ref": "sbr030btn"
+        },
+        {
+          "_$ref": "sbr029txt"
+        },
+        {
+          "_$ref": "sbr032btn"
+        },
+        {
+          "_$ref": "sbr031txt"
+        },
+        {
+          "_$ref": "sbr034btn"
+        },
+        {
+          "_$ref": "sbr033txt"
+        },
+        {
+          "_$ref": "sbr036btn"
+        },
+        {
+          "_$ref": "sbr035txt"
+        },
+        {
+          "_$ref": "sbr038btn"
+        },
+        {
+          "_$ref": "sbr037txt"
         }
-    ],
-    "_$child": [
+      ],
+      "mapperType": 4
+    }
+  ],
+  "_$child": [
+    {
+      "_$id": "settlement_background",
+      "_$type": "GImage",
+      "name": "screenBackground",
+      "width": 1280,
+      "height": 720,
+      "zOrder": -10,
+      "mouseEnabled": false,
+      "autoSize": false,
+      "alpha": 0.36,
+      "src": "ui/texture/common/hub_background.png"
+    },
+    {
+      "_$id": "sbr001res",
+      "_$type": "GWidget",
+      "name": "result",
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 720,
+      "visible": false
+    },
+    {
+      "_$id": "sbr002lbl",
+      "_$type": "GTextField",
+      "name": "overlayBrand",
+      "x": 24,
+      "y": 16,
+      "width": 420,
+      "height": 48,
+      "text": "",
+      "zOrder": 1,
+      "fontSize": 22,
+      "color": "#e3e8de",
+      "align": "center",
+      "valign": "middle",
+      "wordWrap": true
+    },
+    {
+      "_$id": "sbr003lbl",
+      "_$type": "GTextField",
+      "name": "currency",
+      "x": 960,
+      "y": 20,
+      "width": 296,
+      "height": 38,
+      "text": "",
+      "zOrder": 1,
+      "fontSize": 22,
+      "color": "#e3e8de",
+      "align": "right",
+      "valign": "middle",
+      "wordWrap": true
+    },
+    {
+      "_$id": "sbr004lbl",
+      "_$type": "GTextField",
+      "name": "resultTitle",
+      "x": 290,
+      "y": 72,
+      "width": 700,
+      "height": 58,
+      "text": "",
+      "zOrder": 1,
+      "fontSize": 32,
+      "color": "#e3e8de",
+      "align": "center",
+      "valign": "middle",
+      "wordWrap": true
+    },
+    {
+      "_$id": "sbr005lbl",
+      "_$type": "GTextField",
+      "name": "resultDetail",
+      "x": 250,
+      "y": 136,
+      "width": 780,
+      "height": 112,
+      "text": "",
+      "zOrder": 1,
+      "fontSize": 22,
+      "color": "#e3e8de",
+      "align": "center",
+      "valign": "middle",
+      "wordWrap": true
+    },
+    {
+      "_$id": "sbr006lbl",
+      "_$type": "GTextField",
+      "name": "section",
+      "x": 150,
+      "y": 264,
+      "width": 980,
+      "height": 38,
+      "text": "",
+      "zOrder": 1,
+      "fontSize": 22,
+      "color": "#e3e8de",
+      "align": "left",
+      "valign": "middle",
+      "wordWrap": true
+    },
+    {
+      "_$id": "sbr007lbl",
+      "_$type": "GTextField",
+      "name": "overlayMessage",
+      "x": 190,
+      "y": 490,
+      "width": 900,
+      "height": 40,
+      "text": "",
+      "zOrder": 1,
+      "fontSize": 22,
+      "color": "#e3e8de",
+      "align": "center",
+      "valign": "middle",
+      "wordWrap": true
+    },
+    {
+      "_$id": "sbr008lbl",
+      "_$type": "GTextField",
+      "name": "choiceTitle",
+      "x": 250,
+      "y": 326,
+      "width": 780,
+      "height": 48,
+      "text": "",
+      "zOrder": 1,
+      "fontSize": 22,
+      "color": "#e3e8de",
+      "align": "center",
+      "valign": "middle",
+      "wordWrap": true
+    },
+    {
+      "_$id": "sbr009lbl",
+      "_$type": "GTextField",
+      "name": "reportBody",
+      "x": 240,
+      "y": 190,
+      "width": 800,
+      "height": 280,
+      "text": "",
+      "zOrder": 1,
+      "fontSize": 22,
+      "color": "#e3e8de",
+      "align": "center",
+      "valign": "middle",
+      "wordWrap": true
+    },
+    {
+      "_$id": "sbr010lbl",
+      "_$type": "GTextField",
+      "name": "page",
+      "x": 570,
+      "y": 530,
+      "width": 140,
+      "height": 38,
+      "text": "",
+      "zOrder": 1,
+      "fontSize": 22,
+      "color": "#e3e8de",
+      "align": "center",
+      "valign": "middle",
+      "wordWrap": true
+    },
+    {
+      "_$id": "sbr011lbl",
+      "_$type": "GTextField",
+      "name": "lootSlot0",
+      "x": 220,
+      "y": 390,
+      "width": 130,
+      "height": 84,
+      "text": "",
+      "zOrder": 1,
+      "fontSize": 22,
+      "color": "#e3e8de",
+      "align": "center",
+      "valign": "middle",
+      "wordWrap": true
+    },
+    {
+      "_$id": "sbr012lbl",
+      "_$type": "GTextField",
+      "name": "lootSlot1",
+      "x": 365,
+      "y": 390,
+      "width": 130,
+      "height": 84,
+      "text": "",
+      "zOrder": 1,
+      "fontSize": 22,
+      "color": "#e3e8de",
+      "align": "center",
+      "valign": "middle",
+      "wordWrap": true
+    },
+    {
+      "_$id": "sbr013lbl",
+      "_$type": "GTextField",
+      "name": "lootSlot2",
+      "x": 510,
+      "y": 390,
+      "width": 130,
+      "height": 84,
+      "text": "",
+      "zOrder": 1,
+      "fontSize": 22,
+      "color": "#e3e8de",
+      "align": "center",
+      "valign": "middle",
+      "wordWrap": true
+    },
+    {
+      "_$id": "sbr014lbl",
+      "_$type": "GTextField",
+      "name": "lootSlot3",
+      "x": 655,
+      "y": 390,
+      "width": 130,
+      "height": 84,
+      "text": "",
+      "zOrder": 1,
+      "fontSize": 22,
+      "color": "#e3e8de",
+      "align": "center",
+      "valign": "middle",
+      "wordWrap": true
+    },
+    {
+      "_$id": "sbr015lbl",
+      "_$type": "GTextField",
+      "name": "lootSlot4",
+      "x": 800,
+      "y": 390,
+      "width": 130,
+      "height": 84,
+      "text": "",
+      "zOrder": 1,
+      "fontSize": 22,
+      "color": "#e3e8de",
+      "align": "center",
+      "valign": "middle",
+      "wordWrap": true
+    },
+    {
+      "_$id": "sbr016lbl",
+      "_$type": "GTextField",
+      "name": "lootSlot5",
+      "x": 945,
+      "y": 390,
+      "width": 130,
+      "height": 84,
+      "text": "",
+      "zOrder": 1,
+      "fontSize": 22,
+      "color": "#e3e8de",
+      "align": "center",
+      "valign": "middle",
+      "wordWrap": true
+    },
+    {
+      "_$id": "sbr018btn",
+      "_$type": "GWidget",
+      "name": "lootClose",
+      "x": 1000,
+      "y": 614,
+      "width": 176,
+      "height": 54,
+      "_$child": [
         {
-            "_$id": "sbr001res",
-            "_$type": "GWidget",
-            "name": "result",
-            "x": 0,
-            "y": 0,
-            "width": 1280,
-            "height": 720,
-            "visible": false
-        },
-        {
-            "_$id": "sbr002lbl",
-            "_$type": "GTextField",
-            "name": "overlayBrand",
-            "x": 24,
-            "y": 16,
-            "width": 420,
-            "height": 48,
-            "text": "",
-            "zOrder": 1,
-            "fontSize": 22,
-            "color": "#e3e8de",
-            "align": "center",
-            "valign": "middle",
-            "wordWrap": true
-        },
-        {
-            "_$id": "sbr003lbl",
-            "_$type": "GTextField",
-            "name": "currency",
-            "x": 960,
-            "y": 20,
-            "width": 296,
-            "height": 38,
-            "text": "",
-            "zOrder": 1,
-            "fontSize": 22,
-            "color": "#e3e8de",
-            "align": "right",
-            "valign": "middle",
-            "wordWrap": true
-        },
-        {
-            "_$id": "sbr004lbl",
-            "_$type": "GTextField",
-            "name": "resultTitle",
-            "x": 290,
-            "y": 72,
-            "width": 700,
-            "height": 58,
-            "text": "",
-            "zOrder": 1,
-            "fontSize": 32,
-            "color": "#e3e8de",
-            "align": "center",
-            "valign": "middle",
-            "wordWrap": true
-        },
-        {
-            "_$id": "sbr005lbl",
-            "_$type": "GTextField",
-            "name": "resultDetail",
-            "x": 250,
-            "y": 136,
-            "width": 780,
-            "height": 112,
-            "text": "",
-            "zOrder": 1,
-            "fontSize": 22,
-            "color": "#e3e8de",
-            "align": "center",
-            "valign": "middle",
-            "wordWrap": true
-        },
-        {
-            "_$id": "sbr006lbl",
-            "_$type": "GTextField",
-            "name": "section",
-            "x": 150,
-            "y": 264,
-            "width": 980,
-            "height": 38,
-            "text": "",
-            "zOrder": 1,
-            "fontSize": 22,
-            "color": "#e3e8de",
-            "align": "left",
-            "valign": "middle",
-            "wordWrap": true
-        },
-        {
-            "_$id": "sbr007lbl",
-            "_$type": "GTextField",
-            "name": "overlayMessage",
-            "x": 190,
-            "y": 490,
-            "width": 900,
-            "height": 40,
-            "text": "",
-            "zOrder": 1,
-            "fontSize": 22,
-            "color": "#e3e8de",
-            "align": "center",
-            "valign": "middle",
-            "wordWrap": true
-        },
-        {
-            "_$id": "sbr008lbl",
-            "_$type": "GTextField",
-            "name": "choiceTitle",
-            "x": 250,
-            "y": 326,
-            "width": 780,
-            "height": 48,
-            "text": "",
-            "zOrder": 1,
-            "fontSize": 22,
-            "color": "#e3e8de",
-            "align": "center",
-            "valign": "middle",
-            "wordWrap": true
-        },
-        {
-            "_$id": "sbr009lbl",
-            "_$type": "GTextField",
-            "name": "reportBody",
-            "x": 240,
-            "y": 190,
-            "width": 800,
-            "height": 280,
-            "text": "",
-            "zOrder": 1,
-            "fontSize": 22,
-            "color": "#e3e8de",
-            "align": "center",
-            "valign": "middle",
-            "wordWrap": true
-        },
-        {
-            "_$id": "sbr010lbl",
-            "_$type": "GTextField",
-            "name": "page",
-            "x": 570,
-            "y": 530,
-            "width": 140,
-            "height": 38,
-            "text": "",
-            "zOrder": 1,
-            "fontSize": 22,
-            "color": "#e3e8de",
-            "align": "center",
-            "valign": "middle",
-            "wordWrap": true
-        },
-        {
-            "_$id": "sbr011lbl",
-            "_$type": "GTextField",
-            "name": "lootSlot0",
-            "x": 220,
-            "y": 390,
-            "width": 130,
-            "height": 84,
-            "text": "",
-            "zOrder": 1,
-            "fontSize": 22,
-            "color": "#e3e8de",
-            "align": "center",
-            "valign": "middle",
-            "wordWrap": true
-        },
-        {
-            "_$id": "sbr012lbl",
-            "_$type": "GTextField",
-            "name": "lootSlot1",
-            "x": 365,
-            "y": 390,
-            "width": 130,
-            "height": 84,
-            "text": "",
-            "zOrder": 1,
-            "fontSize": 22,
-            "color": "#e3e8de",
-            "align": "center",
-            "valign": "middle",
-            "wordWrap": true
-        },
-        {
-            "_$id": "sbr013lbl",
-            "_$type": "GTextField",
-            "name": "lootSlot2",
-            "x": 510,
-            "y": 390,
-            "width": 130,
-            "height": 84,
-            "text": "",
-            "zOrder": 1,
-            "fontSize": 22,
-            "color": "#e3e8de",
-            "align": "center",
-            "valign": "middle",
-            "wordWrap": true
-        },
-        {
-            "_$id": "sbr014lbl",
-            "_$type": "GTextField",
-            "name": "lootSlot3",
-            "x": 655,
-            "y": 390,
-            "width": 130,
-            "height": 84,
-            "text": "",
-            "zOrder": 1,
-            "fontSize": 22,
-            "color": "#e3e8de",
-            "align": "center",
-            "valign": "middle",
-            "wordWrap": true
-        },
-        {
-            "_$id": "sbr015lbl",
-            "_$type": "GTextField",
-            "name": "lootSlot4",
-            "x": 800,
-            "y": 390,
-            "width": 130,
-            "height": 84,
-            "text": "",
-            "zOrder": 1,
-            "fontSize": 22,
-            "color": "#e3e8de",
-            "align": "center",
-            "valign": "middle",
-            "wordWrap": true
-        },
-        {
-            "_$id": "sbr016lbl",
-            "_$type": "GTextField",
-            "name": "lootSlot5",
-            "x": 945,
-            "y": 390,
-            "width": 130,
-            "height": 84,
-            "text": "",
-            "zOrder": 1,
-            "fontSize": 22,
-            "color": "#e3e8de",
-            "align": "center",
-            "valign": "middle",
-            "wordWrap": true
-        },
-        {
-            "_$id": "sbr018btn",
-            "_$type": "GWidget",
-            "name": "lootClose",
-            "x": 1000,
-            "y": 614,
-            "width": 176,
-            "height": 54,
-            "_$child": [
-                {
-                    "_$id": "sbr017txt",
-                    "_$type": "GTextField",
-                    "name": "lootCloseText",
-                    "x": 0,
-                    "y": 0,
-                    "width": 176,
-                    "height": 54,
-                    "text": "",
-                    "zOrder": 1,
-                    "fontSize": 22,
-                    "color": "#e3e8de",
-                    "align": "center",
-                    "valign": "middle",
-                    "wordWrap": true
-                }
-            ]
-        },
-        {
-            "_$id": "sbr020btn",
-            "_$type": "GWidget",
-            "name": "hub",
-            "x": 800,
-            "y": 614,
-            "width": 176,
-            "height": 54,
-            "_$child": [
-                {
-                    "_$id": "sbr019txt",
-                    "_$type": "GTextField",
-                    "name": "hubText",
-                    "x": 0,
-                    "y": 0,
-                    "width": 176,
-                    "height": 54,
-                    "text": "",
-                    "zOrder": 1,
-                    "fontSize": 22,
-                    "color": "#e3e8de",
-                    "align": "center",
-                    "valign": "middle",
-                    "wordWrap": true
-                }
-            ]
-        },
-        {
-            "_$id": "sbr022btn",
-            "_$type": "GWidget",
-            "name": "report",
-            "x": 80,
-            "y": 560,
-            "width": 176,
-            "height": 54,
-            "_$child": [
-                {
-                    "_$id": "sbr021txt",
-                    "_$type": "GTextField",
-                    "name": "reportText",
-                    "x": 0,
-                    "y": 0,
-                    "width": 176,
-                    "height": 54,
-                    "text": "",
-                    "zOrder": 1,
-                    "fontSize": 22,
-                    "color": "#e3e8de",
-                    "align": "center",
-                    "valign": "middle",
-                    "wordWrap": true
-                }
-            ]
-        },
-        {
-            "_$id": "sbr024btn",
-            "_$type": "GWidget",
-            "name": "summary",
-            "x": 420,
-            "y": 560,
-            "width": 176,
-            "height": 54,
-            "_$child": [
-                {
-                    "_$id": "sbr023txt",
-                    "_$type": "GTextField",
-                    "name": "summaryText",
-                    "x": 0,
-                    "y": 0,
-                    "width": 176,
-                    "height": 54,
-                    "text": "",
-                    "zOrder": 1,
-                    "fontSize": 22,
-                    "color": "#e3e8de",
-                    "align": "center",
-                    "valign": "middle",
-                    "wordWrap": true
-                }
-            ]
-        },
-        {
-            "_$id": "sbr026btn",
-            "_$type": "GWidget",
-            "name": "actions",
-            "x": 610,
-            "y": 560,
-            "width": 176,
-            "height": 54,
-            "_$child": [
-                {
-                    "_$id": "sbr025txt",
-                    "_$type": "GTextField",
-                    "name": "actionsText",
-                    "x": 0,
-                    "y": 0,
-                    "width": 176,
-                    "height": 54,
-                    "text": "",
-                    "zOrder": 1,
-                    "fontSize": 22,
-                    "color": "#e3e8de",
-                    "align": "center",
-                    "valign": "middle",
-                    "wordWrap": true
-                }
-            ]
-        },
-        {
-            "_$id": "sbr028btn",
-            "_$type": "GWidget",
-            "name": "olderReport",
-            "x": 80,
-            "y": 614,
-            "width": 176,
-            "height": 54,
-            "_$child": [
-                {
-                    "_$id": "sbr027txt",
-                    "_$type": "GTextField",
-                    "name": "olderReportText",
-                    "x": 0,
-                    "y": 0,
-                    "width": 176,
-                    "height": 54,
-                    "text": "",
-                    "zOrder": 1,
-                    "fontSize": 22,
-                    "color": "#e3e8de",
-                    "align": "center",
-                    "valign": "middle",
-                    "wordWrap": true
-                }
-            ]
-        },
-        {
-            "_$id": "sbr030btn",
-            "_$type": "GWidget",
-            "name": "newerReport",
-            "x": 270,
-            "y": 614,
-            "width": 176,
-            "height": 54,
-            "_$child": [
-                {
-                    "_$id": "sbr029txt",
-                    "_$type": "GTextField",
-                    "name": "newerReportText",
-                    "x": 0,
-                    "y": 0,
-                    "width": 176,
-                    "height": 54,
-                    "text": "",
-                    "zOrder": 1,
-                    "fontSize": 22,
-                    "color": "#e3e8de",
-                    "align": "center",
-                    "valign": "middle",
-                    "wordWrap": true
-                }
-            ]
-        },
-        {
-            "_$id": "sbr032btn",
-            "_$type": "GWidget",
-            "name": "reportClose",
-            "x": 1034,
-            "y": 614,
-            "width": 176,
-            "height": 54,
-            "_$child": [
-                {
-                    "_$id": "sbr031txt",
-                    "_$type": "GTextField",
-                    "name": "reportCloseText",
-                    "x": 0,
-                    "y": 0,
-                    "width": 176,
-                    "height": 54,
-                    "text": "",
-                    "zOrder": 1,
-                    "fontSize": 22,
-                    "color": "#e3e8de",
-                    "align": "center",
-                    "valign": "middle",
-                    "wordWrap": true
-                }
-            ]
-        },
-        {
-            "_$id": "sbr034btn",
-            "_$type": "GWidget",
-            "name": "previousPage",
-            "x": 340,
-            "y": 568,
-            "width": 176,
-            "height": 54,
-            "_$child": [
-                {
-                    "_$id": "sbr033txt",
-                    "_$type": "GTextField",
-                    "name": "previousPageText",
-                    "x": 0,
-                    "y": 0,
-                    "width": 176,
-                    "height": 54,
-                    "text": "",
-                    "zOrder": 1,
-                    "fontSize": 22,
-                    "color": "#e3e8de",
-                    "align": "center",
-                    "valign": "middle",
-                    "wordWrap": true
-                }
-            ]
-        },
-        {
-            "_$id": "sbr036btn",
-            "_$type": "GWidget",
-            "name": "nextPage",
-            "x": 540,
-            "y": 568,
-            "width": 176,
-            "height": 54,
-            "_$child": [
-                {
-                    "_$id": "sbr035txt",
-                    "_$type": "GTextField",
-                    "name": "nextPageText",
-                    "x": 0,
-                    "y": 0,
-                    "width": 176,
-                    "height": 54,
-                    "text": "",
-                    "zOrder": 1,
-                    "fontSize": 22,
-                    "color": "#e3e8de",
-                    "align": "center",
-                    "valign": "middle",
-                    "wordWrap": true
-                }
-            ]
-        },
-        {
-            "_$id": "sbr038btn",
-            "_$type": "GWidget",
-            "name": "build",
-            "x": 1034,
-            "y": 216,
-            "width": 176,
-            "height": 54,
-            "_$child": [
-                {
-                    "_$id": "sbr037txt",
-                    "_$type": "GTextField",
-                    "name": "buildText",
-                    "x": 0,
-                    "y": 0,
-                    "width": 176,
-                    "height": 54,
-                    "text": "",
-                    "zOrder": 1,
-                    "fontSize": 22,
-                    "color": "#e3e8de",
-                    "align": "center",
-                    "valign": "middle",
-                    "wordWrap": true
-                }
-            ]
+          "_$id": "sbr017txt",
+          "_$type": "GTextField",
+          "name": "lootCloseText",
+          "x": 0,
+          "y": 0,
+          "width": 176,
+          "height": 54,
+          "text": "",
+          "zOrder": 1,
+          "fontSize": 22,
+          "color": "#e3e8de",
+          "align": "center",
+          "valign": "middle",
+          "wordWrap": true
         }
-    ]
+      ]
+    },
+    {
+      "_$id": "sbr020btn",
+      "_$type": "GWidget",
+      "name": "hub",
+      "x": 800,
+      "y": 614,
+      "width": 176,
+      "height": 54,
+      "_$child": [
+        {
+          "_$id": "sbr019txt",
+          "_$type": "GTextField",
+          "name": "hubText",
+          "x": 0,
+          "y": 0,
+          "width": 176,
+          "height": 54,
+          "text": "",
+          "zOrder": 1,
+          "fontSize": 22,
+          "color": "#e3e8de",
+          "align": "center",
+          "valign": "middle",
+          "wordWrap": true
+        }
+      ]
+    },
+    {
+      "_$id": "sbr022btn",
+      "_$type": "GWidget",
+      "name": "report",
+      "x": 80,
+      "y": 560,
+      "width": 176,
+      "height": 54,
+      "_$child": [
+        {
+          "_$id": "sbr021txt",
+          "_$type": "GTextField",
+          "name": "reportText",
+          "x": 0,
+          "y": 0,
+          "width": 176,
+          "height": 54,
+          "text": "",
+          "zOrder": 1,
+          "fontSize": 22,
+          "color": "#e3e8de",
+          "align": "center",
+          "valign": "middle",
+          "wordWrap": true
+        }
+      ]
+    },
+    {
+      "_$id": "sbr024btn",
+      "_$type": "GWidget",
+      "name": "summary",
+      "x": 420,
+      "y": 560,
+      "width": 176,
+      "height": 54,
+      "_$child": [
+        {
+          "_$id": "sbr023txt",
+          "_$type": "GTextField",
+          "name": "summaryText",
+          "x": 0,
+          "y": 0,
+          "width": 176,
+          "height": 54,
+          "text": "",
+          "zOrder": 1,
+          "fontSize": 22,
+          "color": "#e3e8de",
+          "align": "center",
+          "valign": "middle",
+          "wordWrap": true
+        }
+      ]
+    },
+    {
+      "_$id": "sbr026btn",
+      "_$type": "GWidget",
+      "name": "actions",
+      "x": 610,
+      "y": 560,
+      "width": 176,
+      "height": 54,
+      "_$child": [
+        {
+          "_$id": "sbr025txt",
+          "_$type": "GTextField",
+          "name": "actionsText",
+          "x": 0,
+          "y": 0,
+          "width": 176,
+          "height": 54,
+          "text": "",
+          "zOrder": 1,
+          "fontSize": 22,
+          "color": "#e3e8de",
+          "align": "center",
+          "valign": "middle",
+          "wordWrap": true
+        }
+      ]
+    },
+    {
+      "_$id": "sbr028btn",
+      "_$type": "GWidget",
+      "name": "olderReport",
+      "x": 80,
+      "y": 614,
+      "width": 176,
+      "height": 54,
+      "_$child": [
+        {
+          "_$id": "sbr027txt",
+          "_$type": "GTextField",
+          "name": "olderReportText",
+          "x": 0,
+          "y": 0,
+          "width": 176,
+          "height": 54,
+          "text": "",
+          "zOrder": 1,
+          "fontSize": 22,
+          "color": "#e3e8de",
+          "align": "center",
+          "valign": "middle",
+          "wordWrap": true
+        }
+      ]
+    },
+    {
+      "_$id": "sbr030btn",
+      "_$type": "GWidget",
+      "name": "newerReport",
+      "x": 270,
+      "y": 614,
+      "width": 176,
+      "height": 54,
+      "_$child": [
+        {
+          "_$id": "sbr029txt",
+          "_$type": "GTextField",
+          "name": "newerReportText",
+          "x": 0,
+          "y": 0,
+          "width": 176,
+          "height": 54,
+          "text": "",
+          "zOrder": 1,
+          "fontSize": 22,
+          "color": "#e3e8de",
+          "align": "center",
+          "valign": "middle",
+          "wordWrap": true
+        }
+      ]
+    },
+    {
+      "_$id": "sbr032btn",
+      "_$type": "GWidget",
+      "name": "reportClose",
+      "x": 1034,
+      "y": 614,
+      "width": 176,
+      "height": 54,
+      "_$child": [
+        {
+          "_$id": "sbr031txt",
+          "_$type": "GTextField",
+          "name": "reportCloseText",
+          "x": 0,
+          "y": 0,
+          "width": 176,
+          "height": 54,
+          "text": "",
+          "zOrder": 1,
+          "fontSize": 22,
+          "color": "#e3e8de",
+          "align": "center",
+          "valign": "middle",
+          "wordWrap": true
+        }
+      ]
+    },
+    {
+      "_$id": "sbr034btn",
+      "_$type": "GWidget",
+      "name": "previousPage",
+      "x": 340,
+      "y": 568,
+      "width": 176,
+      "height": 54,
+      "_$child": [
+        {
+          "_$id": "sbr033txt",
+          "_$type": "GTextField",
+          "name": "previousPageText",
+          "x": 0,
+          "y": 0,
+          "width": 176,
+          "height": 54,
+          "text": "",
+          "zOrder": 1,
+          "fontSize": 22,
+          "color": "#e3e8de",
+          "align": "center",
+          "valign": "middle",
+          "wordWrap": true
+        }
+      ]
+    },
+    {
+      "_$id": "sbr036btn",
+      "_$type": "GWidget",
+      "name": "nextPage",
+      "x": 540,
+      "y": 568,
+      "width": 176,
+      "height": 54,
+      "_$child": [
+        {
+          "_$id": "sbr035txt",
+          "_$type": "GTextField",
+          "name": "nextPageText",
+          "x": 0,
+          "y": 0,
+          "width": 176,
+          "height": 54,
+          "text": "",
+          "zOrder": 1,
+          "fontSize": 22,
+          "color": "#e3e8de",
+          "align": "center",
+          "valign": "middle",
+          "wordWrap": true
+        }
+      ]
+    },
+    {
+      "_$id": "sbr038btn",
+      "_$type": "GWidget",
+      "name": "build",
+      "x": 1034,
+      "y": 216,
+      "width": 176,
+      "height": 54,
+      "_$child": [
+        {
+          "_$id": "sbr037txt",
+          "_$type": "GTextField",
+          "name": "buildText",
+          "x": 0,
+          "y": 0,
+          "width": 176,
+          "height": 54,
+          "text": "",
+          "zOrder": 1,
+          "fontSize": 22,
+          "color": "#e3e8de",
+          "align": "center",
+          "valign": "middle",
+          "wordWrap": true
+        }
+      ]
+    }
+  ]
 }

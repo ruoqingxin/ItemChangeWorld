@@ -3,11 +3,11 @@ import { ResLoader } from "../asset/ResLoader";
 import { UIElements } from "./UIElements";
 import { UILayer } from "./UILayer";
 import { UIManager } from "./UIManager";
+import { SoundManager } from "src/script/games/sound/SoundManager";
+import EventEngine from "src/script/games/eventSystem/EventEngine";
+import { UIUtils } from "src/script/games/utils/UIUtils";
 import { ErrorReportManager } from "../report/ErrorReportManager";
 import { MapperTypeEnum } from "./components/ElementMapper";
-import { SoundManager } from "../sound/SoundManager";
-import EventEngine from "../eventSystem/EventEngine";
-import { UIUtils } from "../utils/UIUtils";
 /**
  * ui界面基类
  */
@@ -54,10 +54,16 @@ export abstract class UIBaseView {
         return this.elems;
     }
     /**
-     * 标记当前界面是否打开
+     * 标记当前界面是否打开，且界面节点已创建
      */
     public get isOpened() {
         return this._opened && this._view != null;
+    }
+    /**
+     * 标记当前界面是否打开或正在打开
+     */
+    public get isOpenedOrOpening() {
+        return this._opened;
     }
     private _lastCloseTimeAt: number = 0;
     /**
@@ -98,18 +104,22 @@ export abstract class UIBaseView {
     public get sortingOrder() {
         return this._sortingOrder;
     }
+    /** 同层级内的显示优先级，值越大越靠上。 */
+    public get stackPriority(): number {
+        return 0;
+    }
     /**
      * 界面mapper类型
      */
     public get mapperType() {
         return this.elems?.mapperType;
     }
-    private _fullscreenBgNode: Laya.GImage;
     /**
-     * 全屏背景节点
+     * 全屏界面的首屏内容是否已经可以展示。
+     * 返回 false 时 UIManager 暂不隐藏下层界面。
      */
-    public get fullscreenBgNode() {
-        return this._fullscreenBgNode;
+    public get isFullscreenReady() {
+        return true;
     }
     /**
      * 统计按钮绑定数量
@@ -149,6 +159,12 @@ export abstract class UIBaseView {
      * 界面关闭回调
      */
     private _closeCallback: (param?: UIBaseView) => void;
+    private _closeAnimationCallback: (() => void) | null = null;
+    private _closeInProgress = false;
+    /** 关闭动画尚未结束时，界面仍可能可见，不能作为闲置缓存回收。 */
+    public get isClosing(): boolean {
+        return this._closeInProgress;
+    }
     /**
      * 是否有关闭回调
      */
@@ -165,6 +181,23 @@ export abstract class UIBaseView {
     public get windowAnimator() {
         return this._windowAnimator;
     }
+    protected _autoCollect: boolean = true;
+    /**
+     * 界面是否自动回收资源 默认 = true
+     */
+    public get autoCollect() {
+        return this._autoCollect;
+    }
+    /**
+     * 界面关闭特殊动画
+     */
+    private _windowAnimatorOut: (callback: () => void) => void;
+    /**
+    * 界面关闭动画播放
+    */
+    public set windowAnimatorOut(v: (callback: () => void) => void) {
+        this._windowAnimatorOut = v;
+    }
     /**
      * 界面打开的参数缓存
      */
@@ -177,6 +210,11 @@ export abstract class UIBaseView {
      * 计时器保护字典
      */
     private _timerRegister: { [key: string]: any } = {};
+
+    /**
+     * 界面是否是横屏模式
+     */
+    private _isHor: boolean = false;
 
     /**
      * 为界面设置父界面
@@ -242,7 +280,7 @@ export abstract class UIBaseView {
     private _onCreate(request: AssetRequest) {
         let useLoadingTime = new Date().getTime() - this._loadingTestTime;
         if (useLoadingTime > 300) {
-            console.warn("界面加载总时间：" + this.path + " 时间：" + useLoadingTime, request._resInfos);
+            console.warn("界面加载总时间：" + this.path + " 时间：" + useLoadingTime);
         }
         this._uiRequest = null;
         if (request.error != null) {
@@ -275,25 +313,6 @@ export abstract class UIBaseView {
                 }
                 else if (this.mapperType == MapperTypeEnum.NoMaskWithThrough) {
                     this._view.mouseThrough = true;
-                }
-                else if (this.mapperType == MapperTypeEnum.Fullscreen) {
-                    const getNodeTypeInChildren = (node: Laya.Node) => {
-                        if ((node instanceof Laya.GImage) && node.width >= Laya.stage.designWidth - 100 && node.height >= Laya.stage.designHeight - 100) {
-                            return node;
-                        }
-                        for (let i = 0, len = node.numChildren; i < len; i++) {
-                            let child = node.getChildAt(i);
-                            const nodeT = getNodeTypeInChildren(child);
-                            if (nodeT) {
-                                return nodeT;
-                            }
-                        }
-                        return null;
-                    }
-                    this._fullscreenBgNode = getNodeTypeInChildren(this._view);
-                    if (!this._fullscreenBgNode) {
-                        console.error("全屏界面必须拥有一张背景 " + this.path)
-                    }
                 }
                 else {
                     this._view.mouseThrough = false;
@@ -367,6 +386,7 @@ export abstract class UIBaseView {
         }
     }
     open(...args) {
+        if (this._closeInProgress) this.closeImmediately();
         if (args && args.length > 0) {
             this._openArgs = args;
         }
@@ -384,7 +404,7 @@ export abstract class UIBaseView {
             UIManager.ins()._onFormOpen(this, this._asyncOpen);
         }
         else {
-            if (!this._parentView._view == null) {
+            if (this._parentView._view == null) {
                 console.warn("界面在父界面没有打开时，无法调用open函数");
                 return;
             }
@@ -411,6 +431,8 @@ export abstract class UIBaseView {
             return;
         }
         this._opened = false;
+        this._closeInProgress = true;
+        this._openArgs = null;
         this._lastCloseTimeAt = Laya.Browser.now();
 
         if (this._asyncOpen) {
@@ -420,7 +442,6 @@ export abstract class UIBaseView {
             this._asyncOpen = false;
         }
 
-        this._sortingOrder = -1;
         Laya.timer.clearAll(this);
         this._timerRegister = {};
         if (this.mapperType == MapperTypeEnum.NoMaskWithThrough) {
@@ -437,21 +458,55 @@ export abstract class UIBaseView {
             }
             this._eventRegister = null;
         }
+
         if (null != this._view) {
             if (this._closeSound) {
                 SoundManager.ins().playSound(this._closeSound);
             }
-            this._view.active = false;
-            this._view.visible = false;
-            this._internal_close();
         }
-
         if (this._parentView == null) {
-            UIManager.ins()._onFormClose(this);
             if (this._autoSoundPlay && this.layer >= UILayer.HighBase && this.layer <= UILayer.OnlyTip) {
+                SoundManager.ins().stopSound(SoundManager.COMMON_CLICK_SOUND);
                 SoundManager.ins().playSound(SoundManager.COMMON_CLOSE_SOUND);
             }
         }
+
+        /*关闭动画关闭后回调 */
+        const animOutBack = () => {
+            if (this._closeAnimationCallback !== animOutBack) {
+                return;
+            }
+            this._closeAnimationCallback = null;
+            try {
+                if (null != this._view) {
+                    this._view.active = false;
+                    this._view.visible = false;
+                    this._internal_close();
+                }
+
+                if (this._parentView == null) {
+                    UIManager.ins()._onFormClose(this);
+                }
+            }
+            finally {
+                this._closeInProgress = false;
+            }
+        }
+
+        this._closeAnimationCallback = animOutBack;
+        /*特殊关闭动画*/
+        if (this._windowAnimatorOut) {
+            this._windowAnimatorOut(() => {
+                animOutBack();
+            });
+        }
+        else {
+            //通用关闭动画
+            this.playElementAnimOut(() => {
+                animOutBack();
+            });
+        }
+
 
         const callback = this._closeCallback;
         this._closeCallback = null;
@@ -460,10 +515,27 @@ export abstract class UIBaseView {
         }
     }
 
+    /** 切场时立即完成关闭，先执行 onClose 释放模型和事件，再销毁界面。 */
+    public closeImmediately(): void {
+        this.close();
+        if (this._closeAnimationCallback) {
+            this.killAllElementAnim();
+            this._closeAnimationCallback?.();
+        }
+    }
+
     /**
      * 内部使用，请勿调用
      */
     _destroy() {
+        this.closeImmediately();
+        this._uiRequest?.abort();
+        this._uiRequest = null;
+        Laya.timer.clearAll(this);
+        this._openCallback = null;
+        this._closeCallback = null;
+        this._openArgs = null;
+        this.killAllElementAnim();
         if (!this._view) {
             return;
         }
@@ -471,6 +543,8 @@ export abstract class UIBaseView {
         this._view = null;
         this._windowAnimator = null;
         this.elems = null;
+        this._constructed = false;
+        this.onRelease();
     }
 
     protected processOpenedAlready() {
@@ -545,6 +619,8 @@ export abstract class UIBaseView {
             this.onOpen();
         }
         this._internal_checkRedDot();
+        this.killAllElementAnim();
+        this.playElementAnim();
     }
 
     /**
@@ -607,6 +683,10 @@ export abstract class UIBaseView {
     protected get dependencyRes(): string[] {
         return null;
     }
+    /** 首屏异步内容加载完成后，刷新全屏遮挡状态。 */
+    protected notifyFullscreenReady(): void {
+        UIManager.ins()._onFormFullscreenReady(this);
+    }
     /**
     * 绑定按钮点击，caller不需要使用delegate来封装，在函数内部已实现
     * @param element 节点
@@ -661,12 +741,151 @@ export abstract class UIBaseView {
      * @param anim 是否过渡动画
      */
     public setDirection(isHor: boolean, anim: boolean) {
+        if (!this.elems) return;
         const elementMapper = this.elems.elementMapper;
         if (!elementMapper) {
             return;
         }
+        this._isHor = isHor;
         elementMapper.setDirection(isHor, anim);
     }
+
+    /**动态设置横屏部分节点 横屏位置不统一情况*/
+    public setHorizontalNodes(nodes: Laya.GWidget[]) {
+        if (!this.elems) return;
+        const elementMapper = this.elems.elementMapper;
+        if (!elementMapper) {
+            return;
+        }
+        elementMapper.setHorizontalNodes(nodes);
+    }
+
+    /**动态设置竖屏部分节点 节点动态变化情况*/
+    public setVerticalNodeInfos(nodes: { name: string, x: number, y: number }[]) {
+        if (!this.elems) return;
+        const elementMapper = this.elems.elementMapper;
+        if (!elementMapper) {
+            return;
+        }
+        elementMapper.setVerticalNodeInfos(nodes);
+    }
+
+    /**设置适配节点*/
+    public SetAdapterNodes(force: boolean = false) {
+        if (!this.elems) return;
+        const elementMapper = this.elems.elementMapper;
+        if (!elementMapper) {
+            return;
+        }
+        elementMapper.SetAdapterNodes(force);
+    }
+
+    /**
+     * 播放元素动画
+     */
+    public playElementAnim(useOnEnable: boolean = true) {
+        if (!this.elems) return;
+        this._resetElementAnim();
+        /** 横屏动画 */
+        if (this.elems.elementAnimInHor && this._isHor) {
+            if (!useOnEnable || this.elems.elementAnimInHor.playOnEnable) {
+                this.elems.elementAnimInHor.play();
+            }
+            return;
+        }
+
+        const elementAnimList = this.elems.elementAnimList;
+        if (!elementAnimList || elementAnimList.length <= 0) {
+            return;
+        }
+        for (let i = 0; i < elementAnimList.length; i++) {
+            const animScript = elementAnimList[i];
+            if (!useOnEnable || animScript.playOnEnable) {
+                animScript.play();
+            }
+        }
+    }
+
+    /**
+     * 界面关闭时播放元素动画
+     */
+    public playElementAnimOut(onComplete?: () => void) {
+        if (!this.elems) {
+            if (onComplete) {
+                onComplete();
+            }
+            return;
+        };
+
+        const elementAnimOutList = this.elems.elementAnimOutList;
+        if (!elementAnimOutList || elementAnimOutList.length <= 0) {
+            if (onComplete) {
+                onComplete();
+            }
+            return;
+        }
+        let remaining = elementAnimOutList.length;
+        for (let i = 0; i < elementAnimOutList.length; i++) {
+            const animScript = elementAnimOutList[i];
+            let completed = false;
+            animScript.play(() => {
+                if (completed) return;
+                completed = true;
+                if (--remaining === 0) onComplete?.();
+            });
+        }
+    }
+
+    /**
+     * 杀死所有元素动画
+     */
+    public killAllElementAnim() {
+        if (!this.elems) return;
+        this._resetElementAnim();
+        const elementAnimList = this.elems.elementAnimList;
+        if (elementAnimList) {
+            for (let i = 0; i < elementAnimList.length; i++) {
+                const animScript = elementAnimList[i];
+                animScript.clearAllTweens();
+            }
+        }
+
+        const elementAnimInHor = this.elems.elementAnimInHor;
+        if (elementAnimInHor) {
+            elementAnimInHor.clearAllTweens();
+        }
+
+        const elementAnimOutList = this.elems.elementAnimOutList;
+        if (elementAnimOutList) {
+            for (let i = 0; i < elementAnimOutList.length; i++) {
+                const animScript = elementAnimOutList[i];
+                animScript.clearAllTweens();
+            }
+        }
+    }
+
+    /**重置动画节点 */
+    private _resetElementAnim() {
+        if (!this.elems) return;
+        const elementAnimList = this.elems.elementAnimList;
+        if (elementAnimList) {
+            for (let i = 0; i < elementAnimList.length; i++) {
+                const animScript = elementAnimList[i];
+                animScript.resetNode();
+            }
+        }
+
+        const elementAnimOutList = this.elems.elementAnimOutList;
+        if (elementAnimOutList) {
+            for (let i = 0; i < elementAnimOutList.length; i++) {
+                const animScript = elementAnimOutList[i];
+                animScript.resetNode();
+            }
+        }
+
+    }
+
+
 
     /**
      * 设置界面层级

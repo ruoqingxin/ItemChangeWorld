@@ -1,13 +1,23 @@
-import { Asset } from "../asset/Asset";
-import { List } from "../uilib/List";
-import { ListItemCtrl } from "../uilib/ListItemCtrl";
+import { Asset } from "src/script/games/asset/Asset";
+import { List } from "src/script/games/uilib/List";
+import { ListItemCtrl } from "src/script/games/uilib/ListItemCtrl";
 import { UIButton } from "./UIButton";
 import { ElementMapper, MapperTypeEnum } from "./components/ElementMapper";
+import {
+    collectElementAnimIn,
+    collectElementAnimInHor,
+    collectElementAnimOut,
+    ElementAnimInHorBase,
+    IElementAnimPlayable,
+} from "./components/elementAnim/ElementAnimTypes";
 
 
 export class UIElements {
     root: Laya.Sprite;
     elementMapper: ElementMapper;
+    elementAnimList: IElementAnimPlayable[] = [];
+    elementAnimOutList: IElementAnimPlayable[] = [];
+    elementAnimInHor: ElementAnimInHorBase;
     private _prefabMap: { [key: number]: Laya.Prefab } = {};
     private _asset: Asset;
     private _mapperType: MapperTypeEnum;
@@ -21,6 +31,9 @@ export class UIElements {
         this._asset = asset;
         this.root = form;
         const component = form.getComponent(ElementMapper);
+        this.elementAnimList = collectElementAnimIn(form);
+        this.elementAnimOutList = collectElementAnimOut(form);
+        this.elementAnimInHor = collectElementAnimInHor(form);
         this.elementMapper = component;
         if (component) {
             this._mapperType = component.mapperType;

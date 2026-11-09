@@ -3,7 +3,7 @@ const { icons } = require("lucide");
 const sharp = require("sharp");
 const fs = require("node:fs");
 const path = require("node:path");
-const output = path.join(__dirname, "../assets/ui/texture/skillBattle");
+const output = path.join(__dirname, "../assets/ui/atlas/module/skillBattle");
 fs.mkdirSync(output, { recursive: true });
 const specs = ["Sword", "Shield", "Zap", "ShieldOff"].map((name, index) => [name, `skill-${index + 1}`, "#c5d5bd"]);
 specs.push(["Flame", "fire_stone", "#e29c89"], ["Hexagon", "earth_stone", "#d4bc7e"], ["FlaskRound", "heal", "#9ac8ae"]);

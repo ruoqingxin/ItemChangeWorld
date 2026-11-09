@@ -6,20 +6,33 @@ import { ExpeditionLocalStorage } from "../../expedition/data/ExpeditionData";
 /** Shared model for the independently opened start, battle, and settlement views. */
 export class SkillBattleUISession {
     private static expedition: ExpeditionManager;
-    private static mapEnabled = true;
-
-    /** Preview and regression fixtures can opt into the retired linear route. */
-    static setMapEnabled(enabled: boolean): void {
-        if (this.expedition) throw new Error("秘境会话已经创建，不能切换地图模式");
-        this.mapEnabled = enabled;
-    }
+    private static notifiedTimeoutRun = "";
 
     static getExpedition(): ExpeditionManager {
         if (!this.expedition) {
-            const config = ExpeditionConfigUtils.read(ConfigUtil.Tables, true, this.mapEnabled);
+            const config = ExpeditionConfigUtils.read(ConfigUtil.Tables, true, true);
             config.requireBuildSelection = true;
-            this.expedition = new ExpeditionManager(config, undefined, new ExpeditionLocalStorage("new-rules"));
+            this.expedition = new ExpeditionManager(config, undefined, new ExpeditionLocalStorage());
+            Laya.timer.loop(250, this, this.checkDeadline);
+            window.addEventListener("focus", () => this.checkDeadline());
+            document.addEventListener("visibilitychange", () => this.checkDeadline());
         }
         return this.expedition;
     }
+
+    private static checkDeadline(): void {
+        if (!this.expedition || this.expedition.error) return;
+        try {
+            this.expedition.expireMap();
+            const run = this.expedition.run;
+            if (run?.report.endReason === "timeout" && run.runId !== this.notifiedTimeoutRun && this.onExpired) {
+                this.notifiedTimeoutRun = run.runId;
+                this.onExpired();
+            }
+        } catch (error) {
+            console.error("秘境计时结算失败", error);
+        }
+    }
+
+    static onExpired: () => void;
 }

@@ -1,10 +1,9 @@
 import { UIBaseView } from "./UIBaseView";
 import { UILayer } from "./UILayer";
+import { UIUtils } from "src/script/games/utils/UIUtils";
 import { UIEvents } from "./UIEvnets";
 import { MapperTypeEnum } from "./components/ElementMapper";
-
 import { TabFormSearcher } from "./TabCtrl";
-import { UIUtils } from "../utils/UIUtils";
 
 export type UIOpenParameters<T extends (...args: any) => any> = T extends (...args: infer P) => any ? P : never;
 /**
@@ -98,6 +97,11 @@ export class UIManager extends Laya.EventDispatcher {
      * 具有mask层的顶部界面
      */
     private _topMaskView: UIBaseView;
+    private _topView: UIBaseView;
+    /** 当前顶层界面，关闭动画结束前仍保留其遮挡关系。 */
+    public get topView(): UIBaseView {
+        return this._topView;
+    }
     /**
      * 标记当前资源准备是否完毕
      */
@@ -106,12 +110,13 @@ export class UIManager extends Laya.EventDispatcher {
     /**
      * 当前是否是横屏模式
      */
-    private _isHor: boolean;
+    private _isHor: boolean = true;
 
     /**
      * 初始化ui管理器
      */
     public init() {
+        if (this._uiRoot && !this._uiRoot.destroyed) return;
         for (let i = 0; i < UILayer.Max; i++) {
             this._openstacks[i] = [];
         }
@@ -132,26 +137,12 @@ export class UIManager extends Laya.EventDispatcher {
         Laya.GRoot.inst.addChild(leftMask);
         Laya.GRoot.inst.addChild(rightMask);
 
-        console.log("Laya.stage.width:" + Laya.stage.width);
-        console.log("Laya.stage.height:" + Laya.stage.height);
-
         // stage变化时，调整ui适配
         const autoSize = () => {
-            let designWidth = Laya.stage.designWidth;
-            let designHeight = Laya.stage.designHeight;
-            const matchesDesignCanvas =
-                Math.abs(Laya.stage.width - designWidth) <= 2 &&
-                Math.abs(Laya.stage.height - designHeight) <= 2;
-            if (matchesDesignCanvas) {
-                this._uiRoot.pos(0, 0);
-                this._uiRoot.size(designWidth, designHeight);
-                UIUtils.setActive(leftMask, false);
-                UIUtils.setActive(rightMask, false);
-                this._isAdapterMaskActive = false;
-            }
-            else if (Laya.stage.width / Laya.stage.height > designWidth / designHeight) {
+            const ratio = Laya.stage.designWidth / Laya.stage.designHeight;
+            if (Laya.stage.width / Laya.stage.height > ratio) {
                 this._uiRoot.height = Laya.stage.height;
-                this._uiRoot.width = (designWidth / designHeight) * Laya.stage.height;
+                this._uiRoot.width = ratio * Laya.stage.height;
                 const widthOffset = (Laya.stage.width - this._uiRoot.width) / 2;
                 this._uiRoot.pos(widthOffset, 0);
 
@@ -165,7 +156,7 @@ export class UIManager extends Laya.EventDispatcher {
             }
             else {
                 // 限制最高
-                const limit = 720 / 1660;
+                const limit = ratio;
                 if (Laya.stage.width / Laya.stage.height < limit) {
                     this._uiRoot.width = Laya.stage.width;
                     this._uiRoot.height = Laya.stage.width / limit;
@@ -483,7 +474,16 @@ export class UIManager extends Laya.EventDispatcher {
         for (let form of viewList) {
             form.close();
         }
-        forms.length = 0;
+    }
+
+    /** 入场前释放已完全关闭的缓存，保留即将复用和仍在展示的界面。 */
+    public releaseClosedForms(keepPaths?: ReadonlySet<string>): void {
+        for (const form of Array.from(this._openedViewList)) {
+            if (keepPaths?.has(form.path) || !form.autoCollect || form.layer > UILayer.OnlyTip || form.isOpenedOrOpening || form.isClosing) {
+                continue;
+            }
+            this._destroyView(form);
+        }
     }
 
     /**
@@ -491,17 +491,17 @@ export class UIManager extends Laya.EventDispatcher {
      */
     public clearAllInstant() {
         // 只处理second层级的ui
-        // for (let form of this._openedViewList) {
-        //     if (form.layer != UILayer.Second) {
-        //         continue;
-        //     }
-        //     if (!form.lastCloseTimeAt || form.isOpened) {
-        //         continue;
-        //     }
-        //     form.lastCloseTimeAt = Laya.Browser.now() - this.viewCacheExpireTime - 10;
-        // }
+        for (let form of this._openedViewList) {
+            if (form.layer != UILayer.Second) {
+                continue;
+            }
+            if (!form.lastCloseTimeAt || form.isOpenedOrOpening || form.isClosing) {
+                continue;
+            }
+            form.lastCloseTimeAt = Laya.Browser.now() - this.viewCacheExpireTime - 10;
+        }
 
-        // this.onUpdate();
+        this.onUpdate();
     }
 
     /**
@@ -519,11 +519,11 @@ export class UIManager extends Laya.EventDispatcher {
      * @param excludedForm 排除掉的界面组
      * @param excludedLayers 排除掉的层级组
      */
-    isAnyFormOpenedBut(excludedForms: UIBaseView[], includedLayers: UILayer[]): boolean {
+    isAnyFormOpenedOrOpeningBut(excludedForms: UIBaseView[], includedLayers: UILayer[]): boolean {
         for (let layer of includedLayers) {
             let forms = this._openstacks[layer];
             for (let form of forms) {
-                if (!form.isOpened || (null != excludedForms && excludedForms.indexOf(form) >= 0)) {
+                if (!form.isOpenedOrOpening || (null != excludedForms && excludedForms.indexOf(form) >= 0)) {
                     continue;
                 }
                 return true;
@@ -539,19 +539,11 @@ export class UIManager extends Laya.EventDispatcher {
         if (ansyc) {
             // isReady 防止加载过程中出现遮罩
             if (this._asyncOpenCnt == 0 && this.isReady) {
-                //this.openForm(UIRotateLoadingTipsView, "加载中...");
+                this.event("loading", true);
             }
             this._asyncOpenCnt++;
         }
-
-        console.log("open form:", form);
-
-        console.log("form.layer:", form.layer);
-
         let layer = form.layer;
-
-        console.log("group:", this._openstacks);
-
         let group = this._openstacks[layer];
         const oldIndex = group.indexOf(form);
         if (oldIndex != -1) {
@@ -566,7 +558,7 @@ export class UIManager extends Laya.EventDispatcher {
     _onFormAsyncLoad(form: UIBaseView) {
         this._asyncOpenCnt--;
         if (this._asyncOpenCnt == 0) {
-            //this.closeForm(UIRotateLoadingTipsView);
+            this.event("loading", false);
         }
         //uts.log("remove form:" + form.Name);
     }
@@ -576,7 +568,6 @@ export class UIManager extends Laya.EventDispatcher {
      */
     _afterFormOpened(form: UIBaseView) {
         form.setDirection(this._isHor, false);
-
         // 更新同层级界面，将即将打开的界面置顶
         {
             let layer = form.layer;
@@ -586,19 +577,28 @@ export class UIManager extends Laya.EventDispatcher {
                 console.error("form after open error：" + form.path);
                 return;
             }
+            // 重复打开同层级页面时，将已有页面移动到栈顶。
+            group.splice(oldIndex, 1);
+            group.push(form);
+            group.sort((a, b) => a.stackPriority - b.stackPriority);
             let sortingIndex = 0;
             for (const check of group) {
                 check.setSortingOrder(layer * 100 + sortingIndex * 10);
                 sortingIndex++;
             }
         }
-        if (form.mapperType == MapperTypeEnum.Fullscreen && form.fullscreenBgNode) {
-            form.fullscreenBgNode.off(Laya.Event.LOADED, this, this._updateFullScreenHide);
-            form.fullscreenBgNode.on(Laya.Event.LOADED, this, this._updateFullScreenHide);
-        }
-
-        this._updateFullScreenHide();
+        this._updateFullScreenHide({ open: true, form: form });
         // 更新界面mask
+        this._updateTopMaskTypeView();
+        this._updateTopView();
+    }
+
+    /** 全屏界面的首屏异步内容就绪后，重新计算下层界面显隐。 */
+    _onFormFullscreenReady(form: UIBaseView): void {
+        if (!form.isOpened) {
+            return;
+        }
+        this._updateFullScreenHide();
         this._updateTopMaskTypeView();
     }
 
@@ -616,14 +616,32 @@ export class UIManager extends Laya.EventDispatcher {
                 this._destroyView(form);
             }
         }
-        if (form.mapperType == MapperTypeEnum.Fullscreen && form.fullscreenBgNode) {
-            form.fullscreenBgNode.off(Laya.Event.LOADED, this, this._updateFullScreenHide);
-        }
-        this._updateFullScreenHide();
+        this._updateFullScreenHide({ open: false, form: form });
         // 更新界面mask
-        this._updateTopMaskTypeView();
+        this._updateTopMaskTypeView({ open: false, form: form });
+        this._updateTopView();
     }
 
+    private _updateTopView(): void {
+        let topView: UIBaseView;
+        for (let layer = UILayer.Top - 1; layer >= UILayer.Base; layer--) {
+            const forms = this._openstacks[layer];
+            for (let i = forms.length - 1; i >= 0; i--) {
+                const form = forms[i];
+                if (form.isOpened || form.isClosing) {
+                    topView = form;
+                    break;
+                }
+            }
+            if (topView) {
+                break;
+            }
+        }
+        if (this._topView !== topView) {
+            this._topView = topView;
+            this.event(UIEvents.TopViewChange);
+        }
+    }
 
     /**
      * 内部使用 红点变化时调用
@@ -643,18 +661,16 @@ export class UIManager extends Laya.EventDispatcher {
     /**
      * 刷新全屏状态
      */
-    private _updateFullScreenHide() {
+    private _updateFullScreenHide(param?: { open: boolean, form: UIBaseView }) {
         let fullScreenView: UIBaseView;
         for (let layer = UILayer.MessageBox; layer >= UILayer.Second; layer--) {
             let forms = this._openstacks[layer];
             for (let i = forms.length - 1; i >= 0; i--) {
                 const form = forms[i];
-                if (!form.isOpened) {
+                if (!form.isOpened && !form.isClosing) {
                     continue;
                 }
-                if (form.mapperType == MapperTypeEnum.Fullscreen && form.fullscreenBgNode
-                    && (form.fullscreenBgNode.texture || !form.fullscreenBgNode.src)
-                ) {
+                if (form.mapperType == MapperTypeEnum.Fullscreen && form.isFullscreenReady) {
                     fullScreenView = form;
                     break;
                 }
@@ -669,7 +685,7 @@ export class UIManager extends Laya.EventDispatcher {
             let forms = this._openstacks[layer];
             for (let i = forms.length - 1; i >= 0; i--) {
                 const form = forms[i];
-                if (!form.isOpened) {
+                if (!form.isOpened && !form.isClosing) {
                     continue;
                 }
                 let active = true;
@@ -682,21 +698,25 @@ export class UIManager extends Laya.EventDispatcher {
             }
         }
         if (this._topFullScreenView != fullScreenView) {
+            const previousView = this._topFullScreenView;
             this._topFullScreenView = fullScreenView;
-            this.event(UIEvents.FormOpenClose);
+            this.event(UIEvents.FullScreenViewChange, { previousView, currentView: fullScreenView });
+        }
+        if (param && param.form && param.form.layer <= UILayer.OnlyTip) {
+            this.event(UIEvents.FormOpenClose, param);
         }
     }
 
     /**
      * 更新顶部mask界面
      */
-    private _updateTopMaskTypeView() {
+    private _updateTopMaskTypeView(param?: { open: boolean, form: UIBaseView }) {
         let topView: UIBaseView;
         for (let layer = UILayer.Top; layer >= UILayer.Second; layer--) {
             let forms = this._openstacks[layer];
             for (let i = forms.length - 1; i >= 0; i--) {
                 const form = forms[i];
-                if (!form.isOpened) {
+                if (!form.isOpened && !form.isClosing) {
                     continue;
                 }
                 if (form.mapperType == MapperTypeEnum.MaskWithClose || form.mapperType == MapperTypeEnum.MaskWithoutClose) {
@@ -709,7 +729,7 @@ export class UIManager extends Laya.EventDispatcher {
                 break;
             }
         }
-        if (topView) {
+        if (topView && (!this._topFullScreenView || this._topFullScreenView.sortingOrder < topView.sortingOrder)) {
             UIUtils.setActive(this._mask, true);
             this._mask.zOrder = topView.sortingOrder - 1;
         }
@@ -718,7 +738,9 @@ export class UIManager extends Laya.EventDispatcher {
         }
         if (this._topMaskView != topView) {
             this._topMaskView = topView;
-            this.event(UIEvents.FormOpenClose);
+        }
+        if (param && param.form && param.form.layer == UILayer.Second) {
+            this.event(UIEvents.FormOpenClose, param);
         }
     }
 
@@ -767,10 +789,10 @@ export class UIManager extends Laya.EventDispatcher {
 
         // 只检查second层级的过期ui
         for (let form of this._openedViewList) {
-            if (form.layer != UILayer.Second) {
+            if (!form.autoCollect || (form.layer != UILayer.Second && form.layer != UILayer.OnlyTip)) {
                 continue;
             }
-            if (!form.lastCloseTimeAt || form.isOpened) {
+            if (!form.lastCloseTimeAt || form.isOpenedOrOpening || form.isClosing) {
                 continue;
             }
             if (now - form.lastCloseTimeAt > this.viewCacheExpireTime) {

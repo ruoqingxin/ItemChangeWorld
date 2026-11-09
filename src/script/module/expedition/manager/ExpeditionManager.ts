@@ -43,11 +43,11 @@ export class ExpeditionManager {
             }
             else {
                 const save = JSON.parse(raw) as IExpeditionSave;
-                ExpeditionSaveUtils.upgradeLegacy(save, this.config, this.signature);
                 ExpeditionSaveUtils.validate(save, this.config, this.signature);
                 this.data.snapshot = save;
                 if (save.run) this.battle.restore(this.setup, save.run.battle);
                 else this.battle.reset();
+                this.expireMap();
             }
         } catch (error) {
             this.data.error = `无法读取存档，原存档未覆盖：${(error as Error).message}`;
@@ -311,10 +311,14 @@ export class ExpeditionManager {
         } else if (target.type === "recovery") {
             const maximum = run.battle.player.maxHp;
             if (run.battle.player.hp >= maximum) throw new Error("生命已满，无需使用恢复点");
+            const hpBefore = run.battle.player.hp;
             run.battle.player.hp = Math.min(maximum, run.battle.player.hp +
                 Math.ceil(maximum * config.recoveryRate));
+            run.report.recoveries.push({ nodeId, battleIndex: run.report.battles.length - 1,
+                hpBefore, hpAfter: run.battle.player.hp });
         }
         this.commit(save);
+        this.battle.restore(this.setup, run.battle);
         return "event";
     }
 
@@ -340,9 +344,10 @@ export class ExpeditionManager {
     }
 
     expireMap(now = Date.now()): boolean {
-        const save = this.requireSave(), run = save.run;
+        const save = this.requireSave(false), run = save.run;
         if (!run?.map || run.settled || now < run.map.deadlineAt) return false;
         this.settle(save, false);
+        run.report.endReason = "timeout";
         this.commit(save);
         return true;
     }
@@ -451,7 +456,7 @@ export class ExpeditionManager {
         run.report.battles.push({ initial: Rules.cloneState(state), actions: [] });
         run.phase = "battle";
         this.commit(save);
-        this.battle.restore(setup, state);
+        this.battle.restore(this.setup, state);
     }
 
     private createChoices(run: IExpeditionState): number[] {
@@ -470,6 +475,7 @@ export class ExpeditionManager {
         if (run.settled || profile.settledRunIds.includes(run.runId)) throw new Error("该秘境已经结算");
         if (success) profile.warehouse.push(...run.loot.map(item => ({ ...item })));
         run.report.outcome = success ? "extracted" : "failed";
+        run.report.endReason = success ? "extracted" : "defeat";
         run.report.exitEncounter = run.map ? run.map.battleCount : run.encounterIndex + 1;
         run.report.broughtLoot = success ? run.loot.map(item => ({ ...item })) : [];
         run.report.remainingPouch = success ? run.battle.pouchSlots.map(item => item ? { ...item } : null)
@@ -509,14 +515,15 @@ export class ExpeditionManager {
                 itemUid: `${profileId}_supply_${item.initialSlot}`, itemId: item.itemId,
             };
         });
-        return { version: 1, configSignature: this.signature, run: null, history: [], profile: {
+        return { version: 2, configSignature: this.signature, run: null, history: [], profile: {
             profileId, nextRunIndex: 1, currency: 0, collectionIds: [], warehouse: [], weaponId: setup.weaponId,
             weaponDurability: setup.weaponDurability, pouchSlots, settledRunIds: [],
         } };
     }
 
-    private requireSave(): IExpeditionSave {
+    private requireSave(checkDeadline = true): IExpeditionSave {
         if (this.data.error || !this.data.snapshot) throw new Error(this.data.error || "没有可用存档");
+        if (checkDeadline && this.expireMap()) throw new Error("秘境时间已耗尽，本局已失败");
         return ExpeditionData.clone(this.data.snapshot);
     }
 

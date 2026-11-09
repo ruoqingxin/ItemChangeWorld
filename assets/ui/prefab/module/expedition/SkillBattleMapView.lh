@@ -11,48 +11,128 @@
       "scriptPath": "../src/script/games/ui/components/ElementMapper.ts",
       "adapter": null,
       "elements": [
-        { "_$ref": "map001_back" },
-        { "_$ref": "map002_bg" },
-        { "_$ref": "map003_tint" },
-        { "_$ref": "map004_top" },
-        { "_$ref": "map005_status" },
-        { "_$ref": "map006_status_art" },
-        { "_$ref": "map007_health_track" },
-        { "_$ref": "map008_health_bar" },
-        { "_$ref": "map009_durability_track" },
-        { "_$ref": "map010_durability_bar" },
-        { "_$ref": "map011_supplies_track" },
-        { "_$ref": "map012_supplies_bar" },
-        { "_$ref": "map013_area" },
-        { "_$ref": "map014_edges" },
-        { "_$ref": "map015_nodes" },
-        { "_$ref": "map016_info" },
-        { "_$ref": "map017_info_art" },
-        { "_$ref": "map018_timer_icon" },
-        { "_$ref": "map019_title" },
-        { "_$ref": "map020_subtitle" },
-        { "_$ref": "map021_timer" },
-        { "_$ref": "map022_life" },
-        { "_$ref": "map023_durability" },
-        { "_$ref": "map024_build" },
-        { "_$ref": "map025_supplies" },
-        { "_$ref": "map039_skill_points" },
-        { "_$ref": "map040_progress_track" },
-        { "_$ref": "map026_progress" },
-        { "_$ref": "map027_node_type" },
-        { "_$ref": "map028_node_title" },
-        { "_$ref": "map029_node_detail" },
-        { "_$ref": "map030_node_hint" },
-        { "_$ref": "map031_notice" },
-        { "_$ref": "map032_legend" },
-        { "_$ref": "map033_build_btn" },
-        { "_$ref": "map034_build_btn_txt" },
-        { "_$ref": "map035_cancel_btn" },
-        { "_$ref": "map036_cancel_btn_txt" },
-        { "_$ref": "map037_confirm_btn" },
-        { "_$ref": "map038_confirm_btn_txt" }
+        {
+          "_$ref": "map001_back"
+        },
+        {
+          "_$ref": "map002_bg"
+        },
+        {
+          "_$ref": "map003_tint"
+        },
+        {
+          "_$ref": "map004_top"
+        },
+        {
+          "_$ref": "map005_status"
+        },
+        {
+          "_$ref": "map006_status_art"
+        },
+        {
+          "_$ref": "map007_health_track"
+        },
+        {
+          "_$ref": "map008_health_bar"
+        },
+        {
+          "_$ref": "map009_durability_track"
+        },
+        {
+          "_$ref": "map010_durability_bar"
+        },
+        {
+          "_$ref": "map011_supplies_track"
+        },
+        {
+          "_$ref": "map012_supplies_bar"
+        },
+        {
+          "_$ref": "map013_area"
+        },
+        {
+          "_$ref": "map014_edges"
+        },
+        {
+          "_$ref": "map015_nodes"
+        },
+        {
+          "_$ref": "map016_info"
+        },
+        {
+          "_$ref": "map017_info_art"
+        },
+        {
+          "_$ref": "map018_timer_icon"
+        },
+        {
+          "_$ref": "map019_title"
+        },
+        {
+          "_$ref": "map020_subtitle"
+        },
+        {
+          "_$ref": "map021_timer"
+        },
+        {
+          "_$ref": "map022_life"
+        },
+        {
+          "_$ref": "map023_durability"
+        },
+        {
+          "_$ref": "map024_build"
+        },
+        {
+          "_$ref": "map025_supplies"
+        },
+        {
+          "_$ref": "map039_skill_points"
+        },
+        {
+          "_$ref": "map040_progress_track"
+        },
+        {
+          "_$ref": "map026_progress"
+        },
+        {
+          "_$ref": "map027_node_type"
+        },
+        {
+          "_$ref": "map028_node_title"
+        },
+        {
+          "_$ref": "map029_node_detail"
+        },
+        {
+          "_$ref": "map030_node_hint"
+        },
+        {
+          "_$ref": "map031_notice"
+        },
+        {
+          "_$ref": "map032_legend"
+        },
+        {
+          "_$ref": "map033_build_btn"
+        },
+        {
+          "_$ref": "map034_build_btn_txt"
+        },
+        {
+          "_$ref": "map035_cancel_btn"
+        },
+        {
+          "_$ref": "map036_cancel_btn_txt"
+        },
+        {
+          "_$ref": "map037_confirm_btn"
+        },
+        {
+          "_$ref": "map038_confirm_btn_txt"
+        }
       ],
-      "mapperType": 2
+      "mapperType": 4
     }
   ],
   "_$child": [
@@ -65,7 +145,7 @@
       "width": 1280,
       "height": 720,
       "autoSize": false,
-      "src": "ui/texture/lobby/xianxia_hub_bg_v1.png"
+      "src": "ui/texture/common/hub_background.png"
     },
     {
       "_$id": "map003_tint",
@@ -96,7 +176,7 @@
       "height": 42,
       "autoSize": false,
       "mouseEnabled": true,
-      "src": "ui/atlas/module/battleMap/segment_016.png"
+      "src": "ui/atlas/module/expedition/back.png"
     },
     {
       "_$id": "map006_status_art",
@@ -107,7 +187,7 @@
       "width": 224,
       "height": 570,
       "autoSize": false,
-      "src": "ui/atlas/module/battleMap/segment_001.png"
+      "src": "ui/texture/expedition/status_panel.png"
     },
     {
       "_$id": "map005_status",
@@ -130,7 +210,7 @@
       "autoSize": false,
       "anchorX": 0,
       "anchorY": 0,
-      "src": "ui/atlas/module/battleMap/segment_017.png"
+      "src": "ui/atlas/module/expedition/meter_track.png"
     },
     {
       "_$id": "map008_health_bar",
@@ -143,7 +223,7 @@
       "autoSize": false,
       "anchorX": 0,
       "anchorY": 0,
-      "src": "ui/atlas/module/battleMap/segment_018.png"
+      "src": "ui/atlas/module/expedition/health_fill.png"
     },
     {
       "_$id": "map009_durability_track",
@@ -156,7 +236,7 @@
       "autoSize": false,
       "anchorX": 0,
       "anchorY": 0,
-      "src": "ui/atlas/module/battleMap/segment_017.png"
+      "src": "ui/atlas/module/expedition/meter_track.png"
     },
     {
       "_$id": "map010_durability_bar",
@@ -169,7 +249,7 @@
       "autoSize": false,
       "anchorX": 0,
       "anchorY": 0,
-      "src": "ui/atlas/module/battleMap/segment_019.png"
+      "src": "ui/atlas/module/expedition/durability_fill.png"
     },
     {
       "_$id": "map011_supplies_track",
@@ -182,7 +262,7 @@
       "autoSize": false,
       "anchorX": 0,
       "anchorY": 0,
-      "src": "ui/atlas/module/battleMap/segment_017.png"
+      "src": "ui/atlas/module/expedition/meter_track.png"
     },
     {
       "_$id": "map012_supplies_bar",
@@ -195,7 +275,7 @@
       "autoSize": false,
       "anchorX": 0,
       "anchorY": 0,
-      "src": "ui/atlas/module/battleMap/segment_021.png"
+      "src": "ui/atlas/module/expedition/supplies_fill.png"
     },
     {
       "_$id": "map013_area",
@@ -226,35 +306,383 @@
       "height": 520,
       "mouseThrough": false,
       "_$child": [
-        { "_$id": "mapNode_start_img", "_$type": "GImage", "name": "start", "x": 55, "y": 231.3, "width": 62, "height": 62, "autoSize": false, "anchorX": 0.5, "anchorY": 0.5, "src": "ui/atlas/module/battleMap/segment_012.png" },
-        { "_$id": "mapNode_b1_img", "_$type": "GImage", "name": "b1", "x": 117.9, "y": 186.7, "width": 62, "height": 62, "autoSize": false, "anchorX": 0.5, "anchorY": 0.5, "src": "ui/atlas/module/battleMap/segment_007.png" },
-        { "_$id": "mapNode_b2_img", "_$type": "GImage", "name": "b2", "x": 180.9, "y": 256, "width": 62, "height": 62, "autoSize": false, "anchorX": 0.5, "anchorY": 0.5, "src": "ui/atlas/module/battleMap/segment_006.png" },
-        { "_$id": "mapNode_borrow1_img", "_$type": "GImage", "name": "borrow1", "x": 248, "y": 206.5, "width": 62, "height": 62, "autoSize": false, "anchorX": 0.5, "anchorY": 0.5, "src": "ui/atlas/module/battleMap/segment_005.png" },
-        { "_$id": "mapNode_b3_img", "_$type": "GImage", "name": "b3", "x": 319.4, "y": 266, "width": 62, "height": 62, "autoSize": false, "anchorX": 0.5, "anchorY": 0.5, "src": "ui/atlas/module/battleMap/segment_007.png" },
-        { "_$id": "mapNode_elite1_img", "_$type": "GImage", "name": "elite1", "x": 386.5, "y": 196.6, "width": 62, "height": 62, "autoSize": false, "anchorX": 0.5, "anchorY": 0.5, "src": "ui/atlas/module/battleMap/segment_009.png" },
-        { "_$id": "mapNode_borrow2_img", "_$type": "GImage", "name": "borrow2", "x": 336.1, "y": 122.3, "width": 62, "height": 62, "autoSize": false, "anchorX": 0.5, "anchorY": 0.5, "src": "ui/atlas/module/battleMap/segment_005.png" },
-        { "_$id": "mapNode_b4_img", "_$type": "GImage", "name": "b4", "x": 449.4, "y": 142.1, "width": 62, "height": 62, "autoSize": false, "anchorX": 0.5, "anchorY": 0.5, "src": "ui/atlas/module/battleMap/segment_007.png" },
-        { "_$id": "mapNode_elite2_img", "_$type": "GImage", "name": "elite2", "x": 520.8, "y": 196.6, "width": 62, "height": 62, "autoSize": false, "anchorX": 0.5, "anchorY": 0.5, "src": "ui/atlas/module/battleMap/segment_015.png" },
-        { "_$id": "mapNode_borrow3_img", "_$type": "GImage", "name": "borrow3", "x": 571.1, "y": 132.2, "width": 62, "height": 62, "autoSize": false, "anchorX": 0.5, "anchorY": 0.5, "src": "ui/atlas/module/battleMap/segment_005.png" },
-        { "_$id": "mapNode_b5_img", "_$type": "GImage", "name": "b5", "x": 541.7, "y": 285.8, "width": 62, "height": 62, "autoSize": false, "anchorX": 0.5, "anchorY": 0.5, "src": "ui/atlas/module/battleMap/segment_007.png" },
-        { "_$id": "mapNode_boss_img", "_$type": "GImage", "name": "boss", "x": 462, "y": 350.2, "width": 62, "height": 62, "autoSize": false, "anchorX": 0.5, "anchorY": 0.5, "src": "ui/atlas/module/battleMap/segment_011.png" },
-        { "_$id": "mapNode_extract-final_img", "_$type": "GImage", "name": "extract-final", "x": 378.1, "y": 389.8, "width": 62, "height": 62, "autoSize": false, "anchorX": 0.5, "anchorY": 0.5, "src": "ui/atlas/module/battleMap/segment_012.png" },
-        { "_$id": "mapNode_opt1_img", "_$type": "GImage", "name": "opt1", "x": 180.9, "y": 350.2, "width": 62, "height": 62, "autoSize": false, "anchorX": 0.5, "anchorY": 0.5, "src": "ui/atlas/module/battleMap/segment_007.png" },
-        { "_$id": "mapNode_opt2_img", "_$type": "GImage", "name": "opt2", "x": 256.4, "y": 370, "width": 62, "height": 62, "autoSize": false, "anchorX": 0.5, "anchorY": 0.5, "src": "ui/atlas/module/battleMap/segment_007.png" },
-        { "_$id": "mapNode_opt3_img", "_$type": "GImage", "name": "opt3", "x": 378.1, "y": 414.6, "width": 62, "height": 62, "autoSize": false, "anchorX": 0.5, "anchorY": 0.5, "src": "ui/atlas/module/battleMap/segment_007.png" },
-        { "_$id": "mapNode_search1_img", "_$type": "GImage", "name": "search1", "x": 109.5, "y": 305.6, "width": 62, "height": 62, "autoSize": false, "anchorX": 0.5, "anchorY": 0.5, "src": "ui/atlas/module/battleMap/segment_004.png" },
-        { "_$id": "mapNode_recovery1_img", "_$type": "GImage", "name": "recovery1", "x": 248, "y": 67.8, "width": 62, "height": 62, "autoSize": false, "anchorX": 0.5, "anchorY": 0.5, "src": "ui/atlas/module/battleMap/segment_013.png" },
-        { "_$id": "mapNode_enlightenment_img", "_$type": "GImage", "name": "enlightenment", "x": 378.1, "y": 67.8, "width": 62, "height": 62, "autoSize": false, "anchorX": 0.5, "anchorY": 0.5, "src": "ui/atlas/module/battleMap/segment_014.png" },
-        { "_$id": "mapNode_extract-mid_img", "_$type": "GImage", "name": "extract-mid", "x": 88.6, "y": 414.6, "width": 62, "height": 62, "autoSize": false, "anchorX": 0.5, "anchorY": 0.5, "src": "ui/atlas/module/battleMap/segment_012.png" },
-        { "_$id": "mapNode_search2_img", "_$type": "GImage", "name": "search2", "x": 453.6, "y": 57.9, "width": 62, "height": 62, "autoSize": false, "anchorX": 0.5, "anchorY": 0.5, "src": "ui/atlas/module/battleMap/segment_008.png" },
-        { "_$id": "mapNode_opt4_img", "_$type": "GImage", "name": "opt4", "x": 445.2, "y": 261, "width": 62, "height": 62, "autoSize": false, "anchorX": 0.5, "anchorY": 0.5, "src": "ui/atlas/module/battleMap/segment_007.png" },
-        { "_$id": "mapNode_search3_img", "_$type": "GImage", "name": "search3", "x": 621.5, "y": 231.3, "width": 62, "height": 62, "autoSize": false, "anchorX": 0.5, "anchorY": 0.5, "src": "ui/atlas/module/battleMap/segment_004.png" },
-        { "_$id": "mapNode_recovery2_img", "_$type": "GImage", "name": "recovery2", "x": 613.1, "y": 43, "width": 62, "height": 62, "autoSize": false, "anchorX": 0.5, "anchorY": 0.5, "src": "ui/atlas/module/battleMap/segment_013.png" },
-        { "_$id": "mapNode_extract-deep_img", "_$type": "GImage", "name": "extract-deep", "x": 634.1, "y": 340.3, "width": 62, "height": 62, "autoSize": false, "anchorX": 0.5, "anchorY": 0.5, "src": "ui/atlas/module/battleMap/segment_012.png" },
-        { "_$id": "mapNode_opt5_img", "_$type": "GImage", "name": "opt5", "x": 697, "y": 310.5, "width": 62, "height": 62, "autoSize": false, "anchorX": 0.5, "anchorY": 0.5, "src": "ui/atlas/module/battleMap/segment_015.png" },
-        { "_$id": "mapNode_opt6_img", "_$type": "GImage", "name": "opt6", "x": 697, "y": 414.6, "width": 62, "height": 62, "autoSize": false, "anchorX": 0.5, "anchorY": 0.5, "src": "ui/atlas/module/battleMap/segment_007.png" },
-        { "_$id": "mapNode_search4_img", "_$type": "GImage", "name": "search4", "x": 520.8, "y": 459.2, "width": 62, "height": 62, "autoSize": false, "anchorX": 0.5, "anchorY": 0.5, "src": "ui/atlas/module/battleMap/segment_004.png" },
-        { "_$id": "mapNode_opt7_img", "_$type": "GImage", "name": "opt7", "x": 613.1, "y": 479, "width": 62, "height": 62, "autoSize": false, "anchorX": 0.5, "anchorY": 0.5, "src": "ui/atlas/module/battleMap/segment_007.png" }
+        {
+          "_$id": "mapNode_start_img",
+          "_$type": "GImage",
+          "name": "start",
+          "x": 55,
+          "y": 231.3,
+          "width": 62,
+          "height": 62,
+          "autoSize": false,
+          "anchorX": 0.5,
+          "anchorY": 0.5,
+          "src": "ui/atlas/module/expedition/exit.png"
+        },
+        {
+          "_$id": "mapNode_b1_img",
+          "_$type": "GImage",
+          "name": "b1",
+          "x": 117.9,
+          "y": 186.7,
+          "width": 62,
+          "height": 62,
+          "autoSize": false,
+          "anchorX": 0.5,
+          "anchorY": 0.5,
+          "src": "ui/atlas/module/expedition/battle_active.png"
+        },
+        {
+          "_$id": "mapNode_b2_img",
+          "_$type": "GImage",
+          "name": "b2",
+          "x": 180.9,
+          "y": 256,
+          "width": 62,
+          "height": 62,
+          "autoSize": false,
+          "anchorX": 0.5,
+          "anchorY": 0.5,
+          "src": "ui/atlas/module/expedition/battle_inactive.png"
+        },
+        {
+          "_$id": "mapNode_borrow1_img",
+          "_$type": "GImage",
+          "name": "borrow1",
+          "x": 248,
+          "y": 206.5,
+          "width": 62,
+          "height": 62,
+          "autoSize": false,
+          "anchorX": 0.5,
+          "anchorY": 0.5,
+          "src": "ui/atlas/module/expedition/borrow.png"
+        },
+        {
+          "_$id": "mapNode_b3_img",
+          "_$type": "GImage",
+          "name": "b3",
+          "x": 319.4,
+          "y": 266,
+          "width": 62,
+          "height": 62,
+          "autoSize": false,
+          "anchorX": 0.5,
+          "anchorY": 0.5,
+          "src": "ui/atlas/module/expedition/battle_active.png"
+        },
+        {
+          "_$id": "mapNode_elite1_img",
+          "_$type": "GImage",
+          "name": "elite1",
+          "x": 386.5,
+          "y": 196.6,
+          "width": 62,
+          "height": 62,
+          "autoSize": false,
+          "anchorX": 0.5,
+          "anchorY": 0.5,
+          "src": "ui/atlas/module/expedition/elite_active.png"
+        },
+        {
+          "_$id": "mapNode_borrow2_img",
+          "_$type": "GImage",
+          "name": "borrow2",
+          "x": 336.1,
+          "y": 122.3,
+          "width": 62,
+          "height": 62,
+          "autoSize": false,
+          "anchorX": 0.5,
+          "anchorY": 0.5,
+          "src": "ui/atlas/module/expedition/borrow.png"
+        },
+        {
+          "_$id": "mapNode_b4_img",
+          "_$type": "GImage",
+          "name": "b4",
+          "x": 449.4,
+          "y": 142.1,
+          "width": 62,
+          "height": 62,
+          "autoSize": false,
+          "anchorX": 0.5,
+          "anchorY": 0.5,
+          "src": "ui/atlas/module/expedition/battle_active.png"
+        },
+        {
+          "_$id": "mapNode_elite2_img",
+          "_$type": "GImage",
+          "name": "elite2",
+          "x": 520.8,
+          "y": 196.6,
+          "width": 62,
+          "height": 62,
+          "autoSize": false,
+          "anchorX": 0.5,
+          "anchorY": 0.5,
+          "src": "ui/atlas/module/expedition/elite_inactive.png"
+        },
+        {
+          "_$id": "mapNode_borrow3_img",
+          "_$type": "GImage",
+          "name": "borrow3",
+          "x": 571.1,
+          "y": 132.2,
+          "width": 62,
+          "height": 62,
+          "autoSize": false,
+          "anchorX": 0.5,
+          "anchorY": 0.5,
+          "src": "ui/atlas/module/expedition/borrow.png"
+        },
+        {
+          "_$id": "mapNode_b5_img",
+          "_$type": "GImage",
+          "name": "b5",
+          "x": 541.7,
+          "y": 285.8,
+          "width": 62,
+          "height": 62,
+          "autoSize": false,
+          "anchorX": 0.5,
+          "anchorY": 0.5,
+          "src": "ui/atlas/module/expedition/battle_active.png"
+        },
+        {
+          "_$id": "mapNode_boss_img",
+          "_$type": "GImage",
+          "name": "boss",
+          "x": 462,
+          "y": 350.2,
+          "width": 62,
+          "height": 62,
+          "autoSize": false,
+          "anchorX": 0.5,
+          "anchorY": 0.5,
+          "src": "ui/atlas/module/expedition/boss_active.png"
+        },
+        {
+          "_$id": "mapNode_extract-final_img",
+          "_$type": "GImage",
+          "name": "extract-final",
+          "x": 378.1,
+          "y": 389.8,
+          "width": 62,
+          "height": 62,
+          "autoSize": false,
+          "anchorX": 0.5,
+          "anchorY": 0.5,
+          "src": "ui/atlas/module/expedition/exit.png"
+        },
+        {
+          "_$id": "mapNode_opt1_img",
+          "_$type": "GImage",
+          "name": "opt1",
+          "x": 180.9,
+          "y": 350.2,
+          "width": 62,
+          "height": 62,
+          "autoSize": false,
+          "anchorX": 0.5,
+          "anchorY": 0.5,
+          "src": "ui/atlas/module/expedition/battle_active.png"
+        },
+        {
+          "_$id": "mapNode_opt2_img",
+          "_$type": "GImage",
+          "name": "opt2",
+          "x": 256.4,
+          "y": 370,
+          "width": 62,
+          "height": 62,
+          "autoSize": false,
+          "anchorX": 0.5,
+          "anchorY": 0.5,
+          "src": "ui/atlas/module/expedition/battle_active.png"
+        },
+        {
+          "_$id": "mapNode_opt3_img",
+          "_$type": "GImage",
+          "name": "opt3",
+          "x": 378.1,
+          "y": 414.6,
+          "width": 62,
+          "height": 62,
+          "autoSize": false,
+          "anchorX": 0.5,
+          "anchorY": 0.5,
+          "src": "ui/atlas/module/expedition/battle_active.png"
+        },
+        {
+          "_$id": "mapNode_search1_img",
+          "_$type": "GImage",
+          "name": "search1",
+          "x": 109.5,
+          "y": 305.6,
+          "width": 62,
+          "height": 62,
+          "autoSize": false,
+          "anchorX": 0.5,
+          "anchorY": 0.5,
+          "src": "ui/atlas/module/expedition/search_active.png"
+        },
+        {
+          "_$id": "mapNode_recovery1_img",
+          "_$type": "GImage",
+          "name": "recovery1",
+          "x": 248,
+          "y": 67.8,
+          "width": 62,
+          "height": 62,
+          "autoSize": false,
+          "anchorX": 0.5,
+          "anchorY": 0.5,
+          "src": "ui/atlas/module/expedition/recovery.png"
+        },
+        {
+          "_$id": "mapNode_enlightenment_img",
+          "_$type": "GImage",
+          "name": "enlightenment",
+          "x": 378.1,
+          "y": 67.8,
+          "width": 62,
+          "height": 62,
+          "autoSize": false,
+          "anchorX": 0.5,
+          "anchorY": 0.5,
+          "src": "ui/atlas/module/expedition/enlightenment.png"
+        },
+        {
+          "_$id": "mapNode_extract-mid_img",
+          "_$type": "GImage",
+          "name": "extract-mid",
+          "x": 88.6,
+          "y": 414.6,
+          "width": 62,
+          "height": 62,
+          "autoSize": false,
+          "anchorX": 0.5,
+          "anchorY": 0.5,
+          "src": "ui/atlas/module/expedition/exit.png"
+        },
+        {
+          "_$id": "mapNode_search2_img",
+          "_$type": "GImage",
+          "name": "search2",
+          "x": 453.6,
+          "y": 57.9,
+          "width": 62,
+          "height": 62,
+          "autoSize": false,
+          "anchorX": 0.5,
+          "anchorY": 0.5,
+          "src": "ui/atlas/module/expedition/search_inactive.png"
+        },
+        {
+          "_$id": "mapNode_opt4_img",
+          "_$type": "GImage",
+          "name": "opt4",
+          "x": 445.2,
+          "y": 261,
+          "width": 62,
+          "height": 62,
+          "autoSize": false,
+          "anchorX": 0.5,
+          "anchorY": 0.5,
+          "src": "ui/atlas/module/expedition/battle_active.png"
+        },
+        {
+          "_$id": "mapNode_search3_img",
+          "_$type": "GImage",
+          "name": "search3",
+          "x": 621.5,
+          "y": 231.3,
+          "width": 62,
+          "height": 62,
+          "autoSize": false,
+          "anchorX": 0.5,
+          "anchorY": 0.5,
+          "src": "ui/atlas/module/expedition/search_active.png"
+        },
+        {
+          "_$id": "mapNode_recovery2_img",
+          "_$type": "GImage",
+          "name": "recovery2",
+          "x": 613.1,
+          "y": 43,
+          "width": 62,
+          "height": 62,
+          "autoSize": false,
+          "anchorX": 0.5,
+          "anchorY": 0.5,
+          "src": "ui/atlas/module/expedition/recovery.png"
+        },
+        {
+          "_$id": "mapNode_extract-deep_img",
+          "_$type": "GImage",
+          "name": "extract-deep",
+          "x": 634.1,
+          "y": 340.3,
+          "width": 62,
+          "height": 62,
+          "autoSize": false,
+          "anchorX": 0.5,
+          "anchorY": 0.5,
+          "src": "ui/atlas/module/expedition/exit.png"
+        },
+        {
+          "_$id": "mapNode_opt5_img",
+          "_$type": "GImage",
+          "name": "opt5",
+          "x": 697,
+          "y": 310.5,
+          "width": 62,
+          "height": 62,
+          "autoSize": false,
+          "anchorX": 0.5,
+          "anchorY": 0.5,
+          "src": "ui/atlas/module/expedition/elite_inactive.png"
+        },
+        {
+          "_$id": "mapNode_opt6_img",
+          "_$type": "GImage",
+          "name": "opt6",
+          "x": 697,
+          "y": 414.6,
+          "width": 62,
+          "height": 62,
+          "autoSize": false,
+          "anchorX": 0.5,
+          "anchorY": 0.5,
+          "src": "ui/atlas/module/expedition/battle_active.png"
+        },
+        {
+          "_$id": "mapNode_search4_img",
+          "_$type": "GImage",
+          "name": "search4",
+          "x": 520.8,
+          "y": 459.2,
+          "width": 62,
+          "height": 62,
+          "autoSize": false,
+          "anchorX": 0.5,
+          "anchorY": 0.5,
+          "src": "ui/atlas/module/expedition/search_active.png"
+        },
+        {
+          "_$id": "mapNode_opt7_img",
+          "_$type": "GImage",
+          "name": "opt7",
+          "x": 613.1,
+          "y": 479,
+          "width": 62,
+          "height": 62,
+          "autoSize": false,
+          "anchorX": 0.5,
+          "anchorY": 0.5,
+          "src": "ui/atlas/module/expedition/battle_active.png"
+        }
       ]
     },
     {
@@ -266,7 +694,7 @@
       "width": 220,
       "height": 570,
       "autoSize": false,
-      "src": "ui/atlas/module/battleMap/segment_003.png"
+      "src": "ui/texture/expedition/node_panel.png"
     },
     {
       "_$id": "map016_info",
@@ -287,7 +715,7 @@
       "width": 46,
       "height": 56,
       "autoSize": false,
-      "src": "ui/atlas/module/battleMap/segment_020.png"
+      "src": "ui/atlas/module/expedition/timer.png"
     },
     {
       "_$id": "map019_title",
@@ -420,7 +848,7 @@
       "autoSize": false,
       "anchorX": 0,
       "anchorY": 0,
-      "src": "ui/atlas/module/battleMap/segment_017.png"
+      "src": "ui/atlas/module/expedition/meter_track.png"
     },
     {
       "_$id": "map026_progress",
@@ -531,10 +959,10 @@
       "_$id": "map033_build_btn",
       "_$type": "GWidget",
       "name": "mapBuildButton",
-      "x": 18,
-      "y": 12,
-      "width": 58,
-      "height": 42,
+      "x": 32,
+      "y": 598,
+      "width": 180,
+      "height": 40,
       "_$child": [
         {
           "_$id": "map034_build_btn_txt",
@@ -542,10 +970,10 @@
           "name": "mapBuildButtonText",
           "x": 0,
           "y": 0,
-          "width": 58,
-          "height": 42,
+          "width": 180,
+          "height": 40,
           "text": "局内构筑",
-          "fontSize": 18,
+          "fontSize": 16,
           "color": "#ece9dc",
           "align": "center",
           "valign": "middle",

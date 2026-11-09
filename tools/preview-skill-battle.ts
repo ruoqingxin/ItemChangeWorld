@@ -25,8 +25,6 @@ async function main(): Promise<void> {
     // Use the same UIManager/GRoot path as the actual game. The preview must
     // not place a second hand-built panel directly on the stage.
     UIManager.ins().init();
-    if (new URLSearchParams(location.search).has("legacy"))
-        SkillBattleUISession.setMapEnabled(false);
     const expedition = SkillBattleUISession.getExpedition();
     const run = expedition.run;
     const initialScreen = run && !run.settled
@@ -36,7 +34,7 @@ async function main(): Promise<void> {
     openSkillBattleScreen(initialScreen);
     const initialView = currentSkillBattleView;
     const preview = {
-        manager: SkillBattleManager.ins(), expedition,
+        manager: SkillBattleManager.ins(), expedition, ui: UIManager.ins(),
         get view() { return currentSkillBattleView || initialView; },
         get panel() { return ((currentSkillBattleView || initialView) as any).panel; },
         close: () => {

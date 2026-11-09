@@ -141,22 +141,29 @@ module.exports = ({ assert, test, setups, tables, Config, Rules, Manager, Presen
         assert.equal(store.writes, 0);
     });
 
-    test("F: legacy and new-rules local storage namespaces are isolated", () => {
+    test("F: retired saves are purged while current saves and other applications survive", () => {
         const { ExpeditionLocalStorage } = require(path.join(build, "script/module/expedition/data/ExpeditionData.js"));
         const original = global.window;
-        const values = new Map();
+        const values = new Map([
+            ["nowchange.skill-expedition.v1", "old"],
+            ["nowchange.skill-expedition.new-rules.v4", "old"],
+            [ExpeditionLocalStorage.key, "current"],
+            ["other-application", "keep"],
+        ]);
         global.window = { localStorage: {
+            get length() { return values.size; },
+            key(index) { return [...values.keys()][index]; },
             getItem(key) { return values.has(key) ? values.get(key) : null; },
             setItem(key, value) { values.set(key, value); },
+            removeItem(key) { values.delete(key); },
         } };
         try {
-            const legacy = new ExpeditionLocalStorage();
-            const newer = new ExpeditionLocalStorage("new-rules");
-            legacy.write("old");
-            assert.equal(newer.read(), null);
-            newer.write("new");
-            assert.equal(legacy.read(), "old");
-            assert.equal(newer.read(), "new");
+            const current = new ExpeditionLocalStorage();
+            assert.equal(current.read(), "current");
+            assert.equal(values.size, 2);
+            assert.equal(values.get("other-application"), "keep");
+            current.write("new");
+            assert.equal(new ExpeditionLocalStorage().read(), "new");
         } finally {
             if (original === undefined) delete global.window;
             else global.window = original;
@@ -737,36 +744,16 @@ module.exports = ({ assert, test, setups, tables, Config, Rules, Manager, Presen
         assert.equal(s.history[0].seed, 2); assert.equal(s.history[19].seed, 21);
         assert.deepEqual(reload(c).expedition.snapshot, s);
     });
-    test("E: legacy D saves keep resources and candidates and explicitly mark missing old actions", () => {
-        for (const phase of ["hub", "battle", "reward", "decision", "extracted", "failed"]) {
-            const c = create();
-            if (phase !== "hub") c.expedition.startNew(42);
-            if (["reward", "decision", "extracted"].includes(phase)) win(c);
-            if (["decision", "extracted"].includes(phase)) choose(c);
-            if (phase === "extracted") c.expedition.extract();
-            if (phase === "failed") while (c.battle.state.phase === "player_input") play(c, 1);
-            // Slash-only wins the first battle; manufacture defeat using a second encounter.
-            if (phase === "failed" && !c.expedition.run.settled) {
-                choose(c); c.expedition.continueNext();
-                while (c.battle.state.phase === "player_input") play(c, 2);
-            }
-            const old = c.expedition.snapshot;
-            delete old.history; if (old.run) delete old.run.report;
-            c.store.value = JSON.stringify(old);
-            const loaded = reload(c);
-            assert.deepEqual(loaded.expedition.snapshot.profile, old.profile);
-            assert.equal(c.store.value, JSON.stringify(old), "read-only migration must not write");
-            if (old.run) {
-                assert.equal(loaded.expedition.run.report.partial, true);
-                assert.equal(stats(loaded)[0].rounds, 0);
-                assert.deepEqual(loaded.expedition.run.pendingUpgradeChoices, old.run.pendingUpgradeChoices);
-            }
-            if (phase === "battle") play(loaded, 1);
-            if (phase === "reward") choose(loaded);
-            if (phase === "decision") loaded.expedition.continueNext();
-            if (phase === "extracted") loaded.expedition.openLoot(old.profile.warehouse[0].itemUid);
-            assert.equal(reload(loaded).expedition.error, "");
-        }
+    test("E: old schema is rejected without migrating its contents into the current save", () => {
+        const c = firstReward(), old = c.expedition.snapshot;
+        old.version = 1;
+        delete old.history;
+        delete old.run.report;
+        c.store.value = JSON.stringify(old);
+        const loaded = new ExpeditionManager(config, new Manager(), c.store);
+        assert.ok(loaded.error);
+        assert.equal(loaded.snapshot, null);
+        assert.equal(c.store.value, JSON.stringify(old));
     });
     test("E: corrupted action or report snapshots block loading without overwriting the raw save", () => {
         const c = firstReward(), good = c.expedition.snapshot;

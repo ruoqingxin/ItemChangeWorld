@@ -1,10 +1,12 @@
 import { UIBaseView } from "./UIBaseView";
+import { List } from "src/script/games/uilib/List";
+import { ListItemCtrl } from "src/script/games/uilib/ListItemCtrl";
+import { ElemFinder } from "src/script/games/utils/ElemFinder";
+import { UIUtils } from "src/script/games/utils/UIUtils";
 import { UITabSubView } from "./UITabView";
 import { TabConstructor } from "./TabConstructor";
-import { UIUtils } from "../utils/UIUtils";
-import { ElemFinder } from "../utils/ElemFinder";
-import { ListItemCtrl } from "../uilib/ListItemCtrl";
-import { List } from "../uilib/List";
+import { UIManager } from "./UIManager";
+import { UIEvents } from "./UIEvnets";
 
 export type TabFormSearcher = {
     getTabFormByClass<T extends UIBaseView>(formclass: new () => T): T;
@@ -137,6 +139,15 @@ export class TabCtrl {
         this.switchTabFormById(-1);
     }
 
+    /** 释放所有缓存子页，避免父界面销毁后仍有异步加载和关闭回调。 */
+    destroy(): void {
+        this._openenView = null;
+        for (const form of this._tabTypeMap.values()) {
+            form._destroy();
+        }
+        this._tabTypeMap.clear();
+    }
+
     /**
      * 获取当前打开的页签
      * @returns 
@@ -233,6 +244,7 @@ export class TabCtrl {
             this._openenView = newForm;
             newForm.setViewId(define.id);
             newForm.createForm();
+            UIManager.ins().event(UIEvents.FormOpenClose, { open: true, form: newForm });
             if (args && args.length > 0) {
                 newForm.open(...args);
             }
