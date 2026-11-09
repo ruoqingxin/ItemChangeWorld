@@ -215,7 +215,14 @@ $checks = @(
     ($baseline.confirmed.firstMap.undefeatedEnemiesBlockChosenPath -eq $true),
     ($null -eq $baseline.confirmed.firstMap.bossVictoryDaoyun),
     ($null -eq $baseline.confirmed.inventory.bagWidth),
-    ($baseline.confirmed.outside.automaticStarterWeaponGift -eq $false)
+    ($baseline.confirmed.outside.automaticStarterWeaponGift -eq $false),
+    ($baseline.acceptedAdjustableTestStartingPoints.stage3InventoryApproval.approvedOn -eq "2026-11-09"),
+    (($baseline.acceptedAdjustableTestStartingPoints.stage3InventoryApproval.battleBox -join ",") -eq "5,1"),
+    (($baseline.acceptedAdjustableTestStartingPoints.stage3InventoryApproval.safeBox -join ",") -eq "2,1"),
+    (($baseline.acceptedAdjustableTestStartingPoints.stage3InventoryApproval.bagTiers[0] -join ",") -eq "6,5"),
+    (($baseline.acceptedAdjustableTestStartingPoints.stage3InventoryApproval.bagTiers[1] -join ",") -eq "8,6"),
+    ($baseline.acceptedAdjustableTestStartingPoints.stage3InventoryApproval.repairCurrentEquippedWeaponOnly -eq 20),
+    ($baseline.acceptedAdjustableTestStartingPoints.stage3InventoryApproval.oneAtomicSaveForInventoryBuildBattleAndSettlement -eq $true)
 )
 if ($checks -contains $false) { throw "Confirmed baseline assertions failed." }
 $projectRoot = Split-Path -Parent $documentRoot

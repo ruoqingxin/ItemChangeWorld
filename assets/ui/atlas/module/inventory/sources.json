@@ -1,0 +1,138 @@
+{
+  "date": "2026-11-09",
+  "rights": "用户提供第三方素材，发布授权仍待核实",
+  "assets": [
+    {
+      "file": "ui/atlas/module/inventory/flower-flask.png",
+      "source": "E:\\NowChange\\ItemChangeWorld\\art\\reference\\cultivation\\items\\flower-flask.png",
+      "sha256": "9fc9150ddcbb889a35860e25ce45b1766a53de6ecca1e2b7bfdbe45d4d5f5e93",
+      "note": ""
+    },
+    {
+      "file": "ui/atlas/module/inventory/blue-flask.png",
+      "source": "E:\\NowChange\\ItemChangeWorld\\art\\reference\\cultivation\\items\\blue-flask.png",
+      "sha256": "e3a3773e290c3e72ba0e80a9ec44119d732d0a8c48423b193860b37427d25439",
+      "note": ""
+    },
+    {
+      "file": "ui/atlas/module/inventory/herb-sprig.png",
+      "source": "E:\\NowChange\\ItemChangeWorld\\art\\reference\\cultivation\\items\\herb-sprig.png",
+      "sha256": "852b21c7e88ddc8cc8d7020d6da292f7e62b40ca72e2955103da3fd8fea18e9c",
+      "note": ""
+    },
+    {
+      "file": "ui/atlas/module/inventory/spirit-fruit.png",
+      "source": "E:\\NowChange\\ItemChangeWorld\\art\\reference\\cultivation\\items\\spirit-fruit.png",
+      "sha256": "01ebe8655320f3610700101e626ab144886e8f282bc42fb0e7be834056419b43",
+      "note": ""
+    },
+    {
+      "file": "ui/atlas/module/inventory/fire-ring.png",
+      "source": "E:\\NowChange\\ItemChangeWorld\\art\\reference\\cultivation\\items\\fire-ring.png",
+      "sha256": "e4602d9d0d0296c06cad0a0532043553127f8e0a056335bd6f94f21ef713b11b",
+      "note": ""
+    },
+    {
+      "file": "ui/atlas/module/inventory/gold-sword.png",
+      "source": "E:\\NowChange\\ItemChangeWorld\\art\\reference\\cultivation\\items\\blue-blade.png",
+      "sha256": "9f1c760c2ea8fd4abea830ab126688d6b8e62dede57b79da9474f3ffc310fdc4",
+      "note": "沿用配置图标键；显示选用真实刀剑外观。候选 gold-sword 原图实际是卷轴，不用于武器"
+    },
+    {
+      "file": "ui/atlas/module/inventory/cell.png",
+      "source": "E:\\NowChange\\ItemChangeWorld\\art\\reference\\cultivation\\controls\\storage-cell.png",
+      "sha256": "0bd0a508b373510594020af139c44ad9bbc549782b9d986ccaf2b9b9aa34a7c1",
+      "note": ""
+    },
+    {
+      "file": "ui/atlas/module/inventory/lock.png",
+      "source": "E:\\NowChange\\ItemChangeWorld\\art\\reference\\cultivation\\controls\\lock-closed.png",
+      "sha256": "b091a7b1d3e2e2eb0cfa22fd36b4be66fa28a00e7afe87032485c1cb80aaf57c",
+      "note": ""
+    },
+    {
+      "file": "ui/atlas/module/inventory/selection.png",
+      "source": "E:\\NowChange\\ItemChangeWorld\\art\\reference\\cultivation\\grids\\selection-overlay.png",
+      "sha256": "11097e716701e33c5d3d2a8c90290d9bab7bc3c8d65520ac2681ee12612d8d79",
+      "note": ""
+    },
+    {
+      "file": "ui/atlas/module/inventory/equipment-cell.png",
+      "source": "E:\\NowChange\\ItemChangeWorld\\art\\reference\\cultivation\\grids\\equipment-cell.png",
+      "sha256": "0995d3307a6c943a9ac5dfff6789f9a20c7422abc6b20e25a8b45847cd0baf12",
+      "note": ""
+    },
+    {
+      "file": "ui/atlas/module/inventory/item-frame.png",
+      "source": "E:\\NowChange\\ItemChangeWorld\\art\\reference\\cultivation\\frames\\quality-1.png",
+      "sha256": "93abb6ef8314d46cb4141fc2db4db80e640a61e413a0b4109c5909b523df238f",
+      "note": ""
+    },
+    {
+      "file": "ui/atlas/module/inventory/item-frame-selected.png",
+      "source": "E:\\NowChange\\ItemChangeWorld\\art\\reference\\cultivation\\frames\\compact-quality-2.png",
+      "sha256": "715dff4eacb9ad3b007bc8a7091836ad61d8109c62ca5f00884eaeb31b53690f",
+      "note": ""
+    },
+    {
+      "file": "ui/texture/inventory/warehouse-body.png",
+      "source": "E:\\NowChange\\ItemChangeWorld\\art\\reference\\cultivation\\panels\\warehouse-body.png",
+      "sha256": "19e3f20789f467648921d1736b033e6d5f0f1cbc078c6c6b9da53124d63dbeb0",
+      "note": ""
+    },
+    {
+      "file": "ui/texture/inventory/backpack-body.png",
+      "source": "E:\\NowChange\\ItemChangeWorld\\art\\reference\\cultivation\\panels\\backpack-body.png",
+      "sha256": "b0b71baaa0056962e66841ff313307e406f23fd44133d4bfe5bba0195fc5e4b8",
+      "note": ""
+    },
+    {
+      "file": "ui/texture/inventory/topbar.png",
+      "source": "E:\\NowChange\\ItemChangeWorld\\art\\reference\\cultivation\\panels\\backpack-topbar.png",
+      "sha256": "1e3bfe36dae25125bcfa20852e21cd4c210d03c1a4b93722975bec0594d1308c",
+      "note": ""
+    },
+    {
+      "file": "ui/texture/inventory/tooltip.png",
+      "source": "E:\\NowChange\\ItemChangeWorld\\art\\reference\\cultivation\\panels\\item-tooltip-body.png",
+      "sha256": "0c16f73cef715fa3096c26ae2d937e8f38634cdcf9a5099500b943efadc7b31e",
+      "note": ""
+    },
+    {
+      "file": "ui/atlas/module/inventory/sword-book.png",
+      "source": "E:\\资源\\修仙宗门搜打撤\\extracted_assets\\images\\sprites\\itemui_983e94da1a7aea0ae4d3f64e92b7582a_item_166_1732596632810013890.png",
+      "sha256": "ef56006dc8506d1b9b7bc78c5bcd51e1ade5a907ddde22371678fefbb0aa588b",
+      "note": "卷轴外观临时代指书籍，不依据原游戏物品语义赋予效果"
+    },
+    {
+      "file": "ui/atlas/module/inventory/earth-book.png",
+      "source": "E:\\资源\\修仙宗门搜打撤\\extracted_assets\\images\\sprites\\itemui_983e94da1a7aea0ae4d3f64e92b7582a_item_166_1732596632810013890.png",
+      "sha256": "ef56006dc8506d1b9b7bc78c5bcd51e1ade5a907ddde22371678fefbb0aa588b",
+      "note": "同卷轴外观，名称与形状以本项目源表为准"
+    },
+    {
+      "file": "ui/atlas/module/inventory/repair-tool.png",
+      "source": "E:\\资源\\修仙宗门搜打撤\\extracted_assets\\images\\sprites\\itemui_983e94da1a7aea0ae4d3f64e92b7582a_item_163_-748384340853660908.png",
+      "sha256": "20b563f17ca1134be4489ad981e1d76ceb8366c090ff9df899015b8f8c187ae4",
+      "note": "符纸外观代指修补工具，非新增战斗符箓"
+    },
+    {
+      "file": "ui/atlas/module/inventory/ore.png",
+      "source": "E:\\资源\\修仙宗门搜打撤\\extracted_assets\\images\\sprites\\itemui_983e94da1a7aea0ae4d3f64e92b7582a_item_149_155045131931138061.png",
+      "sha256": "995265369fdbf4a4e9b8785781bfb7ead436ff03329ef2348fa146b180a4d921",
+      "note": "矿晶外观，普通矿材占格仍由配置决定"
+    },
+    {
+      "file": "ui/atlas/module/inventory/storage-bag.png",
+      "source": "E:\\资源\\修仙宗门搜打撤\\extracted_assets\\images\\sprites\\itemui_983e94da1a7aea0ae4d3f64e92b7582a_item_121_765490611520116238.png",
+      "sha256": "30f98351413d83ba83d0694ccef6bba2832be43fb7cd82686aee6fffd12fc0ab",
+      "note": "包裹外观暂代纳虚囊；不是正式最终法宝图"
+    },
+    {
+      "file": "ui/atlas/module/inventory/arrow.png",
+      "source": "E:\\资源\\修仙宗门搜打撤\\extracted_assets\\images\\sprites\\protectchoosepanelui_84dceb194fdffda1bc5b2dceccb284cb_img_bmf_jiantou1_-7376237031672629264.png",
+      "sha256": "f84433637ebb84d69da631f93fae2db9fc7d1bd521078b391bae3fdc5f75e6cf",
+      "note": "原图箭头，用于旋转按钮"
+    }
+  ]
+}

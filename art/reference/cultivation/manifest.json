@@ -1,0 +1,544 @@
+{
+  "version": 1,
+  "date": "2026-11-09",
+  "sourceRoot": "E:\\资源\\修仙宗门搜打撤\\extracted_assets\\images",
+  "sourceDescription": "User-supplied extracted game cache; publishing rights not verified.",
+  "status": "reference-only-not-runtime",
+  "sourceCounts": {
+    "sprites": 620,
+    "textures": 362,
+    "visuallyReviewedSprites": 379,
+    "visuallyReviewedUiReferences": 27,
+    "visuallyReviewedTextures": 288
+  },
+  "assets": [
+    {
+      "file": "controls/lock-closed.png",
+      "source": "sprites/commonui_f8177d23cd74ea96672753a28dbdeb94_img_cbg_suo_-2889170606451547222.png",
+      "width": 46,
+      "height": 64,
+      "sha256": "b091a7b1d3e2e2eb0cfa22fd36b4be66fa28a00e7afe87032485c1cb80aaf57c",
+      "role": "locked-state-candidate",
+      "status": "reference-only"
+    },
+    {
+      "file": "controls/lock-open.png",
+      "source": "sprites/commonui_f8177d23cd74ea96672753a28dbdeb94_img_cbg_suo_2_-2606238234467563285.png",
+      "width": 41,
+      "height": 64,
+      "sha256": "3ae0c351bf741830dda7253ebb2d5f3d16498496a6317e46204c08876aced2dc",
+      "role": "unlocked-state-candidate",
+      "status": "reference-only"
+    },
+    {
+      "file": "items/herb-sprig.png",
+      "source": "sprites/itemui_983e94da1a7aea0ae4d3f64e92b7582a_item_101_-6395426512874407218.png",
+      "width": 111,
+      "height": 243,
+      "sha256": "852b21c7e88ddc8cc8d7020d6da292f7e62b40ca72e2955103da3fd8fea18e9c",
+      "role": "material-candidate",
+      "status": "reference-only"
+    },
+    {
+      "file": "items/spirit-fruit.png",
+      "source": "sprites/itemui_983e94da1a7aea0ae4d3f64e92b7582a_item_102_-4826080189010662923.png",
+      "width": 125,
+      "height": 118,
+      "sha256": "01ebe8655320f3610700101e626ab144886e8f282bc42fb0e7be834056419b43",
+      "role": "material-candidate",
+      "status": "reference-only"
+    },
+    {
+      "file": "items/golden-mushroom.png",
+      "source": "sprites/itemui_983e94da1a7aea0ae4d3f64e92b7582a_item_109_-5634853528308531969.png",
+      "width": 116,
+      "height": 124,
+      "sha256": "1b110675774357ab673d9375b913df182d5bab9fdce28e9e217ba4811b118e27",
+      "role": "material-candidate",
+      "status": "reference-only"
+    },
+    {
+      "file": "items/red-leaf.png",
+      "source": "sprites/itemui_983e94da1a7aea0ae4d3f64e92b7582a_item_112_8682853606126953850.png",
+      "width": 233,
+      "height": 82,
+      "sha256": "236ac65cdeff3ee9f26c9124cc13df1240b04e52cad57cceb0f8e85563de97b5",
+      "role": "material-candidate",
+      "status": "reference-only"
+    },
+    {
+      "file": "items/blue-flask.png",
+      "source": "sprites/itemui_983e94da1a7aea0ae4d3f64e92b7582a_item_117_-4826502760328228364.png",
+      "width": 219,
+      "height": 243,
+      "sha256": "e3a3773e290c3e72ba0e80a9ec44119d732d0a8c48423b193860b37427d25439",
+      "role": "bottle-candidate-not-an-approved-potion",
+      "status": "reference-only"
+    },
+    {
+      "file": "items/flower-flask.png",
+      "source": "sprites/itemui_983e94da1a7aea0ae4d3f64e92b7582a_item_136_-639521697084360122.png",
+      "width": 212,
+      "height": 243,
+      "sha256": "9fc9150ddcbb889a35860e25ce45b1766a53de6ecca1e2b7bfdbe45d4d5f5e93",
+      "role": "bottle-candidate-not-an-approved-potion",
+      "status": "reference-only"
+    },
+    {
+      "file": "items/fire-ring.png",
+      "source": "sprites/itemui_983e94da1a7aea0ae4d3f64e92b7582a_item_161_-3014484986575957777.png",
+      "width": 115,
+      "height": 127,
+      "sha256": "e4602d9d0d0296c06cad0a0532043553127f8e0a056335bd6f94f21ef713b11b",
+      "role": "container-appearance-candidate-not-an-approved-equipment",
+      "status": "reference-only"
+    },
+    {
+      "file": "items/yellow-talisman.png",
+      "source": "sprites/itemui_983e94da1a7aea0ae4d3f64e92b7582a_item_163_-748384340853660908.png",
+      "width": 94,
+      "height": 248,
+      "sha256": "20b563f17ca1134be4489ad981e1d76ceb8366c090ff9df899015b8f8c187ae4",
+      "role": "talisman-candidate-not-an-approved-effect",
+      "status": "reference-only"
+    },
+    {
+      "file": "items/gold-sword.png",
+      "source": "sprites/itemui_983e94da1a7aea0ae4d3f64e92b7582a_item_166_1732596632810013890.png",
+      "width": 202,
+      "height": 251,
+      "sha256": "ef56006dc8506d1b9b7bc78c5bcd51e1ade5a907ddde22371678fefbb0aa588b",
+      "role": "weapon-appearance-candidate",
+      "status": "reference-only"
+    },
+    {
+      "file": "items/blue-blade.png",
+      "source": "sprites/itemui_983e94da1a7aea0ae4d3f64e92b7582a_item_168_306454383125723256.png",
+      "width": 146,
+      "height": 247,
+      "sha256": "9f1c760c2ea8fd4abea830ab126688d6b8e62dede57b79da9474f3ffc310fdc4",
+      "role": "weapon-appearance-candidate",
+      "status": "reference-only"
+    },
+    {
+      "file": "controls/search.png",
+      "source": "sprites/treasurepanelui_e2c2e2998c65a504a9617f1883154ddf_img_cbg_sousuo_2591475848941452566.png",
+      "width": 64,
+      "height": 64,
+      "sha256": "0311407cc0e2560662bc3a97acc00f5964a62d4279168bc2f61c56c58556f9fa",
+      "role": "search-candidate-prefer-existing-common-icons",
+      "status": "reference-only"
+    },
+    {
+      "file": "controls/storage-cell.png",
+      "source": "sprites/treasurepanelui_e2c2e2998c65a504a9617f1883154ddf_img_cbg2_gezi_3846786243107223588.png",
+      "width": 64,
+      "height": 64,
+      "sha256": "0bd0a508b373510594020af139c44ad9bbc549782b9d986ccaf2b9b9aa34a7c1",
+      "role": "storage-cell-candidate",
+      "status": "reference-only"
+    },
+    {
+      "file": "panels/warehouse-body.png",
+      "source": "sprites/treasurepanelui_e2c2e2998c65a504a9617f1883154ddf_img_cbg2_bg_8401952182026874435.png",
+      "width": 1024,
+      "height": 721,
+      "sha256": "19e3f20789f467648921d1736b033e6d5f0f1cbc078c6c6b9da53124d63dbeb0",
+      "role": "warehouse-panel-body",
+      "notes": "",
+      "status": "reference-only"
+    },
+    {
+      "file": "panels/warehouse-trim.png",
+      "source": "sprites/treasurepanelui_e2c2e2998c65a504a9617f1883154ddf_img_cbg2_kuang_-683215096292563041.png",
+      "width": 1024,
+      "height": 751,
+      "sha256": "8fd62ae0fbc72f56f7c830acc741b05fe1d6640d3566802cbedc37b90cfad3dd",
+      "role": "warehouse-top-and-bottom-trim",
+      "notes": "Transparent center; combine with a body; not a complete grid.",
+      "status": "reference-only"
+    },
+    {
+      "file": "panels/backpack-body.png",
+      "source": "sprites/disciplepanelui_bcfaa74ea943648599be0d342aff0cbe_img_dzdf_bbbg_-3185651245864634092.png",
+      "width": 512,
+      "height": 381,
+      "sha256": "b0b71baaa0056962e66841ff313307e406f23fd44133d4bfe5bba0195fc5e4b8",
+      "role": "backpack-panel-body",
+      "notes": "",
+      "status": "reference-only"
+    },
+    {
+      "file": "panels/backpack-topbar.png",
+      "source": "sprites/disciplepanelui_bcfaa74ea943648599be0d342aff0cbe_img_dzdf_bbkuang1_-1143432888703593110.png",
+      "width": 512,
+      "height": 48,
+      "sha256": "1e3bfe36dae25125bcfa20852e21cd4c210d03c1a4b93722975bec0594d1308c",
+      "role": "backpack-top-trim",
+      "notes": "",
+      "status": "reference-only"
+    },
+    {
+      "file": "panels/backpack-bottombar.png",
+      "source": "sprites/disciplepanelui_bcfaa74ea943648599be0d342aff0cbe_img_dzdf_bbkuang2_6309134007774213210.png",
+      "width": 512,
+      "height": 36,
+      "sha256": "6e2891834e331e235316163d0deeb0b9edf5b4963a05e1f12acf73875be135db",
+      "role": "backpack-bottom-trim",
+      "notes": "",
+      "status": "reference-only"
+    },
+    {
+      "file": "panels/equipment-body.png",
+      "source": "sprites/treasurepanelui_e2c2e2998c65a504a9617f1883154ddf_img_cwd_zjbg_-2436997004715699124.png",
+      "width": 1024,
+      "height": 670,
+      "sha256": "6b5c0300f265b6a0f639d04b76af794ffe5d1f2d2f24c1a6a8f029b8a43764a5",
+      "role": "equipment-panel-body",
+      "notes": "Appearance only; does not define equipment slots.",
+      "status": "reference-only"
+    },
+    {
+      "file": "panels/item-tooltip-body.png",
+      "source": "sprites/treasurepanelui_e2c2e2998c65a504a9617f1883154ddf_img_cbg_xq2_-6949857795160575805.png",
+      "width": 256,
+      "height": 215,
+      "sha256": "0c16f73cef715fa3096c26ae2d937e8f38634cdcf9a5099500b943efadc7b31e",
+      "role": "item-tooltip-body",
+      "notes": "",
+      "status": "reference-only"
+    },
+    {
+      "file": "panels/item-tooltip-divider.png",
+      "source": "sprites/treasurepanelui_e2c2e2998c65a504a9617f1883154ddf_img_cbg_xq3_7942529902561800810.png",
+      "width": 256,
+      "height": 32,
+      "sha256": "6b5411bebd5e1e4e6efd36d79b010d7c2625da55850bff31029789578694aa37",
+      "role": "item-tooltip-divider",
+      "notes": "",
+      "status": "reference-only"
+    },
+    {
+      "file": "panels/item-tooltip-callout.png",
+      "source": "sprites/treasurepanelui_e2c2e2998c65a504a9617f1883154ddf_img_cbg_xiangqing_8480748135941669834.png",
+      "width": 256,
+      "height": 237,
+      "sha256": "17162f6933245fb543ed7bb7c3f03d0188294055df2aea546e3519c390178d5d",
+      "role": "item-tooltip-callout",
+      "notes": "Includes colored bottom areas; not a neutral blank panel.",
+      "status": "reference-only"
+    },
+    {
+      "file": "grids/equipment-cell.png",
+      "source": "sprites/treasurepanelui_e2c2e2998c65a504a9617f1883154ddf_img_cwd_fangge_1100921540882233368.png",
+      "width": 128,
+      "height": 128,
+      "sha256": "0995d3307a6c943a9ac5dfff6789f9a20c7422abc6b20e25a8b45847cd0baf12",
+      "role": "equipment-cell",
+      "notes": "",
+      "status": "reference-only"
+    },
+    {
+      "file": "grids/selection-overlay.png",
+      "source": "sprites/treasurepanelui_e2c2e2998c65a504a9617f1883154ddf_img_cwd_choose_6184649730556880543.png",
+      "width": 256,
+      "height": 253,
+      "sha256": "11097e716701e33c5d3d2a8c90290d9bab7bc3c8d65520ac2681ee12612d8d79",
+      "role": "dark-selection-overlay-candidate",
+      "notes": "Dark fill; actual selection contrast requires runtime verification.",
+      "status": "reference-only"
+    },
+    {
+      "file": "grids/page-active.png",
+      "source": "sprites/treasurepanelui_e2c2e2998c65a504a9617f1883154ddf_img_cbg2_btn1_-7258656541446825120.png",
+      "width": 64,
+      "height": 54,
+      "sha256": "309f3bc81d22d38e7da4fb340ca799d7da7b3d1133e13f76e8e1d52a342cd143",
+      "role": "active-page-background",
+      "notes": "Background only; no page numbers.",
+      "status": "reference-only"
+    },
+    {
+      "file": "grids/page-inactive.png",
+      "source": "sprites/treasurepanelui_e2c2e2998c65a504a9617f1883154ddf_img_cbg2_btn2_-7168729768988425679.png",
+      "width": 64,
+      "height": 54,
+      "sha256": "43a509ed47b5116535ad5369f87ed8deeeccbe0b647fb79337b1639a6f68ddc5",
+      "role": "inactive-page-background",
+      "notes": "Background only; no page numbers.",
+      "status": "reference-only"
+    },
+    {
+      "file": "frames/quality-1.png",
+      "source": "sprites/itemborder_e43526ede4a6488384fa7e1d865008d2_img_cwd_1_269946906686751883.png",
+      "width": 256,
+      "height": 253,
+      "sha256": "93abb6ef8314d46cb4141fc2db4db80e640a61e413a0b4109c5909b523df238f",
+      "role": "quality-frame-candidate",
+      "notes": "Alternative palette only; existing common quality frames remain the runtime default.",
+      "status": "reference-only"
+    },
+    {
+      "file": "frames/quality-2.png",
+      "source": "sprites/itemborder_e43526ede4a6488384fa7e1d865008d2_img_cwd_2_-8527685412344352865.png",
+      "width": 256,
+      "height": 253,
+      "sha256": "150bc1d89fcbf0bc0755dbd3139186df9ea54ac87e0ec5e734afef342f18f7ad",
+      "role": "quality-frame-candidate",
+      "notes": "Alternative palette only; existing common quality frames remain the runtime default.",
+      "status": "reference-only"
+    },
+    {
+      "file": "frames/quality-3.png",
+      "source": "sprites/itemborder_e43526ede4a6488384fa7e1d865008d2_img_cwd_3_422503461645523645.png",
+      "width": 263,
+      "height": 260,
+      "sha256": "8f94ce49b0dc986d7c4f284a01e1571a86a09c6d8cde0d8c288d2b9130782abc",
+      "role": "quality-frame-candidate",
+      "notes": "Alternative palette only; existing common quality frames remain the runtime default.",
+      "status": "reference-only"
+    },
+    {
+      "file": "frames/quality-4.png",
+      "source": "sprites/itemborder_e43526ede4a6488384fa7e1d865008d2_img_cwd_4_8558360869692196896.png",
+      "width": 256,
+      "height": 253,
+      "sha256": "6f5ec75b2d4466e399801a57e3d711739a1df7ec57ce99bdf355cc88c693f17f",
+      "role": "quality-frame-candidate",
+      "notes": "Alternative palette only; existing common quality frames remain the runtime default.",
+      "status": "reference-only"
+    },
+    {
+      "file": "frames/quality-5.png",
+      "source": "sprites/itemborder_e43526ede4a6488384fa7e1d865008d2_img_cwd_5_-1231550870521695046.png",
+      "width": 256,
+      "height": 253,
+      "sha256": "68d7ae84863ece715abd65cb5e3774090bf25b988dbaed047bf68295bf330f8b",
+      "role": "quality-frame-candidate",
+      "notes": "Alternative palette only; existing common quality frames remain the runtime default.",
+      "status": "reference-only"
+    },
+    {
+      "file": "frames/quality-6.png",
+      "source": "sprites/itemborder_e43526ede4a6488384fa7e1d865008d2_img_cwd_6_8798943921010015834.png",
+      "width": 256,
+      "height": 253,
+      "sha256": "9148693cd073e9f4a64fb7ed9d10f777f6940c9b8851c6881132bae352cc588a",
+      "role": "quality-frame-candidate",
+      "notes": "Alternative palette only; existing common quality frames remain the runtime default.",
+      "status": "reference-only"
+    },
+    {
+      "file": "frames/compact-quality-1.png",
+      "source": "sprites/itemborder_e43526ede4a6488384fa7e1d865008d2_img_ckj_item1_7147659806727050420.png",
+      "width": 64,
+      "height": 64,
+      "sha256": "724f93c02727e605341386c6fa402848a8e1f1b35d4d831f893f6cf74370eff9",
+      "role": "compact-quality-frame-candidate",
+      "notes": "64px source; do not stretch to large panels.",
+      "status": "reference-only"
+    },
+    {
+      "file": "frames/compact-quality-2.png",
+      "source": "sprites/itemborder_e43526ede4a6488384fa7e1d865008d2_img_ckj_item2_-1796361808473590905.png",
+      "width": 64,
+      "height": 64,
+      "sha256": "715dff4eacb9ad3b007bc8a7091836ad61d8109c62ca5f00884eaeb31b53690f",
+      "role": "compact-quality-frame-candidate",
+      "notes": "64px source; do not stretch to large panels.",
+      "status": "reference-only"
+    },
+    {
+      "file": "frames/compact-quality-3.png",
+      "source": "sprites/itemborder_e43526ede4a6488384fa7e1d865008d2_img_ckj_item3_-9135262205004544248.png",
+      "width": 64,
+      "height": 64,
+      "sha256": "e22102843478e3598576225aa47562ef2eb8d6e598a59e7bc4f27a60be753404",
+      "role": "compact-quality-frame-candidate",
+      "notes": "64px source; do not stretch to large panels.",
+      "status": "reference-only"
+    },
+    {
+      "file": "frames/compact-quality-4.png",
+      "source": "sprites/itemborder_e43526ede4a6488384fa7e1d865008d2_img_ckj_item4_-4203252221610033066.png",
+      "width": 64,
+      "height": 64,
+      "sha256": "b8e1d8d642132547631006d23db035fbfc0b34eb154a0fe4e7b15808878152a7",
+      "role": "compact-quality-frame-candidate",
+      "notes": "64px source; do not stretch to large panels.",
+      "status": "reference-only"
+    },
+    {
+      "file": "frames/compact-quality-5.png",
+      "source": "sprites/itemborder_e43526ede4a6488384fa7e1d865008d2_img_ckj_item5_-7955004752251004708.png",
+      "width": 64,
+      "height": 64,
+      "sha256": "8098dad2b8c65e375c701f60c9ec739ee6e38564d867ffdbd5fb295dd5873a61",
+      "role": "compact-quality-frame-candidate",
+      "notes": "64px source; do not stretch to large panels.",
+      "status": "reference-only"
+    },
+    {
+      "file": "frames/certificate-portrait.png",
+      "source": "sprites/protectchoosepanelui_84dceb194fdffda1bc5b2dceccb284cb_img_bmf_kuang_-4406785256450528904.png",
+      "width": 624,
+      "height": 1024,
+      "sha256": "e1a395e179518700d6bd7c71dfc4b43cbb22731998ae168e5e817e98876ddeb4",
+      "role": "portrait-certificate-frame-candidate",
+      "notes": "Top and bottom trim, transparent center; no confirmed voucher-specific source.",
+      "status": "reference-only"
+    },
+    {
+      "file": "frames/certificate-detail.png",
+      "source": "sprites/protectchoosepanelui_84dceb194fdffda1bc5b2dceccb284cb_img_bmf_kuang2_4015056734432053482.png",
+      "width": 512,
+      "height": 228,
+      "sha256": "deb04d007e6d3447e7658817bd944a49e64cc6dd6d3366e55b2da3e51c09291d",
+      "role": "certificate-detail-panel-candidate",
+      "notes": "Blank dark panel; not a confirmed voucher-specific source.",
+      "status": "reference-only"
+    },
+    {
+      "file": "frames/card-portrait.png",
+      "source": "sprites/identifypanelui_aae8aff68683c2148641e7f4ad01131e_img_dhjd_itemk_3341028913728107601.png",
+      "width": 197,
+      "height": 250,
+      "sha256": "6b5bb28248ee82a91210bd447c05c09d5bc9f2c227b502e8f50acfc3088836fa",
+      "role": "portrait-card-frame",
+      "notes": "Includes separate empty fields; no voucher gameplay is implied.",
+      "status": "reference-only"
+    },
+    {
+      "file": "frames/card-landscape.png",
+      "source": "sprites/identifypanelui_aae8aff68683c2148641e7f4ad01131e_img_dhjd_itemk2_3835362322896622328.png",
+      "width": 256,
+      "height": 173,
+      "sha256": "35653f0f05185c9482a9aeaf10bb30da000beab7a9f9d89af08a13561604256b",
+      "role": "landscape-card-frame",
+      "notes": "Includes separate empty fields; no voucher gameplay is implied.",
+      "status": "reference-only"
+    },
+    {
+      "file": "frames/scroll-portrait.png",
+      "source": "sprites/commonui_f8177d23cd74ea96672753a28dbdeb94_img_dd_bg 1_5076500137758167725.png",
+      "width": 771,
+      "height": 1024,
+      "sha256": "e860b8f009d7b4e06d2dd668285086ad7b395ece33bd9541242d17df8a3f7215",
+      "role": "blank-portrait-scroll",
+      "notes": "",
+      "status": "reference-only"
+    },
+    {
+      "file": "frames/scroll-landscape.png",
+      "source": "sprites/guidedialoguepanelui_047bd8d948edc534a3db945b2b1776ed_img_duihua_bg_8125643296904582813.png",
+      "width": 1024,
+      "height": 524,
+      "sha256": "30df77d6c10de7745951ff0dd353457fb20b3d5c287c4617b7804828c3bfb4c9",
+      "role": "blank-landscape-scroll",
+      "notes": "",
+      "status": "reference-only"
+    },
+    {
+      "file": "frames/label-decorated.png",
+      "source": "sprites/identifypanelui_aae8aff68683c2148641e7f4ad01131e_img_dhjd_bg2_-6241380979940612730.png",
+      "width": 325,
+      "height": 87,
+      "sha256": "57eafec164fe649c11599e7112697b8406ae4d8eac7442318943769096a6e36d",
+      "role": "blank-decorated-label",
+      "notes": "",
+      "status": "reference-only"
+    },
+    {
+      "file": "maps/landscape-panel.png",
+      "source": "sprites/trainingpanelui_a65a4015b777098f79015c6ab1688737_img_wcll_bg2_-3733334158806592892.png",
+      "width": 608,
+      "height": 595,
+      "sha256": "e11bb4f41fbe09ec25c51e3bc525d58db871529a13511f54e669748100ac130d",
+      "role": "landscape-panel-candidate",
+      "notes": "608x595 framed sprite, not a full-bleed 1280x720 map. The raw texture has unused white padding.",
+      "status": "reference-only"
+    },
+    {
+      "file": "maps/region-bamboo.png",
+      "source": "sprites/trainingpanelui_a65a4015b777098f79015c6ab1688737_img_wcll_lldd0_-55601296472161313.png",
+      "width": 263,
+      "height": 241,
+      "sha256": "a02ff79c79062915c5dd42dea21b190d32d64b854b35902ba9fe2c9c38db0e45",
+      "role": "bamboo-region-art",
+      "notes": "Visual region only; no approved map-node role or connections.",
+      "status": "reference-only"
+    },
+    {
+      "file": "maps/region-mountains.png",
+      "source": "sprites/trainingpanelui_a65a4015b777098f79015c6ab1688737_img_wcll_lldd1_-4868483204946678744.png",
+      "width": 262,
+      "height": 255,
+      "sha256": "587aa13b9db7eab164b39c13465742cac644e5544ec456dfe036729bf40182d4",
+      "role": "mountain-region-art",
+      "notes": "Visual region only; no approved map-node role or connections.",
+      "status": "reference-only"
+    },
+    {
+      "file": "maps/region-desert.png",
+      "source": "sprites/trainingpanelui_a65a4015b777098f79015c6ab1688737_img_wcll_lldd3_-6327896494746626836.png",
+      "width": 275,
+      "height": 240,
+      "sha256": "50ff3f77b1ba913caf7862628b70f0d639f2cd34ec29eb1da54f1284425e5943",
+      "role": "desert-region-art",
+      "notes": "Visual region only; no approved map-node role or connections.",
+      "status": "reference-only"
+    },
+    {
+      "file": "maps/region-ruins.png",
+      "source": "sprites/trainingpanelui_a65a4015b777098f79015c6ab1688737_img_wcll_lldd4_-4551911057245823174.png",
+      "width": 302,
+      "height": 267,
+      "sha256": "9181fb65f979cd62df98de11572ba446104961a5338f94e483f7307f45dfbac4",
+      "role": "ruins-region-art",
+      "notes": "Visual region only; no approved map-node role or connections.",
+      "status": "reference-only"
+    },
+    {
+      "file": "maps/region-shadow.png",
+      "source": "sprites/trainingpanelui_a65a4015b777098f79015c6ab1688737_img_wcll_llddyy_-7753477028796469863.png",
+      "width": 256,
+      "height": 150,
+      "sha256": "6027f82127623ccb68de810282e38d98416fc0b474937fa0c88d7e1568febb81",
+      "role": "region-shadow",
+      "notes": "",
+      "status": "reference-only"
+    },
+    {
+      "file": "maps/map-label.png",
+      "source": "sprites/trainingpanelui_a65a4015b777098f79015c6ab1688737_img_wcll_title_0_-7081907684538986333.png",
+      "width": 256,
+      "height": 89,
+      "sha256": "1fb0b17ea0053b6b9d2c7be760909031ffd8755b3d856da9d891450a8afc743e",
+      "role": "blank-map-label",
+      "notes": "",
+      "status": "reference-only"
+    }
+  ],
+  "uiReferences": [
+    {
+      "file": "document/UI参考/599d74abc3a1b8fc3225f603c415a8a6.jpg",
+      "role": "side-by-side-carried-storage-and-warehouse",
+      "sha256": "56d392fcd7c0222efcbeaa06b803abca5e27aaec11ad580e1ed86d93d360a2b8"
+    },
+    {
+      "file": "document/UI参考/63528643263e811625935ece75e2eb9c.jpg",
+      "role": "side-by-side-carried-storage-and-ground-loot",
+      "sha256": "30e60c9e720807e46ef22f8208fc17d1a051b138afb9b0f8fe0fba6f53b2b6d5"
+    },
+    {
+      "file": "document/UI参考/8d46b68d4f1163b31e0412510f6e793d.jpg",
+      "role": "preparation-information-hierarchy",
+      "sha256": "a7077fd25195291fc0ec3b2ef6fa1ef14de12e96b41c7427cf4854c798ccc97a"
+    },
+    {
+      "file": "document/UI参考/bc28e91b799f8363ad1ca08717d6a138.jpg",
+      "role": "preparation-layout-variant",
+      "sha256": "d9e49186ea9523a3fdebd7dfd7c95e1e6ac9f65c872d6b637d69c3c16d0a90cd"
+    }
+  ]
+}

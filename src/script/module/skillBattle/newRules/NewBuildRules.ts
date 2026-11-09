@@ -1,6 +1,6 @@
 import { NewBattleCore as Core } from "./NewBattleCore";
 import type { NewBuildCommand, NewBuildConfig, NewBuildEligibility, NewBuildProfile, NewBuildState } from "./NewBuildTypes";
-import type { NewBattleResult, NewBattleSetup } from "./NewBattleTypes";
+import type { NewBattleCarry, NewBattleResult, NewBattleSetup } from "./NewBattleTypes";
 
 /** Deterministic construction/reward reducer. Randomness belongs to the saved run, never the view. */
 export class NewBuildRules {
@@ -118,7 +118,7 @@ export class NewBuildRules {
     }
 
     static apply(config: NewBuildConfig, profile: NewBuildProfile, snapshot: NewBuildState,
-        command: NewBuildCommand, at: number): { state: NewBuildState; battle?: NewBattleResult } {
+        command: NewBuildCommand, at: number, carry?: NewBattleCarry): { state: NewBuildState; battle?: NewBattleResult } {
         const state = Core.clone(snapshot);
         if (!command || state.phase === "ended") throw new Error("当前试炼已结束");
         let battle: NewBattleResult | undefined;
@@ -163,10 +163,11 @@ export class NewBuildRules {
                 const encounter = config.encounters[state.battles.length];
                 if (!encounter) throw new Error("本次流程夹具已完成");
                 const setup: NewBattleSetup = Core.clone({ ...config.setup, build: state.build, enemy: encounter.enemy });
+                if (carry) setup.weapon = Core.clone(carry.weapon);
                 const previous = state.battles[state.battles.length - 1]?.state;
-                const initial = Core.start(setup, `${state.runId}_${state.battles.length + 1}`, previous ?
-                    { hp: previous.player.hp, mp: previous.player.mp, weapon: previous.weapon, pouch: previous.pouch } : undefined);
-                if (!previous) {
+                const initial = Core.start(setup, `${state.runId}_${state.battles.length + 1}`, carry || (previous ?
+                    { hp: previous.player.hp, mp: previous.player.mp, weapon: previous.weapon, pouch: previous.pouch } : undefined));
+                if (!previous && !carry) {
                     const hp = setup.potions.find(r => r.resource === "hp"), mp = setup.potions.find(r => r.resource === "mp");
                     if (!hp || !mp) throw new Error("流程夹具药品配置缺失");
                     initial.pouch = [hp, hp, mp, mp, null].map((r, i) => r ?
@@ -204,6 +205,10 @@ export class NewBuildRules {
             case "finish":
                 requireReady();
                 if (state.battles.length !== config.encounters.length) throw new Error("流程夹具尚未完成");
+                this.end(state, "complete");
+                break;
+            case "extract":
+                requireReady();
                 this.end(state, "complete");
                 break;
             case "abandon": this.end(state, "abandon"); break;

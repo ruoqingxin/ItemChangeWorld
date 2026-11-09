@@ -1988,6 +1988,198 @@ export class Inew_earth_skillConfig {
 
 
 
+export class Inew_inventory_fixtureConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.id = _buf_.ReadInt()
+        this.item_id = _buf_.ReadInt()
+        this.count = _buf_.ReadInt()
+        this.node = _buf_.ReadInt()
+        this.durability = _buf_.ReadInt()
+    }
+
+    /**
+     * 来源ID
+     */
+    readonly id: number
+    /**
+     * 物品ID
+     */
+    readonly item_id: number
+    /**
+     * 份数
+     */
+    readonly count: number
+    /**
+     * 0仓库 1起节点
+     */
+    readonly node: number
+    /**
+     * 实际耐久
+     */
+    readonly durability: number
+
+/*
+    resolve(tables:Tables) {
+        
+        
+        
+        
+        
+    }
+    */
+}
+
+
+
+
+
+export class Inew_inventory_itemConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.id = _buf_.ReadInt()
+        this.name = _buf_.ReadString()
+        this.kind = _buf_.ReadString()
+        this.width = _buf_.ReadInt()
+        this.height = _buf_.ReadInt()
+        this.rotate = _buf_.ReadInt()
+        this.battle = _buf_.ReadInt()
+        this.safe = _buf_.ReadInt()
+        this.stack = _buf_.ReadInt()
+        this.potion_id = _buf_.ReadInt()
+        this.bag_width = _buf_.ReadInt()
+        this.bag_height = _buf_.ReadInt()
+        this.icon = _buf_.ReadString()
+    }
+
+    /**
+     * 物品ID
+     */
+    readonly id: number
+    /**
+     * 名称
+     */
+    readonly name: string
+    /**
+     * 类别
+     */
+    readonly kind: string
+    /**
+     * 宽格
+     */
+    readonly width: number
+    /**
+     * 高格
+     */
+    readonly height: number
+    /**
+     * 可旋转
+     */
+    readonly rotate: number
+    /**
+     * 可入斗法
+     */
+    readonly battle: number
+    /**
+     * 可入归真
+     */
+    readonly safe: number
+    /**
+     * 每份数量
+     */
+    readonly stack: number
+    /**
+     * 药品效果ID
+     */
+    readonly potion_id: number
+    /**
+     * 容量宽
+     */
+    readonly bag_width: number
+    /**
+     * 容量高
+     */
+    readonly bag_height: number
+    /**
+     * 图片键
+     */
+    readonly icon: string
+
+/*
+    resolve(tables:Tables) {
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    }
+    */
+}
+
+
+
+
+
+export class Inew_inventory_ruleConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.id = _buf_.ReadInt()
+        this.battle_width = _buf_.ReadInt()
+        this.battle_height = _buf_.ReadInt()
+        this.safe_width = _buf_.ReadInt()
+        this.safe_height = _buf_.ReadInt()
+        this.repair = _buf_.ReadInt()
+    }
+
+    /**
+     * 规则ID
+     */
+    readonly id: number
+    /**
+     * 斗法宽
+     */
+    readonly battle_width: number
+    /**
+     * 斗法高
+     */
+    readonly battle_height: number
+    /**
+     * 归真宽
+     */
+    readonly safe_width: number
+    /**
+     * 归真高
+     */
+    readonly safe_height: number
+    /**
+     * 修补耐久
+     */
+    readonly repair: number
+
+/*
+    resolve(tables:Tables) {
+        
+        
+        
+        
+        
+        
+    }
+    */
+}
+
+
+
+
+
 export class Inew_sword_passiveConfig {
 
     constructor(_buf_: ByteBuf) {
@@ -5113,6 +5305,168 @@ export class new_build_rule {
 
 
 
+export class new_inventory_item {
+    private _dataMap: Map<number, Inew_inventory_itemConfig>
+	//private _dataObj: {[index:number]:Inew_inventory_itemConfig}
+    private _dataList: Inew_inventory_itemConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, Inew_inventory_itemConfig>()
+        this._dataList = []
+		//this._dataObj = {}
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Inew_inventory_itemConfig
+            _v = new Inew_inventory_itemConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+			//this._dataObj[_v.id] = _v
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, Inew_inventory_itemConfig> {this.load(); return this._dataMap; }
+	
+	//getDataObj(): { [index: number]: Inew_inventory_itemConfig } {this.load(); return this._dataObj; }
+	
+    getDataList(): Inew_inventory_itemConfig[] { this.load();return this._dataList; }
+
+    get(key: number): Inew_inventory_itemConfig | undefined {
+		this.load();
+        return this._dataMap.get(key); 
+    }
+    
+/**
+    resolve(tables:Tables) {
+        
+    }
+ */    
+
+}
+
+
+
+
+export class new_inventory_rule {
+    private _dataMap: Map<number, Inew_inventory_ruleConfig>
+	//private _dataObj: {[index:number]:Inew_inventory_ruleConfig}
+    private _dataList: Inew_inventory_ruleConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, Inew_inventory_ruleConfig>()
+        this._dataList = []
+		//this._dataObj = {}
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Inew_inventory_ruleConfig
+            _v = new Inew_inventory_ruleConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+			//this._dataObj[_v.id] = _v
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, Inew_inventory_ruleConfig> {this.load(); return this._dataMap; }
+	
+	//getDataObj(): { [index: number]: Inew_inventory_ruleConfig } {this.load(); return this._dataObj; }
+	
+    getDataList(): Inew_inventory_ruleConfig[] { this.load();return this._dataList; }
+
+    get(key: number): Inew_inventory_ruleConfig | undefined {
+		this.load();
+        return this._dataMap.get(key); 
+    }
+    
+/**
+    resolve(tables:Tables) {
+        
+    }
+ */    
+
+}
+
+
+
+
+export class new_inventory_fixture {
+    private _dataMap: Map<number, Inew_inventory_fixtureConfig>
+	//private _dataObj: {[index:number]:Inew_inventory_fixtureConfig}
+    private _dataList: Inew_inventory_fixtureConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, Inew_inventory_fixtureConfig>()
+        this._dataList = []
+		//this._dataObj = {}
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Inew_inventory_fixtureConfig
+            _v = new Inew_inventory_fixtureConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+			//this._dataObj[_v.id] = _v
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, Inew_inventory_fixtureConfig> {this.load(); return this._dataMap; }
+	
+	//getDataObj(): { [index: number]: Inew_inventory_fixtureConfig } {this.load(); return this._dataObj; }
+	
+    getDataList(): Inew_inventory_fixtureConfig[] { this.load();return this._dataList; }
+
+    get(key: number): Inew_inventory_fixtureConfig | undefined {
+		this.load();
+        return this._dataMap.get(key); 
+    }
+    
+/**
+    resolve(tables:Tables) {
+        
+    }
+ */    
+
+}
+
+
+
+
 type ByteBufLoader = (file: string) => ByteBuf
 
 export class Tables {
@@ -5180,6 +5534,12 @@ export class Tables {
     get new_build_passive(): new_build_passive  { return this._new_build_passive;}
     private _new_build_rule: new_build_rule
     get new_build_rule(): new_build_rule  { return this._new_build_rule;}
+    private _new_inventory_item: new_inventory_item
+    get new_inventory_item(): new_inventory_item  { return this._new_inventory_item;}
+    private _new_inventory_rule: new_inventory_rule
+    get new_inventory_rule(): new_inventory_rule  { return this._new_inventory_rule;}
+    private _new_inventory_fixture: new_inventory_fixture
+    get new_inventory_fixture(): new_inventory_fixture  { return this._new_inventory_fixture;}
 
     static getTableNames(): string[] {
         let names: string[] = [];
@@ -5215,6 +5575,9 @@ export class Tables {
         names.push('new_earth_skill');
         names.push('new_build_passive');
         names.push('new_build_rule');
+        names.push('new_inventory_item');
+        names.push('new_inventory_rule');
+        names.push('new_inventory_fixture');
         return names;
     }
 
@@ -5251,6 +5614,9 @@ export class Tables {
         this._new_earth_skill = new new_earth_skill(loader('new_earth_skill'))
         this._new_build_passive = new new_build_passive(loader('new_build_passive'))
         this._new_build_rule = new new_build_rule(loader('new_build_rule'))
+        this._new_inventory_item = new new_inventory_item(loader('new_inventory_item'))
+        this._new_inventory_rule = new new_inventory_rule(loader('new_inventory_rule'))
+        this._new_inventory_fixture = new new_inventory_fixture(loader('new_inventory_fixture'))
 
         /*
         this._item.resolve(this)
@@ -5285,6 +5651,9 @@ export class Tables {
         this._new_earth_skill.resolve(this)
         this._new_build_passive.resolve(this)
         this._new_build_rule.resolve(this)
+        this._new_inventory_item.resolve(this)
+        this._new_inventory_rule.resolve(this)
+        this._new_inventory_fixture.resolve(this)
         */
     }
 }

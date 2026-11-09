@@ -3,7 +3,7 @@ const sharp=require("sharp");
 const assert=require("node:assert/strict");
 const fs=require("node:fs/promises");
 const path=require("node:path");
-const url=process.env.SKILL_BATTLE_URL||"http://127.0.0.1:18120";
+const url=(process.env.SKILL_BATTLE_URL||"http://127.0.0.1:18120").replace(/\/$/,"")+"/?stage=2";
 const key="nowchange.stage2-build.v1";
 const screenshots=path.join(__dirname,"../bin/stage2-browser");
 async function ready(page,screen="start"){

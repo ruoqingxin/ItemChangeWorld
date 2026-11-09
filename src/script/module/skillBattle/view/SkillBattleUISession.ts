@@ -9,14 +9,34 @@ import { NewBuildSession } from "../newRules/NewBuildSession";
 import { NewBuildPanel } from "./NewBuildPanel";
 import { NewBuildConfigUtils } from "../newRules/NewBuildConfigUtils";
 import { NewBattlePanel } from "./NewBattlePanel";
+import { NewInventorySession } from "../newRules/NewInventorySession";
+import { NewInventoryConfigUtils } from "../newRules/NewInventoryConfigUtils";
+import { NewInventoryPanel } from "./NewInventoryPanel";
 import type { UIBaseView } from "../../../games/ui/UIBaseView";
 
 /** Shared model for the independently opened start, battle, and settlement views. */
 export class SkillBattleUISession {
     static previewSingleTrial = false;
+    static previewBuildTrial = false;
     private static build: NewBuildSession;
-    static getActive(): NewBuildSession | NewBattleSession {
-        return this.previewSingleTrial ? this.getTrial() : this.getBuild();
+    static getActive(): NewBuildSession | NewBattleSession | NewInventorySession {
+        return this.previewSingleTrial ? this.getTrial() : this.previewBuildTrial ? this.getBuild() : this.getInventory();
+    }
+    private static inventory: NewInventorySession;
+    static getInventory(): NewInventorySession {
+        if (!this.inventory) {
+            this.inventory = new NewInventorySession(SkillBattleManager.ins(),window.localStorage,
+                () => Date.now(),NewInventoryConfigUtils.read(ConfigUtil.Tables));
+            const check = () => {
+                try { if (!this.inventory.error && this.inventory.expire()) this.onTrialExpired?.(); }
+                catch (error) { console.warn("储物演练截止保存失败，将重试",error); }
+            };
+            Laya.timer.loop(250,this,check);
+            window.addEventListener("focus",check);
+            document.addEventListener("visibilitychange",check);
+            check();
+        }
+        return this.inventory;
     }
     static getBuild(): NewBuildSession {
         if (!this.build) {
@@ -36,7 +56,8 @@ export class SkillBattleUISession {
     static createPanel(view: UIBaseView, screen: "start" | "battle" | "settlement",
         navigate: (screen: "start" | "battle" | "settlement") => void): NewBattlePanel {
         return this.previewSingleTrial ? new NewBattlePanel(view, this.getTrial(), this.trialOptions, navigate, screen) :
-            new NewBuildPanel(view, this.getBuild(), navigate, screen);
+            this.previewBuildTrial ? new NewBuildPanel(view, this.getBuild(), navigate, screen) :
+            new NewInventoryPanel(view,this.getInventory(),navigate,screen);
     }
     private static trial: NewBattleSession;
     static readonly trialOptions = NewBattleConfigUtils.defaults();

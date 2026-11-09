@@ -197,10 +197,32 @@
       "common": { "xianjiBaseAttack": 0.2, "gushouDefense": 0.5, "humingHpRatio": 0.3,
         "humingDefense": 1, "yaoyinDefense": 0.5, "usesPerBattle": 1 },
       "testFixtureIsNotPermanentLearningOrOfficialMap": true
+    },
+    "stage3InventoryApproval": {
+      "approvedOn": "2026-11-09",
+      "source": "阶段3_三空间与物品确认包，用户整包按推荐批准开发",
+      "battleBox": [5, 1],
+      "safeBox": [2, 1],
+      "bagTiers": [[6, 5], [8, 6]],
+      "containerBody": [2, 2],
+      "weaponSlots": 1,
+      "containerSlots": 1,
+      "firstBatchStack": 1,
+      "rectangularShapes": {
+        "hpPotion": [1, 1], "mpPotion": [1, 1], "repair": [1, 1],
+        "swordBook": [1, 2], "earthBook": [1, 2], "herb": [1, 2],
+        "ore": [2, 2], "smallMaterial": [1, 1], "weapon": [1, 3]
+      },
+      "quarterTurnRotation": true,
+      "repairCurrentEquippedWeaponOnly": 20,
+      "containerSwapOverflowRejectsWholeTransaction": true,
+      "oneAtomicSaveForInventoryBuildBattleAndSettlement": true,
+      "countdownStartsOnEnterNotPreparation": true,
+      "fixtureIsNotStarterGiftOfficialMapOrPermanentLearning": true
     }
   },
   "notApproved": [
-    "纳虚器尺寸档数及物品拼图完整表",
+    "后续纳虚器档数与未列首批物品形状、唯一物品保护",
     "首领道韵与具体掉落表",
     "商店价格刷新时刻初赠数量",
     "炼气阶段数目数值及本源具体能力",

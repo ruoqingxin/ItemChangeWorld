@@ -8,6 +8,11 @@ import { NewBuildSession } from "../newRules/NewBuildSession";
 import { NewBattlePanel } from "./NewBattlePanel";
 
 const f = (n: number) => Core.format(n);
+export type NewBuildPanelSession = Pick<NewBuildSession, "snapshot" | "flow" | "state" | "record" |
+    "records" | "error" | "screen"> & import("./NewBattlePanel").NewBattlePanelSession & {
+        start?: NewBuildSession["start"];
+        dispatch(...args: Parameters<NewBuildSession["dispatch"]>): unknown;
+    };
 
 /** Out-of-battle construction uses the existing start prefab, not a second UI framework. */
 export class NewBuildPanel extends NewBattlePanel {
@@ -18,7 +23,7 @@ export class NewBuildPanel extends NewBattlePanel {
     private tab: "build" | "log" = "build";
     private page = 0;
     private upgradeId = 0;
-    constructor(view: UIBaseView, readonly flowSession: NewBuildSession,
+    constructor(view: UIBaseView, readonly flowSession: NewBuildPanelSession,
         navigate: (screen: "start" | "battle" | "settlement") => void, screen: "start" | "battle" | "settlement") {
         super(view, flowSession, NewBattleConfigUtils.defaults(), navigate, screen);
     }

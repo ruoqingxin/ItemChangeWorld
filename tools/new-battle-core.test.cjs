@@ -52,7 +52,7 @@ const allPassives = [1, 2, 3, 4, 5, 6];
 const quiet = cfg => { cfg.enemy.maxHp = 1000000; cfg.enemy.intents = [{ id: 1, name: "观察", damage: 0, block: 0, charging: false }]; return cfg; };
 
 test("generated approved values, repeated intent references and integer formatting", () => {
-    assert.equal(count, 32);
+    assert.equal(count, 35);
     const cfg = setup();
     assert.deepEqual(cfg.enemy.intents.map(i => i.id), [1, 1, 2]);
     assert.deepEqual(Core.attributes(cfg, state(cfg)), { attack: 1400, defense: 800 });

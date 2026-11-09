@@ -26,7 +26,7 @@ export type NewBuildCommand =
     | { type: "battle" }
     | { type: "action"; action: NewBattleAction }
     | { type: "meditate" }
-    | { type: "finish" | "abandon" | "timeout" };
+    | { type: "finish" | "extract" | "abandon" | "timeout" };
 export interface NewBuildSave {
     version: 1; startedAt: number; deadlineAt: number; seed: number; runId: string;
     config: NewBuildConfig; profile: NewBuildProfile;

@@ -26,6 +26,7 @@ async function main(): Promise<void> {
     // not place a second hand-built panel directly on the stage.
     UIManager.ins().init();
     SkillBattleUISession.previewSingleTrial = new URLSearchParams(window.location.search).get("stage") === "1";
+    SkillBattleUISession.previewBuildTrial = new URLSearchParams(window.location.search).get("stage") === "2";
     const trial = SkillBattleUISession.getActive();
     openSkillBattleScreen(trial.screen);
     const initialView = currentSkillBattleView;
