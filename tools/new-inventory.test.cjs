@@ -94,7 +94,112 @@ test("preview and cancel preserve source and every UID",()=>{
     assert.equal(f.s.inventory.items.filter(j=>j.uid===i.uid).length,1);
     unchanged(f,()=>move(f,i,at("safe")),/来源/);
 });
-test("container cannot nest; explicit plans and overflow reject atomically",()=>{
+function warehouseFixture(){
+    const c=structuredClone(config);
+    c.fixtures=[{id:950,templateId:10,count:1,node:0,durability:0},
+        {id:951,templateId:11,count:1,node:0,durability:0},
+        {id:952,templateId:9,count:2,node:0,durability:30},
+        {id:953,templateId:6,count:1,node:0,durability:0},
+        {id:954,templateId:1,count:2,node:0,durability:0}];
+    return fixture(c);
+}
+const arrange=(item,x,y,rotated=false,page=0)=>({type:"arrangeWarehouse",uid:item.uid,from:item.location,to:{page,x,y,rotated}});
+test("warehouse same-space drag keeps a 2x2 container in the lower rows and preserves every other position on reload",()=>{
+    const f=warehouseFixture(),bag=items(f,10)[0],before=f.s.archive,slots=R.warehousePlacements(f.c,f.s.inventory);
+    assert.equal(before.state.warehouseLayout,undefined,"Existing saves do not need migration or an eager write");
+    const plan=arrange(bag,1,5),preview=f.s.previewMove(plan);
+    assert.deepEqual(f.s.archive,before,"Dragging/preview does not write");
+    cmd(f,plan);
+    assert.deepEqual(f.s.inventory,preview.state);
+    assert.deepEqual(f.s.inventory.warehouseLayout.find(p=>p.uid===bag.uid),{uid:bag.uid,page:0,x:1,y:5,rotated:false});
+    assert.deepEqual(f.s.inventory.warehouseLayout.filter(p=>p.uid!==bag.uid),slots.filter(p=>p.uid!==bag.uid));
+    assert.deepEqual(f.s.inventory.items,before.state.items,"Arrangement changes neither ownership nor instances");
+    assert.equal(f.s.inventory.revision,before.state.revision+1);
+    assert.deepEqual(new Session(new Manager(),f.storage,f.now,f.c).inventory,f.s.inventory);
+});
+test("warehouse arrangement excludes its own old footprint but rejects collisions, edges and invalid rotations",()=>{
+    const f=warehouseFixture(),bag=items(f,10)[0],slots=R.warehousePlacements(f.c,f.s.inventory);
+    const other=slots.find(p=>p.uid!==bag.uid);
+    unchanged(f,()=>cmd(f,arrange(bag,other.x,other.y)),/相交/);
+    for(const [x,y,page]of [[-1,0,0],[7,0,0],[0,6,0],[0,0,-1],[0,0,1],[0.5,0,0]])
+        unchanged(f,()=>cmd(f,arrange(bag,x,y,false,page)),/仓库/);
+    const badRotation=arrange(bag,1,5);badRotation.to.rotated="yes";
+    unchanged(f,()=>cmd(f,badRotation),/旋转/);
+    const self=fixture({...f.c,fixtures:f.c.fixtures.slice(0,1)}),own=items(self,10)[0];
+    cmd(self,arrange(own,0,1));
+    assert.equal(self.s.inventory.warehouseLayout.find(p=>p.uid===own.uid).y,1);
+});
+test("warehouse image rotation, first-fit arrivals and departing items preserve the committed layout",()=>{
+    const f=warehouseFixture(),herb=items(f,6)[0];
+    cmd(f,arrange(herb,4,6,true));
+    const original=f.s.inventory.warehouseLayout.find(p=>p.uid===herb.uid);
+    equip(f);
+    const potion=items(f,1)[0];move(f,potion,at("battle"));
+    assert.ok(!f.s.inventory.warehouseLayout.some(p=>p.uid===potion.uid));
+    move(f,items(f,1,"battle")[0],{space:"warehouse"});
+    assert.deepEqual(f.s.inventory.warehouseLayout.find(p=>p.uid===herb.uid),original);
+    assert.equal(f.s.inventory.warehouseLayout.filter(p=>p.uid===potion.uid).length,1);
+    assert.deepEqual(new Session(new Manager(),f.storage,f.now,f.c).inventory,f.s.inventory);
+});
+test("warehouse equipment replacements return the old body to the incoming body's slot",()=>{
+    const f=warehouseFixture(),bag=items(f,11)[0];
+    cmd(f,arrange(bag,1,5));equip(f);
+    const slot=f.s.inventory.warehouseLayout.find(p=>p.uid===bag.uid),old=items(f,10,"container")[0];
+    cmd(f,R.containerPlan(f.c,f.s.inventory,bag.uid));
+    assert.deepEqual(f.s.inventory.warehouseLayout.find(p=>p.uid===old.uid),{...slot,uid:old.uid});
+    const sword=items(f,9)[0];cmd(f,R.weaponPlan(f.c,f.s.inventory,sword.uid));
+    const next=items(f,9)[0],nextSlot=f.s.inventory.warehouseLayout.find(p=>p.uid===next.uid);
+    cmd(f,R.weaponPlan(f.c,f.s.inventory,next.uid));
+    assert.deepEqual(f.s.inventory.warehouseLayout.find(p=>p.uid===sword.uid),{...nextSlot,uid:sword.uid});
+    assert.deepEqual(new Session(new Manager(),f.storage,f.now,f.c).inventory,f.s.inventory);
+});
+test("warehouse arrangement is atomic on quota failure, stale page and concurrent save, and cannot bypass active access",()=>{
+    const f=warehouseFixture(),bag=items(f,10)[0],plan=arrange(bag,1,5),token=f.s.token;
+    const write=f.storage.setItem;f.storage.setItem=()=>{throw Error("warehouse quota");};
+    unchanged(f,()=>cmd(f,plan),/warehouse quota/);f.storage.setItem=write;cmd(f,plan);
+    unchanged(f,()=>f.s.inventoryCommand(arrange(bag,4,5),token),/过期/);
+    const current=f.data.get(Session.key);f.data.set(Session.key,current+" ");
+    unchanged(f,()=>cmd(f,arrange(bag,4,5)),/其他页面/);f.data.set(Session.key,current);
+    enter(f);unchanged(f,()=>cmd(f,arrange(bag,4,5)),/局内/);
+});
+test("warehouse legacy saves stay byte-identical until rearrangement and layout tampering is rejected",()=>{
+    const f=warehouseFixture(),raw=f.data.get(Session.key);
+    const restored=new Session(new Manager(),f.storage,f.now,f.c);
+    assert.equal(restored.error,"");assert.equal(f.data.get(Session.key),raw);
+    assert.equal(restored.inventory.warehouseLayout,undefined);
+    cmd(f,arrange(items(f,10)[0],1,5));
+    const tampered=f.s.archive;tampered.state.warehouseLayout[0].x=4;
+    const text=JSON.stringify(tampered);f.data.set(Session.key,text);
+    const rejected=new Session(new Manager(),f.storage,f.now,f.c);
+    assert.equal(rejected.inventory,null);assert.match(rejected.error,/原档已保留/);
+    assert.equal(f.data.get(Session.key),text);assert.equal(f.data.get("other"),"keep");
+});
+test("warehouse pagination keeps all 57 actual items and permits placement on an existing second page",()=>{
+    const c=structuredClone(config);c.fixtures=[
+        {id:960,templateId:8,count:30,node:0,durability:0},{id:961,templateId:8,count:27,node:0,durability:0}];
+    const f=fixture(c),all=items(f,8),slots=R.warehousePlacements(c,f.s.inventory);
+    assert.equal(slots.filter(p=>p.page===0).length,56);assert.equal(slots.filter(p=>p.page===1).length,1);
+    cmd(f,arrange(all[0],7,6,false,1));
+    assert.equal(f.s.inventory.warehouseLayout.length,57);
+    assert.deepEqual(f.s.inventory.warehouseLayout.find(p=>p.uid===all[0].uid),
+        {uid:all[0].uid,page:1,x:7,y:6,rotated:false});
+    assert.deepEqual(new Session(new Manager(),f.storage,f.now,c).inventory,f.s.inventory);
+});
+test("warehouse layout survives extraction and timeout without losing arrivals or moving retained items",()=>{
+    for(const result of ["extract","timeout"]){
+        const f=warehouseFixture(),bag=items(f,10)[0];cmd(f,arrange(bag,1,5));equip(f,11);
+        move(f,items(f,1)[0],at("safe"));
+        const retained=f.s.inventory.warehouseLayout;
+        enter(f);
+        if(result==="extract")cmd(f,{type:"extract"});
+        else{f.setNow(f.s.inventory.deadlineAt);f.s.expire();}
+        assert.equal(f.s.inventory.result,result);
+        for(const slot of retained)assert.deepEqual(f.s.inventory.warehouseLayout.find(p=>p.uid===slot.uid),slot);
+        assert.equal(f.s.inventory.warehouseLayout.length,f.s.inventory.items.filter(i=>i.location.space==="warehouse").length);
+        assert.deepEqual(new Session(new Manager(),f.storage,f.now,f.c).inventory,f.s.inventory);
+    }
+});
+test("unequipped container occupies four bag cells without providing capacity; invalid swaps remain atomic",()=>{
     const f=fixture();equip(f,11);
     const m=items(f,7)[0];move(f,m,at("bag",6,4));
     const small=items(f,10)[0],inside=items(f,7,"bag")[0];
@@ -103,8 +208,107 @@ test("container cannot nest; explicit plans and overflow reject atomically",()=>
         contents:[{uid:inside.uid,from:inside.location,to:inside.location}]}),/尺寸/);
     cmd(f,{type:"equipContainer",uid:small.uid,from:small.location,oldTo:{space:"warehouse"},
         contents:[{uid:inside.uid,from:inside.location,to:at("bag",0,0)}]});
-    unchanged(f,()=>move(f,items(f,11)[0],at("bag",2)),/换装/);
+    const spare=items(f,11)[0];move(f,spare,at("bag",2));
+    assert.equal(items(f,11,"bag")[0].uid,spare.uid);
     assert.deepEqual(R.size(config,f.s.inventory,"bag"),[6,5]);
+    unchanged(f,()=>move(f,items(f,1)[0],at("bag",3,1)),/相交/);
+    unchanged(f,()=>move(f,items(f,11,"bag")[0],at("safe")),/禁止/);
+    unchanged(f,()=>move(f,items(f,11,"bag")[0],at("battle")),/只收/);
+    unchanged(f,()=>move(f,items(f,10,"container")[0],at("bag",4)),/换装/);
+    assert.deepEqual(new Session(new Manager(),f.storage,f.now,f.c).inventory,f.s.inventory);
+});
+test("container in bag can equip without being counted twice as its own cargo",()=>{
+    const f=fixture();equip(f,11);
+    const spare=items(f,10)[0];move(f,spare,at("bag",0,0));
+    move(f,items(f,7)[0],at("bag",6,4));
+    const plan=R.containerPlan(f.c,f.s.inventory,spare.uid),before=f.s.archive;
+    assert.equal(plan.from.space,"bag");assert.equal(plan.contents.length,1);
+    assert.ok(plan.contents.every(m=>m.uid!==spare.uid));
+    const bad=structuredClone(plan);bad.contents.push({uid:spare.uid,from:items(f,10,"bag")[0].location,to:at("bag")});
+    unchanged(f,()=>cmd(f,bad),/全部/);
+    f.s.previewMove(plan);assert.deepEqual(f.s.archive,before);cmd(f,plan);
+    assert.equal(items(f,10,"container")[0].uid,spare.uid);
+    assert.equal(items(f,10,"bag").length,0);assert.equal(items(f,11).length,1);
+    assert.equal(items(f,7,"bag").length,1);assert.deepEqual(R.size(config,f.s.inventory,"bag"),[6,5]);
+    assert.deepEqual(new Session(new Manager(),f.storage,f.now,f.c).inventory,f.s.inventory);
+});
+const returnTo=(item,x,y,rotated=false,page=0)=>({type:"move",
+    move:{uid:item.uid,from:item.location,to:{space:"warehouse"}},warehouseTo:{page,x,y,rotated}});
+test("bag-to-warehouse exact drop and warehouse-to-bag use the same full footprint, preserving unrelated slots",()=>{
+    const f=warehouseFixture();equip(f,11);
+    const spare=items(f,10)[0];move(f,spare,at("bag",0,0));
+    const slots=R.warehousePlacements(f.c,f.s.inventory),before=f.s.archive;
+    const plan=returnTo(items(f,10,"bag")[0],1,5);
+    const preview=f.s.previewMove(plan);assert.deepEqual(f.s.archive,before);
+    cmd(f,plan);assert.deepEqual(f.s.inventory,preview.state);
+    assert.deepEqual(f.s.inventory.warehouseLayout.find(s=>s.uid===spare.uid),{uid:spare.uid,page:0,x:1,y:5,rotated:false});
+    assert.deepEqual(f.s.inventory.warehouseLayout.filter(s=>s.uid!==spare.uid),slots);
+    move(f,items(f,10)[0],at("bag",4,3));
+    assert.deepEqual(R.size(f.c,f.s.inventory,"bag"),[8,6]);
+    assert.equal(f.s.inventory.warehouseLayout.some(s=>s.uid===spare.uid),false);
+    assert.deepEqual(new Session(new Manager(),f.storage,f.now,f.c).inventory,f.s.inventory);
+});
+test("exact warehouse returns reject collisions, bounds, pages and incompatible targets without automatic relocation",()=>{
+    const f=warehouseFixture();equip(f,11);move(f,items(f,10)[0],at("bag"));
+    const spare=items(f,10,"bag")[0],other=R.warehousePlacements(f.c,f.s.inventory)[0];
+    unchanged(f,()=>cmd(f,returnTo(spare,other.x,other.y)),/相交/);
+    for(const [x,y,page]of[[-1,5,0],[7,5,0],[1,6,0],[1,5,1],[1,5,-1]])
+        unchanged(f,()=>cmd(f,returnTo(spare,x,y,false,page)),/仓库/);
+    const bad=returnTo(spare,1,5);bad.move.to=at("bag",2);
+    unchanged(f,()=>cmd(f,bad),/入库/);
+    const sword=items(f,9)[0],badEquip={...R.weaponPlan(f.c,f.s.inventory,sword.uid),warehouseTo:{page:0,x:1,y:5,rotated:false}};
+    unchanged(f,()=>cmd(f,badEquip),/卸下/);
+});
+test("exact return rotation persists and quota failure, stale token and concurrent writes preserve both grids",()=>{
+    const f=warehouseFixture();equip(f,11);move(f,items(f,6)[0],at("bag"));
+    const herb=items(f,6,"bag")[0],plan=returnTo(herb,4,6,true),token=f.s.token,write=f.storage.setItem;
+    f.s.previewMove(plan);
+    f.storage.setItem=()=>{throw Error("return quota");};
+    unchanged(f,()=>cmd(f,plan),/return quota/);f.storage.setItem=write;
+    const text=f.data.get(Session.key);f.data.set(Session.key,text+" ");
+    unchanged(f,()=>cmd(f,plan),/其他页面/);f.data.set(Session.key,text);
+    cmd(f,plan);
+    unchanged(f,()=>f.s.inventoryCommand(returnTo(herb,5,6,true),token),/过期/);
+    assert.deepEqual(f.s.inventory.warehouseLayout.find(s=>s.uid===herb.uid),{uid:herb.uid,page:0,x:4,y:6,rotated:true});
+    assert.deepEqual(new Session(new Manager(),f.storage,f.now,f.c).inventory,f.s.inventory);
+});
+test("unloading equipment targets exact warehouse slots and packs container contents around the body atomically",()=>{
+    const f=warehouseFixture();equip(f,11);
+    move(f,items(f,10)[0],at("bag"));move(f,items(f,6)[0],at("bag",2));
+    const weapon=items(f,9)[0];cmd(f,R.weaponPlan(f.c,f.s.inventory,weapon.uid));
+    const before=f.s.archive,slot={page:0,x:5,y:4,rotated:true};
+    cmd(f,{type:"equipWeapon",uid:null,oldTo:{space:"warehouse"},warehouseTo:slot});
+    assert.deepEqual(f.s.inventory.warehouseLayout.find(s=>s.uid===weapon.uid),{uid:weapon.uid,...slot});
+    assert.equal(items(f,9).find(i=>i.uid===weapon.uid).durability,weapon.durability);
+    const body=items(f,11,"container")[0],plan={...R.containerPlan(f.c,f.s.inventory,null),
+        warehouseTo:{page:0,x:0,y:5,rotated:false}};
+    const old=f.s.archive,write=f.storage.setItem;
+    f.storage.setItem=()=>{throw Error("unload quota");};
+    unchanged(f,()=>cmd(f,plan),/unload quota/);f.storage.setItem=write;cmd(f,plan);
+    assert.equal(f.s.inventory.revision,old.state.revision+1);
+    assert.ok(f.s.inventory.items.every(i=>!["bag","container"].includes(i.location.space)));
+    assert.deepEqual(f.s.inventory.warehouseLayout.find(s=>s.uid===body.uid),{uid:body.uid,...plan.warehouseTo});
+    assert.deepEqual(f.s.inventory.items.map(i=>i.uid),before.state.items.map(i=>i.uid));
+    assert.deepEqual(new Session(new Manager(),f.storage,f.now,f.c).inventory,f.s.inventory);
+});
+test("spare container follows ground access, battle lock and carried-item settlement without nested storage",()=>{
+    for(const result of ["extract","abandon"]){
+        const f=fixture();equip(f,11);const spare=items(f,10)[0];move(f,spare,at("bag"));
+        enter(f);
+        unchanged(f,()=>cmd(f,returnTo(items(f,10,"bag")[0],0,5)),/局内/);
+        unchanged(f,()=>move(f,items(f,10,"bag")[0],{space:"ground",node:0}),/揭示/);
+        cmd(f,{type:"reveal"});move(f,items(f,10,"bag")[0],{space:"ground",node:0});
+        move(f,items(f,10,"ground")[0],at("bag"));
+        const plan=R.containerPlan(f.c,f.s.inventory,spare.uid);
+        cmd(f,plan);assert.equal(items(f,10,"container")[0].uid,spare.uid);
+        const spareLarge=items(f,11,"ground")[0];move(f,spareLarge,at("bag",2));
+        cmd(f,{type:result});
+        assert.equal(R.item(f.s.inventory,spare.uid).location.space,result==="extract"?"warehouse":"lost");
+        assert.equal(R.item(f.s.inventory,spareLarge.uid).location.space,result==="extract"?"warehouse":"lost");
+        assert.deepEqual(new Session(new Manager(),f.storage,f.now,f.c).inventory,f.s.inventory);
+    }
+    const f=fixture();equip(f,11);move(f,items(f,10)[0],at("bag"));enter(f);battle(f);
+    unchanged(f,()=>move(f,items(f,10,"bag")[0],at("bag",2)),/锁定/);
 });
 test("automatic downsize repacks fragmented out-of-bounds contents without touching live state",()=>{
     const f=fixture();equip(f,11);

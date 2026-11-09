@@ -21,8 +21,9 @@ async function main(){
             const actual=await p.evaluate(()=>{
                 const panel=window.__skillBattlePreview.panel;
                 return panel.visibleItems.map((item,i)=>{
-                    const bg=panel.nodes[`invList${i}`].getChildAt(0);
-                    return{src:bg.src,grid:bg.texture?._sizeGrid,commands:bg.graphics.cmds.map(c=>c.cmdID)};
+                    const node=panel.nodes[`invList${i}`],bg=node.getChildAt(0),caption=node.getChildAt(3);
+                    return{src:bg.src,grid:bg.texture?._sizeGrid,commands:bg.graphics.cmds.map(c=>c.cmdID),
+                        caption:caption.text,captionVisible:caption.visible};
                 });
             });
             assert.ok(actual.length>=6);
@@ -30,6 +31,8 @@ async function main(){
                 assert.equal(frame.src,"ui/atlas/module/inventory/quality-1.png","Unspecified quality displays ordinary");
                 assert.deepEqual(frame.grid,[8,8,8,8,0]);
                 assert.ok(frame.commands.includes("Draw9GridTextureCmd"),"Engine must draw a real nine-slice");
+                assert.equal(frame.caption,"","Item images must not show footprint or durability numbers");
+                assert.equal(frame.captionVisible,false);
             }
             await p.screenshot({path:path.join(output,tag+"-current-items.png")});
             // Exercise all six presentation tiers without changing the saved templates.

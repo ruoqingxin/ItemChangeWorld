@@ -97,6 +97,15 @@ for (const file of allFiles) {
         }
         const left = nodes.get("invLeftPanel"), bag = nodes.get("invBagPanel"), right = nodes.get("invRightPanel");
         assert.ok(left.x+left.width<=bag.x && bag.x+bag.width<=right.x,`${file} storage panels must not overlap`);
+        assert.equal(cells.filter(([name])=>/^invSourceCell\d+$/.test(name)).length,56,`${file} source page has 56 cells`);
+        const bottomCell = nodes.get("invSourceCell55"), notice = nodes.get("invNotice");
+        for (const key of ["invPrev","invNext","invPage","invReveal"]) {
+            const footer = nodes.get(key);
+            assert.ok(footer.y >= bottomCell.y+bottomCell.height && footer.y+footer.height <= right.y+right.height,
+                `${file} ${key} stays below all seven rows and inside the panel`);
+        }
+        assert.ok(notice.y >= right.y+right.height,`${file} notice stays below the source panel`);
+        assert.ok(right.y+right.height <= nodes.get("invPrimary").y,`${file} source panel stays clear of bottom actions`);
         for (const [space,key,rows] of [["weapon","invWeapon",3],["container","invContainer",2]]) {
             const slot = nodes.get(key);
             assert.deepEqual([slot.width,slot.height],[110,rows*56-2],`${file} ${space} actual footprint`);

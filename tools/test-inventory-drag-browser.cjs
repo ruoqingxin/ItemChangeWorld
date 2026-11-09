@@ -1,10 +1,21 @@
 const {chromium}=require("playwright");
 const sharp=require("sharp"),assert=require("node:assert/strict"),fs=require("node:fs/promises"),path=require("node:path");
-const url=process.env.SKILL_BATTLE_URL||"http://127.0.0.1:18120";
+const ide=process.argv.includes("--ide");
+const url=process.env.SKILL_BATTLE_URL||(ide?(process.env.SKILL_BATTLE_IDE_URL||"http://127.0.0.1:18092"):"http://127.0.0.1:18120");
 const output=path.resolve(__dirname,"../bin/inventory-drag-browser");
 const saved=p=>p.evaluate(()=>localStorage.getItem("nowchange.stage3-inventory.v1"));
 const state=p=>p.evaluate(()=>window.__skillBattlePreview.trial.inventory);
 async function ready(p){
+    if(ide)await p.waitForFunction(()=>{
+        const find=n=>{
+            if(n.skillBattleController?.nodes?.inventoryRoot)return n.skillBattleController;
+            for(let i=0;i<n.numChildren;i++){const panel=find(n.getChildAt(i));if(panel)return panel;}
+        };
+        if(!window.Laya?.stage||!find(Laya.stage)?.opened)return false;
+        window.__skillBattlePreview={get panel(){return find(Laya.stage);},
+            get trial(){return this.panel.inventorySession;}};
+        return true;
+    });
     await p.waitForFunction(()=>window.__skillBattlePreview?.panel?.opened);
     await p.waitForTimeout(100);
 }
@@ -57,6 +68,17 @@ async function grid(p,space,x,y,w=1,h=1){
     },space);
     return stagePoint(p,g.x+(x+w/2)*g.size,g.y+(y+h/2)*g.size);
 }
+async function sourcePoint(p,x,y,w=1,h=1){
+    const g=await p.evaluate(()=>window.__skillBattlePreview.panel.sourceGeometry());
+    return stagePoint(p,g.x+(x+w/2)*g.size,g.y+(y+h/2)*g.size);
+}
+async function sourceSlot(p,uid){
+    return p.evaluate(uid=>{
+        const {panel,trial}=window.__skillBattlePreview;
+        const pages=panel.packWarehouse(trial.inventory.items,trial.archive.config,trial.inventory);
+        return pages.flat().filter(s=>s.item.uid===uid).map(({x,y,rotated})=>({x,y,rotated}))[0];
+    },uid);
+}
 async function start(p,key,anchor){
     const from=await point(p,key,anchor);p.last=from;
     if(p.mobile)await p.cdp.send("Input.dispatchTouchEvent",{type:"touchStart",touchPoints:[{...from,id:11}]});
@@ -103,6 +125,14 @@ async function capture(p,name){
             if(/^inv(EquipCell_|SourceCell|Cell_)/.test(key)&&visible(n)&&(n.width!==54||n.height!==54))
                 errors.push(`nonuniform cell ${key}: ${n.width}x${n.height}`);
         }
+        const source=panel.sourceGeometry(),last=panel.nodes.invSourceCell55;
+        if(source.cols!==8||source.rows!==7)errors.push("source page must be 7 rows by 8 columns");
+        for(const key of ["invPrev","invNext","invPage","invReveal"]){
+            const n=panel.nodes[key];
+            if(visible(n)&&n.y<last.y+last.height)errors.push(`source footer overlaps row seven: ${key}`);
+        }
+        if(panel.nodes.invNotice.y<panel.nodes.invRightPanel.y+panel.nodes.invRightPanel.height)
+            errors.push("notice overlaps source footer");
         for(const [key,w,h]of[["invWeapon",110,166],["invContainer",110,110]]){
             const n=panel.nodes[key];
             if(visible(n)&&(n.width!==w||n.height!==h))errors.push(`equipment footprint ${key}`);
@@ -127,8 +157,7 @@ async function capture(p,name){
             const caption=n.getChildAt(3);
             if(caption instanceof Laya.GTextField){
                 if(/[×x]/.test(caption.text))errors.push(`footprint caption ${key}`);
-                if(!key.startsWith("invList")&&(caption.visible||caption.text))
-                    errors.push(`grid/drag caption ${key}`);
+                if(caption.visible||caption.text)errors.push(`item image caption ${key}`);
             }
             const outline=n.getChildByName(n.name+"Selection");
             if(outline?.visible){
@@ -149,8 +178,252 @@ async function capture(p,name){
     });
     assert.deepEqual(result.errors,[],`${name} layout`);return result.held;
 }
+async function sourcePageCases(p,tag){
+    const before=await saved(p);
+    const checks=await p.evaluate(()=>{
+        const {panel,trial}=window.__skillBattlePreview,config=trial.archive.config;
+        const one=config.templates.find(t=>t.width===1&&t.height===1),errors=[];
+        const items=(n,template=one)=>Array.from({length:n},(_,i)=>({
+            uid:`source-page-${i}`,templateId:template.id,location:{space:"warehouse"},durability:null,
+        }));
+        const packed=n=>panel.packSource(items(n),config);
+        for(const [count,lengths]of [[0,[0]],[56,[56]],[57,[56,1]],[113,[56,56,1]]]){
+            const pages=packed(count);
+            if(JSON.stringify(pages.map(p=>p.length))!==JSON.stringify(lengths))errors.push(`pagination ${count}`);
+            if(new Set(pages.flat().map(p=>p.item.uid)).size!==count)errors.push(`lost/duplicate ${count}`);
+        }
+        const full=packed(56)[0];
+        if(full[7].x!==7||full[7].y!==0||full[8].x!==0||full[8].y!==1||
+            full[55].x!==7||full[55].y!==6)errors.push("wrong row-major page coordinates");
+        const mixed=config.templates.flatMap(t=>items(12,t).map(i=>({...i,uid:`${t.id}-${i.uid}`})));
+        const pages=panel.packSource(mixed,config);
+        if(pages.flat().length!==mixed.length)errors.push("mixed footprint count");
+        for(const page of pages){
+            const occupied=new Set();
+            for(const {item,x,y}of page){
+                const t=config.templates.find(t=>t.id===item.templateId);
+                if(x<0||y<0||x+t.width>8||y+t.height>7)errors.push("mixed footprint bounds");
+                for(let dy=0;dy<t.height;dy++)for(let dx=0;dx<t.width;dx++){
+                    const cell=(y+dy)*8+x+dx;
+                    if(occupied.has(cell))errors.push("mixed footprint collision");
+                    occupied.add(cell);
+                }
+            }
+        }
+        try{
+            panel.packSource(items(1),{...config,templates:config.templates.map(t=>t.id===one.id?{...t,width:9}:t)});
+            errors.push("oversized source item must fail without looping");
+        }catch(error){if(!error.message.includes("超出来源页尺寸"))errors.push(error.message);}
+        const g=panel.sourceGeometry(),h={uid:trial.inventory.items[0].uid,rotated:false,grabX:0.5,grabY:0.5};
+        const hit=(x,y)=>panel.hitDrag(new Laya.Point(x,y),h);
+        if(hit(g.x+7.5*g.size,g.y+6.5*g.size)?.space!=="warehouse")errors.push("seventh row/eighth column is not a drop target");
+        if(hit(g.x+8*g.size,g.y+g.size)!==null)errors.push("right edge is a drop target");
+        if(hit(g.x+g.size,g.y+7*g.size)!==null)errors.push("footer is a drop target");
+        // Presentation-only fixture: exercise native page buttons without writing an archive.
+        window.__sourcePageOriginal=trial.save;
+        trial.save=structuredClone(trial.save);
+        trial.save.state.items=items(57);
+        panel.inventoryPage=0;panel.refresh();
+        return{errors};
+    });
+    assert.deepEqual(checks.errors,[]);
+    try{
+        await capture(p,tag+"-warehouse-full-56");
+        assert.equal(await p.evaluate(()=>window.__skillBattlePreview.panel.visibleItems.length),56);
+        await click(p,"invNext");
+        assert.deepEqual(await p.evaluate(()=>{
+            const v=window.__skillBattlePreview,panel=v.panel;
+            return{page:panel.inventoryPage,items:panel.visibleItems.map(i=>i.uid)};
+        }),{page:1,items:["source-page-56"]});
+        await capture(p,tag+"-warehouse-next-page");
+        await click(p,"invPrev");
+        assert.equal(await p.evaluate(()=>window.__skillBattlePreview.panel.inventoryPage),0);
+        assert.equal(await saved(p),before,"Paging must not save or alter inventory");
+    }finally{
+        await p.evaluate(()=>{
+            const v=window.__skillBattlePreview;v.trial.save=window.__sourcePageOriginal;
+            delete window.__sourcePageOriginal;v.panel.inventoryPage=0;v.panel.refresh();
+        });
+    }
+    const potion=await itemKey(p,1);
+    await drag(p,potion.key,await grid(p,"battle",0,0));
+    await start(p,(await itemKey(p,1,"battle")).key);
+    const g=await p.evaluate(()=>window.__skillBattlePreview.panel.sourceGeometry());
+    await move(p,await stagePoint(p,g.x+7.5*g.size,g.y+6.5*g.size));
+    assert.equal((await capture(p,tag+"-warehouse-last-cell-drop")).valid,true);
+    await release(p);
+    assert.equal((await state(p)).items.find(i=>i.uid===potion.uid).location.space,"warehouse");
+    assert.deepEqual((await state(p)).warehouseLayout.find(s=>s.uid===potion.uid),
+        {uid:potion.uid,page:0,x:7,y:6,rotated:false});
+    console.log(`PASS ${tag}: 7 rows x 8 columns/56 cells, full-page/overflow/native paging, mixed footprints, last-cell drop and right/bottom boundaries.`);
+    await p.evaluate(text=>localStorage.setItem("nowchange.stage3-inventory.v1",text),before);
+    await p.reload();await ready(p);
+}
+async function warehouseArrangeCases(p,tag){
+    const original=await saved(p);
+    const source=async(x,y,w=1,h=1)=>{
+        const g=await p.evaluate(()=>window.__skillBattlePreview.panel.sourceGeometry());
+        return stagePoint(p,g.x+(x+w/2)*g.size,g.y+(y+h/2)*g.size);
+    };
+    const slot=uid=>p.evaluate(uid=>window.__skillBattlePreview.trial.inventory.warehouseLayout?.find(s=>s.uid===uid),uid);
+    try{
+        await drag(p,(await itemKey(p,11)).key,await point(p,"invContainer"));
+        for(const [id,x,y,w,h]of [[7,0,0,2,2],[7,2,0,2,2],[9,4,0,2,3],[9,4,3,2,3],[6,6,0,1,2]])
+            await drag(p,(await itemKey(p,id)).key,await grid(p,"bag",x,y,w,h));
+        const bag=await itemKey(p,10),before=await saved(p);
+        await start(p,bag.key);await move(p,await source(1,5,2,2));
+        const held=await capture(p,tag+"-warehouse-arrange-lower-preview");
+        assert.equal(held.valid,true,"2x2 body must fit into the lower two warehouse rows");
+        assert.equal(await saved(p),before,"Same-warehouse preview must not save");
+        assert.equal(await p.evaluate(()=>Array.from({length:48},(_,i)=>
+            window.__skillBattlePreview.panel.nodes[`invDragCell${i}`]).filter(n=>n.visible).length),4);
+        await release(p);
+        assert.deepEqual(await slot(bag.uid),{uid:bag.uid,page:0,x:1,y:5,rotated:false});
+        const committed=await saved(p);
+        const otherSlots=(await state(p)).warehouseLayout.filter(s=>s.uid!==bag.uid);
+        await capture(p,tag+"-warehouse-arranged-lower");
+        await click(p,"invEquipment");await click(p,"invAll");
+        assert.deepEqual(await slot(bag.uid),{uid:bag.uid,page:0,x:1,y:5,rotated:false});
+        assert.equal(await saved(p),committed,"Filtering does not rewrite positions");
+        await p.reload();await ready(p);
+        assert.equal(await saved(p),committed,"Warehouse arrangement survives reload");
+        const display=await p.evaluate(uid=>{
+            const panel=window.__skillBattlePreview.panel,index=panel.visibleItems.findIndex(i=>i.uid===uid);
+            const n=panel.nodes[`invList${index}`],g=panel.sourceGeometry();
+            return{x:(n.x-g.x)/g.size,y:(n.y-g.y)/g.size,width:n.width,height:n.height};
+        },bag.uid);
+        assert.deepEqual(display,{x:1,y:5,width:110,height:110});
+        await capture(p,tag+"-warehouse-arranged-reloaded");
+        await start(p,(await keyForUid(p,bag.uid,true)).key);await move(p,await source(0,0,2,2));
+        assert.equal((await capture(p,tag+"-warehouse-arrange-collision")).valid,false);
+        await release(p);assert.equal(await saved(p),committed,"Overlapping warehouse drop returns");
+        await start(p,(await keyForUid(p,bag.uid,true)).key);await move(p,await source(7,6));
+        assert.equal(await p.evaluate(()=>window.__skillBattlePreview.panel.held.valid),false);
+        await release(p);assert.equal(await saved(p),committed,"Warehouse edge drop returns");
+        await start(p,(await keyForUid(p,bag.uid,true)).key);await move(p,await source(4,5,2,2));
+        assert.equal(await p.evaluate(()=>window.__skillBattlePreview.panel.held.valid),true);
+        await cancel(p);assert.equal(await saved(p),committed,"Cancelling warehouse arrangement returns");
+        await p.evaluate(()=>{
+            window.__warehouseSet=Storage.prototype.setItem;
+            Storage.prototype.setItem=function(k,v){if(k==="nowchange.stage3-inventory.v1")throw Error("warehouse quota");
+                return window.__warehouseSet.call(this,k,v);};
+        });
+        try{
+            await drag(p,(await keyForUid(p,bag.uid,true)).key,await source(4,5,2,2));
+            assert.equal(await saved(p),committed,"Failed save keeps warehouse positions unchanged");
+            assert.match(await p.evaluate(()=>window.__skillBattlePreview.panel.notice),/warehouse quota/);
+        }finally{await p.evaluate(()=>{Storage.prototype.setItem=window.__warehouseSet;delete window.__warehouseSet;});}
+        assert.deepEqual((await state(p)).warehouseLayout.filter(s=>s.uid!==bag.uid),otherSlots,"Other items never shuffle");
+        const book=await itemKey(p,4);
+        await start(p,book.key);await move(p,await source(4,6,2,1));await rotate(p);
+        await move(p,await source(4,6,2,1));
+        assert.equal(await p.evaluate(()=>window.__skillBattlePreview.panel.held.valid),true);
+        await release(p);
+        assert.deepEqual(await slot(book.uid),{uid:book.uid,page:0,x:4,y:6,rotated:true});
+        const autoBook=await itemKey(p,5),beforeAuto=await saved(p);
+        await start(p,autoBook.key);await move(p,await source(6,6,2,1));
+        await p.waitForFunction(()=>window.__skillBattlePreview.panel.held?.rotated===true,null,{timeout:1800});
+        assert.equal((await capture(p,tag+"-warehouse-auto-rotate")).valid,true);
+        assert.equal(await saved(p),beforeAuto,"Warehouse hover rotation does not commit");
+        await release(p);
+        assert.deepEqual(await slot(autoBook.uid),{uid:autoBook.uid,page:0,x:6,y:6,rotated:true});
+        const rotated=await saved(p);await p.reload();await ready(p);
+        assert.equal(await saved(p),rotated);
+        await start(p,(await keyForUid(p,book.uid,true)).key);
+        await move(p,await stagePoint(p,700,610));
+        assert.deepEqual(await p.evaluate(()=>{
+            const panel=window.__skillBattlePreview.panel;
+            return{rotated:panel.held.rotated,w:panel.nodes.invHeld.width,h:panel.nodes.invHeld.height,
+                rotation:panel.nodes.invHeld.getChildAt(2).rotation};
+        }),{rotated:true,w:110,h:54,rotation:90},"Re-grabbing uses the saved warehouse orientation");
+        await cancel(p);
+        console.log(`PASS ${tag}: same-warehouse 2x2 downward drag, 4-cell feedback, fixed other positions, filter/reload, collision/edge/cancel/quota rollback and rotation.`);
+    }finally{
+        // Restore only this isolated browser fixture, never the user's running origin.
+        await p.evaluate(text=>localStorage.setItem("nowchange.stage3-inventory.v1",text),original);
+        await p.reload();await ready(p);
+    }
+}
+async function warehouseTransferCases(p,tag){
+    const original=await saved(p);
+    const footprint=()=>p.evaluate(()=>Array.from({length:48},(_,i)=>
+        window.__skillBattlePreview.panel.nodes[`invDragCell${i}`]).filter(n=>n.visible).length);
+    try{
+        await drag(p,(await itemKey(p,11)).key,await point(p,"invContainer"));
+        // Clear lower warehouse rows through normal moves before testing exact return placement.
+        for(const [id,x,y,w,h]of[[7,0,0,2,2],[7,2,0,2,2],[9,4,0,2,3],[9,4,3,2,3],[6,6,0,1,2]])
+            await drag(p,(await itemKey(p,id)).key,await grid(p,"bag",x,y,w,h));
+        const spare=await itemKey(p,10),before=await saved(p);
+        await start(p,spare.key);await move(p,await grid(p,"bag",0,3,2,2));
+        assert.equal((await capture(p,tag+"-spare-to-bag-preview")).valid,true);
+        assert.equal(await footprint(),4);assert.equal(await saved(p),before);
+        await release(p);
+        assert.deepEqual((await state(p)).items.find(i=>i.uid===spare.uid).location,{space:"bag",x:0,y:3,rotated:false});
+        assert.equal(await p.evaluate(()=>window.__skillBattlePreview.panel.gridGeometry("bag").cols),8,"Stored body adds no capacity");
+        const carried=await saved(p),otherSlots=await p.evaluate(()=>{
+            const {panel,trial}=window.__skillBattlePreview;
+            return panel.packWarehouse(trial.inventory.items,trial.archive.config,trial.inventory).flatMap((slots,page)=>
+                slots.map(({item,x,y,rotated})=>({uid:item.uid,page,x,y,rotated})));
+        });
+        await click(p,"invEquipment");
+        await start(p,(await keyForUid(p,spare.uid)).key);await move(p,await sourcePoint(p,0,0,2,2));
+        assert.equal((await capture(p,tag+"-bag-to-warehouse-collision")).valid,false);
+        assert.equal(await footprint(),4);await release(p);assert.equal(await saved(p),carried);
+        await click(p,"invAll");
+        await start(p,(await keyForUid(p,spare.uid)).key);await move(p,await sourcePoint(p,7,6));
+        assert.equal(await p.evaluate(()=>window.__skillBattlePreview.panel.held.valid),false);
+        await release(p);assert.equal(await saved(p),carried);
+        await start(p,(await keyForUid(p,spare.uid)).key);await move(p,await sourcePoint(p,1,5,2,2));
+        assert.equal((await capture(p,tag+"-bag-to-warehouse-preview")).valid,true);
+        assert.equal(await footprint(),4);await cancel(p);assert.equal(await saved(p),carried);
+        await p.evaluate(()=>{
+            window.__transferSet=Storage.prototype.setItem;
+            Storage.prototype.setItem=function(k,v){if(k==="nowchange.stage3-inventory.v1")throw Error("transfer quota");
+                return window.__transferSet.call(this,k,v);};
+        });
+        try{
+            await drag(p,(await keyForUid(p,spare.uid)).key,await sourcePoint(p,1,5,2,2));
+            assert.equal(await saved(p),carried);assert.match(await p.evaluate(()=>window.__skillBattlePreview.panel.notice),/transfer quota/);
+        }finally{await p.evaluate(()=>{Storage.prototype.setItem=window.__transferSet;delete window.__transferSet;});}
+        await drag(p,(await keyForUid(p,spare.uid)).key,await sourcePoint(p,1,5,2,2));
+        let s=await state(p);
+        assert.deepEqual(s.warehouseLayout.find(s=>s.uid===spare.uid),{uid:spare.uid,page:0,x:1,y:5,rotated:false});
+        assert.deepEqual(s.warehouseLayout.filter(s=>s.uid!==spare.uid),otherSlots);
+        const committed=await saved(p);await p.reload();await ready(p);assert.equal(await saved(p),committed);
+        await capture(p,tag+"-bag-to-warehouse-reloaded");
+        const herb=await itemKey(p,6,"bag"),beforeRotate=await saved(p);
+        await start(p,herb.key);await move(p,await sourcePoint(p,6,6,2,1));
+        await p.waitForFunction(()=>window.__skillBattlePreview.panel.held?.rotated===true,null,{timeout:1800});
+        assert.equal((await capture(p,tag+"-bag-to-warehouse-auto-rotate")).valid,true);
+        assert.equal(await footprint(),2);assert.equal(await saved(p),beforeRotate);await release(p);
+        assert.deepEqual((await state(p)).warehouseLayout.find(s=>s.uid===herb.uid),{uid:herb.uid,page:0,x:6,y:6,rotated:true});
+        await drag(p,(await keyForUid(p,spare.uid,true)).key,await grid(p,"bag",0,3,2,2));
+        await drag(p,(await keyForUid(p,spare.uid)).key,await point(p,"invContainer"));
+        s=await state(p);assert.equal(s.items.find(i=>i.uid===spare.uid).location.space,"container");
+        assert.equal(s.items.filter(i=>i.uid===spare.uid).length,1);
+        assert.equal(await p.evaluate(()=>window.__skillBattlePreview.panel.gridGeometry("bag").cols),6);
+        await start(p,"invContainer");await move(p,await sourcePoint(p,1,5,2,2));
+        assert.equal(await p.evaluate(()=>window.__skillBattlePreview.panel.held.valid),true);
+        assert.equal(await footprint(),4);await release(p);
+        s=await state(p);assert.ok(s.items.every(i=>!["bag","container"].includes(i.location.space)));
+        assert.deepEqual(s.warehouseLayout.find(s=>s.uid===spare.uid),{uid:spare.uid,page:0,x:1,y:5,rotated:false});
+        await capture(p,tag+"-container-unloaded-exact-slot");
+        console.log(`PASS ${tag}: spare container bidirectional native drag, identical 4-cell feedback, exact warehouse placement/reload, collision/edge/cancel/quota rollback, equip from bag and atomic unload.`);
+    }finally{
+        await p.evaluate(text=>localStorage.setItem("nowchange.stage3-inventory.v1",text),original);
+        await p.reload();await ready(p);
+    }
+}
 async function autoRotationCases(p,tag){
-    const before=await saved(p),book=await itemKey(p,4);
+    const book=await itemKey(p,4);
+    const bookSlot=await sourceSlot(p,book.uid);
+    // This rotation fixture returns to known slots; commit the initial warehouse layout first.
+    await p.evaluate(({uid,to})=>{
+        const {panel,trial}=window.__skillBattlePreview,item=trial.inventory.items.find(i=>i.uid===uid);
+        trial.inventoryCommand({type:"arrangeWarehouse",uid,from:item.location,to:{page:0,...to}});
+        panel.refresh();
+    },{uid:book.uid,to:bookSlot});
+    const before=await saved(p);
     const held=()=>p.evaluate(()=>{
         const h=window.__skillBattlePreview.panel.held;
         return h?{rotated:h.rotated,valid:h.valid,target:h.target}:null;
@@ -171,11 +444,14 @@ async function autoRotationCases(p,tag){
     await p.waitForTimeout(550);assert.equal((await held()).rotated,true,"A stationary item must not oscillate");
     await capture(p,tag+"-auto-book-horizontal");await release(p);
     assert.deepEqual((await state(p)).items.find(i=>i.uid===book.uid).location,{space:"safe",x:0,y:0,rotated:true});
-    await drag(p,(await itemKey(p,4,"safe")).key,await stagePoint(p,1000,400));
+    await start(p,(await itemKey(p,4,"safe")).key);
+    await move(p,await stagePoint(p,700,610));await rotate(p);
+    await move(p,await sourcePoint(p,bookSlot.x,bookSlot.y,1,2));await release(p);
     await start(p,(await itemKey(p,4)).key);await move(p,await grid(p,"bag",0,0,1,2));
     await p.waitForTimeout(550);assert.equal((await held()).rotated,false,"A fitting orientation must stay unchanged");
     await cancel(p);
-    const ore=await itemKey(p,7);await drag(p,ore.key,await grid(p,"bag",0,0,2,2));
+    const ore=await itemKey(p,7),oreSlot=await sourceSlot(p,ore.uid);
+    await drag(p,ore.key,await grid(p,"bag",0,0,2,2));
     await start(p,(await itemKey(p,4)).key);await move(p,await grid(p,"bag",0,0,1,2));
     await p.waitForTimeout(550);assert.equal((await held()).rotated,false);assert.equal((await held()).valid,false);
     await cancel(p);
@@ -186,7 +462,7 @@ async function autoRotationCases(p,tag){
     await start(p,(await itemKey(p,7,"bag")).key);await move(p,await grid(p,"bag",5,4,2,2));
     await p.waitForTimeout(550);assert.equal((await held()).rotated,false,"A square cannot gain room through rotation");
     await cancel(p);
-    await drag(p,(await itemKey(p,7,"bag")).key,await stagePoint(p,1000,400));
+    await drag(p,(await itemKey(p,7,"bag")).key,await sourcePoint(p,oreSlot.x,oreSlot.y,2,2));
     await start(p,(await itemKey(p,4)).key);await move(p,await grid(p,"battle",0,0,2,1));
     await p.waitForTimeout(550);assert.equal((await held()).rotated,false,"Rotation cannot bypass category rules");
     await cancel(p);
@@ -201,7 +477,7 @@ async function autoRotationCases(p,tag){
     await p.waitForTimeout(500);assert.equal(await saved(p),beforeEarly,"Releasing before dwell returns an invalid item");
     await start(p,(await itemKey(p,4)).key);await move(p,safe);await cancel(p);
     await p.waitForTimeout(500);assert.equal(await held(),null,"Cancel clears pending rotation");
-    const sword=await itemKey(p,9);
+    const sword=await itemKey(p,9),swordSlot=await sourceSlot(p,sword.uid);
     await start(p,sword.key,{x:0.2,y:0.8});await move(p,await stagePoint(p,700,610));await rotate(p);
     await move(p,await grid(p,"bag",3.9,1.9));await waitRotation(false);
     const vertical=await held();
@@ -209,7 +485,7 @@ async function autoRotationCases(p,tag){
     assert.equal(vertical.target.x,4);assert.ok(vertical.target.y===0);
     assert.equal(await p.evaluate(()=>window.__skillBattlePreview.panel.nodes.invHeld.getChildAt(2).rotation),0);
     await capture(p,tag+"-auto-sword-vertical");await release(p);
-    await drag(p,(await itemKey(p,9,"bag")).key,await stagePoint(p,1000,400));
+    await drag(p,(await itemKey(p,9,"bag")).key,await sourcePoint(p,swordSlot.x,swordSlot.y,2,3));
     console.log(`PASS ${tag}: 400ms stationary auto-rotation in both directions, movement reset, no oscillation, collision/category/valid exclusion, manual override, release/cancel cleanup and off-center grip.`);
 }
 async function overflowCase(p,tag){
@@ -269,13 +545,21 @@ async function main(){
     try{
         for(const viewport of [{width:1280,height:720},{width:1920,height:1080},{width:844,height:390}]){
             if(process.argv.includes("--mobile")&&viewport.width>=900)continue;
-            const mobile=viewport.width<900,tag=mobile?"mobile":viewport.width>1280?"wide":"desktop";
+            const mobile=viewport.width<900,tag=(ide?"ide-":"")+(mobile?"mobile":viewport.width>1280?"wide":"desktop");
             const ctx=await browser.newContext({viewport,hasTouch:mobile}),p=await ctx.newPage(),errors=[],missing=[];
             p.mobile=mobile;p.cdp=await ctx.newCDPSession(p);
             p.on("pageerror",e=>errors.push(e.message));p.on("response",r=>{if(r.status()>=400)missing.push(r.url());});
             await p.goto(url);await ready(p);await click(p,"invPrimary");
             await p.evaluate(()=>localStorage.setItem("another-app","preserve"));
             await capture(p,tag+"-source-grid");
+            if(process.argv.includes("--transfer-only")){
+                await warehouseTransferCases(p,tag);
+                assert.deepEqual(errors,[],`${tag} page errors`);assert.deepEqual(missing,[],`${tag} asset failures`);
+                await ctx.close();continue;
+            }
+            await sourcePageCases(p,tag);
+            await warehouseArrangeCases(p,tag);
+            await warehouseTransferCases(p,tag);
             const bag=await itemKey(p,10);
             await drag(p,bag.key,await point(p,"invContainer"));
             assert.equal((await state(p)).items.find(i=>i.uid===bag.uid).location.space,"container");
