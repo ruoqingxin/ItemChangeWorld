@@ -28,6 +28,85 @@ async function screenshot(p,name){
         return issues;
     });assert.deepEqual(bad,[],"Text fits its surface");
 }
+async function checkMapArt(p) {
+    await p.waitForFunction(()=>{
+        const {panel,trial}=window.__skillBattlePreview;
+        return trial.inventory.map.visible.every(id=>panel.buttons[`expNode${id}`].getChildAt(2).texture?.width===128);
+    });
+    const details=await p.evaluate(()=>{
+        const {panel,trial}=window.__skillBattlePreview,s=trial.inventory;
+        const kinds={start:"start",transit:"transit",normal:"enemy-normal",elite:"enemy-elite",boss:"enemy-boss",
+            borrow:"borrow",insight:"insight",extract:"extract",recovery:"recovery"};
+        const issues=[],sources=[];
+        for(const id of s.map.visible) {
+            const node=trial.archive.config.nodes.find(n=>n.id===id),b=panel.buttons[`expNode${id}`],image=b.getChildAt(2);
+            const expected=node.enemy&&s.map.cleared.includes(id)?"battle-loot":
+                node.kind==="search"?(node.pool.startsWith("supply")?"supply":"search"):kinds[node.kind];
+            if(image.src!==`ui/image/expeditionNodes/node-${expected}.png`)issues.push([id,image.src,expected]);
+            if(image.width!==104||image.height!==104)issues.push([id,"unexpected image dimensions"]);
+            if(b.y<0||b.y+b.height>panel.expeditionNodes.expViewport.height)issues.push([id,"clipped node"]);
+            sources.push(image.src);
+        }
+        const lines=panel.expeditionNodes.expLines.graphics.cmds.filter(c=>c.cmdID===Laya.DrawLineCmd.ID);
+        if(!lines.length)issues.push("missing dashed routes");
+        for(const [a,b]of s.map.edges)if(s.map.visible.includes(a)&&s.map.visible.includes(b)) {
+            const route=panel.mapRoutes.get(`${a}:${b}`)||[],visible=route.slice(1,-1);
+            const length=visible.reduce((sum,v,i)=>sum+(i?Math.hypot(v.x-visible[i-1].x,v.y-visible[i-1].y):0),0);
+            if(length<21)issues.push(["missing or too short visible edge",a,b]);
+        }
+        for(const line of lines)if(Math.hypot(line.toX-line.fromX,line.toY-line.fromY)>12.01)
+            issues.push("solid or oversized route segment");
+        const aligned=new Map();
+        for(const line of lines) {
+            const horizontal=Math.abs(line.toY-line.fromY)<0.001,vertical=Math.abs(line.toX-line.fromX)<0.001;
+            if(!horizontal&&!vertical)continue;
+            const key=`${horizontal?"h":"v"}:${(horizontal?line.fromY:line.fromX).toFixed(3)}`;
+            if(!aligned.has(key))aligned.set(key,[]);
+            aligned.get(key).push(horizontal?[Math.min(line.fromX,line.toX),Math.max(line.fromX,line.toX)]:
+                [Math.min(line.fromY,line.toY),Math.max(line.fromY,line.toY)]);
+        }
+        for(const [key,intervals]of aligned) {
+            intervals.sort((a,b)=>a[0]-b[0]);
+            let start=-Infinity,end=-Infinity;
+            for(const [a,b]of intervals) {
+                if(a>end+0.001){start=a;end=b;}else end=Math.max(end,b);
+                if(end-start>12.01)issues.push(["overlapping dashes form a solid route",key,end-start]);
+            }
+        }
+        return{issues,sources};
+    });
+    assert.deepEqual(details.issues,[],"New icons and short dashed routes are rendered");
+    return details.sources;
+}
+async function checkDashPixels(p) {
+    const pair=await p.evaluate(()=>{
+        const {panel}=window.__skillBattlePreview,node=panel.expeditionNodes.expLines;
+        const commands=node.graphics.cmds.filter(c=>c.cmdID===Laya.DrawLineCmd.ID);
+        const viewport=panel.expeditionNodes.expViewport,r=document.querySelector("canvas").getBoundingClientRect();
+        const convert=(x,y)=>{
+            const point=node.localToGlobal(new Laya.Point(x,y));
+            return{x:r.left+point.x*r.width/Laya.stage.width,y:r.top+point.y*r.height/Laya.stage.height};
+        };
+        for(let i=0;i<commands.length-1;i++) {
+            const a=commands[i],b=commands[i+1];
+            if(a.fromY!==a.toY||a.toY!==b.fromY||b.fromY!==b.toY)continue;
+            const gap=b.fromX-a.toX;
+            if(Math.abs(gap)<8||Math.abs(gap)>10||Math.abs(a.toX-a.fromX)<10)continue;
+            if(a.fromX<panel.scroller.scrollingPosX+16||b.toX>panel.scroller.scrollingPosX+viewport.width-16)continue;
+            return{dash:convert((a.fromX+a.toX)/2,a.fromY),gap:convert((a.toX+b.fromX)/2,a.toY)};
+        }
+        throw Error("Missing visible dash/gap pixel pair");
+    });
+    const {data,info}=await sharp(await p.screenshot()).removeAlpha().raw().toBuffer({resolveWithObject:true});
+    const sample=point=>{
+        const x=Math.max(0,Math.min(info.width-1,Math.round(point.x)));
+        const y=Math.max(0,Math.min(info.height-1,Math.round(point.y)));
+        return [...data.subarray((y*info.width+x)*3,(y*info.width+x)*3+3)];
+    };
+    const dash=sample(pair.dash),gap=sample(pair.gap);
+    assert.ok(dash.reduce((a,b)=>a+b,0)>gap.reduce((a,b)=>a+b,0)+80,
+        `A painted dash and a real unpainted gap must differ: ${dash} / ${gap}`);
+}
 async function choose(p){
     while((await state(p)).flow.pending){
         await click(p,"warehouse0");await click(p,"newRun");
@@ -115,6 +194,7 @@ async function drag(p,fromKey,toKey) {
             await screenshot(p,`${name}-preparation`);
             await click(p,"invPrimary");assert.equal((await state(p)).flow.pending.kind,"start");
             await choose(p);await openMap(p);
+            await checkMapArt(p);await checkDashPixels(p);
             await screenshot(p,`${name}-map`);
             console.log(name,"exits",(await state(p)).map.present.filter(n=>n>=30));
             assert.deepEqual((await state(p)).map.visible.filter(n=>n<=16),[1,2,3,4,5]);
@@ -146,6 +226,9 @@ async function drag(p,fromKey,toKey) {
             await screenshot(p,`${name}-battle`);
             await win(p);
             await openMap(p);assert.equal((await state(p)).map.sources.length,1);
+            await checkMapArt(p);
+            assert.equal(await p.evaluate(()=>window.__skillBattlePreview.panel.buttons.expNode2.getChildAt(2).src),
+                "ui/image/expeditionNodes/node-battle-loot.png","Victory changes enemy marker to the shared loot icon");
             const beforePan=await state(p);
             await pan(p,[900,130],[300,130]);
             const scroll=await p.evaluate(()=>{
@@ -259,6 +342,8 @@ async function drag(p,fromKey,toKey) {
                 assert.ok(Math.abs(cameraAfter-cameraDuring.target)<1);
                 assert.equal(await p.evaluate(()=>window.__skillBattlePreview.panel.buttons.expUse.getChildAt(1).text),"已使用");
                 assert.equal(await p.evaluate(()=>window.__skillBattlePreview.panel.buttons.expUse.mouseEnabled),false);
+                assert.equal(await p.evaluate(()=>window.__skillBattlePreview.panel.buttons.expNode4.getChildAt(2).grayed),true,
+                    "Used reward retains its node image with a depleted visual state");
                 assert.equal((await state(p)).node,4,"Used reward node remains a travel destination");
                 assert.deepEqual((await state(p)).map.used,usedBeforeReturn);
                 assert.equal((await state(p)).flow.pending,null,"Revisiting does not grant another reward");
@@ -316,7 +401,8 @@ async function drag(p,fromKey,toKey) {
                 const crossedCaptions=await p.evaluate(()=>{
                     const {panel,trial}=window.__skillBattlePreview,issues=[];
                     const points=new Map(trial.inventory.map.visible.map(id=>{
-                        const b=panel.buttons[`expNode${id}`];return[id,{x:b.x+58,y:b.y+34}];
+                        const b=panel.buttons[`expNode${id}`],icon=b.getChildAt(2);
+                        return[id,{x:b.x+icon.x+icon.width/2,y:b.y+icon.y+icon.height/2}];
                     }));
                     for(const edge of trial.inventory.map.edges){
                         if(!edge.every(id=>points.has(id)))continue;
@@ -345,6 +431,8 @@ async function drag(p,fromKey,toKey) {
                     return issues;
                 });
                 assert.deepEqual(crossedCaptions,[],"Map connections do not cross node captions");
+                const allKinds=await checkMapArt(p);
+                assert.equal(new Set(allKinds).size,12,"Full revealed fixture loads all twelve new node icon categories");
                 await screenshot(p,"desktop-expanded-map-fixture");
                 await p.evaluate(()=>{
                     const {panel,trial}=window.__skillBattlePreview;

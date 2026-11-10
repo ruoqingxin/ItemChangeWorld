@@ -8,6 +8,8 @@ import { NewExpeditionSession } from "../newRules/NewExpeditionSession";
 import { NewInventoryPanel } from "./NewInventoryPanel";
 
 type MapPoint = { x: number; y: number };
+const MAP_HEIGHT = 430;
+const MARKER_HALF = 58;
 
 export class NewExpeditionPanel extends NewInventoryPanel {
     private mapOpen = true;
@@ -281,7 +283,7 @@ export class NewExpeditionPanel extends NewInventoryPanel {
         this.backdrop();
         const c=this.expedition.archive!.config,s=this.expedition.inventory!,current=Rules.node(c,s.node);
         this.expeditionNodes.expeditionRoot.visible=true;
-        this.text("expTitle","末法寻仙 · 秘境",32,14,620,42,26,"#e3c98c");
+        this.text("expTitle","末法寻仙 · 忆境",32,14,620,42,26,"#e3c98c");
         this.text("expClock",this.timeText(),1080,16,168,40,22);
         const weapon=s.items.find(i=>i.location.space==="weapon");
         this.text("expResources",`生命 ${Core.format(s.hp)} / ${Core.format(c.build.setup.player.maxHp)}    灵力 ${Core.format(s.mp)} / ${Core.format(c.build.setup.player.maxMp)}    耐久 ${weapon?.durability ?? "无武器"}    已胜 ${s.map.cleared.length} 场`,
@@ -295,27 +297,32 @@ export class NewExpeditionPanel extends NewInventoryPanel {
             const x=id===28 ? parent!.x+(parent!.id===7?0.9:-0.5) :
                 id===29 ? parent!.x-0.5 : parent?.x??n.x;
             const y=id>=30 ? id===30?-1.1:1.1 : id>=28?-1.1:n.y;
-            const px=80+x*242,py=190+y*112;
+            const px=80+x*242,py=198+y*128;
             points.set(id,{x:px,y:py});
-            const key=`expNode${id}`,kind=({normal:"普通",elite:"精英",boss:"首领",search:n.pool.startsWith("supply")?"补给":"搜索",
+            const cleared=!!n.enemy&&s.map.cleared.includes(id),source=s.map.sources.find(box=>box.node===id);
+            const depleted=s.map.used.includes(id)||!!source&&source.revealed===source.entries.length&&
+                !s.items.some(item=>item.location.space==="ground"&&item.location.node===id);
+            const key=`expNode${id}`,kind=cleared?"遗藏":({normal:"普通",elite:"精英",boss:"首领",search:n.pool.startsWith("supply")?"补给":"搜索",
                 borrow:"借法",insight:"悟道",extract:"撤离",recovery:"恢复",start:"入境处",transit:"岔口"})[n.kind];
-            this.button(key,`${kind}${s.map.cleared.includes(id)?"·胜":s.map.used.includes(id)?"·尽":""}`,
-                px-58,py-34,116,108,reach.has(id),id===s.node||id===this.selectedNode);
+            const caption=`${kind}${depleted?source?"·空":"·尽":""}`;
+            this.button(key,caption,px-58,py-52,116,132,reach.has(id),id===s.node||id===this.selectedNode);
             const b=this.buttons[key],l=b.getChildAt(1) as Laya.GTextField;
             // Image-backed mapped node controls have their caption after the skin.
             (b.getChildAt(0) as Laya.GImage).visible=false;
-            l.text=`${kind}${s.map.cleared.includes(id)?"·胜":s.map.used.includes(id)?"·尽":""}`;
-            l.pos(0,72);l.size(116,32);l.fontSize=17;l.textIns.color=id===s.node?"#ffd879":"#e8edf0";
+            l.text=caption;
+            l.pos(0,104);l.size(116,28);l.fontSize=17;l.textIns.color=id===s.node?"#ffd879":depleted?"#9ca9a0":"#e8edf0";
             const image=b.getChildAt(2) as Laya.GImage;
-            const art=({normal:"battle",elite:"elite",boss:"boss",search:"search"})[n.kind];
-            image.src=`ui/atlas/module/expedition/${art?`${art}_${s.map.cleared.includes(id)?"inactive":"active"}`:
-                ({borrow:"borrow",insight:"enlightenment",extract:"exit",recovery:"recovery",start:"back",transit:"back"})[n.kind]}.png`;
-            image.visible=true;
+            const art=cleared?"battle-loot":n.kind==="search"?(n.pool.startsWith("supply")?"supply":"search"):
+                ({normal:"enemy-normal",elite:"enemy-elite",boss:"enemy-boss",borrow:"borrow",insight:"insight",
+                    extract:"extract",recovery:"recovery",start:"start",transit:"transit"})[n.kind];
+            image.src=`ui/image/expeditionNodes/node-${art}.png`;
+            image.pos(6,0);image.size(104,104);image.visible=true;
+            image.grayed=depleted;image.alpha=depleted?0.68:1;
             b.graphics.clear();
         }
         const viewport=this.expeditionNodes.expViewport as Laya.GPanel;
         const width=Math.max(viewport.width,...[...points.values()].map(p=>p.x+80));
-        this.expeditionNodes.expMapContent.size(width,414);
+        this.expeditionNodes.expMapContent.size(width,MAP_HEIGHT);
         viewport.layout.refresh(true);
         if(this.centerMap) {
             this.scroller.posX=Math.max(0,points.get(s.node)!.x-viewport.width*0.42);
@@ -324,23 +331,23 @@ export class NewExpeditionPanel extends NewInventoryPanel {
         this.renderMapConnections(points,s.map.edges);
         const marker=this.expeditionNodes.expPlayer,p=points.get(s.node)!;
         marker.visible=true;marker.graphics.clear();
-        marker.graphics.drawCircle(42,42,39,null,"#ffd879",3);
+        marker.graphics.drawCircle(MARKER_HALF,MARKER_HALF,54,null,"#ffd879",2);
         if(this.pendingPath) {
             const path=this.pendingPath;this.pendingPath=null;
             this.beginMovement(path,points);
         }
         if(this.movement)this.positionMovement(performance.now());
-        else marker.pos(p.x-42,p.y-42);
+        else marker.pos(p.x-MARKER_HALF,p.y-MARKER_HALF);
         this.scroller.touchEffect=this.movement?Laya.ScrollTouchEffect.Off:Laya.ScrollTouchEffect.On;
         this.scroller.mouseWheelDisabled=!!this.movement;
         const recovered=Rules.recovery(c,s);
         this.text("expStatus",this.extractConfirm?"确认撤离：携带物带回，地面物品损失。":
-            this.abandonConfirm?"确认放弃：仅保留归真匣，装备及其他携带物损失。":`${current.key} · ${current.name}${
+            this.abandonConfirm?"确认放弃：仅保留归真匣，装备及其他携带物损失。":`${current.name}${
                 current.kind==="recovery"?` · 可恢复生命 ${Core.format(recovered.hp)} / 灵力 ${Core.format(recovered.mp)}`:""}`,
             180,548,920,42,20,"#d4dfda");
         this.text("expNotice",this.notice || (s.map.warning===300000?"剩余时间不足五分钟":s.map.warning===600000?"剩余时间不足十分钟":""),
             32,592,1216,34,18,"#efa797");
-        this.button("expStorage","行囊 / 搜索",130,640,180,48);
+        this.button("expStorage","行囊",130,640,180,48);
         this.button("expBuild","构筑",332,640,180,48);
         if(!this.movement && (this.selectedNode!==null || s.node!==1 || this.extractConfirm || this.abandonConfirm)) {
             const n=current,used=s.map.used.includes(n.id);
@@ -353,9 +360,12 @@ export class NewExpeditionPanel extends NewInventoryPanel {
             const title=enemy?({normal:"普通敌人",elite:"精英敌人",boss:"首领"})[n.kind]:
                 source&&n.enemy?"战后掉落":n.kind==="recovery"?"恢复点":n.kind==="extract"?"撤离点":n.name;
             this.expeditionNodes.expContextBackground.visible=true;
-            this.text("expContextTitle",title,1012,210,224,88,22,"#e3c98c");
+            const contextIcon=this.expeditionNodes.expContextIcon as Laya.GImage;
+            contextIcon.src=(this.buttons[`expNode${n.id}`].getChildAt(2) as Laya.GImage).src;
+            contextIcon.visible=true;
+            this.text("expContextTitle",title,1012,316,224,56,22,"#e3c98c");
             this.labels.expContextTitle.align="center";this.labels.expContextTitle.valign="middle";
-            this.button("expUse",action,1020,354,208,54,this.abandonConfirm||this.extractConfirm||
+            this.button("expUse",action,1020,394,208,54,this.abandonConfirm||this.extractConfirm||
                 reach.has(n.id)&&!used&&(
                     (n.kind!=="recovery"||!!recovered.hp||!!recovered.mp)&&
                     (!!source||!["start","transit"].includes(n.kind))));
@@ -394,7 +404,7 @@ export class NewExpeditionPanel extends NewInventoryPanel {
             }
             distance-=length;p=m.points[i];
         }
-        this.expeditionNodes.expPlayer.pos(p.x-42,p.y-42);
+        this.expeditionNodes.expPlayer.pos(p.x-MARKER_HALF,p.y-MARKER_HALF);
         this.scroller.posX=m.cameraFrom+(m.cameraTo-m.cameraFrom)*ease;
         return t===1;
     }
@@ -415,7 +425,7 @@ export class NewExpeditionPanel extends NewInventoryPanel {
             const caption=this.buttons[`expNode${id}`].getChildAt(1) as Laya.GTextField;
             caption.textIns.typeset(true);
             const half=Math.min(58,caption.textIns.textWidth/2+4);
-            bounds.set(p,[[p.x-40,p.y-40,p.x+40,p.y+40],[p.x-half,p.y+36,p.x+half,p.y+74]]);
+            bounds.set(p,[[p.x-54,p.y-54,p.x+54,p.y+54],[p.x-half,p.y+50,p.x+half,p.y+84]]);
         }
         const rectangles=[...bounds.values()].flat();
         const interval=(p:{x:number;y:number},q:{x:number;y:number},box:number[])=>{
@@ -441,16 +451,17 @@ export class NewExpeditionPanel extends NewInventoryPanel {
             const candidate=(path:{x:number;y:number}[])=>{
                 path=path.filter((v,i)=>!i||v.x!==path[i-1].x||v.y!==path[i-1].y);
                 path=[trim(p,path[1]),...path.slice(1,-1),trim(q,path[path.length-2])];
-                return path.some((v,i)=>i&&blocked(path[i-1],v))?null:path;
+                const length=path.reduce((sum,v,i)=>sum+(i?Math.hypot(v.x-path[i-1].x,v.y-path[i-1].y):0),0);
+                return length<21||path.some((v,i)=>i&&blocked(path[i-1],v))?null:path;
             };
             let route=candidate([p,q]);
             if(!route) {
-                // Try unobstructed doglegs only when a straight edge crosses a node.
+                // Keep a readable connection when a direct edge is obscured or too short.
                 const options:{x:number;y:number}[][]=[];
                 for(const x of new Set([p.x,q.x,(p.x+q.x)/2,...obstacles.flatMap(n=>[n.x-66,n.x+66])]))
                     options.push([p,{x,y:p.y},{x,y:q.y},q]);
-                for(const y of new Set([p.y,q.y,(p.y+q.y)/2,...obstacles.flatMap(n=>[n.y-46,n.y+84])]))
-                    if(y>=4&&y<=410)options.push([p,{x:p.x,y},{x:q.x,y},q]);
+                for(const y of new Set([p.y,q.y,(p.y+q.y)/2,...obstacles.flatMap(n=>[n.y-60,n.y+90])]))
+                    if(y>=4&&y<=MAP_HEIGHT-4)options.push([p,{x:p.x,y},{x:q.x,y},q]);
                 let shortest=Infinity;
                 for(const option of options) {
                     const path=candidate(option);
@@ -462,8 +473,26 @@ export class NewExpeditionPanel extends NewInventoryPanel {
             const path=[p,...(route||[]),q];
             this.mapRoutes.set(`${a}:${b}`,path);
             this.mapRoutes.set(`${b}:${a}`,[...path].reverse());
-            if(route)for(let i=1;i<route.length;i++)
-                lines.graphics.drawLine(route[i-1].x,route[i-1].y,route[i].x,route[i].y,"#70878a",3);
+            if(route)this.dashedRoute(lines.graphics,route);
+        }
+    }
+    private dashedRoute(graphics: Laya.Graphics, route: MapPoint[]): void {
+        const dash=12,gap=9,period=dash+gap;
+        // Anchor collinear segments to the same phase so shared routes cannot fill each other's gaps.
+        for(let i=1;i<route.length;i++) {
+            const a=route[i-1],b=route[i],dx=b.x-a.x,dy=b.y-a.y,length=Math.hypot(dx,dy);
+            if(length<0.0001)continue;
+            const reverse=dx<0||dx===0&&dy<0,start=reverse?b:a;
+            const ux=(reverse?-dx:dx)/length,uy=(reverse?-dy:dy)/length;
+            const anchor=start.x*ux+start.y*uy;
+            for(let offset=0;offset<length;) {
+                const phase=((anchor+offset)%period+period)%period;
+                const step=Math.min(length-offset,phase<dash?dash-phase:period-phase);
+                if(step<0.0001) { offset+=0.0001;continue; }
+                if(phase<dash)graphics.drawLine(start.x+ux*offset,start.y+uy*offset,
+                    start.x+ux*(offset+step),start.y+uy*(offset+step),"#8b9b8e",3);
+                offset+=step;
+            }
         }
     }
 }

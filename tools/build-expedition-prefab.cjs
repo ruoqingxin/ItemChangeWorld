@@ -28,22 +28,24 @@ for (const view of ["SkillBattleStartView","SkillBattleSettlementView"]) {
     children.push(text("expTitle",32,14,620,42,26),text("expClock",1080,16,168,40,22));
     children.push(text("expResources",32,64,1216,38),text("expStatus",180,548,920,42));
     children.push(text("expNotice",32,592,1216,34,18));
-    const viewport=node("expViewport","GPanel",32,112,936,414,{clipping:true,mouseEnabled:true,_$child:[]});
-    const content=node("expMapContent","GWidget",0,0,936,414,{mouseThrough:true,_$child:[]});
+    const viewport=node("expViewport","GPanel",32,112,936,430,{clipping:true,mouseEnabled:true,_$child:[]});
+    const content=node("expMapContent","GWidget",0,0,936,430,{mouseThrough:true,_$child:[]});
     viewport._$child.push(content);children.push(viewport);
-    content._$child.push(node("expLines","GWidget",0,0,936,414,{mouseEnabled:false}));
+    content._$child.push(node("expLines","GWidget",0,0,936,430,{mouseEnabled:false}));
     for (let i=1;i<=32;i++) {
-        const n=button(`expNode${i}`,0,0,116,108);
+        const n=button(`expNode${i}`,0,0,116,132);
         n._$child[0].visible=false;
-        n._$child.push(node(`expNode${i}Icon`,"GImage",24,0,68,68,{
-            src:"ui/atlas/module/expedition/battle_active.png",autoSize:false,mouseEnabled:false}));
-        n._$child[1].x=0;n._$child[1].y=72;n._$child[1].width=116;n._$child[1].height=36;
+        n._$child.push(node(`expNode${i}Icon`,"GImage",6,0,104,104,{
+            src:"ui/image/expeditionNodes/node-enemy-normal.png",autoSize:false,mouseEnabled:false}));
+        n._$child[1].x=0;n._$child[1].y=104;n._$child[1].width=116;n._$child[1].height=28;
         content._$child.push(n);
     }
-    content._$child.push(node("expPlayer","GWidget",0,0,84,84,{mouseEnabled:false}));
-    children.push(node("expContextBackground","GImage",1000,192,248,246,{
+    content._$child.push(node("expPlayer","GWidget",0,0,116,116,{mouseEnabled:false}));
+    children.push(node("expContextBackground","GImage",1000,192,248,282,{
         src:"ui/texture/inventory/tooltip.png",autoSize:false,mouseEnabled:false}));
-    children.push(text("expContextTitle",1012,210,224,88,22),button("expUse",1020,354,208,54));
+    children.push(node("expContextIcon","GImage",1072,204,104,104,{
+        src:"ui/image/expeditionNodes/node-start.png",autoSize:false,mouseEnabled:false}));
+    children.push(text("expContextTitle",1012,316,224,56,22),button("expUse",1020,394,208,54));
     for(const [name,x,w] of [["expStorage",130,180],
         ["expBuild",332,180],["expAbandon",1000,248]]) children.push(button(name,x,640,w,48));
     inventory._$child.push(

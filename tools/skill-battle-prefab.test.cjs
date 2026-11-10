@@ -77,6 +77,24 @@ for (const file of allFiles) {
     };
     visit(prefab);
     validateBounds(prefab);
+    if (nodes.has("expeditionRoot")) {
+        assert.ok(nodes.has("expContextIcon"), `${file} contextual panel has a node image`);
+        assert.equal(nodes.get("expViewport").height,430);
+        for(let i=1;i<=32;i++) {
+            const icon=nodes.get(`expNode${i}Icon`);
+            assert.equal(icon.src,"ui/image/expeditionNodes/node-enemy-normal.png");
+            assert.deepEqual([icon.width,icon.height],[104,104]);
+        }
+        for(const name of ["start","transit","enemy-normal","enemy-elite","enemy-boss","supply",
+            "search","borrow","insight","recovery","extract","battle-loot"]) {
+            const icon=path.join(__dirname,`../assets/ui/image/expeditionNodes/node-${name}.png`);
+            assert.ok(fs.existsSync(icon),`Missing new expedition icon ${name}`);
+            const meta=JSON.parse(fs.readFileSync(icon+".meta","utf8"));
+            assert.equal(meta.importer.textureType,2);
+            assert.equal(meta.importer.sRGB,true);
+            assert.equal(meta.importer.premultiplyAlpha,true);
+        }
+    }
     if (nodes.has("inventoryRoot")) {
         const cells = [...nodes].filter(([name]) => /^inv(?:EquipCell_(?:weapon|container)_\d+|SourceCell\d+|Cell_(?:battle|safe|bag)_\d+)$/.test(name));
         for (const [name,node] of cells)

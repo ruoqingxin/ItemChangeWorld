@@ -3847,6 +3847,9 @@
         },
         {
           "_$ref": "exp_SkillBattleSettlementView_175"
+        },
+        {
+          "_$ref": "exp_SkillBattleSettlementView_176"
         }
       ],
       "mapperType": 4
@@ -17485,7 +17488,7 @@
           "mouseEnabled": false
         },
         {
-          "_$id": "exp_SkillBattleSettlementView_153",
+          "_$id": "exp_SkillBattleSettlementView_154",
           "_$type": "GImage",
           "name": "expUnknown",
           "x": 0,
@@ -17499,7 +17502,7 @@
           "src": "ui/atlas/module/expedition/search_active.png"
         },
         {
-          "_$id": "exp_SkillBattleSettlementView_154",
+          "_$id": "exp_SkillBattleSettlementView_155",
           "_$type": "GWidget",
           "name": "expSearchSpinner",
           "x": 0,
@@ -17510,7 +17513,7 @@
           "mouseEnabled": false
         },
         {
-          "_$id": "exp_SkillBattleSettlementView_157",
+          "_$id": "exp_SkillBattleSettlementView_158",
           "_$type": "GWidget",
           "name": "expLootPage1",
           "x": 800,
@@ -17520,7 +17523,7 @@
           "mouseEnabled": true,
           "_$child": [
             {
-              "_$id": "exp_SkillBattleSettlementView_155",
+              "_$id": "exp_SkillBattleSettlementView_156",
               "_$type": "GImage",
               "name": "expLootPage1Skin",
               "x": 0,
@@ -17532,7 +17535,7 @@
               "mouseEnabled": false
             },
             {
-              "_$id": "exp_SkillBattleSettlementView_156",
+              "_$id": "exp_SkillBattleSettlementView_157",
               "_$type": "GTextField",
               "name": "expLootPage1Text",
               "x": 4,
@@ -17547,7 +17550,7 @@
           ]
         },
         {
-          "_$id": "exp_SkillBattleSettlementView_160",
+          "_$id": "exp_SkillBattleSettlementView_161",
           "_$type": "GWidget",
           "name": "expLootPage2",
           "x": 864,
@@ -17557,7 +17560,7 @@
           "mouseEnabled": true,
           "_$child": [
             {
-              "_$id": "exp_SkillBattleSettlementView_158",
+              "_$id": "exp_SkillBattleSettlementView_159",
               "_$type": "GImage",
               "name": "expLootPage2Skin",
               "x": 0,
@@ -17569,7 +17572,7 @@
               "mouseEnabled": false
             },
             {
-              "_$id": "exp_SkillBattleSettlementView_159",
+              "_$id": "exp_SkillBattleSettlementView_160",
               "_$type": "GTextField",
               "name": "expLootPage2Text",
               "x": 4,
@@ -17584,7 +17587,7 @@
           ]
         },
         {
-          "_$id": "exp_SkillBattleSettlementView_163",
+          "_$id": "exp_SkillBattleSettlementView_164",
           "_$type": "GWidget",
           "name": "expLootPage3",
           "x": 928,
@@ -17594,7 +17597,7 @@
           "mouseEnabled": true,
           "_$child": [
             {
-              "_$id": "exp_SkillBattleSettlementView_161",
+              "_$id": "exp_SkillBattleSettlementView_162",
               "_$type": "GImage",
               "name": "expLootPage3Skin",
               "x": 0,
@@ -17606,7 +17609,7 @@
               "mouseEnabled": false
             },
             {
-              "_$id": "exp_SkillBattleSettlementView_162",
+              "_$id": "exp_SkillBattleSettlementView_163",
               "_$type": "GTextField",
               "name": "expLootPage3Text",
               "x": 4,
@@ -17621,7 +17624,7 @@
           ]
         },
         {
-          "_$id": "exp_SkillBattleSettlementView_166",
+          "_$id": "exp_SkillBattleSettlementView_167",
           "_$type": "GWidget",
           "name": "expLootPage4",
           "x": 992,
@@ -17631,7 +17634,7 @@
           "mouseEnabled": true,
           "_$child": [
             {
-              "_$id": "exp_SkillBattleSettlementView_164",
+              "_$id": "exp_SkillBattleSettlementView_165",
               "_$type": "GImage",
               "name": "expLootPage4Skin",
               "x": 0,
@@ -17643,7 +17646,7 @@
               "mouseEnabled": false
             },
             {
-              "_$id": "exp_SkillBattleSettlementView_165",
+              "_$id": "exp_SkillBattleSettlementView_166",
               "_$type": "GTextField",
               "name": "expLootPage4Text",
               "x": 4,
@@ -17658,7 +17661,7 @@
           ]
         },
         {
-          "_$id": "exp_SkillBattleSettlementView_169",
+          "_$id": "exp_SkillBattleSettlementView_170",
           "_$type": "GWidget",
           "name": "expLootPage5",
           "x": 1056,
@@ -17668,7 +17671,7 @@
           "mouseEnabled": true,
           "_$child": [
             {
-              "_$id": "exp_SkillBattleSettlementView_167",
+              "_$id": "exp_SkillBattleSettlementView_168",
               "_$type": "GImage",
               "name": "expLootPage5Skin",
               "x": 0,
@@ -17680,7 +17683,7 @@
               "mouseEnabled": false
             },
             {
-              "_$id": "exp_SkillBattleSettlementView_168",
+              "_$id": "exp_SkillBattleSettlementView_169",
               "_$type": "GTextField",
               "name": "expLootPage5Text",
               "x": 4,
@@ -17695,7 +17698,7 @@
           ]
         },
         {
-          "_$id": "exp_SkillBattleSettlementView_172",
+          "_$id": "exp_SkillBattleSettlementView_173",
           "_$type": "GWidget",
           "name": "expLootPage6",
           "x": 1120,
@@ -17705,7 +17708,7 @@
           "mouseEnabled": true,
           "_$child": [
             {
-              "_$id": "exp_SkillBattleSettlementView_170",
+              "_$id": "exp_SkillBattleSettlementView_171",
               "_$type": "GImage",
               "name": "expLootPage6Skin",
               "x": 0,
@@ -17717,7 +17720,7 @@
               "mouseEnabled": false
             },
             {
-              "_$id": "exp_SkillBattleSettlementView_171",
+              "_$id": "exp_SkillBattleSettlementView_172",
               "_$type": "GTextField",
               "name": "expLootPage6Text",
               "x": 4,
@@ -17732,7 +17735,7 @@
           ]
         },
         {
-          "_$id": "exp_SkillBattleSettlementView_175",
+          "_$id": "exp_SkillBattleSettlementView_176",
           "_$type": "GWidget",
           "name": "expLootPage7",
           "x": 1184,
@@ -17742,7 +17745,7 @@
           "mouseEnabled": true,
           "_$child": [
             {
-              "_$id": "exp_SkillBattleSettlementView_173",
+              "_$id": "exp_SkillBattleSettlementView_174",
               "_$type": "GImage",
               "name": "expLootPage7Skin",
               "x": 0,
@@ -17754,7 +17757,7 @@
               "mouseEnabled": false
             },
             {
-              "_$id": "exp_SkillBattleSettlementView_174",
+              "_$id": "exp_SkillBattleSettlementView_175",
               "_$type": "GTextField",
               "name": "expLootPage7Text",
               "x": 4,
@@ -17878,7 +17881,7 @@
           "x": 32,
           "y": 112,
           "width": 936,
-          "height": 414,
+          "height": 430,
           "clipping": true,
           "mouseEnabled": true,
           "_$child": [
@@ -17889,7 +17892,7 @@
               "x": 0,
               "y": 0,
               "width": 936,
-              "height": 414,
+              "height": 430,
               "mouseThrough": true,
               "_$child": [
                 {
@@ -17899,7 +17902,7 @@
                   "x": 0,
                   "y": 0,
                   "width": 936,
-                  "height": 414,
+                  "height": 430,
                   "mouseEnabled": false
                 },
                 {
@@ -17909,7 +17912,7 @@
                   "x": 0,
                   "y": 0,
                   "width": 116,
-                  "height": 108,
+                  "height": 132,
                   "mouseEnabled": true,
                   "_$child": [
                     {
@@ -17919,7 +17922,7 @@
                       "x": 0,
                       "y": 0,
                       "width": 116,
-                      "height": 108,
+                      "height": 132,
                       "src": "ui/texture/inventory/tooltip.png",
                       "autoSize": false,
                       "mouseEnabled": false,
@@ -17930,9 +17933,9 @@
                       "_$type": "GTextField",
                       "name": "expNode1Text",
                       "x": 0,
-                      "y": 72,
+                      "y": 104,
                       "width": 116,
-                      "height": 36,
+                      "height": 28,
                       "text": "",
                       "fontSize": 18,
                       "color": "#e8edf0",
@@ -17942,11 +17945,11 @@
                       "_$id": "exp_SkillBattleSettlementView_13",
                       "_$type": "GImage",
                       "name": "expNode1Icon",
-                      "x": 24,
+                      "x": 6,
                       "y": 0,
-                      "width": 68,
-                      "height": 68,
-                      "src": "ui/atlas/module/expedition/battle_active.png",
+                      "width": 104,
+                      "height": 104,
+                      "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                       "autoSize": false,
                       "mouseEnabled": false
                     }
@@ -17959,7 +17962,7 @@
                   "x": 0,
                   "y": 0,
                   "width": 116,
-                  "height": 108,
+                  "height": 132,
                   "mouseEnabled": true,
                   "_$child": [
                     {
@@ -17969,7 +17972,7 @@
                       "x": 0,
                       "y": 0,
                       "width": 116,
-                      "height": 108,
+                      "height": 132,
                       "src": "ui/texture/inventory/tooltip.png",
                       "autoSize": false,
                       "mouseEnabled": false,
@@ -17980,9 +17983,9 @@
                       "_$type": "GTextField",
                       "name": "expNode2Text",
                       "x": 0,
-                      "y": 72,
+                      "y": 104,
                       "width": 116,
-                      "height": 36,
+                      "height": 28,
                       "text": "",
                       "fontSize": 18,
                       "color": "#e8edf0",
@@ -17992,11 +17995,11 @@
                       "_$id": "exp_SkillBattleSettlementView_17",
                       "_$type": "GImage",
                       "name": "expNode2Icon",
-                      "x": 24,
+                      "x": 6,
                       "y": 0,
-                      "width": 68,
-                      "height": 68,
-                      "src": "ui/atlas/module/expedition/battle_active.png",
+                      "width": 104,
+                      "height": 104,
+                      "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                       "autoSize": false,
                       "mouseEnabled": false
                     }
@@ -18009,7 +18012,7 @@
                   "x": 0,
                   "y": 0,
                   "width": 116,
-                  "height": 108,
+                  "height": 132,
                   "mouseEnabled": true,
                   "_$child": [
                     {
@@ -18019,7 +18022,7 @@
                       "x": 0,
                       "y": 0,
                       "width": 116,
-                      "height": 108,
+                      "height": 132,
                       "src": "ui/texture/inventory/tooltip.png",
                       "autoSize": false,
                       "mouseEnabled": false,
@@ -18030,9 +18033,9 @@
                       "_$type": "GTextField",
                       "name": "expNode3Text",
                       "x": 0,
-                      "y": 72,
+                      "y": 104,
                       "width": 116,
-                      "height": 36,
+                      "height": 28,
                       "text": "",
                       "fontSize": 18,
                       "color": "#e8edf0",
@@ -18042,11 +18045,11 @@
                       "_$id": "exp_SkillBattleSettlementView_21",
                       "_$type": "GImage",
                       "name": "expNode3Icon",
-                      "x": 24,
+                      "x": 6,
                       "y": 0,
-                      "width": 68,
-                      "height": 68,
-                      "src": "ui/atlas/module/expedition/battle_active.png",
+                      "width": 104,
+                      "height": 104,
+                      "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                       "autoSize": false,
                       "mouseEnabled": false
                     }
@@ -18059,7 +18062,7 @@
                   "x": 0,
                   "y": 0,
                   "width": 116,
-                  "height": 108,
+                  "height": 132,
                   "mouseEnabled": true,
                   "_$child": [
                     {
@@ -18069,7 +18072,7 @@
                       "x": 0,
                       "y": 0,
                       "width": 116,
-                      "height": 108,
+                      "height": 132,
                       "src": "ui/texture/inventory/tooltip.png",
                       "autoSize": false,
                       "mouseEnabled": false,
@@ -18080,9 +18083,9 @@
                       "_$type": "GTextField",
                       "name": "expNode4Text",
                       "x": 0,
-                      "y": 72,
+                      "y": 104,
                       "width": 116,
-                      "height": 36,
+                      "height": 28,
                       "text": "",
                       "fontSize": 18,
                       "color": "#e8edf0",
@@ -18092,11 +18095,11 @@
                       "_$id": "exp_SkillBattleSettlementView_25",
                       "_$type": "GImage",
                       "name": "expNode4Icon",
-                      "x": 24,
+                      "x": 6,
                       "y": 0,
-                      "width": 68,
-                      "height": 68,
-                      "src": "ui/atlas/module/expedition/battle_active.png",
+                      "width": 104,
+                      "height": 104,
+                      "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                       "autoSize": false,
                       "mouseEnabled": false
                     }
@@ -18109,7 +18112,7 @@
                   "x": 0,
                   "y": 0,
                   "width": 116,
-                  "height": 108,
+                  "height": 132,
                   "mouseEnabled": true,
                   "_$child": [
                     {
@@ -18119,7 +18122,7 @@
                       "x": 0,
                       "y": 0,
                       "width": 116,
-                      "height": 108,
+                      "height": 132,
                       "src": "ui/texture/inventory/tooltip.png",
                       "autoSize": false,
                       "mouseEnabled": false,
@@ -18130,9 +18133,9 @@
                       "_$type": "GTextField",
                       "name": "expNode5Text",
                       "x": 0,
-                      "y": 72,
+                      "y": 104,
                       "width": 116,
-                      "height": 36,
+                      "height": 28,
                       "text": "",
                       "fontSize": 18,
                       "color": "#e8edf0",
@@ -18142,11 +18145,11 @@
                       "_$id": "exp_SkillBattleSettlementView_29",
                       "_$type": "GImage",
                       "name": "expNode5Icon",
-                      "x": 24,
+                      "x": 6,
                       "y": 0,
-                      "width": 68,
-                      "height": 68,
-                      "src": "ui/atlas/module/expedition/battle_active.png",
+                      "width": 104,
+                      "height": 104,
+                      "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                       "autoSize": false,
                       "mouseEnabled": false
                     }
@@ -18159,7 +18162,7 @@
                   "x": 0,
                   "y": 0,
                   "width": 116,
-                  "height": 108,
+                  "height": 132,
                   "mouseEnabled": true,
                   "_$child": [
                     {
@@ -18169,7 +18172,7 @@
                       "x": 0,
                       "y": 0,
                       "width": 116,
-                      "height": 108,
+                      "height": 132,
                       "src": "ui/texture/inventory/tooltip.png",
                       "autoSize": false,
                       "mouseEnabled": false,
@@ -18180,9 +18183,9 @@
                       "_$type": "GTextField",
                       "name": "expNode6Text",
                       "x": 0,
-                      "y": 72,
+                      "y": 104,
                       "width": 116,
-                      "height": 36,
+                      "height": 28,
                       "text": "",
                       "fontSize": 18,
                       "color": "#e8edf0",
@@ -18192,11 +18195,11 @@
                       "_$id": "exp_SkillBattleSettlementView_33",
                       "_$type": "GImage",
                       "name": "expNode6Icon",
-                      "x": 24,
+                      "x": 6,
                       "y": 0,
-                      "width": 68,
-                      "height": 68,
-                      "src": "ui/atlas/module/expedition/battle_active.png",
+                      "width": 104,
+                      "height": 104,
+                      "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                       "autoSize": false,
                       "mouseEnabled": false
                     }
@@ -18209,7 +18212,7 @@
                   "x": 0,
                   "y": 0,
                   "width": 116,
-                  "height": 108,
+                  "height": 132,
                   "mouseEnabled": true,
                   "_$child": [
                     {
@@ -18219,7 +18222,7 @@
                       "x": 0,
                       "y": 0,
                       "width": 116,
-                      "height": 108,
+                      "height": 132,
                       "src": "ui/texture/inventory/tooltip.png",
                       "autoSize": false,
                       "mouseEnabled": false,
@@ -18230,9 +18233,9 @@
                       "_$type": "GTextField",
                       "name": "expNode7Text",
                       "x": 0,
-                      "y": 72,
+                      "y": 104,
                       "width": 116,
-                      "height": 36,
+                      "height": 28,
                       "text": "",
                       "fontSize": 18,
                       "color": "#e8edf0",
@@ -18242,11 +18245,11 @@
                       "_$id": "exp_SkillBattleSettlementView_37",
                       "_$type": "GImage",
                       "name": "expNode7Icon",
-                      "x": 24,
+                      "x": 6,
                       "y": 0,
-                      "width": 68,
-                      "height": 68,
-                      "src": "ui/atlas/module/expedition/battle_active.png",
+                      "width": 104,
+                      "height": 104,
+                      "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                       "autoSize": false,
                       "mouseEnabled": false
                     }
@@ -18259,7 +18262,7 @@
                   "x": 0,
                   "y": 0,
                   "width": 116,
-                  "height": 108,
+                  "height": 132,
                   "mouseEnabled": true,
                   "_$child": [
                     {
@@ -18269,7 +18272,7 @@
                       "x": 0,
                       "y": 0,
                       "width": 116,
-                      "height": 108,
+                      "height": 132,
                       "src": "ui/texture/inventory/tooltip.png",
                       "autoSize": false,
                       "mouseEnabled": false,
@@ -18280,9 +18283,9 @@
                       "_$type": "GTextField",
                       "name": "expNode8Text",
                       "x": 0,
-                      "y": 72,
+                      "y": 104,
                       "width": 116,
-                      "height": 36,
+                      "height": 28,
                       "text": "",
                       "fontSize": 18,
                       "color": "#e8edf0",
@@ -18292,11 +18295,11 @@
                       "_$id": "exp_SkillBattleSettlementView_41",
                       "_$type": "GImage",
                       "name": "expNode8Icon",
-                      "x": 24,
+                      "x": 6,
                       "y": 0,
-                      "width": 68,
-                      "height": 68,
-                      "src": "ui/atlas/module/expedition/battle_active.png",
+                      "width": 104,
+                      "height": 104,
+                      "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                       "autoSize": false,
                       "mouseEnabled": false
                     }
@@ -18309,7 +18312,7 @@
                   "x": 0,
                   "y": 0,
                   "width": 116,
-                  "height": 108,
+                  "height": 132,
                   "mouseEnabled": true,
                   "_$child": [
                     {
@@ -18319,7 +18322,7 @@
                       "x": 0,
                       "y": 0,
                       "width": 116,
-                      "height": 108,
+                      "height": 132,
                       "src": "ui/texture/inventory/tooltip.png",
                       "autoSize": false,
                       "mouseEnabled": false,
@@ -18330,9 +18333,9 @@
                       "_$type": "GTextField",
                       "name": "expNode9Text",
                       "x": 0,
-                      "y": 72,
+                      "y": 104,
                       "width": 116,
-                      "height": 36,
+                      "height": 28,
                       "text": "",
                       "fontSize": 18,
                       "color": "#e8edf0",
@@ -18342,11 +18345,11 @@
                       "_$id": "exp_SkillBattleSettlementView_45",
                       "_$type": "GImage",
                       "name": "expNode9Icon",
-                      "x": 24,
+                      "x": 6,
                       "y": 0,
-                      "width": 68,
-                      "height": 68,
-                      "src": "ui/atlas/module/expedition/battle_active.png",
+                      "width": 104,
+                      "height": 104,
+                      "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                       "autoSize": false,
                       "mouseEnabled": false
                     }
@@ -18359,7 +18362,7 @@
                   "x": 0,
                   "y": 0,
                   "width": 116,
-                  "height": 108,
+                  "height": 132,
                   "mouseEnabled": true,
                   "_$child": [
                     {
@@ -18369,7 +18372,7 @@
                       "x": 0,
                       "y": 0,
                       "width": 116,
-                      "height": 108,
+                      "height": 132,
                       "src": "ui/texture/inventory/tooltip.png",
                       "autoSize": false,
                       "mouseEnabled": false,
@@ -18380,9 +18383,9 @@
                       "_$type": "GTextField",
                       "name": "expNode10Text",
                       "x": 0,
-                      "y": 72,
+                      "y": 104,
                       "width": 116,
-                      "height": 36,
+                      "height": 28,
                       "text": "",
                       "fontSize": 18,
                       "color": "#e8edf0",
@@ -18392,11 +18395,11 @@
                       "_$id": "exp_SkillBattleSettlementView_49",
                       "_$type": "GImage",
                       "name": "expNode10Icon",
-                      "x": 24,
+                      "x": 6,
                       "y": 0,
-                      "width": 68,
-                      "height": 68,
-                      "src": "ui/atlas/module/expedition/battle_active.png",
+                      "width": 104,
+                      "height": 104,
+                      "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                       "autoSize": false,
                       "mouseEnabled": false
                     }
@@ -18409,7 +18412,7 @@
                   "x": 0,
                   "y": 0,
                   "width": 116,
-                  "height": 108,
+                  "height": 132,
                   "mouseEnabled": true,
                   "_$child": [
                     {
@@ -18419,7 +18422,7 @@
                       "x": 0,
                       "y": 0,
                       "width": 116,
-                      "height": 108,
+                      "height": 132,
                       "src": "ui/texture/inventory/tooltip.png",
                       "autoSize": false,
                       "mouseEnabled": false,
@@ -18430,9 +18433,9 @@
                       "_$type": "GTextField",
                       "name": "expNode11Text",
                       "x": 0,
-                      "y": 72,
+                      "y": 104,
                       "width": 116,
-                      "height": 36,
+                      "height": 28,
                       "text": "",
                       "fontSize": 18,
                       "color": "#e8edf0",
@@ -18442,11 +18445,11 @@
                       "_$id": "exp_SkillBattleSettlementView_53",
                       "_$type": "GImage",
                       "name": "expNode11Icon",
-                      "x": 24,
+                      "x": 6,
                       "y": 0,
-                      "width": 68,
-                      "height": 68,
-                      "src": "ui/atlas/module/expedition/battle_active.png",
+                      "width": 104,
+                      "height": 104,
+                      "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                       "autoSize": false,
                       "mouseEnabled": false
                     }
@@ -18459,7 +18462,7 @@
                   "x": 0,
                   "y": 0,
                   "width": 116,
-                  "height": 108,
+                  "height": 132,
                   "mouseEnabled": true,
                   "_$child": [
                     {
@@ -18469,7 +18472,7 @@
                       "x": 0,
                       "y": 0,
                       "width": 116,
-                      "height": 108,
+                      "height": 132,
                       "src": "ui/texture/inventory/tooltip.png",
                       "autoSize": false,
                       "mouseEnabled": false,
@@ -18480,9 +18483,9 @@
                       "_$type": "GTextField",
                       "name": "expNode12Text",
                       "x": 0,
-                      "y": 72,
+                      "y": 104,
                       "width": 116,
-                      "height": 36,
+                      "height": 28,
                       "text": "",
                       "fontSize": 18,
                       "color": "#e8edf0",
@@ -18492,11 +18495,11 @@
                       "_$id": "exp_SkillBattleSettlementView_57",
                       "_$type": "GImage",
                       "name": "expNode12Icon",
-                      "x": 24,
+                      "x": 6,
                       "y": 0,
-                      "width": 68,
-                      "height": 68,
-                      "src": "ui/atlas/module/expedition/battle_active.png",
+                      "width": 104,
+                      "height": 104,
+                      "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                       "autoSize": false,
                       "mouseEnabled": false
                     }
@@ -18509,7 +18512,7 @@
                   "x": 0,
                   "y": 0,
                   "width": 116,
-                  "height": 108,
+                  "height": 132,
                   "mouseEnabled": true,
                   "_$child": [
                     {
@@ -18519,7 +18522,7 @@
                       "x": 0,
                       "y": 0,
                       "width": 116,
-                      "height": 108,
+                      "height": 132,
                       "src": "ui/texture/inventory/tooltip.png",
                       "autoSize": false,
                       "mouseEnabled": false,
@@ -18530,9 +18533,9 @@
                       "_$type": "GTextField",
                       "name": "expNode13Text",
                       "x": 0,
-                      "y": 72,
+                      "y": 104,
                       "width": 116,
-                      "height": 36,
+                      "height": 28,
                       "text": "",
                       "fontSize": 18,
                       "color": "#e8edf0",
@@ -18542,11 +18545,11 @@
                       "_$id": "exp_SkillBattleSettlementView_61",
                       "_$type": "GImage",
                       "name": "expNode13Icon",
-                      "x": 24,
+                      "x": 6,
                       "y": 0,
-                      "width": 68,
-                      "height": 68,
-                      "src": "ui/atlas/module/expedition/battle_active.png",
+                      "width": 104,
+                      "height": 104,
+                      "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                       "autoSize": false,
                       "mouseEnabled": false
                     }
@@ -18559,7 +18562,7 @@
                   "x": 0,
                   "y": 0,
                   "width": 116,
-                  "height": 108,
+                  "height": 132,
                   "mouseEnabled": true,
                   "_$child": [
                     {
@@ -18569,7 +18572,7 @@
                       "x": 0,
                       "y": 0,
                       "width": 116,
-                      "height": 108,
+                      "height": 132,
                       "src": "ui/texture/inventory/tooltip.png",
                       "autoSize": false,
                       "mouseEnabled": false,
@@ -18580,9 +18583,9 @@
                       "_$type": "GTextField",
                       "name": "expNode14Text",
                       "x": 0,
-                      "y": 72,
+                      "y": 104,
                       "width": 116,
-                      "height": 36,
+                      "height": 28,
                       "text": "",
                       "fontSize": 18,
                       "color": "#e8edf0",
@@ -18592,11 +18595,11 @@
                       "_$id": "exp_SkillBattleSettlementView_65",
                       "_$type": "GImage",
                       "name": "expNode14Icon",
-                      "x": 24,
+                      "x": 6,
                       "y": 0,
-                      "width": 68,
-                      "height": 68,
-                      "src": "ui/atlas/module/expedition/battle_active.png",
+                      "width": 104,
+                      "height": 104,
+                      "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                       "autoSize": false,
                       "mouseEnabled": false
                     }
@@ -18609,7 +18612,7 @@
                   "x": 0,
                   "y": 0,
                   "width": 116,
-                  "height": 108,
+                  "height": 132,
                   "mouseEnabled": true,
                   "_$child": [
                     {
@@ -18619,7 +18622,7 @@
                       "x": 0,
                       "y": 0,
                       "width": 116,
-                      "height": 108,
+                      "height": 132,
                       "src": "ui/texture/inventory/tooltip.png",
                       "autoSize": false,
                       "mouseEnabled": false,
@@ -18630,9 +18633,9 @@
                       "_$type": "GTextField",
                       "name": "expNode15Text",
                       "x": 0,
-                      "y": 72,
+                      "y": 104,
                       "width": 116,
-                      "height": 36,
+                      "height": 28,
                       "text": "",
                       "fontSize": 18,
                       "color": "#e8edf0",
@@ -18642,11 +18645,11 @@
                       "_$id": "exp_SkillBattleSettlementView_69",
                       "_$type": "GImage",
                       "name": "expNode15Icon",
-                      "x": 24,
+                      "x": 6,
                       "y": 0,
-                      "width": 68,
-                      "height": 68,
-                      "src": "ui/atlas/module/expedition/battle_active.png",
+                      "width": 104,
+                      "height": 104,
+                      "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                       "autoSize": false,
                       "mouseEnabled": false
                     }
@@ -18659,7 +18662,7 @@
                   "x": 0,
                   "y": 0,
                   "width": 116,
-                  "height": 108,
+                  "height": 132,
                   "mouseEnabled": true,
                   "_$child": [
                     {
@@ -18669,7 +18672,7 @@
                       "x": 0,
                       "y": 0,
                       "width": 116,
-                      "height": 108,
+                      "height": 132,
                       "src": "ui/texture/inventory/tooltip.png",
                       "autoSize": false,
                       "mouseEnabled": false,
@@ -18680,9 +18683,9 @@
                       "_$type": "GTextField",
                       "name": "expNode16Text",
                       "x": 0,
-                      "y": 72,
+                      "y": 104,
                       "width": 116,
-                      "height": 36,
+                      "height": 28,
                       "text": "",
                       "fontSize": 18,
                       "color": "#e8edf0",
@@ -18692,11 +18695,11 @@
                       "_$id": "exp_SkillBattleSettlementView_73",
                       "_$type": "GImage",
                       "name": "expNode16Icon",
-                      "x": 24,
+                      "x": 6,
                       "y": 0,
-                      "width": 68,
-                      "height": 68,
-                      "src": "ui/atlas/module/expedition/battle_active.png",
+                      "width": 104,
+                      "height": 104,
+                      "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                       "autoSize": false,
                       "mouseEnabled": false
                     }
@@ -18709,7 +18712,7 @@
                   "x": 0,
                   "y": 0,
                   "width": 116,
-                  "height": 108,
+                  "height": 132,
                   "mouseEnabled": true,
                   "_$child": [
                     {
@@ -18719,7 +18722,7 @@
                       "x": 0,
                       "y": 0,
                       "width": 116,
-                      "height": 108,
+                      "height": 132,
                       "src": "ui/texture/inventory/tooltip.png",
                       "autoSize": false,
                       "mouseEnabled": false,
@@ -18730,9 +18733,9 @@
                       "_$type": "GTextField",
                       "name": "expNode17Text",
                       "x": 0,
-                      "y": 72,
+                      "y": 104,
                       "width": 116,
-                      "height": 36,
+                      "height": 28,
                       "text": "",
                       "fontSize": 18,
                       "color": "#e8edf0",
@@ -18742,11 +18745,11 @@
                       "_$id": "exp_SkillBattleSettlementView_77",
                       "_$type": "GImage",
                       "name": "expNode17Icon",
-                      "x": 24,
+                      "x": 6,
                       "y": 0,
-                      "width": 68,
-                      "height": 68,
-                      "src": "ui/atlas/module/expedition/battle_active.png",
+                      "width": 104,
+                      "height": 104,
+                      "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                       "autoSize": false,
                       "mouseEnabled": false
                     }
@@ -18759,7 +18762,7 @@
                   "x": 0,
                   "y": 0,
                   "width": 116,
-                  "height": 108,
+                  "height": 132,
                   "mouseEnabled": true,
                   "_$child": [
                     {
@@ -18769,7 +18772,7 @@
                       "x": 0,
                       "y": 0,
                       "width": 116,
-                      "height": 108,
+                      "height": 132,
                       "src": "ui/texture/inventory/tooltip.png",
                       "autoSize": false,
                       "mouseEnabled": false,
@@ -18780,9 +18783,9 @@
                       "_$type": "GTextField",
                       "name": "expNode18Text",
                       "x": 0,
-                      "y": 72,
+                      "y": 104,
                       "width": 116,
-                      "height": 36,
+                      "height": 28,
                       "text": "",
                       "fontSize": 18,
                       "color": "#e8edf0",
@@ -18792,11 +18795,11 @@
                       "_$id": "exp_SkillBattleSettlementView_81",
                       "_$type": "GImage",
                       "name": "expNode18Icon",
-                      "x": 24,
+                      "x": 6,
                       "y": 0,
-                      "width": 68,
-                      "height": 68,
-                      "src": "ui/atlas/module/expedition/battle_active.png",
+                      "width": 104,
+                      "height": 104,
+                      "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                       "autoSize": false,
                       "mouseEnabled": false
                     }
@@ -18809,7 +18812,7 @@
                   "x": 0,
                   "y": 0,
                   "width": 116,
-                  "height": 108,
+                  "height": 132,
                   "mouseEnabled": true,
                   "_$child": [
                     {
@@ -18819,7 +18822,7 @@
                       "x": 0,
                       "y": 0,
                       "width": 116,
-                      "height": 108,
+                      "height": 132,
                       "src": "ui/texture/inventory/tooltip.png",
                       "autoSize": false,
                       "mouseEnabled": false,
@@ -18830,9 +18833,9 @@
                       "_$type": "GTextField",
                       "name": "expNode19Text",
                       "x": 0,
-                      "y": 72,
+                      "y": 104,
                       "width": 116,
-                      "height": 36,
+                      "height": 28,
                       "text": "",
                       "fontSize": 18,
                       "color": "#e8edf0",
@@ -18842,11 +18845,11 @@
                       "_$id": "exp_SkillBattleSettlementView_85",
                       "_$type": "GImage",
                       "name": "expNode19Icon",
-                      "x": 24,
+                      "x": 6,
                       "y": 0,
-                      "width": 68,
-                      "height": 68,
-                      "src": "ui/atlas/module/expedition/battle_active.png",
+                      "width": 104,
+                      "height": 104,
+                      "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                       "autoSize": false,
                       "mouseEnabled": false
                     }
@@ -18859,7 +18862,7 @@
                   "x": 0,
                   "y": 0,
                   "width": 116,
-                  "height": 108,
+                  "height": 132,
                   "mouseEnabled": true,
                   "_$child": [
                     {
@@ -18869,7 +18872,7 @@
                       "x": 0,
                       "y": 0,
                       "width": 116,
-                      "height": 108,
+                      "height": 132,
                       "src": "ui/texture/inventory/tooltip.png",
                       "autoSize": false,
                       "mouseEnabled": false,
@@ -18880,9 +18883,9 @@
                       "_$type": "GTextField",
                       "name": "expNode20Text",
                       "x": 0,
-                      "y": 72,
+                      "y": 104,
                       "width": 116,
-                      "height": 36,
+                      "height": 28,
                       "text": "",
                       "fontSize": 18,
                       "color": "#e8edf0",
@@ -18892,11 +18895,11 @@
                       "_$id": "exp_SkillBattleSettlementView_89",
                       "_$type": "GImage",
                       "name": "expNode20Icon",
-                      "x": 24,
+                      "x": 6,
                       "y": 0,
-                      "width": 68,
-                      "height": 68,
-                      "src": "ui/atlas/module/expedition/battle_active.png",
+                      "width": 104,
+                      "height": 104,
+                      "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                       "autoSize": false,
                       "mouseEnabled": false
                     }
@@ -18909,7 +18912,7 @@
                   "x": 0,
                   "y": 0,
                   "width": 116,
-                  "height": 108,
+                  "height": 132,
                   "mouseEnabled": true,
                   "_$child": [
                     {
@@ -18919,7 +18922,7 @@
                       "x": 0,
                       "y": 0,
                       "width": 116,
-                      "height": 108,
+                      "height": 132,
                       "src": "ui/texture/inventory/tooltip.png",
                       "autoSize": false,
                       "mouseEnabled": false,
@@ -18930,9 +18933,9 @@
                       "_$type": "GTextField",
                       "name": "expNode21Text",
                       "x": 0,
-                      "y": 72,
+                      "y": 104,
                       "width": 116,
-                      "height": 36,
+                      "height": 28,
                       "text": "",
                       "fontSize": 18,
                       "color": "#e8edf0",
@@ -18942,11 +18945,11 @@
                       "_$id": "exp_SkillBattleSettlementView_93",
                       "_$type": "GImage",
                       "name": "expNode21Icon",
-                      "x": 24,
+                      "x": 6,
                       "y": 0,
-                      "width": 68,
-                      "height": 68,
-                      "src": "ui/atlas/module/expedition/battle_active.png",
+                      "width": 104,
+                      "height": 104,
+                      "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                       "autoSize": false,
                       "mouseEnabled": false
                     }
@@ -18959,7 +18962,7 @@
                   "x": 0,
                   "y": 0,
                   "width": 116,
-                  "height": 108,
+                  "height": 132,
                   "mouseEnabled": true,
                   "_$child": [
                     {
@@ -18969,7 +18972,7 @@
                       "x": 0,
                       "y": 0,
                       "width": 116,
-                      "height": 108,
+                      "height": 132,
                       "src": "ui/texture/inventory/tooltip.png",
                       "autoSize": false,
                       "mouseEnabled": false,
@@ -18980,9 +18983,9 @@
                       "_$type": "GTextField",
                       "name": "expNode22Text",
                       "x": 0,
-                      "y": 72,
+                      "y": 104,
                       "width": 116,
-                      "height": 36,
+                      "height": 28,
                       "text": "",
                       "fontSize": 18,
                       "color": "#e8edf0",
@@ -18992,11 +18995,11 @@
                       "_$id": "exp_SkillBattleSettlementView_97",
                       "_$type": "GImage",
                       "name": "expNode22Icon",
-                      "x": 24,
+                      "x": 6,
                       "y": 0,
-                      "width": 68,
-                      "height": 68,
-                      "src": "ui/atlas/module/expedition/battle_active.png",
+                      "width": 104,
+                      "height": 104,
+                      "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                       "autoSize": false,
                       "mouseEnabled": false
                     }
@@ -19009,7 +19012,7 @@
                   "x": 0,
                   "y": 0,
                   "width": 116,
-                  "height": 108,
+                  "height": 132,
                   "mouseEnabled": true,
                   "_$child": [
                     {
@@ -19019,7 +19022,7 @@
                       "x": 0,
                       "y": 0,
                       "width": 116,
-                      "height": 108,
+                      "height": 132,
                       "src": "ui/texture/inventory/tooltip.png",
                       "autoSize": false,
                       "mouseEnabled": false,
@@ -19030,9 +19033,9 @@
                       "_$type": "GTextField",
                       "name": "expNode23Text",
                       "x": 0,
-                      "y": 72,
+                      "y": 104,
                       "width": 116,
-                      "height": 36,
+                      "height": 28,
                       "text": "",
                       "fontSize": 18,
                       "color": "#e8edf0",
@@ -19042,11 +19045,11 @@
                       "_$id": "exp_SkillBattleSettlementView_101",
                       "_$type": "GImage",
                       "name": "expNode23Icon",
-                      "x": 24,
+                      "x": 6,
                       "y": 0,
-                      "width": 68,
-                      "height": 68,
-                      "src": "ui/atlas/module/expedition/battle_active.png",
+                      "width": 104,
+                      "height": 104,
+                      "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                       "autoSize": false,
                       "mouseEnabled": false
                     }
@@ -19059,7 +19062,7 @@
                   "x": 0,
                   "y": 0,
                   "width": 116,
-                  "height": 108,
+                  "height": 132,
                   "mouseEnabled": true,
                   "_$child": [
                     {
@@ -19069,7 +19072,7 @@
                       "x": 0,
                       "y": 0,
                       "width": 116,
-                      "height": 108,
+                      "height": 132,
                       "src": "ui/texture/inventory/tooltip.png",
                       "autoSize": false,
                       "mouseEnabled": false,
@@ -19080,9 +19083,9 @@
                       "_$type": "GTextField",
                       "name": "expNode24Text",
                       "x": 0,
-                      "y": 72,
+                      "y": 104,
                       "width": 116,
-                      "height": 36,
+                      "height": 28,
                       "text": "",
                       "fontSize": 18,
                       "color": "#e8edf0",
@@ -19092,11 +19095,11 @@
                       "_$id": "exp_SkillBattleSettlementView_105",
                       "_$type": "GImage",
                       "name": "expNode24Icon",
-                      "x": 24,
+                      "x": 6,
                       "y": 0,
-                      "width": 68,
-                      "height": 68,
-                      "src": "ui/atlas/module/expedition/battle_active.png",
+                      "width": 104,
+                      "height": 104,
+                      "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                       "autoSize": false,
                       "mouseEnabled": false
                     }
@@ -19109,7 +19112,7 @@
                   "x": 0,
                   "y": 0,
                   "width": 116,
-                  "height": 108,
+                  "height": 132,
                   "mouseEnabled": true,
                   "_$child": [
                     {
@@ -19119,7 +19122,7 @@
                       "x": 0,
                       "y": 0,
                       "width": 116,
-                      "height": 108,
+                      "height": 132,
                       "src": "ui/texture/inventory/tooltip.png",
                       "autoSize": false,
                       "mouseEnabled": false,
@@ -19130,9 +19133,9 @@
                       "_$type": "GTextField",
                       "name": "expNode25Text",
                       "x": 0,
-                      "y": 72,
+                      "y": 104,
                       "width": 116,
-                      "height": 36,
+                      "height": 28,
                       "text": "",
                       "fontSize": 18,
                       "color": "#e8edf0",
@@ -19142,11 +19145,11 @@
                       "_$id": "exp_SkillBattleSettlementView_109",
                       "_$type": "GImage",
                       "name": "expNode25Icon",
-                      "x": 24,
+                      "x": 6,
                       "y": 0,
-                      "width": 68,
-                      "height": 68,
-                      "src": "ui/atlas/module/expedition/battle_active.png",
+                      "width": 104,
+                      "height": 104,
+                      "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                       "autoSize": false,
                       "mouseEnabled": false
                     }
@@ -19159,7 +19162,7 @@
                   "x": 0,
                   "y": 0,
                   "width": 116,
-                  "height": 108,
+                  "height": 132,
                   "mouseEnabled": true,
                   "_$child": [
                     {
@@ -19169,7 +19172,7 @@
                       "x": 0,
                       "y": 0,
                       "width": 116,
-                      "height": 108,
+                      "height": 132,
                       "src": "ui/texture/inventory/tooltip.png",
                       "autoSize": false,
                       "mouseEnabled": false,
@@ -19180,9 +19183,9 @@
                       "_$type": "GTextField",
                       "name": "expNode26Text",
                       "x": 0,
-                      "y": 72,
+                      "y": 104,
                       "width": 116,
-                      "height": 36,
+                      "height": 28,
                       "text": "",
                       "fontSize": 18,
                       "color": "#e8edf0",
@@ -19192,11 +19195,11 @@
                       "_$id": "exp_SkillBattleSettlementView_113",
                       "_$type": "GImage",
                       "name": "expNode26Icon",
-                      "x": 24,
+                      "x": 6,
                       "y": 0,
-                      "width": 68,
-                      "height": 68,
-                      "src": "ui/atlas/module/expedition/battle_active.png",
+                      "width": 104,
+                      "height": 104,
+                      "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                       "autoSize": false,
                       "mouseEnabled": false
                     }
@@ -19209,7 +19212,7 @@
                   "x": 0,
                   "y": 0,
                   "width": 116,
-                  "height": 108,
+                  "height": 132,
                   "mouseEnabled": true,
                   "_$child": [
                     {
@@ -19219,7 +19222,7 @@
                       "x": 0,
                       "y": 0,
                       "width": 116,
-                      "height": 108,
+                      "height": 132,
                       "src": "ui/texture/inventory/tooltip.png",
                       "autoSize": false,
                       "mouseEnabled": false,
@@ -19230,9 +19233,9 @@
                       "_$type": "GTextField",
                       "name": "expNode27Text",
                       "x": 0,
-                      "y": 72,
+                      "y": 104,
                       "width": 116,
-                      "height": 36,
+                      "height": 28,
                       "text": "",
                       "fontSize": 18,
                       "color": "#e8edf0",
@@ -19242,11 +19245,11 @@
                       "_$id": "exp_SkillBattleSettlementView_117",
                       "_$type": "GImage",
                       "name": "expNode27Icon",
-                      "x": 24,
+                      "x": 6,
                       "y": 0,
-                      "width": 68,
-                      "height": 68,
-                      "src": "ui/atlas/module/expedition/battle_active.png",
+                      "width": 104,
+                      "height": 104,
+                      "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                       "autoSize": false,
                       "mouseEnabled": false
                     }
@@ -19259,7 +19262,7 @@
                   "x": 0,
                   "y": 0,
                   "width": 116,
-                  "height": 108,
+                  "height": 132,
                   "mouseEnabled": true,
                   "_$child": [
                     {
@@ -19269,7 +19272,7 @@
                       "x": 0,
                       "y": 0,
                       "width": 116,
-                      "height": 108,
+                      "height": 132,
                       "src": "ui/texture/inventory/tooltip.png",
                       "autoSize": false,
                       "mouseEnabled": false,
@@ -19280,9 +19283,9 @@
                       "_$type": "GTextField",
                       "name": "expNode28Text",
                       "x": 0,
-                      "y": 72,
+                      "y": 104,
                       "width": 116,
-                      "height": 36,
+                      "height": 28,
                       "text": "",
                       "fontSize": 18,
                       "color": "#e8edf0",
@@ -19292,11 +19295,11 @@
                       "_$id": "exp_SkillBattleSettlementView_121",
                       "_$type": "GImage",
                       "name": "expNode28Icon",
-                      "x": 24,
+                      "x": 6,
                       "y": 0,
-                      "width": 68,
-                      "height": 68,
-                      "src": "ui/atlas/module/expedition/battle_active.png",
+                      "width": 104,
+                      "height": 104,
+                      "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                       "autoSize": false,
                       "mouseEnabled": false
                     }
@@ -19309,7 +19312,7 @@
                   "x": 0,
                   "y": 0,
                   "width": 116,
-                  "height": 108,
+                  "height": 132,
                   "mouseEnabled": true,
                   "_$child": [
                     {
@@ -19319,7 +19322,7 @@
                       "x": 0,
                       "y": 0,
                       "width": 116,
-                      "height": 108,
+                      "height": 132,
                       "src": "ui/texture/inventory/tooltip.png",
                       "autoSize": false,
                       "mouseEnabled": false,
@@ -19330,9 +19333,9 @@
                       "_$type": "GTextField",
                       "name": "expNode29Text",
                       "x": 0,
-                      "y": 72,
+                      "y": 104,
                       "width": 116,
-                      "height": 36,
+                      "height": 28,
                       "text": "",
                       "fontSize": 18,
                       "color": "#e8edf0",
@@ -19342,11 +19345,11 @@
                       "_$id": "exp_SkillBattleSettlementView_125",
                       "_$type": "GImage",
                       "name": "expNode29Icon",
-                      "x": 24,
+                      "x": 6,
                       "y": 0,
-                      "width": 68,
-                      "height": 68,
-                      "src": "ui/atlas/module/expedition/battle_active.png",
+                      "width": 104,
+                      "height": 104,
+                      "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                       "autoSize": false,
                       "mouseEnabled": false
                     }
@@ -19359,7 +19362,7 @@
                   "x": 0,
                   "y": 0,
                   "width": 116,
-                  "height": 108,
+                  "height": 132,
                   "mouseEnabled": true,
                   "_$child": [
                     {
@@ -19369,7 +19372,7 @@
                       "x": 0,
                       "y": 0,
                       "width": 116,
-                      "height": 108,
+                      "height": 132,
                       "src": "ui/texture/inventory/tooltip.png",
                       "autoSize": false,
                       "mouseEnabled": false,
@@ -19380,9 +19383,9 @@
                       "_$type": "GTextField",
                       "name": "expNode30Text",
                       "x": 0,
-                      "y": 72,
+                      "y": 104,
                       "width": 116,
-                      "height": 36,
+                      "height": 28,
                       "text": "",
                       "fontSize": 18,
                       "color": "#e8edf0",
@@ -19392,11 +19395,11 @@
                       "_$id": "exp_SkillBattleSettlementView_129",
                       "_$type": "GImage",
                       "name": "expNode30Icon",
-                      "x": 24,
+                      "x": 6,
                       "y": 0,
-                      "width": 68,
-                      "height": 68,
-                      "src": "ui/atlas/module/expedition/battle_active.png",
+                      "width": 104,
+                      "height": 104,
+                      "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                       "autoSize": false,
                       "mouseEnabled": false
                     }
@@ -19409,7 +19412,7 @@
                   "x": 0,
                   "y": 0,
                   "width": 116,
-                  "height": 108,
+                  "height": 132,
                   "mouseEnabled": true,
                   "_$child": [
                     {
@@ -19419,7 +19422,7 @@
                       "x": 0,
                       "y": 0,
                       "width": 116,
-                      "height": 108,
+                      "height": 132,
                       "src": "ui/texture/inventory/tooltip.png",
                       "autoSize": false,
                       "mouseEnabled": false,
@@ -19430,9 +19433,9 @@
                       "_$type": "GTextField",
                       "name": "expNode31Text",
                       "x": 0,
-                      "y": 72,
+                      "y": 104,
                       "width": 116,
-                      "height": 36,
+                      "height": 28,
                       "text": "",
                       "fontSize": 18,
                       "color": "#e8edf0",
@@ -19442,11 +19445,11 @@
                       "_$id": "exp_SkillBattleSettlementView_133",
                       "_$type": "GImage",
                       "name": "expNode31Icon",
-                      "x": 24,
+                      "x": 6,
                       "y": 0,
-                      "width": 68,
-                      "height": 68,
-                      "src": "ui/atlas/module/expedition/battle_active.png",
+                      "width": 104,
+                      "height": 104,
+                      "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                       "autoSize": false,
                       "mouseEnabled": false
                     }
@@ -19459,7 +19462,7 @@
                   "x": 0,
                   "y": 0,
                   "width": 116,
-                  "height": 108,
+                  "height": 132,
                   "mouseEnabled": true,
                   "_$child": [
                     {
@@ -19469,7 +19472,7 @@
                       "x": 0,
                       "y": 0,
                       "width": 116,
-                      "height": 108,
+                      "height": 132,
                       "src": "ui/texture/inventory/tooltip.png",
                       "autoSize": false,
                       "mouseEnabled": false,
@@ -19480,9 +19483,9 @@
                       "_$type": "GTextField",
                       "name": "expNode32Text",
                       "x": 0,
-                      "y": 72,
+                      "y": 104,
                       "width": 116,
-                      "height": 36,
+                      "height": 28,
                       "text": "",
                       "fontSize": 18,
                       "color": "#e8edf0",
@@ -19492,11 +19495,11 @@
                       "_$id": "exp_SkillBattleSettlementView_137",
                       "_$type": "GImage",
                       "name": "expNode32Icon",
-                      "x": 24,
+                      "x": 6,
                       "y": 0,
-                      "width": 68,
-                      "height": 68,
-                      "src": "ui/atlas/module/expedition/battle_active.png",
+                      "width": 104,
+                      "height": 104,
+                      "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                       "autoSize": false,
                       "mouseEnabled": false
                     }
@@ -19508,8 +19511,8 @@
                   "name": "expPlayer",
                   "x": 0,
                   "y": 0,
-                  "width": 84,
-                  "height": 84,
+                  "width": 116,
+                  "height": 116,
                   "mouseEnabled": false
                 }
               ]
@@ -19523,36 +19526,48 @@
           "x": 1000,
           "y": 192,
           "width": 248,
-          "height": 246,
+          "height": 282,
           "src": "ui/texture/inventory/tooltip.png",
           "autoSize": false,
           "mouseEnabled": false
         },
         {
           "_$id": "exp_SkillBattleSettlementView_140",
+          "_$type": "GImage",
+          "name": "expContextIcon",
+          "x": 1072,
+          "y": 204,
+          "width": 104,
+          "height": 104,
+          "src": "ui/image/expeditionNodes/node-start.png",
+          "autoSize": false,
+          "mouseEnabled": false
+        },
+        {
+          "_$id": "exp_SkillBattleSettlementView_141",
           "_$type": "GTextField",
           "name": "expContextTitle",
           "x": 1012,
-          "y": 210,
+          "y": 316,
           "width": 224,
-          "height": 88,
+          "height": 56,
           "text": "",
           "fontSize": 22,
           "color": "#e8edf0",
           "mouseEnabled": false
         },
         {
-          "_$id": "exp_SkillBattleSettlementView_143",
+          "_$id": "exp_SkillBattleSettlementView_144",
           "_$type": "GWidget",
           "name": "expUse",
           "x": 1020,
-          "y": 354,
+          "y": 394,
           "width": 208,
           "height": 54,
           "mouseEnabled": true,
           "_$child": [
             {
-              "_$id": "exp_SkillBattleSettlementView_141",
+              "_$id": "exp_SkillBattleSettlementView_142",
               "_$type": "GImage",
               "name": "expUseSkin",
               "x": 0,
@@ -19564,7 +19579,7 @@
               "mouseEnabled": false
             },
             {
-              "_$id": "exp_SkillBattleSettlementView_142",
+              "_$id": "exp_SkillBattleSettlementView_143",
               "_$type": "GTextField",
               "name": "expUseText",
               "x": 4,
@@ -19579,7 +19594,7 @@
           ]
         },
         {
-          "_$id": "exp_SkillBattleSettlementView_146",
+          "_$id": "exp_SkillBattleSettlementView_147",
           "_$type": "GWidget",
           "name": "expStorage",
           "x": 130,
@@ -19589,7 +19604,7 @@
           "mouseEnabled": true,
           "_$child": [
             {
-              "_$id": "exp_SkillBattleSettlementView_144",
+              "_$id": "exp_SkillBattleSettlementView_145",
               "_$type": "GImage",
               "name": "expStorageSkin",
               "x": 0,
@@ -19601,7 +19616,7 @@
               "mouseEnabled": false
             },
             {
-              "_$id": "exp_SkillBattleSettlementView_145",
+              "_$id": "exp_SkillBattleSettlementView_146",
               "_$type": "GTextField",
               "name": "expStorageText",
               "x": 4,
@@ -19616,7 +19631,7 @@
           ]
         },
         {
-          "_$id": "exp_SkillBattleSettlementView_149",
+          "_$id": "exp_SkillBattleSettlementView_150",
           "_$type": "GWidget",
           "name": "expBuild",
           "x": 332,
@@ -19626,7 +19641,7 @@
           "mouseEnabled": true,
           "_$child": [
             {
-              "_$id": "exp_SkillBattleSettlementView_147",
+              "_$id": "exp_SkillBattleSettlementView_148",
               "_$type": "GImage",
               "name": "expBuildSkin",
               "x": 0,
@@ -19638,7 +19653,7 @@
               "mouseEnabled": false
             },
             {
-              "_$id": "exp_SkillBattleSettlementView_148",
+              "_$id": "exp_SkillBattleSettlementView_149",
               "_$type": "GTextField",
               "name": "expBuildText",
               "x": 4,
@@ -19653,7 +19668,7 @@
           ]
         },
         {
-          "_$id": "exp_SkillBattleSettlementView_152",
+          "_$id": "exp_SkillBattleSettlementView_153",
           "_$type": "GWidget",
           "name": "expAbandon",
           "x": 1000,
@@ -19663,7 +19678,7 @@
           "mouseEnabled": true,
           "_$child": [
             {
-              "_$id": "exp_SkillBattleSettlementView_150",
+              "_$id": "exp_SkillBattleSettlementView_151",
               "_$type": "GImage",
               "name": "expAbandonSkin",
               "x": 0,
@@ -19675,7 +19690,7 @@
               "mouseEnabled": false
             },
             {
-              "_$id": "exp_SkillBattleSettlementView_151",
+              "_$id": "exp_SkillBattleSettlementView_152",
               "_$type": "GTextField",
               "name": "expAbandonText",
               "x": 4,

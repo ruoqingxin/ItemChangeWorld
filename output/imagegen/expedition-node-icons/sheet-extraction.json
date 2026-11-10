@@ -1,0 +1,402 @@
+{
+  "source": "output/imagegen/n8PNXpZH.webp",
+  "source_sha256": "09aef114b8e3ffabc6e15219d434fde76524e9b109965b5907ccbb887fcd35ec",
+  "source_size": [
+    768,
+    429
+  ],
+  "method": "Local hand-traced silhouette masks, retained painted bases, selective glow extraction; no generation API",
+  "source_preserved": true,
+  "selected_loot": "left open-lid variant",
+  "excluded": [
+    "duplicate open-box variant",
+    "standalone base",
+    "paper background",
+    "labels"
+  ],
+  "runtime_bound": false,
+  "config_changed": false,
+  "saves_changed": false,
+  "alpha_probes": {
+    "start": [
+      [
+        83,
+        60,
+        false
+      ],
+      [
+        103,
+        64,
+        true
+      ]
+    ],
+    "enemy-elite": [
+      [
+        531,
+        43,
+        true
+      ]
+    ],
+    "extract": [
+      [
+        242,
+        330,
+        false
+      ],
+      [
+        226,
+        330,
+        true
+      ]
+    ],
+    "battle-loot": [
+      [
+        380,
+        350,
+        true
+      ]
+    ]
+  },
+  "previous_expedition_hashes": {
+    "assets/ui/atlas/module/expedition/back.png": "2cbfbadfa34c706a6fb09426469d5c976076c10afedcc5f942764f04c70a5b9c",
+    "assets/ui/atlas/module/expedition/back.png.meta": "1733871ac635b88b0d28c0a60f74ed81ea6877011ee4518017cb071a9848bd7e",
+    "assets/ui/atlas/module/expedition/battle_active.png": "13415b95c89baff08342e09a138125b9003604db4cb9e87b2e6d0a4fa3e13b03",
+    "assets/ui/atlas/module/expedition/battle_active.png.meta": "ba4c1c59d35cc5d193f1102566b017dca9ea668ac0762543f10df5a980c70036",
+    "assets/ui/atlas/module/expedition/battle_inactive.png": "ad439e960b22906a68c4bbc7c108ddde6acb6a7761315ca2a8b9cba095a54cf8",
+    "assets/ui/atlas/module/expedition/battle_inactive.png.meta": "f7f118bd0b54a4b013e197b05ef815637d990d2b8af67afe45d63cef4f0d7a1d",
+    "assets/ui/atlas/module/expedition/borrow.png": "06ca6b64fac84cc633e7bd48f308809ad65d364f8cbd603220e6137991dedae7",
+    "assets/ui/atlas/module/expedition/borrow.png.meta": "c7cae54f5c86647a1c7a0d4a078ec6dfa7af3d4aaca4b1474c1f856905e21214",
+    "assets/ui/atlas/module/expedition/boss_active.png": "0f67566d5ef8a2637a862681c37c4c5707cd9c14509ad7e467761ad366daa76b",
+    "assets/ui/atlas/module/expedition/boss_active.png.meta": "be25f4a2be38c54939bc19749de322a69de67df8e94dd64007d45648aba4a46f",
+    "assets/ui/atlas/module/expedition/boss_inactive.png": "369c9f4e56d7c8120c3787dc8fafca57015754a7c3abc356316b95acf22b7d0a",
+    "assets/ui/atlas/module/expedition/boss_inactive.png.meta": "4e4735d2dcb798784e6edc0dac7d5008e8895dfea9f22d9a7c7398eb220d377d",
+    "assets/ui/atlas/module/expedition/durability_fill.png": "78613d9c7941bc5fb629c136bcd5f466346c5dc8b3d243524f9a256534e34be3",
+    "assets/ui/atlas/module/expedition/durability_fill.png.meta": "2f37f1304063cb1edad0122ef8a41cc5868757938a32ab09d4b82d2e69d6a08b",
+    "assets/ui/atlas/module/expedition/elite_active.png": "d5d7fbc5ac3fa7ee4accbf44866a637d0421a0e96c4a9ac3506797d8619cf132",
+    "assets/ui/atlas/module/expedition/elite_active.png.meta": "966444f2db08cc58bcbe0c539e8892e2e55e440b8d51b427771371e78b02a93d",
+    "assets/ui/atlas/module/expedition/elite_inactive.png": "877e63848a467a9141633ecf542b6d27e8cd3d4df8936456384dce68509ef89f",
+    "assets/ui/atlas/module/expedition/elite_inactive.png.meta": "ee41d4497d9c084aa1fe835ef64962e9f633bf8cac744b89ddfde4b0d3cd915c",
+    "assets/ui/atlas/module/expedition/enlightenment.png": "a53deeece6bdf747b7255e45174e9528df062a803c13e586e287d43c28b89a90",
+    "assets/ui/atlas/module/expedition/enlightenment.png.meta": "fa71d7edc5f55f812c33a5ac32525f2484ea8e5ad5b7265b6b2b9d999bc980be",
+    "assets/ui/atlas/module/expedition/exit.png": "207ef51376272c9c8d1e96a1308f5718f5553a1333d44ea8bbd1085ce8e8bce6",
+    "assets/ui/atlas/module/expedition/exit.png.meta": "29265f9490db2f8db8031c095cb420bbd45adb688390c5ad03f696fd348e05c2",
+    "assets/ui/atlas/module/expedition/health_fill.png": "181191169e4c0fde934706557ace109d395ff1f41270e11b8068d236e0074371",
+    "assets/ui/atlas/module/expedition/health_fill.png.meta": "47a8920067a3e8df18be1005c947b6be6aa5c0a7f7ad27f4d0c0f6200377a32f",
+    "assets/ui/atlas/module/expedition/meter_track.png": "42ec04be73ab35e0505f601356b19b8595b7a9bf0eecb4b19361eb508edcc106",
+    "assets/ui/atlas/module/expedition/meter_track.png.meta": "16ea3f2f61e1629b8101ddc066c1897c5f783908074b14b4d314e2db4d840b7b",
+    "assets/ui/atlas/module/expedition/recovery.png": "14c8a4865715f50fa6ef6dca50812009d98270243c49846165dd3de2895916fc",
+    "assets/ui/atlas/module/expedition/recovery.png.meta": "2d6bbd1520ea0501cf3fe3786c7b46f59da473374b25721a7df76fe29a82f8ac",
+    "assets/ui/atlas/module/expedition/search_active.png": "36aa153d821d91bfb676e8788b903c39ea5b2f7ec0931081af43c3e012372a93",
+    "assets/ui/atlas/module/expedition/search_active.png.meta": "c2dd9aa0cb3e8f8dd557bd0b4a2e947829b6c8f435bbe5f10a89a29f5e32dd3e",
+    "assets/ui/atlas/module/expedition/search_inactive.png": "13214289bd671ff0a703a11813b65938829c811d88296be17102842aee34e38e",
+    "assets/ui/atlas/module/expedition/search_inactive.png.meta": "05a16cd797ba6fbe0ebe85627070c04c7fb864c4e125398244bbdd733d6faf67",
+    "assets/ui/atlas/module/expedition/supplies_fill.png": "d9cbbc569d994f1d7fe2ffc5ce5c027e69744850508c35192ac915d8bd23d9ae",
+    "assets/ui/atlas/module/expedition/supplies_fill.png.meta": "b2b91859af03d7f27fd4ce9b4e8fe3791307e76e36983b51c77093deb0589925",
+    "assets/ui/atlas/module/expedition/timer.png": "71376b71175962514a2d49f00d837bef64ed29cedfc32ca57b5ce325857b7306",
+    "assets/ui/atlas/module/expedition/timer.png.meta": "f9536fac1117d23ca89fcafd068220b481667eb6de8dc848bbe7f4fcfabd6cb0"
+  },
+  "previous_expedition_files_verified": 36,
+  "count": 12,
+  "files": [
+    {
+      "key": "start",
+      "name": "入境处",
+      "file": "assets/ui/image/expeditionNodes/node-start.png",
+      "uuid": "b37989ba-5e8a-4998-a989-812fb939a95f",
+      "source_bounds": {
+        "left": 43,
+        "top": 30,
+        "width": 106,
+        "height": 111
+      },
+      "sha256": "a08678b675183bb8ab6194c60fa402551f55049c3e5b2daf4a65e7a397ce2faf",
+      "size": [
+        128,
+        128
+      ],
+      "alpha_bounds": {
+        "left": 12,
+        "top": 10,
+        "width": 103,
+        "height": 108,
+        "partial": 2047,
+        "transparent": 7820
+      }
+    },
+    {
+      "key": "transit",
+      "name": "通行岔口",
+      "file": "assets/ui/image/expeditionNodes/node-transit.png",
+      "uuid": "b42cd6d3-5ee8-4791-8362-d07d7b26376e",
+      "source_bounds": {
+        "left": 189,
+        "top": 44,
+        "width": 106,
+        "height": 97
+      },
+      "sha256": "4c4b555d2d7c876aedcfbd531e666982c73f411229a5760d875bd0f29c6001c4",
+      "size": [
+        128,
+        128
+      ],
+      "alpha_bounds": {
+        "left": 10,
+        "top": 14,
+        "width": 108,
+        "height": 99,
+        "partial": 661,
+        "transparent": 8183
+      }
+    },
+    {
+      "key": "enemy-normal",
+      "name": "普通敌人",
+      "file": "assets/ui/image/expeditionNodes/node-enemy-normal.png",
+      "uuid": "7402b693-cb1f-4120-8c53-463c9f300ca9",
+      "source_bounds": {
+        "left": 334,
+        "top": 25,
+        "width": 106,
+        "height": 116
+      },
+      "sha256": "10ca039b4099ec5a2e9cf0a998788f3857cf5bc8ecce4cc310449cddcb3c80a0",
+      "size": [
+        128,
+        128
+      ],
+      "alpha_bounds": {
+        "left": 14,
+        "top": 10,
+        "width": 99,
+        "height": 108,
+        "partial": 1071,
+        "transparent": 8886
+      }
+    },
+    {
+      "key": "enemy-elite",
+      "name": "精英敌人",
+      "file": "assets/ui/image/expeditionNodes/node-enemy-elite.png",
+      "uuid": "a668b1fd-0df6-42cc-827f-1107f3006755",
+      "source_bounds": {
+        "left": 479,
+        "top": 28,
+        "width": 106,
+        "height": 113
+      },
+      "sha256": "dabf0e36a9c81369cc69b001afff99cbb932ed2e7834b2c91661af0d030a98a5",
+      "size": [
+        128,
+        128
+      ],
+      "alpha_bounds": {
+        "left": 13,
+        "top": 10,
+        "width": 101,
+        "height": 108,
+        "partial": 2200,
+        "transparent": 8275
+      }
+    },
+    {
+      "key": "enemy-boss",
+      "name": "首领",
+      "file": "assets/ui/image/expeditionNodes/node-enemy-boss.png",
+      "uuid": "e5f65abd-a961-442e-b583-abaedb5af254",
+      "source_bounds": {
+        "left": 624,
+        "top": 33,
+        "width": 106,
+        "height": 108
+      },
+      "sha256": "d3189ac0fc47f45d18c2ab778256066bdef40f3c57e228b43f3f9c28f039a5c7",
+      "size": [
+        128,
+        128
+      ],
+      "alpha_bounds": {
+        "left": 11,
+        "top": 10,
+        "width": 106,
+        "height": 108,
+        "partial": 401,
+        "transparent": 7319
+      }
+    },
+    {
+      "key": "supply",
+      "name": "补给处",
+      "file": "assets/ui/image/expeditionNodes/node-supply.png",
+      "uuid": "7cccf010-a497-48c8-8db2-53d5378ba6a2",
+      "source_bounds": {
+        "left": 43,
+        "top": 173,
+        "width": 106,
+        "height": 100
+      },
+      "sha256": "8b63826bc2ebd8e84fce36a06b395d58821ae5a823f11522843abc194587c550",
+      "size": [
+        128,
+        128
+      ],
+      "alpha_bounds": {
+        "left": 10,
+        "top": 13,
+        "width": 108,
+        "height": 102,
+        "partial": 589,
+        "transparent": 9162
+      }
+    },
+    {
+      "key": "search",
+      "name": "搜索点",
+      "file": "assets/ui/image/expeditionNodes/node-search.png",
+      "uuid": "b37b6dc9-3980-4e31-9459-8e43718b81c4",
+      "source_bounds": {
+        "left": 189,
+        "top": 181,
+        "width": 106,
+        "height": 92
+      },
+      "sha256": "91187fea1cab779e2e37084115dd05f9937f0bc54b5af0f89136256d13eda857",
+      "size": [
+        128,
+        128
+      ],
+      "alpha_bounds": {
+        "left": 10,
+        "top": 17,
+        "width": 108,
+        "height": 94,
+        "partial": 531,
+        "transparent": 8519
+      }
+    },
+    {
+      "key": "borrow",
+      "name": "借法台",
+      "file": "assets/ui/image/expeditionNodes/node-borrow.png",
+      "uuid": "a6c56939-a81b-4d7a-845b-6d5d356b0ac7",
+      "source_bounds": {
+        "left": 334,
+        "top": 170,
+        "width": 106,
+        "height": 103
+      },
+      "sha256": "5f9ea6682c8338bbdbc688f65941f82155e84010e5cad6f91b1d059ed49acadb",
+      "size": [
+        128,
+        128
+      ],
+      "alpha_bounds": {
+        "left": 10,
+        "top": 11,
+        "width": 108,
+        "height": 105,
+        "partial": 1066,
+        "transparent": 9171
+      }
+    },
+    {
+      "key": "insight",
+      "name": "悟道处",
+      "file": "assets/ui/image/expeditionNodes/node-insight.png",
+      "uuid": "29367c60-5ee1-4987-a4a9-49c59bfa0f88",
+      "source_bounds": {
+        "left": 479,
+        "top": 167,
+        "width": 106,
+        "height": 106
+      },
+      "sha256": "56425533c7c064c9e1413ec20ea4fe81291cadcfa4db7bf310c8513fe2da5126",
+      "size": [
+        128,
+        128
+      ],
+      "alpha_bounds": {
+        "left": 10,
+        "top": 10,
+        "width": 108,
+        "height": 108,
+        "partial": 597,
+        "transparent": 8785
+      }
+    },
+    {
+      "key": "recovery",
+      "name": "恢复点",
+      "file": "assets/ui/image/expeditionNodes/node-recovery.png",
+      "uuid": "c4e31583-a80a-4098-9f6f-117079279304",
+      "source_bounds": {
+        "left": 43,
+        "top": 305,
+        "width": 106,
+        "height": 98
+      },
+      "sha256": "a4644e6835c2211f6c554f1f6c92b1cef8ad357fdfb67253b0c9c0d82f5eb4b4",
+      "size": [
+        128,
+        128
+      ],
+      "alpha_bounds": {
+        "left": 10,
+        "top": 14,
+        "width": 108,
+        "height": 100,
+        "partial": 737,
+        "transparent": 9310
+      }
+    },
+    {
+      "key": "extract",
+      "name": "撤离点",
+      "file": "assets/ui/image/expeditionNodes/node-extract.png",
+      "uuid": "5a2c2bb6-54d5-4099-93da-bd2af385b624",
+      "source_bounds": {
+        "left": 189,
+        "top": 298,
+        "width": 106,
+        "height": 105
+      },
+      "sha256": "f196caad75f42b8852409c6c39b30cca203187f990670bec4a21c995af7efe39",
+      "size": [
+        128,
+        128
+      ],
+      "alpha_bounds": {
+        "left": 10,
+        "top": 10,
+        "width": 108,
+        "height": 107,
+        "partial": 1077,
+        "transparent": 9141
+      }
+    },
+    {
+      "key": "battle-loot",
+      "name": "战后遗藏",
+      "file": "assets/ui/image/expeditionNodes/node-battle-loot.png",
+      "uuid": "0fb59beb-596d-4961-a517-83bcb55b8cf3",
+      "source_bounds": {
+        "left": 334,
+        "top": 316,
+        "width": 106,
+        "height": 87
+      },
+      "sha256": "8fc36c2915573ac5f12ca62c6aeb140461fd6afcbb1e7aadbf076548e79c53eb",
+      "size": [
+        128,
+        128
+      ],
+      "alpha_bounds": {
+        "left": 10,
+        "top": 19,
+        "width": 108,
+        "height": 89,
+        "partial": 600,
+        "transparent": 8800
+      }
+    }
+  ]
+}

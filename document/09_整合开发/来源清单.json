@@ -2,9 +2,9 @@
   "snapshotDate": "2026-11-09",
   "sourceRoot": "E:\\NowChange\\ItemChangeWorld\\document",
   "authority": "README.md",
-  "sourceCount": 73,
+  "sourceCount": 76,
   "textAndDataCount": 46,
-  "imageCount": 27,
+  "imageCount": 30,
   "entries": [
     {
       "source": "00_总览/1.游戏基础定位.txt",
@@ -634,6 +634,26 @@
       ]
     },
     {
+      "source": "UI参考/07caf8b59959ca15fb672868e19b710a.jpg",
+      "snapshot": "参考资料/原始快照/UI参考/07caf8b59959ca15fb672868e19b710a.jpg",
+      "bytes": 961827,
+      "sha256": "b4dd03b21da4854ddc230164e1213c7bea900ccc6d41064e99281da1c1b51dc6",
+      "status": "图片参考：原图保留，不是需求或最终布局",
+      "integratedInto": [
+        "08_界面交互与资源要求.md"
+      ]
+    },
+    {
+      "source": "UI参考/1172edef1f09610e0a39eee8faebfa22.jpg",
+      "snapshot": "参考资料/原始快照/UI参考/1172edef1f09610e0a39eee8faebfa22.jpg",
+      "bytes": 998606,
+      "sha256": "705f2fe2f57af172141f2aae1819ef3989df5f51e88db150960a4b1897d3726d",
+      "status": "图片参考：原图保留，不是需求或最终布局",
+      "integratedInto": [
+        "08_界面交互与资源要求.md"
+      ]
+    },
+    {
       "source": "UI参考/130124e3ea3a5895ddaefb08ecb1c691.jpg",
       "snapshot": "参考资料/原始快照/UI参考/130124e3ea3a5895ddaefb08ecb1c691.jpg",
       "bytes": 965840,
@@ -718,6 +738,16 @@
       "snapshot": "参考资料/原始快照/UI参考/65ba00b088e960feea6540352f2793be.jpg",
       "bytes": 1236993,
       "sha256": "74052d972bb10faebd6dab82dcf69ccf0f9398f1ed70cab6a9185aa1fbdd1995",
+      "status": "图片参考：原图保留，不是需求或最终布局",
+      "integratedInto": [
+        "08_界面交互与资源要求.md"
+      ]
+    },
+    {
+      "source": "UI参考/67274652cc764345834343b8286a8cb8.jpg",
+      "snapshot": "参考资料/原始快照/UI参考/67274652cc764345834343b8286a8cb8.jpg",
+      "bytes": 1003859,
+      "sha256": "3aed226f48ece4fac5ccdb791ffd326e869c64fa2f180a51d7ff01fd512e1948",
       "status": "图片参考：原图保留，不是需求或最终布局",
       "integratedInto": [
         "08_界面交互与资源要求.md"
