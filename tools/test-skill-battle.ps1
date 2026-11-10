@@ -29,6 +29,8 @@ $sources = @(
     (Join-Path $root "src/script/module/skillBattle/newRules/NewBuildSession.ts"),
     (Join-Path $root "src/script/module/skillBattle/newRules/NewInventorySession.ts"),
     (Join-Path $root "src/script/module/skillBattle/newRules/NewInventoryConfigUtils.ts"),
+    (Join-Path $root "src/script/module/skillBattle/newRules/NewExpeditionConfigUtils.ts"),
+    (Join-Path $root "src/script/module/skillBattle/newRules/NewExpeditionSession.ts"),
     (Join-Path $root "src/script/module/expedition/utils/ExpeditionConfigUtils.ts"),
     (Join-Path $root "engine/types/LayaAir.d.ts")
 )
@@ -46,6 +48,8 @@ if ($LASTEXITCODE -ne 0) { throw "New battle core tests failed." }
 if ($LASTEXITCODE -ne 0) { throw "New build flow tests failed." }
 & $node (Join-Path $PSScriptRoot "new-inventory.test.cjs") $build
 if ($LASTEXITCODE -ne 0) { throw "Inventory transaction tests failed." }
+& $node (Join-Path $PSScriptRoot "new-expedition.test.cjs") $build
+if ($LASTEXITCODE -ne 0) { throw "Expedition transaction tests failed." }
 & $node (Join-Path $PSScriptRoot "skill-battle-prefab.test.cjs")
 if ($LASTEXITCODE -ne 0) { throw "Skill battle prefab tests failed." }
 & $node (Join-Path $PSScriptRoot "ui-assets.cjs")

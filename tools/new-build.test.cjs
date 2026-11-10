@@ -38,7 +38,7 @@ function step(cfg,s,action){
 }
 test("approved nine sheets supply ten actives, sixteen passives and default qualifications",()=>{
     const cfg=config(),profile=Config.profile(cfg),s=Rules.start(cfg,profile,15,"run");
-    assert.equal(count,35);assert.equal(cfg.setup.skills.length,10);assert.equal(cfg.setup.passives.length,16);
+    assert.equal(count,Tables.getTableNames().length);assert.equal(cfg.setup.skills.length,10);assert.equal(cfg.setup.passives.length,16);
     assert.deepEqual(Rules.activePool(cfg,profile,s),[1,2,6,7]);
     assert.equal(s.pending.candidates.length,3);assert.equal(s.build.actives.length,0);
     assert.deepEqual(profile.learnedSkills,[]);assert.deepEqual(profile.learnedPassives,[]);

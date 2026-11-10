@@ -12,15 +12,44 @@ import { NewBattlePanel } from "./NewBattlePanel";
 import { NewInventorySession } from "../newRules/NewInventorySession";
 import { NewInventoryConfigUtils } from "../newRules/NewInventoryConfigUtils";
 import { NewInventoryPanel } from "./NewInventoryPanel";
+import { NewExpeditionSession } from "../newRules/NewExpeditionSession";
+import { NewExpeditionConfigUtils } from "../newRules/NewExpeditionConfigUtils";
+import { NewExpeditionPanel } from "./NewExpeditionPanel";
 import type { UIBaseView } from "../../../games/ui/UIBaseView";
 
 /** Shared model for the independently opened start, battle, and settlement views. */
 export class SkillBattleUISession {
     static previewSingleTrial = false;
     static previewBuildTrial = false;
+    static previewInventoryTrial = false;
     private static build: NewBuildSession;
-    static getActive(): NewBuildSession | NewBattleSession | NewInventorySession {
-        return this.previewSingleTrial ? this.getTrial() : this.previewBuildTrial ? this.getBuild() : this.getInventory();
+    static getActive(): NewBuildSession | NewBattleSession | NewInventorySession | NewExpeditionSession {
+        return this.previewSingleTrial ? this.getTrial() : this.previewBuildTrial ? this.getBuild() :
+            this.previewInventoryTrial ? this.getInventory() : this.getMapTrial();
+    }
+    private static mapTrial: NewExpeditionSession;
+    static getMapTrial(): NewExpeditionSession {
+        if (!this.mapTrial) {
+            this.mapTrial = new NewExpeditionSession(SkillBattleManager.ins(),window.localStorage,
+                () => Date.now(),NewExpeditionConfigUtils.read(ConfigUtil.Tables));
+            const check = () => {
+                try {
+                    if (document.hidden) this.mapTrial.pauseSearch();
+                    if (!this.mapTrial.error && this.mapTrial.expire()) this.onTrialExpired?.();
+                } catch (error) { console.warn("地图事务保存失败，将重试",error); }
+            };
+            Laya.timer.loop(250,this,check);
+            window.addEventListener("focus",check);
+            window.addEventListener("blur",() => {
+                try { this.mapTrial.pauseSearch(); } catch (e) { console.warn("搜索暂停保存失败",e); }
+            });
+            window.addEventListener("pagehide",() => {
+                try { this.mapTrial.pauseSearch(); } catch (e) { console.warn("搜索暂停保存失败",e); }
+            });
+            document.addEventListener("visibilitychange",check);
+            check();
+        }
+        return this.mapTrial;
     }
     private static inventory: NewInventorySession;
     static getInventory(): NewInventorySession {
@@ -57,7 +86,8 @@ export class SkillBattleUISession {
         navigate: (screen: "start" | "battle" | "settlement") => void): NewBattlePanel {
         return this.previewSingleTrial ? new NewBattlePanel(view, this.getTrial(), this.trialOptions, navigate, screen) :
             this.previewBuildTrial ? new NewBuildPanel(view, this.getBuild(), navigate, screen) :
-            new NewInventoryPanel(view,this.getInventory(),navigate,screen);
+            this.previewInventoryTrial ? new NewInventoryPanel(view,this.getInventory(),navigate,screen) :
+            new NewExpeditionPanel(view,this.getMapTrial(),navigate,screen);
     }
     private static trial: NewBattleSession;
     static readonly trialOptions = NewBattleConfigUtils.defaults();

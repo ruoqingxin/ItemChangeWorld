@@ -15,6 +15,7 @@ export interface InventoryWarehousePlacement { uid: string; page: number; x: num
 export type InventoryWarehouseTarget = Omit<InventoryWarehousePlacement,"uid">;
 export interface InventoryConfig {
     build: NewBuildConfig; templates: InventoryTemplate[];
+    groundNodeLimit?: number;
     spaces: { battleWidth: number; battleHeight: number; safeWidth: number; safeHeight: number; repair: number };
     fixtures: Array<{ id: number; templateId: number; count: number; node: number; durability: number }>;
 }

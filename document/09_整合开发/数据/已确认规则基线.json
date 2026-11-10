@@ -129,7 +129,7 @@
       "recoveryRepairsDurability": false,
       "normalVictoryDaoyun": 10,
       "eliteVictoryDaoyun": 20,
-      "bossVictoryDaoyun": null,
+      "bossVictoryDaoyun": 30,
       "firstPassiveChoiceCost": 30,
       "laterPassiveChoiceCost": 40,
       "realTimeLimitSeconds": 1200,
@@ -238,6 +238,60 @@
       "body": [2, 2],
       "fixtureIsNotStarterGiftOrOfficialLoot": true
     },
+    "stage4MapApproval": {
+      "approvedOn": "2026-11-10",
+      "source": "阶段4_正式地图与敌人掉落确认包，用户后续明确可以 按建议来",
+      "mainNodeCount": 16,
+      "branchNodeCount": 11,
+      "mainEdgesBidirectional": true,
+      "branchPaths": [
+        ["H02", "S01", "H03"],
+        ["H05", "B01", "S02", "B02", "W01", "H06"],
+        ["H08", "B03", "B04", "S03", "H09"],
+        ["H11", "B05", "B06", "S04", "H12"]
+      ],
+      "borrowNodes": ["H03", "H08", "H13"],
+      "insightNode": "W01",
+      "initialVisibleMainRange": ["H00", "H04"],
+      "mainRevealAhead": 4,
+      "independentSearchNodes": ["S01", "H06", "S02", "S03", "S04"],
+      "recoveryCountWeights": [60, 40],
+      "recoveryFirstParents": ["H06", "H08"],
+      "recoveryFirstParentWeights": [50, 50],
+      "recoverySecondParent": "H11",
+      "exitCountWeights": [60, 40],
+      "exitTwoConditionalWeights": [30, 45, 25],
+      "exitThreeConditionalWeights": [40, 30, 30],
+      "exitCandidates": ["XA@H03", "XB@H08", "XC@H13"],
+      "fixedExit": "H15",
+      "bossNode": "H14",
+      "enemyHp": [48, 56, 52, 76, 80, 72, 120],
+      "enemyDaoyun": [10, 10, 10, 20, 20, 20, 30],
+      "dropCategories": ["hp", "mp", "repair", "herb", "ore", "small", "book", "container", "weapon"],
+      "dropWeights": {
+        "normal": [25, 20, 5, 18, 8, 15, 5, 2, 2],
+        "elite": [20, 15, 10, 10, 10, 15, 10, 5, 5],
+        "boss": [10, 10, 10, 5, 10, 15, 20, 12, 8],
+        "search": [20, 20, 10, 15, 10, 15, 6, 3, 1],
+        "risk": [15, 15, 10, 10, 10, 15, 12, 8, 5]
+      },
+      "containerQualityWeights": {
+        "normal": [80, 20, 0, 0, 0, 0],
+        "elite": [30, 50, 20, 0, 0, 0],
+        "boss": [0, 15, 40, 35, 9, 1],
+        "search": [60, 35, 5, 0, 0, 0],
+        "risk": [20, 45, 25, 9, 1, 0]
+      },
+      "bookGroupWeights": [45, 45, 10],
+      "supplyThirdWeights": [50, 35, 15],
+      "searchItemMs": 1000,
+      "searchCheckpointMs": 250,
+      "recoveryRounding": "half-up-to-hundredth-then-truncate-gap",
+      "saveKey": "nowchange.stage4-expedition.v1",
+      "fixtureIsNotStarterGiftOrPermanentLearning": true,
+      "oldSaveAndObsoleteTestCompatibilityRequired": false,
+      "deletingOtherApplicationDataAllowed": false
+    },
     "stage3InventoryApproval": {
       "approvedOn": "2026-11-09",
       "source": "阶段3_三空间与物品确认包，用户整包按推荐批准开发",
@@ -272,7 +326,6 @@
   },
   "notApproved": [
     "本轮六档之外的容器扩展、未列首批物品形状及唯一物品保护",
-    "首领道韵与具体掉落表",
     "商店价格刷新时刻初赠数量",
     "炼气阶段数目数值及本源具体能力",
     "正式广告平台尚未验证的回调边界"

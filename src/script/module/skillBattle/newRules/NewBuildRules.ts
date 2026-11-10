@@ -29,7 +29,8 @@ export class NewBuildRules {
             new Set(config.encounters.map(r => r.id)).size !== config.encounters.length)
             throw new Error("构筑奖励或流程夹具无效");
         config.encounters.forEach(row => {
-            if (!row.id || typeof row.elite !== "boolean" || typeof row.borrow !== "boolean") throw new Error("流程来源无效");
+            if (!row.id || typeof row.elite !== "boolean" || typeof row.borrow !== "boolean" ||
+                row.daoyun !== undefined && !integer(row.daoyun)) throw new Error("流程来源无效");
             Core.validateSetup({ ...config.setup, enemy: row.enemy });
         });
     }
@@ -117,8 +118,24 @@ export class NewBuildRules {
         state.build = { schools: [], actives: [], passiveIds: [] }; state.points = 0; state.daoyun = 0;
     }
 
+    static offer(config: NewBuildConfig, profile: NewBuildProfile, snapshot: NewBuildState,
+        source: string, kind: "active" | "passive"): NewBuildState {
+        const state = Core.clone(snapshot);
+        if (!source || state.phase !== "ready" || state.pending || state.sources.includes(source) ||
+            state.activeQueue.includes(source)) throw new Error("奖励来源不可用或已领取");
+        if (kind === "active") {
+            state.activeQueue.push(source); this.advance(config,profile,state);
+        } else {
+            state.sources.push(source);
+            if (this.passivePool(config,profile,state).length)
+                state.pending = { kind: "passive", source, candidates: this.passiveCandidates(config,profile,state) };
+        }
+        state.revision++;
+        return state;
+    }
+
     static apply(config: NewBuildConfig, profile: NewBuildProfile, snapshot: NewBuildState,
-        command: NewBuildCommand, at: number, carry?: NewBattleCarry): { state: NewBuildState; battle?: NewBattleResult } {
+        command: NewBuildCommand, at: number, carry?: NewBattleCarry, encounterId?: string): { state: NewBuildState; battle?: NewBattleResult } {
         const state = Core.clone(snapshot);
         if (!command || state.phase === "ended") throw new Error("当前试炼已结束");
         let battle: NewBattleResult | undefined;
@@ -160,7 +177,8 @@ export class NewBuildRules {
             }
             case "battle": {
                 requireReady();
-                const encounter = config.encounters[state.battles.length];
+                const encounter = encounterId === undefined ? config.encounters[state.battles.length] :
+                    config.encounters.find(row => row.id === encounterId);
                 if (!encounter) throw new Error("本次流程夹具已完成");
                 const setup: NewBattleSetup = Core.clone({ ...config.setup, build: state.build, enemy: encounter.enemy });
                 if (carry) setup.weapon = Core.clone(carry.weapon);
@@ -185,11 +203,14 @@ export class NewBuildRules {
                 record.actions.push({ at, action: Core.clone(command.action) }); record.state = battle.state;
                 if (battle.state.phase === "defeat") this.end(state, "defeat");
                 else if (battle.state.phase === "victory") {
-                    const encounter = config.encounters[state.battles.length - 1];
+                    const encounter = encounterId === undefined ? config.encounters[state.battles.length - 1] :
+                        config.encounters.find(row => row.id === encounterId);
+                    if (!encounter ||
+                        JSON.stringify(encounter.enemy) !== JSON.stringify(record.setup.enemy)) throw new Error("战斗来源不匹配");
                     if (state.sources.includes(encounter.id)) throw new Error("战斗奖励已结算");
                     state.sources.push(encounter.id);
                     if (this.passivePool(config, profile, state).length)
-                        state.daoyun += encounter.elite ? config.rules.eliteDaoyun : config.rules.normalDaoyun;
+                        state.daoyun += encounter.daoyun ?? (encounter.elite ? config.rules.eliteDaoyun : config.rules.normalDaoyun);
                     if (encounter.borrow) state.activeQueue.push(`borrow:${encounter.id}`);
                     state.phase = "ready"; this.advance(config, profile, state);
                 }

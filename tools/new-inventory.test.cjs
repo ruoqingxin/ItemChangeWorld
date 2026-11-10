@@ -51,7 +51,7 @@ function act(f,a){const p=f.s.preview(a);assert.equal(p.ok,true,p.reason);const 
 function unchanged(f,action,re){const before=f.s.archive,text=f.data.get(Session.key);
     assert.throws(action,re);assert.deepEqual(f.s.archive,before);assert.equal(f.data.get(Session.key),text);}
 test("live catalogue binds twelve named icons, six qualities and increasing capacity gaps",()=>{
-    assert.equal(Object.keys(blocks).length,35);
+    assert.equal(Object.keys(blocks).length,Tables.getTableNames().length);
     const containers=liveConfig.templates.filter(t=>t.kind==="container");
     assert.equal(containers.length,12);
     assert.equal(new Set(containers.map(t=>t.name)).size,12);
@@ -91,8 +91,8 @@ test("catalogue rejects invalid quality and non-project image paths",()=>{
         assert.throws(()=>R.validateConfig(c,B.profile(c.build)),/配置无效/);
     }
 });
-test("geometry fixtures have 35 tables, 6x5/8x6 grids, fixed shapes and conserved instances",()=>{
-    assert.equal(Object.keys(blocks).length,35);const f=fixture();equip(f);
+test("isolated geometry fixtures have 6x5/8x6 grids, fixed shapes and conserved instances",()=>{
+    assert.equal(Object.keys(blocks).length,Tables.getTableNames().length);const f=fixture();equip(f);
     assert.deepEqual(R.size(config,f.s.inventory,"bag"),[6,5]);equip(f,11);
     assert.deepEqual(R.size(config,f.s.inventory,"bag"),[8,6]);
     assert.equal(f.s.inventory.items.length,config.fixtures.reduce((n,r)=>n+r.count,0));

@@ -13,6 +13,19 @@ const node = (
 const edge = (from: string, to: string): IExpeditionMapEdge => ({ from, to });
 
 export class ExpeditionMapUtils {
+    static reachableGraph<T extends string | number>(start: T, edges: ReadonlyArray<readonly [T,T]>,
+        canPass: (id: T) => boolean, canSee: (id: T) => boolean): Set<T> {
+        const queue = [start], seen = new Set<T>(queue);
+        for (let index = 0; index < queue.length; index++) {
+            const current = queue[index];
+            if (!canPass(current)) continue;
+            for (const [a,b] of edges) {
+                const next = a === current ? b : b === current ? a : undefined;
+                if (next !== undefined && !seen.has(next) && canSee(next)) { seen.add(next); queue.push(next); }
+            }
+        }
+        return seen;
+    }
     static createFirstMap(durationMs = 20 * 60 * 1000): IExpeditionMapConfig {
         const nodes = [
             node("start", "入境处", "start", 70, 300, 0, true),

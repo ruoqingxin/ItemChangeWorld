@@ -8,7 +8,7 @@ export interface NewBuildConfig {
     passives: NewBuildEligibility[];
     rules: { commonMixPercent: number; firstCost: number; laterCost: number; normalDaoyun: number;
         eliteDaoyun: number; forgoPoints: number };
-    encounters: Array<{ id: string; enemy: NewBattleSetup["enemy"]; elite: boolean; borrow: boolean }>;
+    encounters: Array<{ id: string; enemy: NewBattleSetup["enemy"]; elite: boolean; borrow: boolean; daoyun?: number }>;
 }
 export interface NewBuildProfile { realm: number; learnedSkills: number[]; learnedPassives: number[]; fixture: boolean; }
 export interface NewBuildPending { kind: "start" | "active" | "passive"; source: string; candidates: number[]; }

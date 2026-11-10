@@ -22,12 +22,19 @@ interface HeldInventoryItem {
     candidate: InventoryCommand | null; error: string; valid: boolean;
     hover: { key: string; point: Laya.Point; blocked: boolean } | null;
 }
+export type NewInventoryPanelSession = Pick<NewInventorySession, "inventory" | "flow" | "snapshot" | "state" |
+    "record" | "records" | "token" | "remainingMs" | "outcome" | "screen" | "error" | "preview" | "confirm" |
+    "expire" | "resetConfirmed" | "previewMove" | "inventoryCommand" | "dispatch"> & {
+        readonly archive: { config: InventoryConfig; profile: import("../newRules/NewBuildTypes").NewBuildProfile;
+            state: InventoryState } | null;
+        prepare: NewInventorySession["prepare"];
+    };
 
 /** Image-backed inventory projection; all accepted changes pass through the single saved reducer. */
 export class NewInventoryPanel extends NewBuildPanel {
     private static readonly AUTO_ROTATE_DELAY = 400;
     private static readonly HOVER_TOLERANCE = 6;
-    private inventoryMode: "storage" | "build" = "storage";
+    protected inventoryMode: "storage" | "build" = "storage";
     private uid = "";
     private rotated = false;
     private draft: InventoryCommand | null = null;
@@ -35,12 +42,12 @@ export class NewInventoryPanel extends NewBuildPanel {
     private draftError = "";
     private inventoryPage = 0;
     private filter = "all";
-    private nodes: { [key: string]: Laya.GWidget } = {};
+    protected nodes: { [key: string]: Laya.GWidget } = {};
     private visibleItems: InventoryItem[] = [];
     private gridItems: InventoryItem[] = [];
     private dragController: NewInventoryDragController;
     private held: HeldInventoryItem | null = null;
-    constructor(view: UIBaseView, readonly inventorySession: NewInventorySession,
+    constructor(view: UIBaseView, readonly inventorySession: NewInventoryPanelSession,
         navigate: (screen: "start" | "battle" | "settlement") => void, screen: "start" | "battle" | "settlement") {
         super(view,inventorySession,navigate,screen);
         const root = view.getElement<Laya.GWidget>("inventoryRoot",false);
@@ -269,13 +276,13 @@ export class NewInventoryPanel extends NewBuildPanel {
         this.text("resultTitle","清除损坏的储物演练档？",240,190,800,60,30,"#e3c98c");
         this.text("resultDetail","仅删除阶段 3 演练档，阶段 1、2 及其他应用存档保留。",200,284,880,90,22);
     }
-    private label(key: string, text: string, size = 18, color = "#e8edf0"): void {
+    protected label(key: string, text: string, size = 18, color = "#e8edf0"): void {
         const l = this.nodes[key] as Laya.GTextField;
         l.text = text; l.fontSize = size; l.color = color; l.textIns.color = color;
         l.textIns.wordWrap = true; l.visible = true;
         this.fit(l,12);
     }
-    private control(key: string, text: string, enabled = true, selected = false): void {
+    protected control(key: string, text: string, enabled = true, selected = false): void {
         const n = this.nodes[key]; n.visible = true; n.mouseEnabled = enabled; n.alpha = enabled ? 1 : 0.4;
         const l = n.getChildAt(1) as Laya.GTextField;
         l.text = text; l.fontSize = key === "invRotate" ? 30 : n.height <= 32 ? 16 : 18;
@@ -501,7 +508,7 @@ export class NewInventoryPanel extends NewBuildPanel {
         }
         return pages;
     }
-    private beginDrag(key: string, point: Laya.Point): boolean {
+    protected beginDrag(key: string, point: Laya.Point): boolean {
         const state = this.inventorySession.inventory;
         if (!this.opened || this.busy || this.overlay || this.resetConfirm || !state ||
             state.phase === "ended" || state.flow?.phase === "battle") return false;

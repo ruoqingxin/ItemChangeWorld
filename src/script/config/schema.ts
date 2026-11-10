@@ -1988,6 +1988,548 @@ export class Inew_earth_skillConfig {
 
 
 
+export class Inew_expedition_edgeConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.id = _buf_.ReadInt()
+        this.from_node = _buf_.ReadInt()
+        this.to_node = _buf_.ReadInt()
+    }
+
+    /**
+     * 边ID
+     */
+    readonly id: number
+    /**
+     * 起点
+     */
+    readonly from_node: number
+    /**
+     * 终点
+     */
+    readonly to_node: number
+
+/*
+    resolve(tables:Tables) {
+        
+        
+        
+    }
+    */
+}
+
+
+
+
+
+export class Inew_expedition_enemyConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.id = _buf_.ReadString()
+        this.name = _buf_.ReadString()
+        this.hp = _buf_.ReadInt()
+        this.daoyun = _buf_.ReadInt()
+    }
+
+    /**
+     * 敌人键
+     */
+    readonly id: string
+    /**
+     * 名称
+     */
+    readonly name: string
+    /**
+     * 生命
+     */
+    readonly hp: number
+    /**
+     * 道韵
+     */
+    readonly daoyun: number
+
+/*
+    resolve(tables:Tables) {
+        
+        
+        
+        
+    }
+    */
+}
+
+
+
+
+
+export class Inew_expedition_intentConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.id = _buf_.ReadInt()
+        this.enemy = _buf_.ReadString()
+        this.order = _buf_.ReadInt()
+        this.damage = _buf_.ReadInt()
+        this.block = _buf_.ReadInt()
+        this.charging = _buf_.ReadInt()
+    }
+
+    /**
+     * 意图ID
+     */
+    readonly id: number
+    /**
+     * 敌人键
+     */
+    readonly enemy: string
+    /**
+     * 循环序
+     */
+    readonly order: number
+    /**
+     * 伤害
+     */
+    readonly damage: number
+    /**
+     * 护盾
+     */
+    readonly block: number
+    /**
+     * 蓄力
+     */
+    readonly charging: number
+
+/*
+    resolve(tables:Tables) {
+        
+        
+        
+        
+        
+        
+    }
+    */
+}
+
+
+
+
+
+export class Inew_expedition_nodeConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.id = _buf_.ReadInt()
+        this.key = _buf_.ReadString()
+        this.kind = _buf_.ReadString()
+        this.name = _buf_.ReadString()
+        this.enemy = _buf_.ReadString()
+        this.pool = _buf_.ReadString()
+        this.main_order = _buf_.ReadInt()
+        this.x = _buf_.ReadFloat()
+        this.y = _buf_.ReadFloat()
+    }
+
+    /**
+     * 节点ID
+     */
+    readonly id: number
+    /**
+     * 语义键
+     */
+    readonly key: string
+    /**
+     * 类别
+     */
+    readonly kind: string
+    /**
+     * 功能名
+     */
+    readonly name: string
+    /**
+     * 敌人键
+     */
+    readonly enemy: string
+    /**
+     * 来源池
+     */
+    readonly pool: string
+    /**
+     * 主序号
+     */
+    readonly main_order: number
+    /**
+     * 横坐标
+     */
+    readonly x: number
+    /**
+     * 纵坐标
+     */
+    readonly y: number
+
+/*
+    resolve(tables:Tables) {
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    }
+    */
+}
+
+
+
+
+
+export class Inew_expedition_placementConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.id = _buf_.ReadInt()
+        this.group = _buf_.ReadString()
+        this.a = _buf_.ReadInt()
+        this.b = _buf_.ReadInt()
+        this.weight = _buf_.ReadInt()
+    }
+
+    /**
+     * 方案ID
+     */
+    readonly id: number
+    /**
+     * 抽取组
+     */
+    readonly group: string
+    /**
+     * 值一
+     */
+    readonly a: number
+    /**
+     * 值二
+     */
+    readonly b: number
+    /**
+     * 权重
+     */
+    readonly weight: number
+
+/*
+    resolve(tables:Tables) {
+        
+        
+        
+        
+        
+    }
+    */
+}
+
+
+
+
+
+export class Inew_expedition_poolConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.id = _buf_.ReadString()
+        this.min_count = _buf_.ReadInt()
+        this.max_count = _buf_.ReadInt()
+        this.min_weight = _buf_.ReadInt()
+        this.dur_min = _buf_.ReadInt()
+        this.dur_max = _buf_.ReadInt()
+        this.hp = _buf_.ReadInt()
+        this.mp = _buf_.ReadInt()
+        this.repair = _buf_.ReadInt()
+        this.herb = _buf_.ReadInt()
+        this.ore = _buf_.ReadInt()
+        this.small = _buf_.ReadInt()
+        this.book = _buf_.ReadInt()
+        this.container = _buf_.ReadInt()
+        this.weapon = _buf_.ReadInt()
+        this.q1 = _buf_.ReadInt()
+        this.q2 = _buf_.ReadInt()
+        this.q3 = _buf_.ReadInt()
+        this.q4 = _buf_.ReadInt()
+        this.q5 = _buf_.ReadInt()
+        this.q6 = _buf_.ReadInt()
+    }
+
+    /**
+     * 来源池
+     */
+    readonly id: string
+    /**
+     * 较少件数
+     */
+    readonly min_count: number
+    /**
+     * 较多件数
+     */
+    readonly max_count: number
+    /**
+     * 较少权重
+     */
+    readonly min_weight: number
+    /**
+     * 耐久下限
+     */
+    readonly dur_min: number
+    /**
+     * 耐久上限
+     */
+    readonly dur_max: number
+    /**
+     * hp
+     */
+    readonly hp: number
+    /**
+     * mp
+     */
+    readonly mp: number
+    /**
+     * repair
+     */
+    readonly repair: number
+    /**
+     * herb
+     */
+    readonly herb: number
+    /**
+     * ore
+     */
+    readonly ore: number
+    /**
+     * small
+     */
+    readonly small: number
+    /**
+     * book
+     */
+    readonly book: number
+    /**
+     * container
+     */
+    readonly container: number
+    /**
+     * weapon
+     */
+    readonly weapon: number
+    /**
+     * 白
+     */
+    readonly q1: number
+    /**
+     * 绿
+     */
+    readonly q2: number
+    /**
+     * 蓝
+     */
+    readonly q3: number
+    /**
+     * 紫
+     */
+    readonly q4: number
+    /**
+     * 金
+     */
+    readonly q5: number
+    /**
+     * 红
+     */
+    readonly q6: number
+
+/*
+    resolve(tables:Tables) {
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    }
+    */
+}
+
+
+
+
+
+export class Inew_expedition_ruleConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.id = _buf_.ReadInt()
+        this.map_version = _buf_.ReadString()
+        this.limit_ms = _buf_.ReadInt()
+        this.search_ms = _buf_.ReadInt()
+        this.checkpoint_ms = _buf_.ReadInt()
+        this.recovery_percent = _buf_.ReadInt()
+        this.supply_hp = _buf_.ReadInt()
+        this.supply_mp = _buf_.ReadInt()
+        this.supply_repair = _buf_.ReadInt()
+        this.book_sword = _buf_.ReadInt()
+        this.book_earth = _buf_.ReadInt()
+        this.book_common = _buf_.ReadInt()
+        this.weapon_id = _buf_.ReadInt()
+        this.container_id = _buf_.ReadInt()
+        this.hp_id = _buf_.ReadInt()
+        this.mp_id = _buf_.ReadInt()
+        this.repair_id = _buf_.ReadInt()
+    }
+
+    /**
+     * 规则ID
+     */
+    readonly id: number
+    /**
+     * 图版本
+     */
+    readonly map_version: string
+    /**
+     * 时限毫秒
+     */
+    readonly limit_ms: number
+    /**
+     * 每件毫秒
+     */
+    readonly search_ms: number
+    /**
+     * 检查点毫秒
+     */
+    readonly checkpoint_ms: number
+    /**
+     * 恢复百分比
+     */
+    readonly recovery_percent: number
+    /**
+     * 补给血药权重
+     */
+    readonly supply_hp: number
+    /**
+     * 补给蓝药权重
+     */
+    readonly supply_mp: number
+    /**
+     * 补给修补权重
+     */
+    readonly supply_repair: number
+    /**
+     * 剑书权重
+     */
+    readonly book_sword: number
+    /**
+     * 土书权重
+     */
+    readonly book_earth: number
+    /**
+     * 通用书权重
+     */
+    readonly book_common: number
+    /**
+     * 夹具武器
+     */
+    readonly weapon_id: number
+    /**
+     * 夹具容器
+     */
+    readonly container_id: number
+    /**
+     * 夹具血药
+     */
+    readonly hp_id: number
+    /**
+     * 夹具蓝药
+     */
+    readonly mp_id: number
+    /**
+     * 夹具修补
+     */
+    readonly repair_id: number
+
+/*
+    resolve(tables:Tables) {
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    }
+    */
+}
+
+
+
+
+
+export class Inew_expedition_variantConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.id = _buf_.ReadInt()
+        this.family = _buf_.ReadString()
+        this.item_id = _buf_.ReadInt()
+        this.weight = _buf_.ReadInt()
+    }
+
+    /**
+     * 子项ID
+     */
+    readonly id: number
+    /**
+     * 类别
+     */
+    readonly family: string
+    /**
+     * 物品ID
+     */
+    readonly item_id: number
+    /**
+     * 权重
+     */
+    readonly weight: number
+
+/*
+    resolve(tables:Tables) {
+        
+        
+        
+        
+    }
+    */
+}
+
+
+
+
+
 export class Inew_inventory_fixtureConfig {
 
     constructor(_buf_: ByteBuf) {
@@ -5473,6 +6015,438 @@ export class new_inventory_fixture {
 
 
 
+export class new_expedition_node {
+    private _dataMap: Map<number, Inew_expedition_nodeConfig>
+	//private _dataObj: {[index:number]:Inew_expedition_nodeConfig}
+    private _dataList: Inew_expedition_nodeConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, Inew_expedition_nodeConfig>()
+        this._dataList = []
+		//this._dataObj = {}
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Inew_expedition_nodeConfig
+            _v = new Inew_expedition_nodeConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+			//this._dataObj[_v.id] = _v
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, Inew_expedition_nodeConfig> {this.load(); return this._dataMap; }
+	
+	//getDataObj(): { [index: number]: Inew_expedition_nodeConfig } {this.load(); return this._dataObj; }
+	
+    getDataList(): Inew_expedition_nodeConfig[] { this.load();return this._dataList; }
+
+    get(key: number): Inew_expedition_nodeConfig | undefined {
+		this.load();
+        return this._dataMap.get(key); 
+    }
+    
+/**
+    resolve(tables:Tables) {
+        
+    }
+ */    
+
+}
+
+
+
+
+export class new_expedition_edge {
+    private _dataMap: Map<number, Inew_expedition_edgeConfig>
+	//private _dataObj: {[index:number]:Inew_expedition_edgeConfig}
+    private _dataList: Inew_expedition_edgeConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, Inew_expedition_edgeConfig>()
+        this._dataList = []
+		//this._dataObj = {}
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Inew_expedition_edgeConfig
+            _v = new Inew_expedition_edgeConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+			//this._dataObj[_v.id] = _v
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, Inew_expedition_edgeConfig> {this.load(); return this._dataMap; }
+	
+	//getDataObj(): { [index: number]: Inew_expedition_edgeConfig } {this.load(); return this._dataObj; }
+	
+    getDataList(): Inew_expedition_edgeConfig[] { this.load();return this._dataList; }
+
+    get(key: number): Inew_expedition_edgeConfig | undefined {
+		this.load();
+        return this._dataMap.get(key); 
+    }
+    
+/**
+    resolve(tables:Tables) {
+        
+    }
+ */    
+
+}
+
+
+
+
+export class new_expedition_enemy {
+    private _dataMap: Map<string, Inew_expedition_enemyConfig>
+	//private _dataObj: {[index:number]:Inew_expedition_enemyConfig}
+    private _dataList: Inew_expedition_enemyConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<string, Inew_expedition_enemyConfig>()
+        this._dataList = []
+		//this._dataObj = {}
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Inew_expedition_enemyConfig
+            _v = new Inew_expedition_enemyConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+			//this._dataObj[_v.id] = _v
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<string, Inew_expedition_enemyConfig> {this.load(); return this._dataMap; }
+	
+	//getDataObj(): { [index: number]: Inew_expedition_enemyConfig } {this.load(); return this._dataObj; }
+	
+    getDataList(): Inew_expedition_enemyConfig[] { this.load();return this._dataList; }
+
+    get(key: string): Inew_expedition_enemyConfig | undefined {
+		this.load();
+        return this._dataMap.get(key); 
+    }
+    
+/**
+    resolve(tables:Tables) {
+        
+    }
+ */    
+
+}
+
+
+
+
+export class new_expedition_intent {
+    private _dataMap: Map<number, Inew_expedition_intentConfig>
+	//private _dataObj: {[index:number]:Inew_expedition_intentConfig}
+    private _dataList: Inew_expedition_intentConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, Inew_expedition_intentConfig>()
+        this._dataList = []
+		//this._dataObj = {}
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Inew_expedition_intentConfig
+            _v = new Inew_expedition_intentConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+			//this._dataObj[_v.id] = _v
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, Inew_expedition_intentConfig> {this.load(); return this._dataMap; }
+	
+	//getDataObj(): { [index: number]: Inew_expedition_intentConfig } {this.load(); return this._dataObj; }
+	
+    getDataList(): Inew_expedition_intentConfig[] { this.load();return this._dataList; }
+
+    get(key: number): Inew_expedition_intentConfig | undefined {
+		this.load();
+        return this._dataMap.get(key); 
+    }
+    
+/**
+    resolve(tables:Tables) {
+        
+    }
+ */    
+
+}
+
+
+
+
+export class new_expedition_pool {
+    private _dataMap: Map<string, Inew_expedition_poolConfig>
+	//private _dataObj: {[index:number]:Inew_expedition_poolConfig}
+    private _dataList: Inew_expedition_poolConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<string, Inew_expedition_poolConfig>()
+        this._dataList = []
+		//this._dataObj = {}
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Inew_expedition_poolConfig
+            _v = new Inew_expedition_poolConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+			//this._dataObj[_v.id] = _v
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<string, Inew_expedition_poolConfig> {this.load(); return this._dataMap; }
+	
+	//getDataObj(): { [index: number]: Inew_expedition_poolConfig } {this.load(); return this._dataObj; }
+	
+    getDataList(): Inew_expedition_poolConfig[] { this.load();return this._dataList; }
+
+    get(key: string): Inew_expedition_poolConfig | undefined {
+		this.load();
+        return this._dataMap.get(key); 
+    }
+    
+/**
+    resolve(tables:Tables) {
+        
+    }
+ */    
+
+}
+
+
+
+
+export class new_expedition_placement {
+    private _dataMap: Map<number, Inew_expedition_placementConfig>
+	//private _dataObj: {[index:number]:Inew_expedition_placementConfig}
+    private _dataList: Inew_expedition_placementConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, Inew_expedition_placementConfig>()
+        this._dataList = []
+		//this._dataObj = {}
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Inew_expedition_placementConfig
+            _v = new Inew_expedition_placementConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+			//this._dataObj[_v.id] = _v
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, Inew_expedition_placementConfig> {this.load(); return this._dataMap; }
+	
+	//getDataObj(): { [index: number]: Inew_expedition_placementConfig } {this.load(); return this._dataObj; }
+	
+    getDataList(): Inew_expedition_placementConfig[] { this.load();return this._dataList; }
+
+    get(key: number): Inew_expedition_placementConfig | undefined {
+		this.load();
+        return this._dataMap.get(key); 
+    }
+    
+/**
+    resolve(tables:Tables) {
+        
+    }
+ */    
+
+}
+
+
+
+
+export class new_expedition_variant {
+    private _dataMap: Map<number, Inew_expedition_variantConfig>
+	//private _dataObj: {[index:number]:Inew_expedition_variantConfig}
+    private _dataList: Inew_expedition_variantConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, Inew_expedition_variantConfig>()
+        this._dataList = []
+		//this._dataObj = {}
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Inew_expedition_variantConfig
+            _v = new Inew_expedition_variantConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+			//this._dataObj[_v.id] = _v
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, Inew_expedition_variantConfig> {this.load(); return this._dataMap; }
+	
+	//getDataObj(): { [index: number]: Inew_expedition_variantConfig } {this.load(); return this._dataObj; }
+	
+    getDataList(): Inew_expedition_variantConfig[] { this.load();return this._dataList; }
+
+    get(key: number): Inew_expedition_variantConfig | undefined {
+		this.load();
+        return this._dataMap.get(key); 
+    }
+    
+/**
+    resolve(tables:Tables) {
+        
+    }
+ */    
+
+}
+
+
+
+
+export class new_expedition_rule {
+    private _dataMap: Map<number, Inew_expedition_ruleConfig>
+	//private _dataObj: {[index:number]:Inew_expedition_ruleConfig}
+    private _dataList: Inew_expedition_ruleConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, Inew_expedition_ruleConfig>()
+        this._dataList = []
+		//this._dataObj = {}
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Inew_expedition_ruleConfig
+            _v = new Inew_expedition_ruleConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+			//this._dataObj[_v.id] = _v
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, Inew_expedition_ruleConfig> {this.load(); return this._dataMap; }
+	
+	//getDataObj(): { [index: number]: Inew_expedition_ruleConfig } {this.load(); return this._dataObj; }
+	
+    getDataList(): Inew_expedition_ruleConfig[] { this.load();return this._dataList; }
+
+    get(key: number): Inew_expedition_ruleConfig | undefined {
+		this.load();
+        return this._dataMap.get(key); 
+    }
+    
+/**
+    resolve(tables:Tables) {
+        
+    }
+ */    
+
+}
+
+
+
+
 type ByteBufLoader = (file: string) => ByteBuf
 
 export class Tables {
@@ -5546,6 +6520,22 @@ export class Tables {
     get new_inventory_rule(): new_inventory_rule  { return this._new_inventory_rule;}
     private _new_inventory_fixture: new_inventory_fixture
     get new_inventory_fixture(): new_inventory_fixture  { return this._new_inventory_fixture;}
+    private _new_expedition_node: new_expedition_node
+    get new_expedition_node(): new_expedition_node  { return this._new_expedition_node;}
+    private _new_expedition_edge: new_expedition_edge
+    get new_expedition_edge(): new_expedition_edge  { return this._new_expedition_edge;}
+    private _new_expedition_enemy: new_expedition_enemy
+    get new_expedition_enemy(): new_expedition_enemy  { return this._new_expedition_enemy;}
+    private _new_expedition_intent: new_expedition_intent
+    get new_expedition_intent(): new_expedition_intent  { return this._new_expedition_intent;}
+    private _new_expedition_pool: new_expedition_pool
+    get new_expedition_pool(): new_expedition_pool  { return this._new_expedition_pool;}
+    private _new_expedition_placement: new_expedition_placement
+    get new_expedition_placement(): new_expedition_placement  { return this._new_expedition_placement;}
+    private _new_expedition_variant: new_expedition_variant
+    get new_expedition_variant(): new_expedition_variant  { return this._new_expedition_variant;}
+    private _new_expedition_rule: new_expedition_rule
+    get new_expedition_rule(): new_expedition_rule  { return this._new_expedition_rule;}
 
     static getTableNames(): string[] {
         let names: string[] = [];
@@ -5584,6 +6574,14 @@ export class Tables {
         names.push('new_inventory_item');
         names.push('new_inventory_rule');
         names.push('new_inventory_fixture');
+        names.push('new_expedition_node');
+        names.push('new_expedition_edge');
+        names.push('new_expedition_enemy');
+        names.push('new_expedition_intent');
+        names.push('new_expedition_pool');
+        names.push('new_expedition_placement');
+        names.push('new_expedition_variant');
+        names.push('new_expedition_rule');
         return names;
     }
 
@@ -5623,6 +6621,14 @@ export class Tables {
         this._new_inventory_item = new new_inventory_item(loader('new_inventory_item'))
         this._new_inventory_rule = new new_inventory_rule(loader('new_inventory_rule'))
         this._new_inventory_fixture = new new_inventory_fixture(loader('new_inventory_fixture'))
+        this._new_expedition_node = new new_expedition_node(loader('new_expedition_node'))
+        this._new_expedition_edge = new new_expedition_edge(loader('new_expedition_edge'))
+        this._new_expedition_enemy = new new_expedition_enemy(loader('new_expedition_enemy'))
+        this._new_expedition_intent = new new_expedition_intent(loader('new_expedition_intent'))
+        this._new_expedition_pool = new new_expedition_pool(loader('new_expedition_pool'))
+        this._new_expedition_placement = new new_expedition_placement(loader('new_expedition_placement'))
+        this._new_expedition_variant = new new_expedition_variant(loader('new_expedition_variant'))
+        this._new_expedition_rule = new new_expedition_rule(loader('new_expedition_rule'))
 
         /*
         this._item.resolve(this)
@@ -5660,6 +6666,14 @@ export class Tables {
         this._new_inventory_item.resolve(this)
         this._new_inventory_rule.resolve(this)
         this._new_inventory_fixture.resolve(this)
+        this._new_expedition_node.resolve(this)
+        this._new_expedition_edge.resolve(this)
+        this._new_expedition_enemy.resolve(this)
+        this._new_expedition_intent.resolve(this)
+        this._new_expedition_pool.resolve(this)
+        this._new_expedition_placement.resolve(this)
+        this._new_expedition_variant.resolve(this)
+        this._new_expedition_rule.resolve(this)
         */
     }
 }

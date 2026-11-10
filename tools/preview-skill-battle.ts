@@ -27,6 +27,7 @@ async function main(): Promise<void> {
     UIManager.ins().init();
     SkillBattleUISession.previewSingleTrial = new URLSearchParams(window.location.search).get("stage") === "1";
     SkillBattleUISession.previewBuildTrial = new URLSearchParams(window.location.search).get("stage") === "2";
+    SkillBattleUISession.previewInventoryTrial = new URLSearchParams(window.location.search).get("stage") === "3";
     const trial = SkillBattleUISession.getActive();
     openSkillBattleScreen(trial.screen);
     const initialView = currentSkillBattleView;

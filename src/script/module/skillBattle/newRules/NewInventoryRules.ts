@@ -250,7 +250,7 @@ export class NewInventoryRules {
         return { hp: state.hp, mp: state.mp, weapon: weapon ?
             { ...Core.clone(config.build.setup.weapon!), durability: weapon.durability! } : null, pouch };
     }
-    private static settle(state: InventoryState, result: NonNullable<InventoryState["result"]>): void {
+    static settle(state: InventoryState, result: NonNullable<InventoryState["result"]>): void {
         state.result = result; state.phase = "ended";
         for (const item of state.items) {
             const space = item.location.space;
@@ -452,7 +452,7 @@ export class NewInventoryRules {
                 if (Object.keys(l).some(k => !["space",...(l.space === "ground" ? ["node"] : [])].includes(k)))
                     throw new Error("列表或装备位不能保留格坐标");
                 if (l.space === "ground" && (!Number.isInteger(l.node) || l.node! < 0 ||
-                    l.node! > config.build.encounters.length)) throw new Error("地面来源无效");
+                    l.node! > (config.groundNodeLimit ?? config.build.encounters.length))) throw new Error("地面来源无效");
                 if (l.space === "weapon" || l.space === "container") {
                     if (t.kind !== l.space || equipped.includes(l.space)) throw new Error("装备类型或数量不合法");
                     equipped.push(l.space);
