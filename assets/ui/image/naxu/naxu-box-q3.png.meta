@@ -1,6 +1,8 @@
 {
-  "uuid": "27b0842d-2b1a-41e3-94d5-8772a8218c87",
+  "uuid": "0156b779-53ed-4529-b4ca-8dec45f9bcbb",
   "importer": {
-    "textureType": 2
+    "textureType": 2,
+    "sRGB": true,
+    "premultiplyAlpha": true
   }
 }

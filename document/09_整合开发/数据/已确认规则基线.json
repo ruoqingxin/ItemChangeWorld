@@ -1,5 +1,5 @@
 {
-  "documentVersion": "2026-11-09",
+  "documentVersion": "2026-11-10",
   "purpose": "documentation-only-not-runtime-config",
   "authority": "../README.md",
   "confirmed": {
@@ -70,6 +70,9 @@
       "qualityFrameImageCount": 6,
       "qualityFrameUsesNineSlice": true,
       "qualityFrameSeparateImagesPerFootprint": false,
+      "containerDisplayNamesOmitNaxu": true,
+      "containerCapacityIncreasesByQuality": true,
+      "legendaryCapacityGapExceedsExcellentGap": true,
       "battleBoxCells": 5,
       "safeBoxInitialCells": 2,
       "warehousePageRows": 7,
@@ -225,12 +228,23 @@
         "humingDefense": 1, "yaoyinDefense": 0.5, "usesPerBattle": 1 },
       "testFixtureIsNotPermanentLearningOrOfficialMap": true
     },
+    "containerCatalogue20261110": {
+      "source": "2026-11-10 用户明确接表及品质递增方向；下列具体格数为实施选择的可调测试起点",
+      "capacityByQuality": [12, 16, 21, 28, 36, 48],
+      "gridByQuality": [[4, 3], [4, 4], [7, 3], [7, 4], [6, 6], [8, 6]],
+      "adjacentCapacityGaps": [4, 5, 7, 8, 12],
+      "namesByQuality": [["素麻囊", "灰木匣"], ["云纹佩", "青藤葫"], ["玄纹匣", "青铜鼎"],
+        ["云阙印", "玄玉戒"], ["金络葫", "承虚镜"], ["须弥珠", "太虚鼎"]],
+      "body": [2, 2],
+      "fixtureIsNotStarterGiftOrOfficialLoot": true
+    },
     "stage3InventoryApproval": {
       "approvedOn": "2026-11-09",
       "source": "阶段3_三空间与物品确认包，用户整包按推荐批准开发",
       "battleBox": [5, 1],
       "safeBox": [2, 1],
       "bagTiers": [[6, 5], [8, 6]],
+      "bagTiersSupersededBy": "containerCatalogue20261110",
       "containerBody": [2, 2],
       "weaponSlots": 1,
       "containerSlots": 1,
@@ -257,7 +271,7 @@
     }
   },
   "notApproved": [
-    "后续纳虚器档数与未列首批物品形状、唯一物品保护",
+    "本轮六档之外的容器扩展、未列首批物品形状及唯一物品保护",
     "首领道韵与具体掉落表",
     "商店价格刷新时刻初赠数量",
     "炼气阶段数目数值及本源具体能力",

@@ -23,7 +23,12 @@ for(let n=0;n<bytes.readInt32LE(0);n++){
     const data=bytes.subarray(offset,offset+size);offset+=size;
     blocks[name]=data;
 }
-const tables=new Tables(name=>new ByteBuf(new Uint8Array(blocks[name]))),config=Config.read(tables),profile=B.profile(config.build);
+const tables=new Tables(name=>new ByteBuf(new Uint8Array(blocks[name]))),liveConfig=Config.read(tables);
+// Geometry regressions retain explicit 6x5/8x6 fixtures, independent of the adjustable item catalogue.
+const config=structuredClone(liveConfig);
+Object.assign(config.templates.find(t=>t.id===10),{bagWidth:6,bagHeight:5});
+Object.assign(config.templates.find(t=>t.id===11),{bagWidth:8,bagHeight:6});
+const profile=B.profile(config.build);
 let passed=0;
 function test(name,fn){try{fn();console.log(`PASS inventory ${name}`);passed++;}catch(e){console.error(`FAIL inventory ${name}`);throw e;}}
 function fixture(c=config){
@@ -45,7 +50,48 @@ function battle(f){f.s.dispatch({type:"battle"});}
 function act(f,a){const p=f.s.preview(a);assert.equal(p.ok,true,p.reason);const r=f.s.confirm(a,p.preview.token);assert.equal(r.ok,true,r.reason);return r;}
 function unchanged(f,action,re){const before=f.s.archive,text=f.data.get(Session.key);
     assert.throws(action,re);assert.deepEqual(f.s.archive,before);assert.equal(f.data.get(Session.key),text);}
-test("configuration has 35 tables; approved grids, shapes, instance counts",()=>{
+test("live catalogue binds twelve named icons, six qualities and increasing capacity gaps",()=>{
+    assert.equal(Object.keys(blocks).length,35);
+    const containers=liveConfig.templates.filter(t=>t.kind==="container");
+    assert.equal(containers.length,12);
+    assert.equal(new Set(containers.map(t=>t.name)).size,12);
+    assert.equal(new Set(containers.map(t=>t.icon)).size,12);
+    const sizes=[[4,3],[4,4],[7,3],[7,4],[6,6],[8,6]],areas=sizes.map(([w,h])=>w*h);
+    const gaps=areas.slice(1).map((area,i)=>area-areas[i]);
+    assert.deepEqual(gaps,[4,5,7,8,12]);
+    for(const t of containers){
+        assert.doesNotMatch(t.name,/纳虚/);
+        assert.deepEqual([t.width,t.height],[2,2]);
+        assert.deepEqual([t.bagWidth,t.bagHeight],sizes[t.quality-1]);
+        assert.ok(t.icon.endsWith(`-q${t.quality}.png`));
+        assert.ok(fs.existsSync(path.join(root,"assets",t.icon)),t.icon);
+        const meta=JSON.parse(fs.readFileSync(path.join(root,"assets",t.icon+".meta"),"utf8"));
+        assert.deepEqual(meta.importer,{textureType:2,sRGB:true,premultiplyAlpha:true});
+        assert.ok(liveConfig.fixtures.some(f=>f.templateId===t.id&&f.node===0));
+    }
+    for(let quality=1;quality<=6;quality++)assert.equal(containers.filter(t=>t.quality===quality).length,2);
+    const f=fixture(liveConfig);
+    for(const t of containers){
+        const item=items(f,t.id)[0];cmd(f,R.containerPlan(liveConfig,f.s.inventory,item.uid));
+        assert.deepEqual(R.size(liveConfig,f.s.inventory,"bag"),sizes[t.quality-1]);
+        assert.deepEqual(new Session(new Manager(),f.storage,f.now,liveConfig).inventory,f.s.inventory);
+    }
+    const raw=f.data.get(Session.key);
+    const incompatible=structuredClone(liveConfig);incompatible.templates.find(t=>t.id===10).bagHeight=4;
+    assert.equal(new Session(new Manager(),f.storage,f.now,incompatible).inventory,null);
+    assert.equal(f.data.get(Session.key),raw,"A changed catalogue must preserve the original save");
+});
+test("catalogue rejects invalid quality and non-project image paths",()=>{
+    for(const quality of [0,7,-1,2.5]){
+        const c=structuredClone(liveConfig);c.templates.find(t=>t.id===10).quality=quality;
+        assert.throws(()=>R.validateConfig(c,B.profile(c.build)),/配置无效/);
+    }
+    for(const icon of ["ui/image/naxu/../other.png","https://example.com/a.png","ui/image/naxu/naxu-box-q7.png"]){
+        const c=structuredClone(liveConfig);c.templates.find(t=>t.id===10).icon=icon;
+        assert.throws(()=>R.validateConfig(c,B.profile(c.build)),/配置无效/);
+    }
+});
+test("geometry fixtures have 35 tables, 6x5/8x6 grids, fixed shapes and conserved instances",()=>{
     assert.equal(Object.keys(blocks).length,35);const f=fixture();equip(f);
     assert.deepEqual(R.size(config,f.s.inventory,"bag"),[6,5]);equip(f,11);
     assert.deepEqual(R.size(config,f.s.inventory,"bag"),[8,6]);

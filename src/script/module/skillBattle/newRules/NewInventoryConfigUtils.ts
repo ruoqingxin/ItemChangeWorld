@@ -15,7 +15,8 @@ export class NewInventoryConfigUtils {
                 id: t.id, name: t.name, kind: t.kind as InventoryTemplate["kind"],
                 width: t.width, height: t.height, rotate: t.rotate === 1, battle: t.battle === 1,
                 safe: t.safe === 1, stack: t.stack, potionId: t.potion_id, bagWidth: t.bag_width, bagHeight: t.bag_height,
-                icon: `ui/atlas/module/inventory/${t.icon}.png`,
+                icon: t.icon.startsWith("ui/") ? t.icon : `ui/atlas/module/inventory/${t.icon}.png`,
+                quality: t.quality,
             })),
             fixtures: tables.new_inventory_fixture.getDataList().map(f => ({
                 id: f.id, templateId: f.item_id, count: f.count, node: f.node, durability: f.durability,

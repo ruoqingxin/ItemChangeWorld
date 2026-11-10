@@ -7,8 +7,8 @@
   "top": 0,
   "bottom": 0,
   "name": "Scene2D",
-  "width": 1334,
-  "height": 750,
+  "width": 1280,
+  "height": 720,
   "_$comp": [
     {
       "_$type": "7bad1742-6eed-4d8d-81c0-501dc5bf03d6",

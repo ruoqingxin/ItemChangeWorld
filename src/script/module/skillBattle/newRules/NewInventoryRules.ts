@@ -39,7 +39,8 @@ export class NewInventoryRules {
                 !int(t.width, 1, 8) || !int(t.height, 1, 6) || t.stack !== 1 ||
                 ![t.rotate,t.battle,t.safe].every(v => typeof v === "boolean") ||
                 !int(t.bagWidth, 0, 8) || !int(t.bagHeight, 0, 6) || !int(t.potionId) ||
-                !/^ui\/atlas\/module\/inventory\/[\w-]+\.png$/.test(t.icon) ||
+                !/^(?:ui\/atlas\/module\/inventory\/[\w-]+|ui\/image\/naxu\/naxu-[a-z]+-q[1-6])\.png$/.test(t.icon) ||
+                (t.quality !== undefined && !int(t.quality, 1, 6)) ||
                 (["weapon","container"].includes(t.kind) && (t.safe || t.battle)) ||
                 (t.battle && !["hp","mp","repair"].includes(t.kind)) ||
                 (t.kind === "container" ? !t.bagWidth || !t.bagHeight : t.bagWidth !== 0 || t.bagHeight !== 0))

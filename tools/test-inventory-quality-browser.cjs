@@ -22,13 +22,14 @@ async function main(){
                 const panel=window.__skillBattlePreview.panel;
                 return panel.visibleItems.map((item,i)=>{
                     const node=panel.nodes[`invList${i}`],bg=node.getChildAt(0),caption=node.getChildAt(3);
+                    const template=window.__skillBattlePreview.trial.archive.config.templates.find(t=>t.id===item.templateId);
                     return{src:bg.src,grid:bg.texture?._sizeGrid,commands:bg.graphics.cmds.map(c=>c.cmdID),
-                        caption:caption.text,captionVisible:caption.visible};
+                        quality:panel.quality(template),caption:caption.text,captionVisible:caption.visible};
                 });
             });
             assert.ok(actual.length>=6);
             for(const frame of actual){
-                assert.equal(frame.src,"ui/atlas/module/inventory/quality-1.png","Unspecified quality displays ordinary");
+                assert.equal(frame.src,`ui/atlas/module/inventory/quality-${frame.quality}.png`,"Frame follows the configured quality");
                 assert.deepEqual(frame.grid,[8,8,8,8,0]);
                 assert.ok(frame.commands.includes("Draw9GridTextureCmd"),"Engine must draw a real nine-slice");
                 assert.equal(frame.caption,"","Item images must not show footprint or durability numbers");

@@ -54,7 +54,8 @@ for (const file of files.filter(file => file.endsWith(".lh")).sort()) {
         relative(candidate).startsWith(dynamicDirectory) && candidate.endsWith(".png"))) deps.add(relative(image));
     if (file.includes(`${path.sep}skillBattle${path.sep}`)) for (const image of files.filter(candidate =>
         (relative(candidate).startsWith("ui/atlas/module/inventory/") ||
-            relative(candidate).startsWith("ui/texture/inventory/")) && candidate.endsWith(".png"))) deps.add(relative(image));
+            relative(candidate).startsWith("ui/texture/inventory/") ||
+            relative(candidate).startsWith("ui/image/naxu/")) && candidate.endsWith(".png"))) deps.add(relative(image));
     depMap[relative(file)] = [...deps].sort();
 }
 for (const file of files.filter(file => /\.(png|lh)$/.test(file))) {

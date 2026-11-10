@@ -2050,6 +2050,7 @@ export class Inew_inventory_itemConfig {
         this.bag_width = _buf_.ReadInt()
         this.bag_height = _buf_.ReadInt()
         this.icon = _buf_.ReadString()
+        this.quality = _buf_.ReadInt()
     }
 
     /**
@@ -2104,9 +2105,14 @@ export class Inew_inventory_itemConfig {
      * 图片键
      */
     readonly icon: string
+    /**
+     * 品质
+     */
+    readonly quality: EQuality
 
 /*
     resolve(tables:Tables) {
+        
         
         
         
