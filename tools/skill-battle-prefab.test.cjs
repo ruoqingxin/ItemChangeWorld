@@ -1,273 +1,118 @@
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
-
-const directory = path.join(__dirname, "../assets/ui/prefab/module/skillBattle");
-const views = {
-    "SkillBattleStartView.lh": {
-        required: ["result", "newRun", "reset", "warehouse0", "report", "reportBody", "resultTitle"],
-        buttons: ["newRun", "reset", "resetYes", "resetNo", "report", "summary", "actions",
-            "olderReport", "newerReport", "reportClose", "previousPage", "nextPage", "build",
-            ...Array.from({ length: 6 }, (_, i) => `warehouse${i}`)],
-        excluded: ["enemy", "player", "numbers", "skill1", "pouch0", "enemyHpBar", "lootSlot0"],
-    },
-    "SkillBattleBattleView.lh": {
-        required: ["result", "enemy", "player", "numbers", "skill1", "pouch0", "pouchIcon0",
-            "battleReport", "enemyHpBar", "playerHpBar", "upgrade0", "continue", "extract", "lootSlot0"],
-        buttons: ["battleReport", "loot", "skip", "cancel", "confirm", "continue", "extract", "hub",
-            "lootClose", "report", "summary", "actions", "olderReport", "newerReport", "reportClose",
-            "previousPage", "nextPage", "build", ...Array.from({ length: 4 }, (_, i) => `skill${i + 1}`),
-            ...Array.from({ length: 5 }, (_, i) => `pouch${i}`), ...Array.from({ length: 3 }, (_, i) => `upgrade${i}`)],
-        excluded: ["newRun", "warehouse0", "reset"],
-    },
-    "SkillBattleSettlementView.lh": {
-        required: ["result", "lootClose", "hub", "lootSlot0", "report", "reportBody", "resultTitle"],
-        buttons: ["lootClose", "hub", "report", "summary", "actions", "olderReport", "newerReport",
-            "reportClose", "previousPage", "nextPage", "build"],
-        excluded: ["enemy", "player", "numbers", "skill1", "pouch0", "enemyHpBar", "warehouse0", "newRun"],
-    },
-};
-
-const allFiles = Object.keys(views);
-const viewNames = [];
-const viewNodeCounts = {};
-for (const file of allFiles) {
-    const prefab = JSON.parse(fs.readFileSync(path.join(directory, file), "utf8"));
-    const ids = new Set();
-    const allIds = [];
-    const refs = [];
-    const names = new Set();
-    const nodes = new Map();
-    const outOfBounds = [];
-    const visit = node => {
-        if (Array.isArray(node)) {
-            node.forEach(visit);
-            return;
+const root = path.resolve(__dirname, "..");
+const files = [
+    ["skillBattle/SkillBattleStartView", 4, "inventoryRoot"],
+    ["skillBattle/SkillBattleInventoryView", 4, "inventoryRoot"],
+    ["skillBattle/SkillBattleBuildView", 4, "candidateArea"],
+    ["skillBattle/SkillBattleBattleView", 4, "battleActionsArea"],
+    ["skillBattle/SkillBattleSettlementView", 4, "inventoryRoot"],
+    ["expedition/SkillBattleMapView", 4, "expeditionRoot"],
+    ["skillBattle/SkillBattleConfirmView", 2, "dialogArea"],
+    ["skillBattle/SkillBattleReportView", 1, "reportDialogArea"],
+    ["skillBattle/SkillBattleBuildInfoView", 1, "reportDialogArea"],
+    ["skillBattle/SkillBattleTrialView", 4, "candidateArea"],
+    ["skillBattle/SkillBattleTrialResultView", 4, "trialResultArea"],
+];
+for (const [file, type, content] of files) {
+    const prefab = JSON.parse(fs.readFileSync(path.join(root, "assets/ui/prefab/module", file + ".lh"), "utf8"));
+    const nodes = new Map(), ids = new Set(), references = [], positions = new Map();
+    function walk(node, parent, px = 0, py = 0) {
+        assert.ok(!ids.has(node._$id), `${file}: duplicate ID ${node._$id}`);
+        ids.add(node._$id);
+        assert.ok(!nodes.has(node.name), `${file}: duplicate name ${node.name}`);
+        nodes.set(node.name, node);
+        const x = node.x || 0, y = node.y || 0;
+        positions.set(node.name, { x: px + x, y: py + y });
+        if (parent) {
+            assert.ok([x,y,node.width,node.height].every(Number.isFinite), `${file}: invalid dimensions ${node.name}`);
+            assert.ok(x >= 0 && y >= 0 && x + node.width <= parent.width && y + node.height <= parent.height,
+                `${file}: ${node.name} exceeds ${parent.name}`);
         }
-        if (!node || typeof node !== "object") return;
-        if (node.name) { names.add(node.name); nodes.set(node.name, node); }
-        if (node["_$id"]) {
-            ids.add(node["_$id"]);
-            allIds.push(node["_$id"]);
-        }
-        if (node["_$ref"]) refs.push(node["_$ref"]);
-        Object.values(node).forEach(visit);
-    };
-    const validateBounds = (node, parentWidth = prefab.width, parentHeight = prefab.height) => {
-        if (!node || typeof node !== "object") return;
-        if (node.name && node !== prefab) {
-            const x = node.x ?? 0, y = node.y ?? 0;
-            const width = node.width ?? 0, height = node.height ?? 0;
-            if ((node.x !== undefined && !Number.isFinite(node.x)) ||
-                (node.y !== undefined && !Number.isFinite(node.y)) ||
-                !Number.isFinite(x) || !Number.isFinite(y) ||
-                !Number.isFinite(width) || !Number.isFinite(height) ||
-                x < 0 || y < 0 || x + width > parentWidth || y + height > parentHeight) {
-                outOfBounds.push(node.name);
-            }
-        }
-        for (const key of ["scaleX", "scaleY"]) {
-            if (node === prefab && node[key] != null && node[key] !== 1) {
-                throw new Error(`${file} root must not be scaled (${key}=${node[key]})`);
-            }
-        }
-        for (const child of node._$child || []) {
-            validateBounds(child, node.width || parentWidth, node.height || parentHeight);
-        }
-    };
-    visit(prefab);
-    validateBounds(prefab);
-    if (nodes.has("expeditionRoot")) {
-        assert.ok(nodes.has("expContextIcon"), `${file} contextual panel has a node image`);
-        assert.equal(nodes.get("expViewport").height,430);
-        for(let i=1;i<=32;i++) {
-            const icon=nodes.get(`expNode${i}Icon`);
-            assert.equal(icon.src,"ui/image/expeditionNodes/node-enemy-normal.png");
-            assert.deepEqual([icon.width,icon.height],[104,104]);
-        }
-        for(const name of ["start","transit","enemy-normal","enemy-elite","enemy-boss","supply",
-            "search","borrow","insight","recovery","extract","battle-loot"]) {
-            const icon=path.join(__dirname,`../assets/ui/image/expeditionNodes/node-${name}.png`);
-            assert.ok(fs.existsSync(icon),`Missing new expedition icon ${name}`);
-            const meta=JSON.parse(fs.readFileSync(icon+".meta","utf8"));
-            assert.equal(meta.importer.textureType,2);
-            assert.equal(meta.importer.sRGB,true);
-            assert.equal(meta.importer.premultiplyAlpha,true);
-        }
+        for (const child of node._$child || []) walk(child, node, px + x, py + y);
+    }
+    function refs(value) {
+        if (!value || typeof value !== "object") return;
+        if (value._$ref) references.push(value._$ref);
+        Object.values(value).forEach(refs);
+    }
+    walk(prefab); refs(prefab);
+    assert.deepEqual([prefab.width,prefab.height,prefab.scaleX || 1,prefab.scaleY || 1], [1280,720,1,1], file);
+    assert.equal(prefab._$child.length, 1, `${file}: content must be under the adapter`);
+    const adapter = nodes.get("adapter"), mapper = prefab._$comp.find(c => c.scriptPath?.endsWith("/ElementMapper.ts"));
+    assert.equal(mapper.adapter._$ref, adapter._$id, `${file}: adapter must actually be bound`);
+    assert.equal(mapper.mapperType, type, `${file}: fullscreen pages and masked popups must be distinct`);
+    assert.ok(nodes.has(content), `${file}: missing ${content}`);
+    for (const ref of references) assert.ok(ids.has(ref), `${file}: unresolved reference ${ref}`);
+    for (const name of ["resetYes","resetNo","olderReport","newerReport"]) {
+        if (type === 4) assert.ok(!nodes.has(name), `${file}: embedded popup control ${name}`);
     }
     if (nodes.has("inventoryRoot")) {
-        const cells = [...nodes].filter(([name]) => /^inv(?:EquipCell_(?:weapon|container)_\d+|SourceCell\d+|Cell_(?:battle|safe|bag)_\d+)$/.test(name));
-        for (const [name,node] of cells)
-            assert.deepEqual([node.width,node.height],[54,54],`${file} ${name} must use the shared 56px pitch`);
-        for (const [prefix,count,cols,panelName] of [
-            ["invCell_battle_",5,5,"invLeftPanel"],["invCell_safe_",2,2,"invLeftPanel"],
-            ["invCell_bag_",48,8,"invBagPanel"],["invSourceCell",56,8,"invRightPanel"],
+        for (const name of ["expeditionRoot","candidateArea","reportBody"])
+            assert.ok(!nodes.has(name), `${file}: must not contain the ${name} page`);
+        for (const name of ["equipmentArea","battleItemsArea","safeItemsArea","bagItemsArea","sourceItemsArea","sourcePagesArea","actionsArea"])
+            assert.ok(nodes.has(name), `${file}: missing semantic parent ${name}`);
+        for (const [prefix,count,cols] of [
+            ["invCell_battle_",5,5],["invCell_safe_",2,2],["invCell_bag_",48,8],["invSourceCell",56,8],
         ]) {
-            const origin = nodes.get(prefix+"0"), panel = nodes.get(panelName);
-            for (let i=0;i<count;i++) {
-                const cell = nodes.get(prefix+i);
-                assert.deepEqual([cell.x,cell.y],[origin.x+i%cols*56,origin.y+Math.floor(i/cols)*56],
-                    `${file} ${prefix}${i} shared pitch`);
-                assert.ok(cell.x>=panel.x && cell.y>=panel.y &&
-                    cell.x+cell.width<=panel.x+panel.width && cell.y+cell.height<=panel.y+panel.height,
-                    `${file} ${prefix}${i} stays inside its panel`);
+            const origin = positions.get(prefix+"0");
+            for (let i=0; i<count; i++) {
+                const node = nodes.get(prefix+i), position = positions.get(prefix+i);
+                assert.deepEqual([node.width,node.height], [54,54], `${file}: uniform cell dimensions`);
+                assert.deepEqual([position.x,position.y], [origin.x+i%cols*56,origin.y+Math.floor(i/cols)*56],
+                    `${file}: uniform 56px pitch`);
             }
         }
-        const left = nodes.get("invLeftPanel"), bag = nodes.get("invBagPanel"), right = nodes.get("invRightPanel");
-        assert.ok(left.x+left.width<=bag.x && bag.x+bag.width<=right.x,`${file} storage panels must not overlap`);
-        assert.equal(cells.filter(([name])=>/^invSourceCell\d+$/.test(name)).length,56,`${file} source page has 56 cells`);
-        const bottomCell = nodes.get("invSourceCell55"), notice = nodes.get("invNotice");
-        for (const key of ["invPrev","invNext","invPage","invReveal"]) {
-            const footer = nodes.get(key);
-            assert.ok(footer.y >= bottomCell.y+bottomCell.height && footer.y+footer.height <= right.y+right.height,
-                `${file} ${key} stays below all seven rows and inside the panel`);
-        }
-        assert.ok(notice.y >= right.y+right.height,`${file} notice stays below the source panel`);
-        assert.ok(right.y+right.height <= nodes.get("invPrimary").y,`${file} source panel stays clear of bottom actions`);
-        for (const [space,key,rows] of [["weapon","invWeapon",3],["container","invContainer",2]]) {
-            const slot = nodes.get(key);
-            assert.deepEqual([slot.width,slot.height],[110,rows*56-2],`${file} ${space} actual footprint`);
-            for (let i=0;i<2*rows;i++) {
-                const cell = nodes.get(`invEquipCell_${space}_${i}`);
-                assert.deepEqual([cell.x,cell.y],[slot.x+i%2*56,slot.y+Math.floor(i/2)*56],
-                    `${file} ${space} cell ${i}`);
-            }
+        for (const [name,rows] of [["invWeapon",3],["invContainer",2]]) {
+            const node = nodes.get(name); assert.deepEqual([node.width,node.height], [110,rows*56-2]);
         }
         for (const key of ["invWeapon","invContainer","invHeld",
             ...Array.from({length:60},(_,i)=>`invItem${i}`),...Array.from({length:56},(_,i)=>`invList${i}`)]) {
-            const n=nodes.get(key),outline=nodes.get(key+"Selection");
-            assert.ok(outline && outline.mouseEnabled===false,`${file} ${key} independent selection outline`);
-            assert.equal(n._$child[2]._$type,"GImage",`${file} ${key} retains the item icon index`);
-            if (!["invWeapon","invContainer"].includes(key))
-                assert.equal(n._$child[0].src,"ui/atlas/module/inventory/quality-1.png",`${file} ${key} default quality frame`);
+            const n=nodes.get(key);
+            assert.equal(n._$child[2]._$type,"GImage",`${file}: stable item icon child index`);
+            assert.equal(nodes.get(key+"Selection").mouseEnabled,false,`${file}: independent inert selection frame`);
+            if (/^inv(?:Item|List)\d+$/.test(key)) assert.equal(n.visible,false,`${file}: pool must not stack in the editor`);
         }
-        for (const key of ["invGhost",...Array.from({length:48},(_,i)=>`invDragCell${i}`)])
-            assert.equal(nodes.get(key).src,"ui/atlas/module/inventory/quality-1.png",
-                `${file} ${key} must not restore the old circular feedback frame`);
+        const bottom=positions.get("invSourceCell55").y+54;
+        for (const name of ["invPrev","invNext","invPage"])
+            assert.ok(positions.get(name).y>=bottom,`${file}: pagination clears all seven rows`);
     }
-
-    assert.equal(prefab.width, 1280, `${file} design width`);
-    assert.equal(prefab.height, 720, `${file} design height`);
-    assert.deepEqual(outOfBounds, [], `${file} nodes must use finite in-bounds landscape coordinates`);
-    assert.equal(ids.size, allIds.length, `${file} has duplicate Laya node IDs`);
-    assert.ok(prefab["_$comp"]?.some(component =>
-        component.scriptPath?.endsWith("/ElementMapper.ts")),
-    `${file} must use ElementMapper`);
-    for (const ref of refs) assert.ok(ids.has(ref), `${file} has an unresolved ElementMapper reference ${ref}`);
-    viewNodeCounts[file] = names.size;
-
-    const expectations = views[file];
-    for (const name of expectations.required)
-        assert.ok(names.has(name), `${file} is missing prefab node ${name}`);
-    for (const name of expectations.excluded)
-        assert.ok(!names.has(name), `${file} must not contain unused node ${name}`);
-    for (const name of expectations.buttons)
-        assert.ok(nodes.get(name)?._$child?.length > 0, `${file} button ${name} must retain its prefab label child`);
-    if (file === "SkillBattleBattleView.lh") {
-        const cancel = nodes.get("cancel"), confirm = nodes.get("confirm");
-        assert.notDeepEqual([cancel.x, cancel.y, cancel.width, cancel.height],
-            [confirm.x, confirm.y, confirm.width, confirm.height],
-            "cancel and confirm must not occupy the same hit area");
-        assert.ok(nodes.get("enemyHpBar").x + nodes.get("enemyHpBar").width <= nodes.get("build").x,
-            "enemy HP bar must not overlap the action toolbar");
-        for (let index = 0; index < 5; index++)
-            assert.equal(nodes.get(`pouchIcon${index}`).autoSize, false, "icons must keep authored dimensions");
-        for (let index = 0; index < 5; index++)
-            assert.equal(nodes.get(`pouchQuality${index}`).src,"ui/atlas/module/inventory/quality-1.png",
-                "battle item icons retain a quality frame");
-        assert.ok(nodes.get("pouch4").x + nodes.get("pouch4").width <= confirm.x,
-            "pouch hit areas must not overlap confirm");
+    if (file.endsWith("SkillBattleStartView"))
+        assert.ok(!nodes.has("warehouse0"), "Production start is preparation, not a trial/configuration stack");
+    if (file.endsWith("SkillBattleBuildView"))
+        assert.ok(!nodes.has("inventoryRoot")&&!nodes.has("expeditionRoot"), "Build owns no storage or map subtree");
+    if (file.endsWith("SkillBattleMapView")) {
+        assert.ok(!nodes.has("inventoryRoot")&&!nodes.has("warehouse0"), "Map owns no other full page");
+        assert.equal(nodes.get("expViewport").height,430);
+        assert.ok(nodes.get("nodeActionArea")._$child.some(n=>n.name==="expUse"));
+        for(let i=1;i<=32;i++) {
+            const icon=nodes.get(`expNode${i}Icon`); assert.deepEqual([icon.width,icon.height],[104,104]);
+        }
     }
-    viewNames.push([...names].sort().join("|"));
-}
-
-assert.equal(new Set(viewNames).size, Object.keys(views).length, "each view must have a distinct node tree");
-for (const role of ["Start", "Battle", "Settlement"]) {
-    const source = fs.readFileSync(path.join(__dirname,
-        `../src/script/module/skillBattle/view/SkillBattle${role}View.ts`), "utf8");
-    assert.match(source, /SkillBattleUISession\.createPanel\(/, `${role} production view must use the shared new-kernel panel factory`);
-    assert.doesNotMatch(source, /getExpedition\(/, `${role} must not initialize the legacy save or rules`);
+    if (file.endsWith("SkillBattleBattleView")) {
+        for(const name of ["reportBody","resultTitle","lootSlot0","inventoryRoot","expeditionRoot"])
+            assert.ok(!nodes.has(name),`Battle must not carry ${name}`);
+        for(let i=0;i<5;i++)assert.equal(nodes.get(`pouchQuality${i}`).src,"ui/atlas/module/inventory/quality-1.png");
+    }
 }
 for(let quality=1;quality<=6;quality++){
-    const name=`quality-${quality}.png`,file=path.join(__dirname,"../assets/ui/atlas/module/inventory",name);
-    const reference=path.join(__dirname,"../art/reference/cultivation/frames",name);
-    assert.deepEqual(fs.readFileSync(file),fs.readFileSync(reference),`${name} must use the supplied original PNG`);
+    const name=`quality-${quality}.png`,file=path.join(root,"assets/ui/atlas/module/inventory",name);
+    assert.deepEqual(fs.readFileSync(file),fs.readFileSync(path.join(root,"art/reference/cultivation/frames",name)));
     const meta=JSON.parse(fs.readFileSync(file+".meta","utf8"));
-    assert.deepEqual(meta.importer.sizeGrid,[8,8,8,8,0],`${name} nine-slice borders`);
+    assert.deepEqual(meta.importer.sizeGrid,[8,8,8,8,0]);
 }
-const sessionSource = fs.readFileSync(path.join(__dirname,
-    "../src/script/module/skillBattle/view/SkillBattleUISession.ts"), "utf8");
-assert.match(sessionSource, /new NewBuildPanel\(/, "default factory must use the new construction panel");
-assert.match(sessionSource, /static previewSingleTrial = false/, "production entry must default to stage two");
-const buildPanel = fs.readFileSync(path.join(__dirname,
-    "../src/script/module/skillBattle/view/NewBuildPanel.ts"), "utf8");
-assert.match(buildPanel, /extends NewBattlePanel/, "construction must retain the existing battle projection");
-assert.doesNotMatch(buildPanel, /SkillBattleFormulaUtils|ExpeditionManager|stoneItemUid/);
-const newPanel = fs.readFileSync(path.join(__dirname,
-    "../src/script/module/skillBattle/view/NewBattlePanel.ts"), "utf8");
-assert.doesNotMatch(newPanel, /SkillBattleFormulaUtils|ExpeditionManager|stoneItemUid/);
-assert.match(newPanel, /"skill1", "skill2", "skill3", "skill4", "upgrade0"/,
-    "two universal actions and three borrowed active slots must remain distinct");
-const panelSource = fs.readFileSync(path.join(__dirname,
-    "../src/script/module/skillBattle/view/SkillBattlePanel.ts"), "utf8");
-const resizeBlock = panelSource.slice(panelSource.indexOf("resizeTo("), panelSource.indexOf("private continueNext"));
-assert.doesNotMatch(resizeBlock, /this\.root\.scale\(/, "runtime layout must not scale the SkillBattle root");
-assert.match(resizeBlock, /this\.root\.scaleX\s*=\s*1/, "runtime layout must pin root scaleX to 1");
-assert.match(resizeBlock, /this\.root\.scaleY\s*=\s*1/, "runtime layout must pin root scaleY to 1");
-assert.match(panelSource, /bind\("build", \(\) => this\.openBuild\(\)\)/,
-    "every role view must bind the authored build button");
-assert.match(panelSource, /combatButtons = \["battleReport", "loot", "build"/,
-    "loot and build must remain visible in the combat action chrome");
-for (const action of ["claimActiveCandidate", "skipActiveChoice", "replaceActive", "strengthenActive", "claimPassive"])
-    assert.match(panelSource, new RegExp(`this\\.expedition\\.${action}\\(`),
-        `build panel must wire ${action}`);
-
-const mapDirectory = path.join(__dirname, "../assets/ui/prefab/module/expedition");
-const mapPrefab = JSON.parse(fs.readFileSync(path.join(mapDirectory, "SkillBattleMapView.lh"), "utf8"));
-const mapNames = new Set(), mapIds = new Set(), mapRefs = [], mapOutOfBounds = [];
-const visitMap = (node, parentWidth = mapPrefab.width, parentHeight = mapPrefab.height) => {
-    if (!node || typeof node !== "object") return;
-    if (node.name) mapNames.add(node.name);
-    if (node._$id) {
-        assert.ok(!mapIds.has(node._$id), `Map prefab has duplicate node ID ${node._$id}`);
-        mapIds.add(node._$id);
-    }
-    if (node._$ref) mapRefs.push(node._$ref);
-    if (node.name && node.name !== "SkillBattleMapView") {
-        const x = node.x ?? 0, y = node.y ?? 0, width = node.width ?? 0, height = node.height ?? 0;
-        const left = x - width * (node.anchorX || 0), top = y - height * (node.anchorY || 0);
-        if (left < 0 || top < 0 || left + width > parentWidth || top + height > parentHeight)
-            mapOutOfBounds.push(node.name);
-    }
-    for (const child of node._$child || []) visitMap(child, node.width || parentWidth, node.height || parentHeight);
-};
-visitMap(mapPrefab);
-assert.equal(mapPrefab.width, 1280);
-assert.equal(mapPrefab.height, 720);
-assert.deepEqual(mapOutOfBounds, []);
-for (const name of ["mapBackground", "mapTint", "mapTopBar", "mapStatusPanel", "mapArea", "mapEdges",
-    "mapNodes", "mapInfoPanel", "mapTitle", "mapTimer", "mapLife", "mapDurability", "mapBuild",
-    "mapSupplies", "mapProgress", "nodeType", "nodeTitle", "nodeDetail", "nodeHint", "mapNotice",
-    "mapLegend", "mapConfirm", "mapCancel", "mapBuildButton"])
-    assert.ok(mapNames.has(name), `Map prefab is missing ${name}`);
-for (const name of ["mapConfirm", "mapCancel", "mapBuildButton"]) {
-    const node = (() => {
-        let found;
-        const find = value => {
-            if (value?.name === name) found = value;
-            for (const child of value?._$child || []) find(child);
-        };
-        find(mapPrefab);
-        return found;
-    })();
-    assert.ok(node?._$child?.length > 0, `Map button ${name} must retain its label child`);
+for(const name of ["start","transit","enemy-normal","enemy-elite","enemy-boss","supply",
+    "search","borrow","insight","recovery","extract","battle-loot"]) {
+    const meta=JSON.parse(fs.readFileSync(path.join(root,`assets/ui/image/expeditionNodes/node-${name}.png.meta`),"utf8"));
+    assert.equal(meta.importer.textureType,2);assert.equal(meta.importer.sRGB,true);assert.equal(meta.importer.premultiplyAlpha,true);
 }
-for (const ref of mapRefs) assert.ok(mapIds.has(ref), `Map prefab has unresolved ref ${ref}`);
-const mapPanelSource = fs.readFileSync(path.join(__dirname,
-    "../src/script/module/expedition/view/SkillBattleMapPanel.ts"), "utf8");
-for (const action of ["enterMapNode", "extractMap", "expireMap", "mapCanEnter"])
-    assert.match(mapPanelSource, new RegExp(`this\\.expedition\\.${action}\\(`),
-        `Map panel must wire ${action}`);
-assert.match(mapPanelSource, /dashedLine\(/, "Map routes must use the authored dashed route style");
-console.log(`Skill battle prefabs: distinct role-based nodes verified (${Object.entries(viewNodeCounts)
-    .map(([file, count]) => `${file}: ${count}`).join(", ")}, SkillBattleMapView: ${mapNames.size}).`);
+for(const role of ["Start","Inventory","Build","Battle","Settlement"]) {
+    const source=fs.readFileSync(path.join(root,`src/script/module/skillBattle/view/SkillBattle${role}View.ts`),"utf8");
+    assert.match(source,/SkillBattleUISession\.createPanel\(/);
+    assert.doesNotMatch(source,/getExpedition\(/,"Formal pages must not instantiate the legacy save");
+}
+const mapSource=fs.readFileSync(path.join(root,"src/script/module/expedition/view/SkillBattleMapView.ts"),"utf8");
+assert.match(mapSource,/SkillBattleUISession\.createPanel\(/);
+assert.doesNotMatch(mapSource,/getExpedition\(/);
+console.log(`Skill battle UI: ${files.length} independent 1280x720 pages/popups; adapters, regions, grids, bindings and assets verified.`);

@@ -1,0 +1,863 @@
+{
+  "_$ver": 1,
+  "_$id": "page_SkillBattleBuildView",
+  "_$type": "GWidget",
+  "name": "SkillBattleBuildView",
+  "width": 1280,
+  "height": 720,
+  "_$child": [
+    {
+      "_$id": "region_60",
+      "_$type": "GWidget",
+      "name": "adapter",
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 720,
+      "mouseThrough": true,
+      "_$child": [
+        {
+          "_$id": "start_background",
+          "_$type": "GImage",
+          "name": "screenBackground",
+          "width": 1280,
+          "height": 720,
+          "zOrder": -10,
+          "mouseEnabled": false,
+          "autoSize": false,
+          "alpha": 0.36,
+          "src": "ui/texture/common/hub_background.png"
+        },
+        {
+          "_$id": "sbr001res",
+          "_$type": "GWidget",
+          "name": "result",
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720,
+          "visible": false
+        },
+        {
+          "_$id": "region_55",
+          "_$type": "GWidget",
+          "name": "buildHeaderArea",
+          "x": 24,
+          "y": 16,
+          "width": 1232,
+          "height": 166,
+          "mouseThrough": true,
+          "_$child": [
+            {
+              "_$id": "sbr002lbl",
+              "_$type": "GTextField",
+              "name": "overlayBrand",
+              "x": 0,
+              "y": 0,
+              "width": 420,
+              "height": 48,
+              "text": "末法寻仙",
+              "zOrder": 1,
+              "fontSize": 22,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "sbr003lbl",
+              "_$type": "GTextField",
+              "name": "currency",
+              "x": 936,
+              "y": 4,
+              "width": 296,
+              "height": 38,
+              "text": "20:00",
+              "zOrder": 1,
+              "fontSize": 22,
+              "color": "#e3e8de",
+              "align": "right",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "sbr004lbl",
+              "_$type": "GTextField",
+              "name": "resultTitle",
+              "x": 266,
+              "y": 56,
+              "width": 700,
+              "height": 58,
+              "text": "秘境构筑",
+              "zOrder": 1,
+              "fontSize": 32,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "sbr005lbl",
+              "_$type": "GTextField",
+              "name": "resultDetail",
+              "x": 226,
+              "y": 122,
+              "width": 780,
+              "height": 44,
+              "text": "",
+              "zOrder": 1,
+              "fontSize": 22,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            }
+          ]
+        },
+        {
+          "_$id": "region_56",
+          "_$type": "GWidget",
+          "name": "candidateArea",
+          "x": 170,
+          "y": 246,
+          "width": 940,
+          "height": 196,
+          "mouseThrough": true,
+          "_$child": [
+            {
+              "_$id": "sbr038btn",
+              "_$type": "GWidget",
+              "name": "warehouse0",
+              "x": 0,
+              "y": 0,
+              "width": 300,
+              "height": 82,
+              "_$child": [
+                {
+                  "_$id": "sbr037txt",
+                  "_$type": "GTextField",
+                  "name": "warehouse0Text",
+                  "x": 0,
+                  "y": 4,
+                  "width": 300,
+                  "height": 74,
+                  "text": "",
+                  "zOrder": 1,
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr040btn",
+              "_$type": "GWidget",
+              "name": "warehouse1",
+              "x": 320,
+              "y": 0,
+              "width": 300,
+              "height": 82,
+              "_$child": [
+                {
+                  "_$id": "sbr039txt",
+                  "_$type": "GTextField",
+                  "name": "warehouse1Text",
+                  "x": 0,
+                  "y": 4,
+                  "width": 300,
+                  "height": 74,
+                  "text": "",
+                  "zOrder": 1,
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr042btn",
+              "_$type": "GWidget",
+              "name": "warehouse2",
+              "x": 640,
+              "y": 0,
+              "width": 300,
+              "height": 82,
+              "_$child": [
+                {
+                  "_$id": "sbr041txt",
+                  "_$type": "GTextField",
+                  "name": "warehouse2Text",
+                  "x": 0,
+                  "y": 4,
+                  "width": 300,
+                  "height": 74,
+                  "text": "",
+                  "zOrder": 1,
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr044btn",
+              "_$type": "GWidget",
+              "name": "warehouse3",
+              "x": 0,
+              "y": 96,
+              "width": 300,
+              "height": 82,
+              "_$child": [
+                {
+                  "_$id": "sbr043txt",
+                  "_$type": "GTextField",
+                  "name": "warehouse3Text",
+                  "x": 0,
+                  "y": 4,
+                  "width": 300,
+                  "height": 74,
+                  "text": "",
+                  "zOrder": 1,
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr046btn",
+              "_$type": "GWidget",
+              "name": "warehouse4",
+              "x": 320,
+              "y": 96,
+              "width": 300,
+              "height": 82,
+              "_$child": [
+                {
+                  "_$id": "sbr045txt",
+                  "_$type": "GTextField",
+                  "name": "warehouse4Text",
+                  "x": 0,
+                  "y": 4,
+                  "width": 300,
+                  "height": 74,
+                  "text": "",
+                  "zOrder": 1,
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr048btn",
+              "_$type": "GWidget",
+              "name": "warehouse5",
+              "x": 640,
+              "y": 96,
+              "width": 300,
+              "height": 82,
+              "_$child": [
+                {
+                  "_$id": "sbr047txt",
+                  "_$type": "GTextField",
+                  "name": "warehouse5Text",
+                  "x": 0,
+                  "y": 4,
+                  "width": 300,
+                  "height": 74,
+                  "text": "",
+                  "zOrder": 1,
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "_$id": "region_57",
+          "_$type": "GWidget",
+          "name": "buildDetailsArea",
+          "x": 150,
+          "y": 184,
+          "width": 980,
+          "height": 412,
+          "mouseThrough": true,
+          "_$child": [
+            {
+              "_$id": "sbr006lbl",
+              "_$type": "GTextField",
+              "name": "section",
+              "x": 0,
+              "y": 80,
+              "width": 980,
+              "height": 38,
+              "text": "起始借法 · 三选一",
+              "zOrder": 1,
+              "fontSize": 22,
+              "color": "#e3e8de",
+              "align": "left",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "sbr008lbl",
+              "_$type": "GTextField",
+              "name": "choiceTitle",
+              "x": 100,
+              "y": 142,
+              "width": 780,
+              "height": 48,
+              "text": "",
+              "zOrder": 1,
+              "fontSize": 22,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "sbr009lbl",
+              "_$type": "GTextField",
+              "name": "reportBody",
+              "x": 90,
+              "y": 6,
+              "width": 800,
+              "height": 280,
+              "text": "",
+              "zOrder": 1,
+              "fontSize": 22,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "sbr010lbl",
+              "_$type": "GTextField",
+              "name": "page",
+              "x": 420,
+              "y": 346,
+              "width": 140,
+              "height": 38,
+              "text": "",
+              "zOrder": 1,
+              "fontSize": 22,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "sbr012btn",
+              "_$type": "GWidget",
+              "name": "previousPage",
+              "x": 190,
+              "y": 374,
+              "width": 176,
+              "height": 38,
+              "_$child": [
+                {
+                  "_$id": "sbr011txt",
+                  "_$type": "GTextField",
+                  "name": "previousPageText",
+                  "x": 0,
+                  "y": 4,
+                  "width": 176,
+                  "height": 30,
+                  "text": "",
+                  "zOrder": 1,
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr014btn",
+              "_$type": "GWidget",
+              "name": "nextPage",
+              "x": 390,
+              "y": 374,
+              "width": 176,
+              "height": 38,
+              "_$child": [
+                {
+                  "_$id": "sbr013txt",
+                  "_$type": "GTextField",
+                  "name": "nextPageText",
+                  "x": 0,
+                  "y": 4,
+                  "width": 176,
+                  "height": 30,
+                  "text": "",
+                  "zOrder": 1,
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr026btn",
+              "_$type": "GWidget",
+              "name": "summary",
+              "x": 270,
+              "y": 366,
+              "width": 176,
+              "height": 42,
+              "_$child": [
+                {
+                  "_$id": "sbr025txt",
+                  "_$type": "GTextField",
+                  "name": "summaryText",
+                  "x": 0,
+                  "y": 4,
+                  "width": 176,
+                  "height": 34,
+                  "text": "",
+                  "zOrder": 1,
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr028btn",
+              "_$type": "GWidget",
+              "name": "actions",
+              "x": 460,
+              "y": 366,
+              "width": 176,
+              "height": 42,
+              "_$child": [
+                {
+                  "_$id": "sbr027txt",
+                  "_$type": "GTextField",
+                  "name": "actionsText",
+                  "x": 0,
+                  "y": 4,
+                  "width": 176,
+                  "height": 34,
+                  "text": "",
+                  "zOrder": 1,
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr034btn",
+              "_$type": "GWidget",
+              "name": "reportClose",
+              "x": 760,
+              "y": 366,
+              "width": 200,
+              "height": 42,
+              "_$child": [
+                {
+                  "_$id": "sbr033txt",
+                  "_$type": "GTextField",
+                  "name": "reportCloseText",
+                  "x": 0,
+                  "y": 4,
+                  "width": 200,
+                  "height": 34,
+                  "text": "",
+                  "zOrder": 1,
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "_$id": "region_58",
+          "_$type": "GWidget",
+          "name": "buildActionsArea",
+          "x": 170,
+          "y": 600,
+          "width": 940,
+          "height": 100,
+          "mouseThrough": true,
+          "_$child": [
+            {
+              "_$id": "sbr007lbl",
+              "_$type": "GTextField",
+              "name": "overlayMessage",
+              "x": 20,
+              "y": 0,
+              "width": 900,
+              "height": 30,
+              "text": "",
+              "zOrder": 1,
+              "fontSize": 22,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "sbr016btn",
+              "_$type": "GWidget",
+              "name": "newRun",
+              "x": 640,
+              "y": 34,
+              "width": 300,
+              "height": 54,
+              "_$child": [
+                {
+                  "_$id": "sbr015txt",
+                  "_$type": "GTextField",
+                  "name": "newRunText",
+                  "x": 0,
+                  "y": 4,
+                  "width": 300,
+                  "height": 46,
+                  "text": "确认领取",
+                  "zOrder": 1,
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr018btn",
+              "_$type": "GWidget",
+              "name": "reset",
+              "x": 0,
+              "y": 34,
+              "width": 260,
+              "height": 54,
+              "_$child": [
+                {
+                  "_$id": "sbr017txt",
+                  "_$type": "GTextField",
+                  "name": "resetText",
+                  "x": 0,
+                  "y": 4,
+                  "width": 260,
+                  "height": 46,
+                  "text": "放弃本局",
+                  "zOrder": 1,
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr024btn",
+              "_$type": "GWidget",
+              "name": "report",
+              "x": 320,
+              "y": 34,
+              "width": 260,
+              "height": 54,
+              "_$child": [
+                {
+                  "_$id": "sbr023txt",
+                  "_$type": "GTextField",
+                  "name": "reportText",
+                  "x": 0,
+                  "y": 4,
+                  "width": 260,
+                  "height": 46,
+                  "text": "战斗记录",
+                  "zOrder": 1,
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "_$id": "region_59",
+          "_$type": "GWidget",
+          "name": "navigationArea",
+          "x": 24,
+          "y": 78,
+          "width": 128,
+          "height": 48,
+          "mouseThrough": true,
+          "_$child": [
+            {
+              "_$id": "invstart_947",
+              "_$type": "GWidget",
+              "name": "invToggle",
+              "x": 0,
+              "y": 0,
+              "width": 128,
+              "height": 48,
+              "visible": false,
+              "_$child": [
+                {
+                  "_$id": "invstart_946",
+                  "_$type": "GTextField",
+                  "name": "invToggleText",
+                  "x": 4,
+                  "y": 4,
+                  "width": 120,
+                  "height": 40,
+                  "text": "地图",
+                  "fontSize": 18,
+                  "color": "#ecefe7",
+                  "mouseEnabled": false,
+                  "overflow": "shrink"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "relations": [
+        {
+          "_$type": "Relation",
+          "target": {
+            "_$ref": "page_SkillBattleBuildView"
+          },
+          "data": [
+            100,
+            0
+          ]
+        }
+      ]
+    }
+  ],
+  "_$comp": [
+    {
+      "_$type": "3593fc26-337e-42e3-92dc-1b9c2bb8f988",
+      "scriptPath": "../src/script/games/ui/components/ElementMapper.ts",
+      "adapter": {
+        "_$ref": "region_60"
+      },
+      "elements": [
+        {
+          "_$ref": "region_60"
+        },
+        {
+          "_$ref": "start_background"
+        },
+        {
+          "_$ref": "sbr001res"
+        },
+        {
+          "_$ref": "region_55"
+        },
+        {
+          "_$ref": "sbr002lbl"
+        },
+        {
+          "_$ref": "sbr003lbl"
+        },
+        {
+          "_$ref": "sbr004lbl"
+        },
+        {
+          "_$ref": "sbr005lbl"
+        },
+        {
+          "_$ref": "region_56"
+        },
+        {
+          "_$ref": "sbr038btn"
+        },
+        {
+          "_$ref": "sbr037txt"
+        },
+        {
+          "_$ref": "sbr040btn"
+        },
+        {
+          "_$ref": "sbr039txt"
+        },
+        {
+          "_$ref": "sbr042btn"
+        },
+        {
+          "_$ref": "sbr041txt"
+        },
+        {
+          "_$ref": "sbr044btn"
+        },
+        {
+          "_$ref": "sbr043txt"
+        },
+        {
+          "_$ref": "sbr046btn"
+        },
+        {
+          "_$ref": "sbr045txt"
+        },
+        {
+          "_$ref": "sbr048btn"
+        },
+        {
+          "_$ref": "sbr047txt"
+        },
+        {
+          "_$ref": "region_57"
+        },
+        {
+          "_$ref": "sbr006lbl"
+        },
+        {
+          "_$ref": "sbr008lbl"
+        },
+        {
+          "_$ref": "sbr009lbl"
+        },
+        {
+          "_$ref": "sbr010lbl"
+        },
+        {
+          "_$ref": "sbr012btn"
+        },
+        {
+          "_$ref": "sbr011txt"
+        },
+        {
+          "_$ref": "sbr014btn"
+        },
+        {
+          "_$ref": "sbr013txt"
+        },
+        {
+          "_$ref": "sbr026btn"
+        },
+        {
+          "_$ref": "sbr025txt"
+        },
+        {
+          "_$ref": "sbr028btn"
+        },
+        {
+          "_$ref": "sbr027txt"
+        },
+        {
+          "_$ref": "sbr034btn"
+        },
+        {
+          "_$ref": "sbr033txt"
+        },
+        {
+          "_$ref": "region_58"
+        },
+        {
+          "_$ref": "sbr007lbl"
+        },
+        {
+          "_$ref": "sbr016btn"
+        },
+        {
+          "_$ref": "sbr015txt"
+        },
+        {
+          "_$ref": "sbr018btn"
+        },
+        {
+          "_$ref": "sbr017txt"
+        },
+        {
+          "_$ref": "sbr024btn"
+        },
+        {
+          "_$ref": "sbr023txt"
+        },
+        {
+          "_$ref": "region_59"
+        },
+        {
+          "_$ref": "invstart_947"
+        },
+        {
+          "_$ref": "invstart_946"
+        }
+      ],
+      "mapperType": 4
+    }
+  ]
+}

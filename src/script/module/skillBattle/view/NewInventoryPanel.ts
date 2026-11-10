@@ -10,6 +10,8 @@ import type { NewBuildToken } from "../newRules/NewBuildTypes";
 import type { InventoryCommand, InventoryConfig, InventoryItem, InventoryLocation, InventorySpace, InventoryState, InventoryTemplate } from "../newRules/NewInventoryTypes";
 import { NewBuildPanel } from "./NewBuildPanel";
 import { NewInventoryDragController } from "./NewInventoryDragController";
+import { pagePosition, placeInPage, visitRegion } from "./SkillBattleUILayout";
+import type { SkillBattlePage } from "./SkillBattleUILayout";
 
 interface InventorySelection {
     uid: string; rotated: boolean; draft: InventoryCommand | null; token: NewBuildToken | null;
@@ -34,7 +36,6 @@ export type NewInventoryPanelSession = Pick<NewInventorySession, "inventory" | "
 export class NewInventoryPanel extends NewBuildPanel {
     private static readonly AUTO_ROTATE_DELAY = 400;
     private static readonly HOVER_TOLERANCE = 6;
-    protected inventoryMode: "storage" | "build" = "storage";
     private uid = "";
     private rotated = false;
     private draft: InventoryCommand | null = null;
@@ -46,13 +47,15 @@ export class NewInventoryPanel extends NewBuildPanel {
     private visibleItems: InventoryItem[] = [];
     private gridItems: InventoryItem[] = [];
     private dragController: NewInventoryDragController;
+    private presentedRunId = "";
     protected held: HeldInventoryItem | null = null;
     constructor(view: UIBaseView, readonly inventorySession: NewInventoryPanelSession,
-        navigate: (screen: "start" | "battle" | "settlement") => void, screen: "start" | "battle" | "settlement") {
-        super(view,inventorySession,navigate,screen);
+        navigate: (screen: SkillBattlePage) => void, screen: "start" | "battle" | "settlement",
+        page: SkillBattlePage = screen) {
+        super(view,inventorySession,navigate,screen,page);
         const root = view.getElement<Laya.GWidget>("inventoryRoot",false);
         if (screen === "battle") return;
-        if (!root) throw new Error("储物预制未绑定");
+        if (!root) return;
         this.dragController = new NewInventoryDragController(this.root,{
             begin: (key,point) => this.beginDrag(key,point),
             move: point => this.moveDrag(point),
@@ -61,8 +64,7 @@ export class NewInventoryPanel extends NewBuildPanel {
             rotate: () => this.rotateDrag(),
         });
         this.nodes.inventoryRoot = root;
-        for (let i = 0; i < root.numChildren; i++) {
-            const n = root.getChildAt(i) as Laya.GWidget;
+        visitRegion(view, root, n => {
             const bound = view.getElement<Laya.GWidget>(n.name,false);
             if (!bound) throw new Error(`储物节点未绑定：${n.name}`);
             this.nodes[n.name] = bound;
@@ -75,19 +77,27 @@ export class NewInventoryPanel extends NewBuildPanel {
                 if (/^inv(List\d+|Item\d+|Weapon|Container)$/.test(n.name))
                     n.on(Laya.Event.MOUSE_DOWN,this,(event: Laya.Event) => this.dragController.arm(n.name,event));
             }
-        }
+            return false;
+        });
     }
     suspend(): void {
         super.suspend();
         this.dragController?.cancel();
     }
     refresh(): void {
+        if (this.modalOpen || this.resetConfirm || this.overlay) { super.refresh(); return; }
         if (this.nodes) for (const key of Object.keys(this.nodes)) this.nodes[key].visible = false;
         super.refresh();
     }
     openHubScreen(): void {
+        this.resetPresentation();
         super.openHubScreen();
         Laya.timer.loop(250,this,this.updateInventoryClock);
+    }
+    private resetPresentation(): void {
+        const id = this.inventorySession.inventory?.runId || "";
+        if (this.presentedRunId === id) return;
+        this.presentedRunId = id; this.inventoryPage = 0; this.filter = "all"; this.clearSelection();
     }
     private updateInventoryClock(): void {
         if (this.nodes.invClock?.visible && this.inventorySession.inventory?.phase === "active")
@@ -100,22 +110,25 @@ export class NewInventoryPanel extends NewBuildPanel {
                 const config = NewInventoryConfigUtils.read(ConfigUtil.Tables), seed = new Uint32Array(1);
                 window.crypto.getRandomValues(seed);
                 session.prepare(config,NewBuildConfigUtils.profile(config.build),seed[0] || 1);
-                this.inventoryMode = "storage"; this.clearSelection(); return;
+                this.clearSelection(); return;
             }
             if (state.phase === "preparation") {
-                session.inventoryCommand({ type: "enter" }); this.inventoryMode = "build"; this.clearSelection();
+                session.inventoryCommand({ type: "enter" }); this.clearSelection();
+                this.navigate("build");
             } else if (state.flow?.phase === "battle") this.navigate("battle");
-            else if (state.flow?.pending) this.inventoryMode = "build";
+            else if (state.flow?.pending) this.navigate("build");
             else {
                 const target = state.flow!.battles.length;
                 if (target === session.archive!.config.build.encounters.length) this.stage({ type: "extract" });
                 else if (state.node !== target) {
-                    session.inventoryCommand({ type: "visit", node: target }); this.inventoryMode = "storage";
+                    session.inventoryCommand({ type: "visit", node: target });
+                    this.navigate("inventory");
                 } else { session.dispatch({ type: "battle" }); this.navigate("battle"); }
             }
         });
     }
     protected command(key: string): void {
+        if (this.modalOpen) return;
         if (this.held) {
             if (key === "invRotate") this.rotateDrag();
             else if (key === "invCancel") this.dragController.cancel();
@@ -123,13 +136,13 @@ export class NewInventoryPanel extends NewBuildPanel {
         }
         if (this.dragController?.suppressClick()) return;
         if (key === "invToggle") {
-            this.run(() => { this.inventoryMode = this.inventoryMode === "storage" ? "build" : "storage"; this.clearSelection(); }); return;
+            this.run(() => { this.clearSelection(); this.navigate(this.pageRole === "build" ? "inventory" : "build"); }); return;
         }
         if (key.startsWith("inv")) {
             this.run(() => this.inventoryCommand(key)); return;
         }
         if (key === "reset" && this.inventorySession.inventory?.phase === "active") {
-            this.run(() => { this.inventoryMode = "storage"; this.stage({ type: "abandon" }); }); return;
+            this.run(() => { this.stage({ type: "abandon" }); }); return;
         }
         if (this.screen === "battle" || this.overlay) { super.command(key); return; }
         if (key === "resetYes" && this.resetConfirm) {
@@ -228,6 +241,17 @@ export class NewInventoryPanel extends NewBuildPanel {
         this.notice = "";
     }
     private stage(command: InventoryCommand): void {
+        if (command.type === "extract" || command.type === "abandon") {
+            const token = this.inventorySession.token;
+            this.requestConfirmation(command.type === "extract" ? "确认撤离？" : "放弃本局？",
+                command.type === "extract" ? "携带物带回，地面物品损失，本局临时构筑结束。" :
+                    "仅保留归真匣合规物品，装备及其他携带物损失。",
+                () => {
+                    this.inventorySession.inventoryCommand(command,token);
+                    this.navigate("settlement");
+                });
+            return;
+        }
         this.draft = command; this.draftToken = this.inventorySession.token; this.checkDraft();
     }
     private checkDraft(): void {
@@ -259,7 +283,7 @@ export class NewInventoryPanel extends NewBuildPanel {
         return this.inventorySession.inventory;
     }
     protected renderStart(): void {
-        if (this.inventorySession.inventory?.phase === "active" && this.inventoryMode === "build") {
+        if (this.inventorySession.inventory?.phase === "active" && this.pageRole === "build") {
             super.renderStart();
             this.button("invToggle","储物",24,78,128,48);
             // A run must not silently skip the current node's loot panel.
@@ -272,10 +296,13 @@ export class NewInventoryPanel extends NewBuildPanel {
         else this.renderStart();
     }
     protected renderReset(): void {
-        super.renderReset();
-        this.text("resultTitle","清除损坏的储物演练档？",240,190,800,60,30,"#e3c98c");
-        this.text("resultDetail","仅删除阶段 3 演练档，阶段 1、2 及其他应用存档保留。",200,284,880,90,22);
+        this.requestConfirmation("清除损坏的储物演练档？",
+            "仅删除阶段 3 演练档，阶段 1、2 及其他应用存档保留。",
+            () => { this.inventorySession.resetConfirmed(); this.resetConfirm = false; this.navigate("start"); },
+            "确认清除");
     }
+    protected position(node: Laya.GWidget): Laya.Point { return pagePosition(node,this.root); }
+    protected place(node: Laya.GWidget, x: number, y: number): void { placeInPage(node,this.root,x,y); }
     protected label(key: string, text: string, size = 18, color = "#e8edf0"): void {
         const l = this.nodes[key] as Laya.GTextField;
         l.text = text; l.fontSize = size; l.color = color; l.textIns.color = color;
@@ -384,13 +411,16 @@ export class NewInventoryPanel extends NewBuildPanel {
             }
             for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
                 const key = `invCell_${space}_${y * cols + x}`, cell = this.nodes[key];
-                this.control(key,"",editable); cell.pos(startX + x * size,startY + y * size);
+                this.control(key,"",editable); this.place(cell,startX + x * size,startY + y * size);
             }
             for (const item of state.items.filter(i => i.location.space === space)) {
                 const key = `invItem${count++}`, n = this.nodes[key], t = Rules.template(save.config,item);
+                const area = this.root.findChild(space === "bag" ? "bagItemsArea" :
+                    space === "battle" ? "battleItemsArea" : "safeItemsArea") as Laya.GWidget;
+                if (area && n.parent !== area) area.addChild(n);
                 const [w,h] = Rules.dimensions(t,item.location);
                 this.control(key,"",editable,item.uid === this.uid);
-                n.pos(startX + item.location.x! * size,startY + item.location.y! * size); n.size(w * size - 2,h * size - 2);
+                this.place(n,startX + item.location.x! * size,startY + item.location.y! * size); n.size(w * size - 2,h * size - 2);
                 this.qualityFrame(n,t,item.uid === this.uid);
                 this.icon(n,t.icon,n.width - 12,n.height - 12,6,6,!!item.location.rotated);
                 const caption = n.getChildAt(3) as Laya.GTextField;
@@ -406,7 +436,7 @@ export class NewInventoryPanel extends NewBuildPanel {
             if (["battle","safe","bag"].includes(to.space)) {
                 const { size,x,y } = this.gridGeometry(to.space);
                 const item = Rules.item(actual!,this.draft.move.uid), [w,h] = Rules.dimensions(Rules.template(save.config,item),to);
-                const ghost = this.nodes.invGhost; ghost.pos(x + to.x! * size,y + to.y! * size);
+                const ghost = this.nodes.invGhost; this.place(ghost,x + to.x! * size,y + to.y! * size);
                 ghost.size(w * size - 2,h * size - 2); ghost.visible = true;
                 this.qualityLoaded(ghost as Laya.GImage);
             }
@@ -431,9 +461,10 @@ export class NewInventoryPanel extends NewBuildPanel {
         sourcePage.forEach(({item,x,y,rotated},i) => {
             const key = `invList${i}`, t = Rules.template(save.config,item);
             const n = this.nodes[key], origin = this.nodes.invSourceCell0, size = origin.width + 2;
+            const point = this.position(origin);
             this.control(key,"",editable || state.phase === "ended",item.uid === this.uid);
             const [width,height] = Rules.dimensions(t,{ space: "warehouse", rotated });
-            n.pos(origin.x + x * size,origin.y + y * size); n.size(width * size - 2,height * size - 2);
+            this.place(n,point.x + x * size,point.y + y * size); n.size(width * size - 2,height * size - 2);
             this.qualityFrame(n,t,item.uid === this.uid);
             this.icon(n,t.icon,n.width - 12,n.height - 12,6,6,rotated);
             const caption = n.getChildAt(3) as Laya.GTextField;
@@ -522,8 +553,9 @@ export class NewInventoryPanel extends NewBuildPanel {
             error: this.draftError, notice: this.notice,
         };
         this.selectItem(Rules.item(state,item.uid));
-        this.held = { key, uid: item.uid, point, grabX: Math.max(0,Math.min(1,(point.x - n.x) / n.width)),
-            grabY: Math.max(0,Math.min(1,(point.y - n.y) / n.height)), rotated: this.rotated, previous,
+        const origin = this.position(n);
+        this.held = { key, uid: item.uid, point, grabX: Math.max(0,Math.min(1,(point.x - origin.x) / n.width)),
+            grabY: Math.max(0,Math.min(1,(point.y - origin.y) / n.height)), rotated: this.rotated, previous,
             token: this.inventorySession.token,
             target: null, candidate: null, error: "", valid: false, hover: null };
         this.refresh();
@@ -533,12 +565,13 @@ export class NewInventoryPanel extends NewBuildPanel {
         if (space === "warehouse") return this.sourceGeometry();
         const [cols,rows] = Rules.size(this.inventorySession.archive!.config,this.projection()!,space);
         const cell = this.nodes[`invCell_${space}_0`];
-        return { x: cell.x, y: cell.y, size: cell.width + 2, cols, rows };
+        return { ...this.position(cell), size: cell.width + 2, cols, rows };
     }
     private sourceGeometry() {
         const first = this.nodes.invSourceCell0, last = this.nodes.invSourceCell55, size = first.width + 2;
-        return { x: first.x, y: first.y, size, cols: Math.round((last.x - first.x) / size) + 1,
-            rows: Math.round((last.y - first.y) / size) + 1 };
+        const a = this.position(first), b = this.position(last);
+        return { x: a.x, y: a.y, size, cols: Math.round((b.x - a.x) / size) + 1,
+            rows: Math.round((b.y - a.y) / size) + 1 };
     }
     private hitDrag(point: Laya.Point, h: Pick<HeldInventoryItem,"uid" | "rotated" | "grabX" | "grabY"> = this.held!): InventoryDropTarget | null {
         const state = this.projection()!, config = this.inventorySession.archive!.config;
@@ -551,7 +584,8 @@ export class NewInventoryPanel extends NewBuildPanel {
         }
         for (const [space,key] of [["weapon","invWeapon"],["container","invContainer"]] as const) {
             const n = this.nodes[key];
-            if (point.x >= n.x && point.x < n.x + n.width && point.y >= n.y && point.y < n.y + n.height) return { space };
+            const origin = this.position(n);
+            if (point.x >= origin.x && point.x < origin.x + n.width && point.y >= origin.y && point.y < origin.y + n.height) return { space };
         }
         const source = this.sourceGeometry();
         if (point.x >= source.x && point.x < source.x + source.cols * source.size &&
@@ -745,7 +779,7 @@ export class NewInventoryPanel extends NewBuildPanel {
         const [w,height] = Rules.dimensions(t,{ space: "bag", rotated: h.rotated });
         const to = h.target, equipment = to && ["weapon","container"].includes(to.space) ?
             this.nodes[to.space === "weapon" ? "invWeapon" : "invContainer"] : null;
-        const grid = equipment ? { x: equipment.x, y: equipment.y, size: this.nodes.invSourceCell0.width + 2,
+        const grid = equipment ? { ...this.position(equipment), size: this.nodes.invSourceCell0.width + 2,
             cols: 2, rows: to!.space === "weapon" ? 3 : 2 } :
             to && ["battle","safe","bag","warehouse"].includes(to.space) && to.x !== undefined ? this.gridGeometry(to.space) : null;
         const size = grid?.size || this.nodes.invSourceCell0.width + 2;
@@ -758,13 +792,13 @@ export class NewInventoryPanel extends NewBuildPanel {
                 const cx = equipment ? x : to!.x! + x, cy = equipment ? y : to!.y! + y;
                 if (cx < 0 || cy < 0 || cx >= grid.cols || cy >= grid.rows) continue;
                 const cell = this.nodes[`invDragCell${index++}`] as Laya.GImage;
-                cell.pos(grid.x + cx * grid.size,grid.y + cy * grid.size);
+                this.place(cell,grid.x + cx * grid.size,grid.y + cy * grid.size);
                 cell.size(grid.size - 2,grid.size - 2); cell.color = h.valid ? "#76ffad" : "#ff6262"; cell.visible = true;
                 this.qualityLoaded(cell);
             }
         }
         const n = this.nodes.invHeld;
-        n.visible = true; n.pos(h.point.x - h.grabX * w * size,h.point.y - h.grabY * height * size);
+        n.visible = true; this.place(n,h.point.x - h.grabX * w * size,h.point.y - h.grabY * height * size);
         n.size(w * size - 2,height * size - 2);
         this.qualityFrame(n,t,!!h.target,h.valid ? "#76ffad" : "#ff6262");
         this.icon(n,t.icon,n.width - 12,n.height - 12,6,6,h.rotated);
@@ -790,11 +824,13 @@ export class NewInventoryPanel extends NewBuildPanel {
                 this.button(`pouch${index}`,"修补工具\n战外使用",454 + index * 112,540,102,62,false);
             }
             const button = this.buttons[`pouch${index}`], frame = this.elements[`pouchQuality${index}`] as Laya.GImage;
-            frame.pos(button.x + 3,button.y + (button.height - 30) / 2); frame.size(30,30);
+            const point = this.position(button);
+            this.place(frame,point.x + 3,point.y + (button.height - 30) / 2); frame.size(30,30);
             this.qualityImage(frame,t);
             const icon = this.elements[`pouchIcon${index}`] as Laya.GImage;
             icon.autoSize = false; icon.src = t.icon; icon.visible = true;
-            icon.pos(frame.x + 3,frame.y + 3); icon.size(24,24);
+            const framePoint = this.position(frame);
+            this.place(icon,framePoint.x + 3,framePoint.y + 3); icon.size(24,24);
             const label = button.getChildAt(0) as Laya.GTextField;
             label.pos(36,4); label.size(button.width - 40,button.height - 8); this.fit(label,12);
         }

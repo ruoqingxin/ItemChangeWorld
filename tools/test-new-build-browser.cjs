@@ -13,7 +13,8 @@ async function ready(page,screen="start"){
 }
 async function click(page,name,twice=false){
     const point=await page.evaluate(name=>{
-        const b=window.__skillBattlePreview.panel.buttons[name];
+        const v=window.__skillBattlePreview;
+        const b=v.ui.topView?.getElement(name,false)||v.panel.buttons[name];
         if(!b?.visible||!b.mouseEnabled)throw Error(`Disabled/hidden: ${name}`);
         const p=b.localToGlobal(new Laya.Point(b.width/2,b.height/2)),r=document.querySelector("canvas").getBoundingClientRect();
         return{x:r.left+p.x*r.width/Laya.stage.width,y:r.top+p.y*r.height/Laya.stage.height};
@@ -32,11 +33,15 @@ async function capture(page,name){
     assert.ok(stats.channels.slice(0,3).some(c=>c.stdev>8&&c.max>170),`${name} canvas blank`);
     const layout=await page.evaluate(()=>{
         const panel=window.__skillBattlePreview.panel;
-        const rects=Object.entries(panel.buttons).filter(([,b])=>b.visible).map(([name,b])=>({name,x:b.x,y:b.y,w:b.width,h:b.height}));
+        const visible=n=>{for(let a=n;a;a=a.parent)if(!a.visible)return false;return true;};
+        const rects=Object.entries(panel.buttons).filter(([,b])=>visible(b)).map(([name,b])=>{
+            const point=panel.root.globalToLocal(b.localToGlobal(new Laya.Point()));
+            return{name,x:point.x,y:point.y,w:b.width,h:b.height};
+        });
         const overlap=rects.flatMap((a,i)=>rects.slice(i+1).filter(b=>
             Math.min(a.x+a.w,b.x+b.w)>Math.max(a.x,b.x)&&Math.min(a.y+a.h,b.y+b.h)>Math.max(a.y,b.y)).map(b=>`${a.name}/${b.name}`));
         const bounds=rects.filter(r=>r.x<0||r.y<0||r.x+r.w>1280||r.y+r.h>720).map(r=>r.name);
-        const clipped=Object.entries(panel.labels).filter(([,l])=>l.visible&&l.text&&
+        const clipped=Object.entries(panel.labels).filter(([,l])=>visible(l)&&l.text&&
             (l.textIns.textWidth>l.width+2||l.textIns.textHeight>l.height+2)).map(([name,l])=>
                 ({name,w:l.width,h:l.height,tw:l.textIns.textWidth,th:l.textIns.textHeight}));
         return{overlap,bounds,clipped};
@@ -213,8 +218,8 @@ async function main(){
         await corrupt.reload();await ready(corrupt);
         assert.ok(await corrupt.evaluate(()=>window.__skillBattlePreview.trial.error));
         await click(corrupt,"reset");await capture(corrupt,"corrupt-confirm");
-        await click(corrupt,"resetNo");assert.equal(await corrupt.evaluate(k=>localStorage.getItem(k),key),"broken-build");
-        await click(corrupt,"reset");await click(corrupt,"resetYes");
+        await click(corrupt,"dialogCancel");assert.equal(await corrupt.evaluate(k=>localStorage.getItem(k),key),"broken-build");
+        await click(corrupt,"reset");await click(corrupt,"dialogConfirm");
         assert.equal(await corrupt.evaluate(k=>localStorage.getItem(k),key),null);
         assert.deepEqual(corrupt.errors,[]);await corrupt.close();
         console.log("Stage2 browser: real entry/choices/combat/forgo/upgrade/carry/passives/replacement/history/reload; desktop/wide/mobile; initial/combat/reward timeout; corrupt reset, text bounds, control overlaps and canvas pixels passed.");

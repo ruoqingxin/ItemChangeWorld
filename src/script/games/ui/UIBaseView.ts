@@ -479,6 +479,8 @@ export abstract class UIBaseView {
             this._closeAnimationCallback = null;
             try {
                 if (null != this._view) {
+                    // onClose may close an owned popup and reenter fullscreen visibility updates.
+                    this._manualActive = false;
                     this._view.active = false;
                     this._view.visible = false;
                     this._internal_close();
@@ -923,7 +925,7 @@ export abstract class UIBaseView {
         if (!this._view) {
             return;
         }
-        const active = this._manualActive && this._fullscreenActive;
+        const active = (this._opened || this._closeInProgress) && this._manualActive && this._fullscreenActive;
         this._view.active = active;
         this._view.visible = active;
     }

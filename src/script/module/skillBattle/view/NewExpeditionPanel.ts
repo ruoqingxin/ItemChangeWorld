@@ -6,6 +6,8 @@ import { NewExpeditionConfigUtils } from "../newRules/NewExpeditionConfigUtils";
 import { NewExpeditionRules as Rules } from "../newRules/NewExpeditionRules";
 import { NewExpeditionSession } from "../newRules/NewExpeditionSession";
 import { NewInventoryPanel } from "./NewInventoryPanel";
+import { visitRegion } from "./SkillBattleUILayout";
+import type { SkillBattlePage } from "./SkillBattleUILayout";
 
 type MapPoint = { x: number; y: number };
 const MAP_HEIGHT = 430;
@@ -17,30 +19,35 @@ export class NewExpeditionPanel extends NewInventoryPanel {
     private centerMap = true;
     private scroller: Laya.Scroller;
     private expeditionNodes: { [key: string]: Laya.GWidget } = {};
-    private abandonConfirm = false;
-    private extractConfirm = false;
+    private presentedMapRunId = "";
     private renderedRevision = -1;
+    private openingGround = false;
     private pendingPath: number[] | null = null;
     private mapRoutes = new Map<string,MapPoint[]>();
     private movement: { points: MapPoint[]; lengths: number[]; total: number; startedAt: number;
         duration: number; cameraFrom: number; cameraTo: number } | null = null;
     constructor(view: UIBaseView, readonly expedition: NewExpeditionSession,
-        navigate: (s: "start"|"battle"|"settlement") => void, screen: "start"|"battle"|"settlement") {
-        super(view,expedition,s => navigate(s==="settlement" && expedition.inventory?.phase==="active" ? "start" : s),screen);
+        navigate: (s: SkillBattlePage) => void, screen: "start"|"battle"|"settlement",
+        page: SkillBattlePage = screen) {
+        super(view,expedition,s => navigate(s==="settlement" && expedition.inventory?.phase==="active" ? "start" : s),screen,page);
+        for(let i=1;i<=7;i++) {
+            const n=this.nodes[`expLootPage${i}`];
+            if (!n) continue;
+            this.buttons[n.name]=n;
+            n.on(Laya.Event.CLICK,this,()=>this.command(n.name));
+        }
         const root = view.getElement<Laya.GWidget>("expeditionRoot",false);
         if (!root) return;
         this.expeditionNodes.expeditionRoot = root;
-        const bind=(n:Laya.GWidget) => {
+        visitRegion(view,root,n => {
             this.expeditionNodes[n.name]=n;
-            if (n instanceof Laya.GTextField) { this.labels[n.name]=n;return; }
+            if (n instanceof Laya.GTextField) { this.labels[n.name]=n;return false; }
             else if (/^exp(?:Node\d+|Storage|Build|Use|Abandon)$/.test(n.name)) {
                 this.buttons[n.name]=n;
                 n.on(Laya.Event.CLICK,this,() => this.command(n.name));
-                return;
+                return false;
             }
-            for(let i=0;i<n.numChildren;i++) bind(n.getChildAt(i) as Laya.GWidget);
-        };
-        for (let i=0;i<root.numChildren;i++) bind(root.getChildAt(i) as Laya.GWidget);
+        });
         const viewport=this.expeditionNodes.expViewport as Laya.GPanel;
         this.scroller=new Laya.Scroller();
         this.scroller.direction=Laya.ScrollDirection.Horizontal;
@@ -48,17 +55,13 @@ export class NewExpeditionPanel extends NewInventoryPanel {
         this.scroller.touchEffect=Laya.ScrollTouchEffect.On;
         this.scroller.bouncebackEffect=Laya.ScrollBounceBackEffect.Off;
         viewport.scroller=this.scroller;
-        for(let i=1;i<=7;i++) {
-            const n=this.nodes[`expLootPage${i}`];
-            this.buttons[n.name]=n;
-            n.on(Laya.Event.CLICK,this,()=>this.command(n.name));
-        }
     }
     openHubScreen(): void { super.openHubScreen(); Laya.timer.loop(50,this,this.searchTick); }
     openSettlementScreen(): void { super.openSettlementScreen(); Laya.timer.loop(50,this,this.searchTick); }
     openEncounter(): void { super.openEncounter(); Laya.timer.loop(50,this,this.searchTick); }
     suspend(): void {
-        this.run(() => this.expedition.pauseSearch(),false);
+        if (!this.openingGround) this.run(() => this.expedition.pauseSearch(),false);
+        this.openingGround=false;
         if(this.movement)this.scroller.posX=this.movement.cameraTo;
         this.movement=null;this.pendingPath=null;
         super.suspend();
@@ -74,6 +77,7 @@ export class NewExpeditionPanel extends NewInventoryPanel {
         },false);
     }
     refresh(): void {
+        if (this.modalOpen || this.resetConfirm || this.overlay) { super.refresh(); return; }
         for (const n of Object.values(this.expeditionNodes || {})) n.visible=false;
         super.refresh();
         const s=this.expedition.inventory,warning=s?.phase==="active" ?
@@ -94,16 +98,18 @@ export class NewExpeditionPanel extends NewInventoryPanel {
                 const c=NewExpeditionConfigUtils.read(ConfigUtil.Tables), seed=new Uint32Array(1);
                 crypto.getRandomValues(seed);
                 this.expedition.prepare(c,NewBuildConfigUtils.profile(c.build),seed[0]||1);
-                this.inventoryMode="storage"; this.mapOpen=false; this.centerMap=true;this.inventoryPage=0;
+                this.mapOpen=false; this.centerMap=true;this.inventoryPage=0;
                 this.selectedNode=null;
                 if (this.screen==="settlement") this.navigate("start");
             } else if (s.phase==="preparation") {
-                this.expedition.inventoryCommand({type:"enter"}); this.inventoryMode="build"; this.mapOpen=false;
+                this.expedition.inventoryCommand({type:"enter"}); this.mapOpen=false;
+                this.navigate("build");
             } else if (s.flow?.phase==="battle") this.navigate("battle");
-            else { this.mapOpen=true; this.inventoryMode=s.flow?.pending ? "build" : "storage"; }
+            else this.navigate(s.flow?.pending ? "build" : "map");
         });
     }
     protected command(key: string): void {
+        if (this.modalOpen) return;
         if(this.movement && /^(?:exp(?:Node|Use|Storage|Build)|invToggle|invPrimary)/.test(key))return;
         if (this.held && /^expLootPage/.test(key)) return;
         if (/^inv(?:List\d+|Item\d+|Use|Drop|Extract|Abandon)$/.test(key))
@@ -117,10 +123,10 @@ export class NewExpeditionPanel extends NewInventoryPanel {
         }
         if (["invNodePrev","invNodeNext"].includes(key)) return;
         if (key==="invToggle") {
-            this.run(() => { this.expedition.pauseSearch(); this.mapOpen=true; }); return;
+            this.run(() => { this.expedition.pauseSearch(); this.navigate("map"); }); return;
         }
         if (key==="invPrimary" && this.expedition.inventory?.phase==="active" && !this.expedition.flow?.pending) {
-            this.run(() => { this.expedition.pauseSearch(); this.mapOpen=true; }); return;
+            this.run(() => { this.expedition.pauseSearch(); this.navigate("map"); }); return;
         }
         if (key.startsWith("exp")) {
             this.run(() => {
@@ -131,29 +137,26 @@ export class NewExpeditionPanel extends NewInventoryPanel {
                     this.expedition.pauseSearch();this.inventoryPage=+page[1]-1;return;
                 }
                 if (key==="expStorage") { this.openGround(); return; }
-                if (key==="expBuild") { this.mapOpen=false; this.inventoryMode="build"; return; }
+                if (key==="expBuild") { this.navigate("build"); return; }
                 if (key==="expAbandon") {
-                    if (this.extractConfirm) { this.extractConfirm=false;return; }
-                    if (this.abandonConfirm) {
-                        this.expedition.mapCommand({type:"abandon"}); this.navigate("settlement");
-                    } else { this.abandonConfirm=true; this.extractConfirm=false; }
+                    this.requestConfirmation("放弃本局？","仅保留归真匣合规物品，装备及其他携带物损失。",
+                        () => { this.expedition.mapCommand({type:"abandon"}); this.navigate("settlement"); });
                     return;
                 }
                 if (key==="expUse") {
                     const c=this.expedition.archive!.config, id=s.node,n=Rules.node(c,id);
-                    if (this.abandonConfirm || this.extractConfirm) {
-                        if (this.extractConfirm) {
-                            this.expedition.mapCommand({type:"extract"}); this.navigate("settlement");
-                        }
-                        this.abandonConfirm=false; this.extractConfirm=false; return;
-                    }
                     if(n.enemy&&!s.map.cleared.includes(id)) {
                         this.expedition.mapCommand({type:"fight"});this.navigate("battle");return;
                     }
                     if(s.map.used.includes(id))return;
-                    if (n.kind==="extract") { this.extractConfirm=true; return; }
+                    if (n.kind==="extract") {
+                        this.requestConfirmation("确认安全撤离？","携带物带回，地面物品损失，本局临时构筑结束。",
+                            () => { this.expedition.mapCommand({type:"extract"}); this.navigate("settlement"); });
+                        return;
+                    }
                     if (n.kind==="borrow" || n.kind==="insight") {
-                        this.expedition.mapCommand({type:n.kind}); this.mapOpen=false; this.inventoryMode="build";
+                        this.expedition.mapCommand({type:n.kind}); this.mapOpen=false;
+                        this.navigate("build");
                     } else if (n.kind==="recovery") this.expedition.mapCommand({type:"recover"});
                     else if(Rules.source(this.expedition.inventory!))this.openGround(true);
                     return;
@@ -161,7 +164,6 @@ export class NewExpeditionPanel extends NewInventoryPanel {
                 const target=/^expNode(\d+)$/.exec(key);
                 if (target) {
                     if (this.scroller.isDragged) return;
-                    this.abandonConfirm=false; this.extractConfirm=false;
                     const id=+target[1];
                     const path=Rules.travelPaths(this.expedition.archive!.config,s).get(id);
                     if(!path)return;
@@ -171,11 +173,15 @@ export class NewExpeditionPanel extends NewInventoryPanel {
                 }
             }); return;
         }
+        const pending = this.expedition.flow?.pending;
         super.command(key);
+        if (this.opened && pending && !this.expedition.flow?.pending) this.navigate("map");
     }
     private openGround(search=false): void {
         if(search)this.expedition.openSource();
-        this.mapOpen=false;this.inventoryMode="storage";
+        this.mapOpen=false;
+        this.openingGround=true;
+        this.navigate("inventory");
     }
     protected beginDrag(key: string, point: Laya.Point): boolean {
         try { this.expedition.pauseSearch(); }
@@ -184,18 +190,20 @@ export class NewExpeditionPanel extends NewInventoryPanel {
     }
     protected renderStart(): void {
         const s=this.expedition.inventory;
-        if (s?.phase==="active" && s.flow?.phase!=="battle" && !s.flow?.pending && this.mapOpen) {
+        this.mapOpen = this.pageRole === "map";
+        if (s?.phase==="active" && this.pageRole === "map") {
             this.renderMap(); return;
         }
-        if (s?.flow?.pending) this.inventoryMode="build";
         if (s?.phase==="active") this.filter="all";
         super.renderStart();
         if (s?.phase==="active" && this.labels.resultTitle?.text==="剑土双道试炼")
             this.labels.resultTitle.text="秘境构筑";
         if (s?.flow?.pending && this.buttons.invToggle) this.buttons.invToggle.visible=false;
         if (this.nodes?.inventoryRoot?.visible) {
-            this.label("invTitle","末法寻仙 · 秘境行囊",26,"#e3c98c");
-            this.control("invPrimary",!s || s.phase==="ended" ? "建立探索测试库存" : s.phase==="preparation" ? "入境" :
+            this.label("invTitle",this.pageRole==="start" ? "末法寻仙 · 行前整备" : "末法寻仙 · 秘境行囊",26,"#e3c98c");
+            this.label("invSourceTitle",s?.phase==="active" ? "当前地面" : "仓库",20,"#e3c98c");
+            if (!s) this.label("invClock","行前整备",22);
+            this.control("invPrimary",!s || s.phase==="ended" ? "开始整备" : s.phase==="preparation" ? "入境" :
                 s.flow?.pending ? "领取借法" : "地图",!this.expedition.error);
             for (const key of ["invNodePrev","invNodeNext"]) this.nodes[key].visible=false;
             if (s?.phase==="active") {
@@ -208,12 +216,18 @@ export class NewExpeditionPanel extends NewInventoryPanel {
                     this.control("invReveal",this.expedition.searching ? "暂停搜索" : box.opened ? "继续搜索" : "搜索",!s.flow?.pending&&!this.held);
                 if (box && box.revealed<box.entries.length && this.inventoryPage===0) {
                     const items=Object.entries(this.buttons).filter(([key,n])=>/^invList\d+$/.test(key)&&n.visible).map(([,n])=>n);
-                    const cell=Array.from({length:56},(_,i)=>this.nodes[`invSourceCell${i}`]).find(cell=>
-                        items.every(n=>cell.x>=n.x+n.width||cell.x+cell.width<=n.x||cell.y>=n.y+n.height||cell.y+cell.height<=n.y));
+                    const cell=Array.from({length:56},(_,i)=>this.nodes[`invSourceCell${i}`]).find(cell=> {
+                        const a=this.position(cell);
+                        return items.every(n=> {
+                            const b=this.position(n);
+                            return a.x>=b.x+n.width||a.x+cell.width<=b.x||a.y>=b.y+n.height||a.y+cell.height<=b.y;
+                        });
+                    });
                     if(cell) {
+                        const point=this.position(cell);
                         this.nodes.expUnknown.visible=true;
-                        this.nodes.expUnknown.pos(cell.x+(cell.width-28)/2,cell.y+(cell.height-28)/2);
-                        this.nodes.expSearchSpinner.pos(cell.x+(cell.width-44)/2,cell.y+(cell.height-44)/2);
+                        this.place(this.nodes.expUnknown,point.x+(cell.width-28)/2,point.y+(cell.height-28)/2);
+                        this.place(this.nodes.expSearchSpinner,point.x+(cell.width-44)/2,point.y+(cell.height-44)/2);
                     }
                     this.nodes.invSourceTitle.width=380;
                     this.renderSearchSpinner();
@@ -221,7 +235,7 @@ export class NewExpeditionPanel extends NewInventoryPanel {
                 this.nodes.invExtract.visible=n.kind==="extract" && !s.flow?.pending;
                 for(const key of ["invAll","invMedicine","invMaterials","invEquipment","invPrev","invNext","invPage"])
                     this.nodes[key].visible=false;
-                this.nodes.invReveal.pos(804,112);this.nodes.invReveal.size(180,30);
+                this.place(this.nodes.invReveal,804,112);this.nodes.invReveal.size(180,30);
                 for(let i=1;i<=7;i++) this.button(`expLootPage${i}`,String(i),
                     800+(i-1)*64,550,58,38,!this.held,this.inventoryPage===i-1);
             }
@@ -234,6 +248,10 @@ export class NewExpeditionPanel extends NewInventoryPanel {
                 const l=this.buttons.newRun.getChildAt(0) as Laya.GTextField;
                 if (l.text==="进入下一战" || l.text==="结束演练") l.text="返回地图";
             }
+        }
+        if (this.pageRole==="build") {
+            const reset=this.buttons.reset?.getChildAt(0) as Laya.GTextField;
+            if(reset)reset.text="放弃本局";
         }
     }
     protected renderSettlement(): void {
@@ -252,14 +270,16 @@ export class NewExpeditionPanel extends NewInventoryPanel {
         this.labels.brand.text="末法寻仙 · 秘境斗法";
     }
     protected renderReset(): void {
-        super.renderReset();
-        this.labels.resultTitle.text="清除本阶段探索档？";
-        this.labels.resultDetail.text="仅清除阶段 4 当前档，不删除其他应用数据。";
+        this.requestConfirmation("重建当前探索档？","仅重建阶段 4 当前档，不删除其他应用数据。",
+            () => { this.expedition.resetConfirmed(); this.resetConfirm=false; this.navigate("start"); },
+            "确认重建");
     }
     protected button(key: string, value: string, x: number, y: number, w: number, h=54, enabled=true, selected=false): void {
         if (!key.startsWith("exp")) { super.button(key,value,x,y,w,h,enabled,selected); return; }
         const n=this.buttons[key],label=n.getChildAt(1) as Laya.GTextField;
-        n.visible=true;n.pos(x,y);n.size(w,h);n.mouseEnabled=enabled;n.alpha=enabled||selected?1:0.55;
+        n.visible=true;
+        if (/^expNode\d+$/.test(key)) n.pos(x,y); else this.place(n,x,y);
+        n.size(w,h);n.mouseEnabled=enabled;n.alpha=enabled||selected?1:0.55;
         const skin=n.getChildAt(0) as Laya.GImage;skin.size(w,h);
         label.text=value;label.pos(4,2);label.size(w-8,h-4);label.fontSize=18;
         label.color=selected?"#ffd879":"#e8edf0";label.textIns.color=label.color;
@@ -282,6 +302,9 @@ export class NewExpeditionPanel extends NewInventoryPanel {
     private renderMap(): void {
         this.backdrop();
         const c=this.expedition.archive!.config,s=this.expedition.inventory!,current=Rules.node(c,s.node);
+        if(this.presentedMapRunId!==s.runId) {
+            this.presentedMapRunId=s.runId;this.selectedNode=null;this.centerMap=true;
+        }
         this.expeditionNodes.expeditionRoot.visible=true;
         this.text("expTitle","末法寻仙 · 忆境",32,14,620,42,26,"#e3c98c");
         this.text("expClock",this.timeText(),1080,16,168,40,22);
@@ -341,20 +364,18 @@ export class NewExpeditionPanel extends NewInventoryPanel {
         this.scroller.touchEffect=this.movement?Laya.ScrollTouchEffect.Off:Laya.ScrollTouchEffect.On;
         this.scroller.mouseWheelDisabled=!!this.movement;
         const recovered=Rules.recovery(c,s);
-        this.text("expStatus",this.extractConfirm?"确认撤离：携带物带回，地面物品损失。":
-            this.abandonConfirm?"确认放弃：仅保留归真匣，装备及其他携带物损失。":`${current.name}${
+        this.text("expStatus",`${current.name}${
                 current.kind==="recovery"?` · 可恢复生命 ${Core.format(recovered.hp)} / 灵力 ${Core.format(recovered.mp)}`:""}`,
             180,548,920,42,20,"#d4dfda");
         this.text("expNotice",this.notice || (s.map.warning===300000?"剩余时间不足五分钟":s.map.warning===600000?"剩余时间不足十分钟":""),
             32,592,1216,34,18,"#efa797");
         this.button("expStorage","行囊",130,640,180,48);
         this.button("expBuild","构筑",332,640,180,48);
-        if(!this.movement && (this.selectedNode!==null || s.node!==1 || this.extractConfirm || this.abandonConfirm)) {
+        if(!this.movement && (this.selectedNode!==null || s.node!==1)) {
             const n=current,used=s.map.used.includes(n.id);
             const source=s.map.sources.find(box=>box.node===n.id);
             const enemy=n.enemy&&!s.map.cleared.includes(n.id);
-            const action=this.extractConfirm?"确认撤离":this.abandonConfirm?"取消放弃":
-                used?"已使用":enemy?"开战":
+            const action=used?"已使用":enemy?"开战":
                 source||n.kind==="search"?"搜索":n.kind==="extract"?"安全撤离":n.kind==="recovery"?"休息":
                 n.kind==="borrow"?"借法":n.kind==="insight"?"悟道":"已在此处";
             const title=enemy?({normal:"普通敌人",elite:"精英敌人",boss:"首领"})[n.kind]:
@@ -365,15 +386,14 @@ export class NewExpeditionPanel extends NewInventoryPanel {
             contextIcon.visible=true;
             this.text("expContextTitle",title,1012,316,224,56,22,"#e3c98c");
             this.labels.expContextTitle.align="center";this.labels.expContextTitle.valign="middle";
-            this.button("expUse",action,1020,394,208,54,this.abandonConfirm||this.extractConfirm||
-                reach.has(n.id)&&!used&&(
+            this.button("expUse",action,1020,394,208,54,reach.has(n.id)&&!used&&(
                     (n.kind!=="recovery"||!!recovered.hp||!!recovered.mp)&&
                     (!!source||!["start","transit"].includes(n.kind))));
             this.buttons.expUse.getChildAt(0).visible=false;
             this.buttons.expUse.graphics.clear();
             this.buttons.expUse.graphics.drawRoundRect(0,0,208,54,6,6,6,6,"#66532e","#c7b279",2);
         }
-        this.button("expAbandon",this.extractConfirm?"取消撤离":this.abandonConfirm?"确认放弃":"放弃本局",1000,640,148,48);
+        this.button("expAbandon","放弃本局",1000,640,148,48);
     }
     private beginMovement(path: number[], points: Map<number,MapPoint>): void {
         const route: MapPoint[]=[points.get(path[0])!];

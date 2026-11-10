@@ -1,12 +1,8 @@
 import { ConfigLoader, ConfigUtil } from "../src/script/config/ConfigUtil";
 import { UIManager } from "../src/script/games/ui/UIManager";
-import { SkillBattleStartView } from "../src/script/module/skillBattle/view/SkillBattleStartView";
-import { SkillBattleBattleView } from "../src/script/module/skillBattle/view/SkillBattleBattleView";
-import { SkillBattleSettlementView } from "../src/script/module/skillBattle/view/SkillBattleSettlementView";
 import { SkillBattleUISession } from "../src/script/module/skillBattle/view/SkillBattleUISession";
-import { currentSkillBattleView, openSkillBattleScreen } from "../src/script/module/skillBattle/view/SkillBattleUINavigation";
+import { closeSkillBattleScreens, currentSkillBattleView, openSkillBattleScreen } from "../src/script/module/skillBattle/view/SkillBattleUINavigation";
 import { SkillBattleManager } from "../src/script/module/skillBattle/manager/SkillBattleManager";
-import { SkillBattleMapView } from "../src/script/module/expedition/view/SkillBattleMapView";
 
 async function main(): Promise<void> {
     Laya.PlayerConfig.UI = { alwaysIncludeDefaultSkin: false } as any;
@@ -35,12 +31,7 @@ async function main(): Promise<void> {
         manager: SkillBattleManager.ins(), trial, ui: UIManager.ins(),
         get view() { return currentSkillBattleView || initialView; },
         get panel() { return ((currentSkillBattleView || initialView) as any).panel; },
-        close: () => {
-            UIManager.ins().closeForm(SkillBattleStartView);
-            UIManager.ins().closeForm(SkillBattleBattleView);
-            UIManager.ins().closeForm(SkillBattleMapView);
-            UIManager.ins().closeForm(SkillBattleSettlementView);
-        },
+        close: () => closeSkillBattleScreens(),
         reopen: () => {
             openSkillBattleScreen(trial.screen);
         },

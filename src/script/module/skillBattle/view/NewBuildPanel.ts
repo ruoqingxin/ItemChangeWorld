@@ -6,6 +6,7 @@ import { NewBuildConfigUtils } from "../newRules/NewBuildConfigUtils";
 import { NewBuildRules } from "../newRules/NewBuildRules";
 import { NewBuildSession } from "../newRules/NewBuildSession";
 import { NewBattlePanel } from "./NewBattlePanel";
+import type { SkillBattlePage } from "./SkillBattleUILayout";
 
 const f = (n: number) => Core.format(n);
 export type NewBuildPanelSession = Pick<NewBuildSession, "snapshot" | "flow" | "state" | "record" |
@@ -14,18 +15,18 @@ export type NewBuildPanelSession = Pick<NewBuildSession, "snapshot" | "flow" | "
         dispatch(...args: Parameters<NewBuildSession["dispatch"]>): unknown;
     };
 
-/** Out-of-battle construction uses the existing start prefab, not a second UI framework. */
+/** Construction projection for the independently managed build page. */
 export class NewBuildPanel extends NewBattlePanel {
     private chosen = 0;
     private replaceId: number | undefined;
     private confirmForgo = false;
     private fixture = false;
-    private tab: "build" | "log" = "build";
     private page = 0;
     private upgradeId = 0;
     constructor(view: UIBaseView, readonly flowSession: NewBuildPanelSession,
-        navigate: (screen: "start" | "battle" | "settlement") => void, screen: "start" | "battle" | "settlement") {
-        super(view, flowSession, NewBattleConfigUtils.defaults(), navigate, screen);
+        navigate: (screen: SkillBattlePage) => void, screen: "start" | "battle" | "settlement",
+        page: SkillBattlePage = screen) {
+        super(view, flowSession, NewBattleConfigUtils.defaults(), navigate, screen, page);
     }
     startRun(): void {
         this.run(() => {
@@ -44,6 +45,7 @@ export class NewBuildPanel extends NewBattlePanel {
         });
     }
     protected command(key: string): void {
+        if (this.modalOpen) return;
         if (this.screen === "battle" || this.overlay) { super.command(key); return; }
         this.run(() => {
             if (this.resetConfirm) {
@@ -56,10 +58,10 @@ export class NewBuildPanel extends NewBattlePanel {
             }
             const flow = this.flowSession.flow, pending = flow?.pending;
             if (key === "reset") { this.resetConfirm = true; return; }
-            if (key === "report") { this.tab = this.tab === "log" ? "build" : "log"; this.page = 0; return; }
+            if (key === "report") { this.openReport(); return; }
             if (key === "reportClose") {
                 this.chosen = 0; this.replaceId = undefined; this.upgradeId = 0;
-                this.confirmForgo = false; this.tab = "build"; return;
+                this.confirmForgo = false; return;
             }
             if (key === "previousPage") { this.page = Math.max(0, this.page - 1); return; }
             if (key === "nextPage") { this.page++; return; }
@@ -105,8 +107,7 @@ export class NewBuildPanel extends NewBattlePanel {
         this.text("overlayMessage", this.flowSession.error || this.notice, 170, 600, 940, 30, 16, "#efa797");
         const active = !!flow && flow.phase !== "ended";
         this.button("reset", active ? "放弃本次试炼" : "清除双道试炼档", 170, 634, 260);
-        this.button("report", this.tab === "log" ? "返回构筑" : "战斗记录", 490, 634, 260, 54, !!flow?.battles.length);
-        if (this.tab === "log" && flow) { this.renderHistory(); return; }
+        this.button("report", "战斗记录", 490, 634, 260, 54, !!flow?.battles.length);
         if (!flow || flow.phase === "ended") {
             const reason = flow?.endReason;
             const title = !flow ? "尚未入境" : reason === "complete" ? "流程演练完成" :
@@ -183,12 +184,7 @@ export class NewBuildPanel extends NewBattlePanel {
             flow.battles.length === save!.config.encounters.length ? "结束演练" : "进入下一战", 810, 634, 300);
     }
     protected renderReset(): void {
-        this.backdrop();
-        this.text("resultTitle", "清除双道试炼档？", 240, 190, 800, 60, 30, "#e3c98c");
-        this.text("resultDetail", "本次双道进度将被清除，其他存档保留。", 200, 284, 880, 90, 22);
-        this.text("overlayMessage", this.notice, 170, 420, 940, 70, 18, "#efa797");
-        this.button("resetYes", "确认清除", 350, 540, 250);
-        this.button("resetNo", "取消", 680, 540, 250);
+        super.renderReset();
     }
     private skillDescription(id: number, level: number): string {
         const save = this.flowSession.snapshot!, setup = Core.clone(save.config.setup);
@@ -223,19 +219,5 @@ export class NewBuildPanel extends NewBattlePanel {
             huming:"每场首次主行动开始血量不高于 30% 时得盾 100% 防御", yaoyin:"每场首次有效战斗用药得盾 50% 防御",
         };
         return `${row.name} · ${text[row.kind]}`;
-    }
-    private renderHistory(): void {
-        const lines: string[] = [];
-        for (const [i, record] of this.flowSession.records.entries()) {
-            lines.push(`第 ${i + 1} 场 · ${record.setup.enemy.name} · ${record.state.phase === "victory" ? "胜利" : record.state.phase === "defeat" ? "失败" : "进行中"}`);
-            lines.push(...record.setup.build.actives.map(a =>
-                `${record.setup.skills.find(s => s.id === a.skillId)!.name} +${a.level}`));
-            lines.push(`生命 ${f(record.state.player.hp)} · 灵力 ${f(record.state.player.mp)} · 主行动 ${record.state.mainActions}`);
-        }
-        const pages = Math.max(1, Math.ceil(lines.length / 9)); this.page = Math.min(this.page, pages - 1);
-        this.text("reportBody", lines.slice(this.page * 9, this.page * 9 + 9).join("\n"), 170, 200, 940, 340, 22);
-        this.button("previousPage", "<", 650, 558, 90, 38, this.page > 0);
-        this.button("nextPage", ">", 760, 558, 90, 38, this.page + 1 < pages);
-        this.button("reportClose", "返回", 910, 558, 200, 38);
     }
 }

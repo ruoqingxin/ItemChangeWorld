@@ -1,0 +1,302 @@
+{
+  "_$ver": 1,
+  "_$id": "page_SkillBattleTrialResultView",
+  "_$type": "GWidget",
+  "name": "SkillBattleTrialResultView",
+  "width": 1280,
+  "height": 720,
+  "_$child": [
+    {
+      "_$id": "region_67",
+      "_$type": "GWidget",
+      "name": "adapter",
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 720,
+      "mouseThrough": true,
+      "_$child": [
+        {
+          "_$id": "start_background",
+          "_$type": "GImage",
+          "name": "screenBackground",
+          "width": 1280,
+          "height": 720,
+          "zOrder": -10,
+          "mouseEnabled": false,
+          "autoSize": false,
+          "alpha": 0.36,
+          "src": "ui/texture/common/hub_background.png"
+        },
+        {
+          "_$id": "region_66",
+          "_$type": "GWidget",
+          "name": "trialResultArea",
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720,
+          "mouseThrough": true,
+          "_$child": [
+            {
+              "_$id": "sbr001res",
+              "_$type": "GWidget",
+              "name": "result",
+              "x": 0,
+              "y": 0,
+              "width": 1280,
+              "height": 720,
+              "visible": false
+            },
+            {
+              "_$id": "sbr002lbl",
+              "_$type": "GTextField",
+              "name": "overlayBrand",
+              "x": 24,
+              "y": 16,
+              "width": 420,
+              "height": 48,
+              "text": "末法寻仙",
+              "zOrder": 1,
+              "fontSize": 22,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "sbr004lbl",
+              "_$type": "GTextField",
+              "name": "resultTitle",
+              "x": 290,
+              "y": 72,
+              "width": 700,
+              "height": 58,
+              "text": "秘境构筑",
+              "zOrder": 1,
+              "fontSize": 32,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "sbr005lbl",
+              "_$type": "GTextField",
+              "name": "resultDetail",
+              "x": 250,
+              "y": 136,
+              "width": 780,
+              "height": 112,
+              "text": "",
+              "zOrder": 1,
+              "fontSize": 22,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "sbr006lbl",
+              "_$type": "GTextField",
+              "name": "section",
+              "x": 150,
+              "y": 264,
+              "width": 980,
+              "height": 38,
+              "text": "起始借法 · 三选一",
+              "zOrder": 1,
+              "fontSize": 22,
+              "color": "#e3e8de",
+              "align": "left",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "sbr007lbl",
+              "_$type": "GTextField",
+              "name": "overlayMessage",
+              "x": 190,
+              "y": 490,
+              "width": 900,
+              "height": 40,
+              "text": "",
+              "zOrder": 1,
+              "fontSize": 22,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "sbr018btn",
+              "_$type": "GWidget",
+              "name": "lootClose",
+              "x": 1000,
+              "y": 614,
+              "width": 176,
+              "height": 54,
+              "_$child": [
+                {
+                  "_$id": "sbr017txt",
+                  "_$type": "GTextField",
+                  "name": "lootCloseText",
+                  "x": 0,
+                  "y": 4,
+                  "width": 176,
+                  "height": 46,
+                  "text": "",
+                  "zOrder": 1,
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr020btn",
+              "_$type": "GWidget",
+              "name": "hub",
+              "x": 800,
+              "y": 614,
+              "width": 176,
+              "height": 54,
+              "_$child": [
+                {
+                  "_$id": "sbr019txt",
+                  "_$type": "GTextField",
+                  "name": "hubText",
+                  "x": 0,
+                  "y": 4,
+                  "width": 176,
+                  "height": 46,
+                  "text": "",
+                  "zOrder": 1,
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr022btn",
+              "_$type": "GWidget",
+              "name": "report",
+              "x": 80,
+              "y": 560,
+              "width": 176,
+              "height": 54,
+              "_$child": [
+                {
+                  "_$id": "sbr021txt",
+                  "_$type": "GTextField",
+                  "name": "reportText",
+                  "x": 0,
+                  "y": 4,
+                  "width": 176,
+                  "height": 46,
+                  "text": "战斗记录",
+                  "zOrder": 1,
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "relations": [
+        {
+          "_$type": "Relation",
+          "target": {
+            "_$ref": "page_SkillBattleTrialResultView"
+          },
+          "data": [
+            100,
+            0
+          ]
+        }
+      ]
+    }
+  ],
+  "_$comp": [
+    {
+      "_$type": "3593fc26-337e-42e3-92dc-1b9c2bb8f988",
+      "scriptPath": "../src/script/games/ui/components/ElementMapper.ts",
+      "adapter": {
+        "_$ref": "region_67"
+      },
+      "elements": [
+        {
+          "_$ref": "region_67"
+        },
+        {
+          "_$ref": "start_background"
+        },
+        {
+          "_$ref": "region_66"
+        },
+        {
+          "_$ref": "sbr001res"
+        },
+        {
+          "_$ref": "sbr002lbl"
+        },
+        {
+          "_$ref": "sbr004lbl"
+        },
+        {
+          "_$ref": "sbr005lbl"
+        },
+        {
+          "_$ref": "sbr006lbl"
+        },
+        {
+          "_$ref": "sbr007lbl"
+        },
+        {
+          "_$ref": "sbr018btn"
+        },
+        {
+          "_$ref": "sbr017txt"
+        },
+        {
+          "_$ref": "sbr020btn"
+        },
+        {
+          "_$ref": "sbr019txt"
+        },
+        {
+          "_$ref": "sbr022btn"
+        },
+        {
+          "_$ref": "sbr021txt"
+        }
+      ],
+      "mapperType": 4
+    }
+  ]
+}

@@ -5,14 +5,1058 @@
   "name": "SkillBattleBattleView",
   "width": 1280,
   "height": 720,
+  "_$child": [
+    {
+      "_$id": "region_76",
+      "_$type": "GWidget",
+      "name": "adapter",
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 720,
+      "mouseThrough": true,
+      "_$child": [
+        {
+          "_$id": "battle_background",
+          "_$type": "GImage",
+          "name": "screenBackground",
+          "width": 1280,
+          "height": 720,
+          "zOrder": -10,
+          "mouseEnabled": false,
+          "autoSize": false,
+          "alpha": 0.36,
+          "src": "ui/texture/skillBattle/battle_background.png"
+        },
+        {
+          "_$id": "region_68",
+          "_$type": "GWidget",
+          "name": "battleHeaderArea",
+          "x": 24,
+          "y": 12,
+          "width": 980,
+          "height": 52,
+          "mouseThrough": true,
+          "_$child": [
+            {
+              "_$id": "sbr002lbl",
+              "_$type": "GTextField",
+              "name": "brand",
+              "x": 0,
+              "y": 0,
+              "width": 380,
+              "height": 52,
+              "text": "末法寻仙 · 秘境斗法",
+              "zOrder": 1,
+              "fontSize": 32,
+              "color": "#e3e8de",
+              "align": "left",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "sbr003lbl",
+              "_$type": "GTextField",
+              "name": "round",
+              "x": 396,
+              "y": 4,
+              "width": 250,
+              "height": 46,
+              "text": "第 1 回合",
+              "zOrder": 1,
+              "fontSize": 22,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "sbr004lbl",
+              "_$type": "GTextField",
+              "name": "upgrades",
+              "x": 726,
+              "y": 4,
+              "width": 250,
+              "height": 46,
+              "text": "20:00",
+              "zOrder": 1,
+              "fontSize": 22,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            }
+          ]
+        },
+        {
+          "_$id": "region_69",
+          "_$type": "GWidget",
+          "name": "battleToolbarArea",
+          "x": 1034,
+          "y": 24,
+          "width": 176,
+          "height": 182,
+          "mouseThrough": true,
+          "_$child": [
+            {
+              "_$id": "sbr044btn",
+              "_$type": "GWidget",
+              "name": "battleReport",
+              "x": 0,
+              "y": 0,
+              "width": 176,
+              "height": 54,
+              "_$child": [
+                {
+                  "_$id": "sbr043txt",
+                  "_$type": "GTextField",
+                  "name": "battleReportText",
+                  "x": 0,
+                  "y": 4,
+                  "width": 176,
+                  "height": 46,
+                  "text": "战斗记录",
+                  "zOrder": 1,
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr046btn",
+              "_$type": "GWidget",
+              "name": "loot",
+              "x": 0,
+              "y": 128,
+              "width": 176,
+              "height": 54,
+              "_$child": [
+                {
+                  "_$id": "sbr045txt",
+                  "_$type": "GTextField",
+                  "name": "lootText",
+                  "x": 0,
+                  "y": 4,
+                  "width": 176,
+                  "height": 46,
+                  "text": "",
+                  "zOrder": 1,
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr078btn",
+              "_$type": "GWidget",
+              "name": "build",
+              "x": 0,
+              "y": 64,
+              "width": 176,
+              "height": 54,
+              "_$child": [
+                {
+                  "_$id": "sbr077txt",
+                  "_$type": "GTextField",
+                  "name": "buildText",
+                  "x": 0,
+                  "y": 4,
+                  "width": 176,
+                  "height": 46,
+                  "text": "构筑",
+                  "zOrder": 1,
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "_$id": "region_70",
+          "_$type": "GWidget",
+          "name": "enemyArea",
+          "x": 720,
+          "y": 110,
+          "width": 284,
+          "height": 250,
+          "mouseThrough": true,
+          "_$child": [
+            {
+              "_$id": "sbr005lbl",
+              "_$type": "GTextField",
+              "name": "enemyName",
+              "x": 0,
+              "y": 0,
+              "width": 284,
+              "height": 44,
+              "text": "",
+              "zOrder": 1,
+              "fontSize": 22,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "sbr006lbl",
+              "_$type": "GTextField",
+              "name": "enemyBlock",
+              "x": 80,
+              "y": 46,
+              "width": 204,
+              "height": 40,
+              "text": "",
+              "zOrder": 1,
+              "fontSize": 22,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "sbr007lbl",
+              "_$type": "GTextField",
+              "name": "enemyHp",
+              "x": 0,
+              "y": 90,
+              "width": 284,
+              "height": 38,
+              "text": "",
+              "zOrder": 1,
+              "fontSize": 22,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "sbr034actor",
+              "_$type": "GWidget",
+              "name": "enemy",
+              "x": 250,
+              "y": 240,
+              "width": 1,
+              "height": 1
+            },
+            {
+              "_$id": "sbr036bar",
+              "_$type": "GWidget",
+              "name": "enemyHpBar",
+              "x": 0,
+              "y": 134,
+              "width": 284,
+              "height": 8
+            }
+          ]
+        },
+        {
+          "_$id": "region_71",
+          "_$type": "GWidget",
+          "name": "intentArea",
+          "x": 410,
+          "y": 210,
+          "width": 280,
+          "height": 88,
+          "mouseThrough": true,
+          "_$child": [
+            {
+              "_$id": "sbr008lbl",
+              "_$type": "GTextField",
+              "name": "intent",
+              "x": 0,
+              "y": 0,
+              "width": 280,
+              "height": 44,
+              "text": "",
+              "zOrder": 1,
+              "fontSize": 22,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "sbr009lbl",
+              "_$type": "GTextField",
+              "name": "interrupt",
+              "x": 0,
+              "y": 48,
+              "width": 280,
+              "height": 40,
+              "text": "",
+              "zOrder": 1,
+              "fontSize": 22,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            }
+          ]
+        },
+        {
+          "_$id": "region_72",
+          "_$type": "GWidget",
+          "name": "playerArea",
+          "x": 30,
+          "y": 340,
+          "width": 390,
+          "height": 336,
+          "mouseThrough": true,
+          "_$child": [
+            {
+              "_$id": "sbr011lbl",
+              "_$type": "GTextField",
+              "name": "playerName",
+              "x": 50,
+              "y": 70,
+              "width": 320,
+              "height": 42,
+              "text": "",
+              "zOrder": 1,
+              "fontSize": 22,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "sbr012lbl",
+              "_$type": "GTextField",
+              "name": "durability",
+              "x": 0,
+              "y": 120,
+              "width": 390,
+              "height": 40,
+              "text": "",
+              "zOrder": 1,
+              "fontSize": 22,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "sbr013lbl",
+              "_$type": "GTextField",
+              "name": "playerHp",
+              "x": 0,
+              "y": 164,
+              "width": 390,
+              "height": 40,
+              "text": "",
+              "zOrder": 1,
+              "fontSize": 22,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "sbr014lbl",
+              "_$type": "GTextField",
+              "name": "playerBlock",
+              "x": 0,
+              "y": 214,
+              "width": 390,
+              "height": 40,
+              "text": "",
+              "zOrder": 1,
+              "fontSize": 22,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "sbr015lbl",
+              "_$type": "GTextField",
+              "name": "qi",
+              "x": 0,
+              "y": 264,
+              "width": 390,
+              "height": 72,
+              "text": "",
+              "zOrder": 1,
+              "fontSize": 22,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "sbr033actor",
+              "_$type": "GWidget",
+              "name": "player",
+              "x": 220,
+              "y": 0,
+              "width": 1,
+              "height": 1
+            },
+            {
+              "_$id": "sbr037bar",
+              "_$type": "GWidget",
+              "name": "playerHpBar",
+              "x": 0,
+              "y": 206,
+              "width": 370,
+              "height": 8
+            }
+          ]
+        },
+        {
+          "_$id": "region_73",
+          "_$type": "GWidget",
+          "name": "previewArea",
+          "x": 454,
+          "y": 396,
+          "width": 550,
+          "height": 136,
+          "mouseThrough": true,
+          "_$child": [
+            {
+              "_$id": "sbr016lbl",
+              "_$type": "GTextField",
+              "name": "previewTitle",
+              "x": 0,
+              "y": 0,
+              "width": 550,
+              "height": 28,
+              "text": "",
+              "zOrder": 1,
+              "fontSize": 22,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "sbr017lbl",
+              "_$type": "GTextField",
+              "name": "preview",
+              "x": 0,
+              "y": 22,
+              "width": 550,
+              "height": 114,
+              "text": "",
+              "zOrder": 1,
+              "fontSize": 22,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            }
+          ]
+        },
+        {
+          "_$id": "region_74",
+          "_$type": "GWidget",
+          "name": "battleActionsArea",
+          "x": 454,
+          "y": 474,
+          "width": 760,
+          "height": 216,
+          "mouseThrough": true,
+          "_$child": [
+            {
+              "_$id": "sbr038ico",
+              "_$type": "GImage",
+              "name": "pouchIcon0",
+              "autoSize": false,
+              "mouseEnabled": false,
+              "x": 4,
+              "y": 62,
+              "width": 24,
+              "height": 24,
+              "zOrder": 2
+            },
+            {
+              "_$id": "sbr039ico",
+              "_$type": "GImage",
+              "name": "pouchIcon1",
+              "autoSize": false,
+              "mouseEnabled": false,
+              "x": 116,
+              "y": 62,
+              "width": 24,
+              "height": 24,
+              "zOrder": 2
+            },
+            {
+              "_$id": "sbr040ico",
+              "_$type": "GImage",
+              "name": "pouchIcon2",
+              "autoSize": false,
+              "mouseEnabled": false,
+              "x": 228,
+              "y": 62,
+              "width": 24,
+              "height": 24,
+              "zOrder": 2
+            },
+            {
+              "_$id": "sbr041ico",
+              "_$type": "GImage",
+              "name": "pouchIcon3",
+              "autoSize": false,
+              "mouseEnabled": false,
+              "x": 340,
+              "y": 62,
+              "width": 24,
+              "height": 24,
+              "zOrder": 2
+            },
+            {
+              "_$id": "sbr042ico",
+              "_$type": "GImage",
+              "name": "pouchIcon4",
+              "autoSize": false,
+              "mouseEnabled": false,
+              "x": 452,
+              "y": 62,
+              "width": 24,
+              "height": 24,
+              "zOrder": 2
+            },
+            {
+              "_$id": "sbr050btn",
+              "_$type": "GWidget",
+              "name": "cancel",
+              "x": 580,
+              "y": 0,
+              "width": 176,
+              "height": 54,
+              "_$child": [
+                {
+                  "_$id": "sbr049txt",
+                  "_$type": "GTextField",
+                  "name": "cancelText",
+                  "x": 0,
+                  "y": 4,
+                  "width": 176,
+                  "height": 46,
+                  "text": "取消",
+                  "zOrder": 1,
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr052btn",
+              "_$type": "GWidget",
+              "name": "confirm",
+              "x": 580,
+              "y": 66,
+              "width": 176,
+              "height": 62,
+              "_$child": [
+                {
+                  "_$id": "sbr051txt",
+                  "_$type": "GTextField",
+                  "name": "confirmText",
+                  "x": 0,
+                  "y": 4,
+                  "width": 176,
+                  "height": 54,
+                  "text": "确认行动",
+                  "zOrder": 1,
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr080btn",
+              "_$type": "GWidget",
+              "name": "skill1",
+              "x": 0,
+              "y": 140,
+              "width": 144,
+              "height": 76,
+              "_$child": [
+                {
+                  "_$id": "sbr079txt",
+                  "_$type": "GTextField",
+                  "name": "skill1Text",
+                  "x": 0,
+                  "y": 4,
+                  "width": 144,
+                  "height": 68,
+                  "text": "普攻",
+                  "zOrder": 1,
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr082btn",
+              "_$type": "GWidget",
+              "name": "skill2",
+              "x": 152,
+              "y": 140,
+              "width": 144,
+              "height": 76,
+              "_$child": [
+                {
+                  "_$id": "sbr081txt",
+                  "_$type": "GTextField",
+                  "name": "skill2Text",
+                  "x": 0,
+                  "y": 4,
+                  "width": 144,
+                  "height": 68,
+                  "text": "防御",
+                  "zOrder": 1,
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr084btn",
+              "_$type": "GWidget",
+              "name": "skill3",
+              "x": 304,
+              "y": 140,
+              "width": 144,
+              "height": 76,
+              "_$child": [
+                {
+                  "_$id": "sbr083txt",
+                  "_$type": "GTextField",
+                  "name": "skill3Text",
+                  "x": 0,
+                  "y": 4,
+                  "width": 144,
+                  "height": 68,
+                  "text": "",
+                  "zOrder": 1,
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr086btn",
+              "_$type": "GWidget",
+              "name": "skill4",
+              "x": 456,
+              "y": 140,
+              "width": 144,
+              "height": 76,
+              "_$child": [
+                {
+                  "_$id": "sbr085txt",
+                  "_$type": "GTextField",
+                  "name": "skill4Text",
+                  "x": 0,
+                  "y": 4,
+                  "width": 144,
+                  "height": 68,
+                  "text": "",
+                  "zOrder": 1,
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr088btn",
+              "_$type": "GWidget",
+              "name": "pouch0",
+              "x": 0,
+              "y": 66,
+              "width": 102,
+              "height": 62,
+              "_$child": [
+                {
+                  "_$id": "sbr087txt",
+                  "_$type": "GTextField",
+                  "name": "pouch0Text",
+                  "x": 8,
+                  "y": 4,
+                  "width": 86,
+                  "height": 54,
+                  "text": "",
+                  "zOrder": 1,
+                  "fontSize": 18,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr090btn",
+              "_$type": "GWidget",
+              "name": "pouch1",
+              "x": 112,
+              "y": 66,
+              "width": 102,
+              "height": 62,
+              "_$child": [
+                {
+                  "_$id": "sbr089txt",
+                  "_$type": "GTextField",
+                  "name": "pouch1Text",
+                  "x": 8,
+                  "y": 4,
+                  "width": 86,
+                  "height": 54,
+                  "text": "",
+                  "zOrder": 1,
+                  "fontSize": 18,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr092btn",
+              "_$type": "GWidget",
+              "name": "pouch2",
+              "x": 224,
+              "y": 66,
+              "width": 102,
+              "height": 62,
+              "_$child": [
+                {
+                  "_$id": "sbr091txt",
+                  "_$type": "GTextField",
+                  "name": "pouch2Text",
+                  "x": 8,
+                  "y": 4,
+                  "width": 86,
+                  "height": 54,
+                  "text": "",
+                  "zOrder": 1,
+                  "fontSize": 18,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr094btn",
+              "_$type": "GWidget",
+              "name": "pouch3",
+              "x": 336,
+              "y": 66,
+              "width": 102,
+              "height": 62,
+              "_$child": [
+                {
+                  "_$id": "sbr093txt",
+                  "_$type": "GTextField",
+                  "name": "pouch3Text",
+                  "x": 8,
+                  "y": 4,
+                  "width": 86,
+                  "height": 54,
+                  "text": "",
+                  "zOrder": 1,
+                  "fontSize": 18,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr096btn",
+              "_$type": "GWidget",
+              "name": "pouch4",
+              "x": 448,
+              "y": 66,
+              "width": 102,
+              "height": 62,
+              "_$child": [
+                {
+                  "_$id": "sbr095txt",
+                  "_$type": "GTextField",
+                  "name": "pouch4Text",
+                  "x": 8,
+                  "y": 4,
+                  "width": 86,
+                  "height": 54,
+                  "text": "",
+                  "zOrder": 1,
+                  "fontSize": 18,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "sbr098btn",
+              "_$type": "GWidget",
+              "name": "upgrade0",
+              "x": 608,
+              "y": 140,
+              "width": 144,
+              "height": 76,
+              "_$child": [
+                {
+                  "_$id": "sbr097txt",
+                  "_$type": "GTextField",
+                  "name": "upgrade0Text",
+                  "x": 0,
+                  "y": 4,
+                  "width": 144,
+                  "height": 68,
+                  "text": "",
+                  "zOrder": 1,
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "inventory_pouch_quality_0",
+              "_$type": "GImage",
+              "name": "pouchQuality0",
+              "src": "ui/atlas/module/inventory/quality-1.png",
+              "x": 4,
+              "y": 70,
+              "width": 30,
+              "height": 30,
+              "autoSize": false,
+              "mouseEnabled": false,
+              "visible": false,
+              "zOrder": 1
+            },
+            {
+              "_$id": "inventory_pouch_quality_1",
+              "_$type": "GImage",
+              "name": "pouchQuality1",
+              "src": "ui/atlas/module/inventory/quality-1.png",
+              "x": 116,
+              "y": 70,
+              "width": 30,
+              "height": 30,
+              "autoSize": false,
+              "mouseEnabled": false,
+              "visible": false,
+              "zOrder": 1
+            },
+            {
+              "_$id": "inventory_pouch_quality_2",
+              "_$type": "GImage",
+              "name": "pouchQuality2",
+              "src": "ui/atlas/module/inventory/quality-1.png",
+              "x": 228,
+              "y": 70,
+              "width": 30,
+              "height": 30,
+              "autoSize": false,
+              "mouseEnabled": false,
+              "visible": false,
+              "zOrder": 1
+            },
+            {
+              "_$id": "inventory_pouch_quality_3",
+              "_$type": "GImage",
+              "name": "pouchQuality3",
+              "src": "ui/atlas/module/inventory/quality-1.png",
+              "x": 340,
+              "y": 70,
+              "width": 30,
+              "height": 30,
+              "autoSize": false,
+              "mouseEnabled": false,
+              "visible": false,
+              "zOrder": 1
+            },
+            {
+              "_$id": "inventory_pouch_quality_4",
+              "_$type": "GImage",
+              "name": "pouchQuality4",
+              "src": "ui/atlas/module/inventory/quality-1.png",
+              "x": 452,
+              "y": 70,
+              "width": 30,
+              "height": 30,
+              "autoSize": false,
+              "mouseEnabled": false,
+              "visible": false,
+              "zOrder": 1
+            }
+          ]
+        },
+        {
+          "_$id": "region_75",
+          "_$type": "GWidget",
+          "name": "battleFeedbackArea",
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720,
+          "mouseThrough": true,
+          "_$child": [
+            {
+              "_$id": "sbr010lbl",
+              "_$type": "GTextField",
+              "name": "event",
+              "x": 400,
+              "y": 338,
+              "width": 600,
+              "height": 48,
+              "text": "",
+              "zOrder": 1,
+              "fontSize": 22,
+              "color": "#e3e8de",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "sbr035num",
+              "_$type": "GTextField",
+              "name": "numbers",
+              "x": 770,
+              "y": 260,
+              "width": 220,
+              "height": 60,
+              "text": "",
+              "fontSize": 28,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            }
+          ]
+        }
+      ],
+      "relations": [
+        {
+          "_$type": "Relation",
+          "target": {
+            "_$ref": "sbr109root"
+          },
+          "data": [
+            100,
+            0
+          ]
+        }
+      ]
+    }
+  ],
   "_$comp": [
     {
       "_$type": "3593fc26-337e-42e3-92dc-1b9c2bb8f988",
       "scriptPath": "../src/script/games/ui/components/ElementMapper.ts",
-      "adapter": null,
+      "adapter": {
+        "_$ref": "region_76"
+      },
       "elements": [
         {
-          "_$ref": "sbr001res"
+          "_$ref": "region_76"
+        },
+        {
+          "_$ref": "battle_background"
+        },
+        {
+          "_$ref": "region_68"
         },
         {
           "_$ref": "sbr002lbl"
@@ -24,6 +1068,30 @@
           "_$ref": "sbr004lbl"
         },
         {
+          "_$ref": "region_69"
+        },
+        {
+          "_$ref": "sbr044btn"
+        },
+        {
+          "_$ref": "sbr043txt"
+        },
+        {
+          "_$ref": "sbr046btn"
+        },
+        {
+          "_$ref": "sbr045txt"
+        },
+        {
+          "_$ref": "sbr078btn"
+        },
+        {
+          "_$ref": "sbr077txt"
+        },
+        {
+          "_$ref": "region_70"
+        },
+        {
           "_$ref": "sbr005lbl"
         },
         {
@@ -33,13 +1101,22 @@
           "_$ref": "sbr007lbl"
         },
         {
+          "_$ref": "sbr034actor"
+        },
+        {
+          "_$ref": "sbr036bar"
+        },
+        {
+          "_$ref": "region_71"
+        },
+        {
           "_$ref": "sbr008lbl"
         },
         {
           "_$ref": "sbr009lbl"
         },
         {
-          "_$ref": "sbr010lbl"
+          "_$ref": "region_72"
         },
         {
           "_$ref": "sbr011lbl"
@@ -57,70 +1134,22 @@
           "_$ref": "sbr015lbl"
         },
         {
+          "_$ref": "sbr033actor"
+        },
+        {
+          "_$ref": "sbr037bar"
+        },
+        {
+          "_$ref": "region_73"
+        },
+        {
           "_$ref": "sbr016lbl"
         },
         {
           "_$ref": "sbr017lbl"
         },
         {
-          "_$ref": "sbr018lbl"
-        },
-        {
-          "_$ref": "sbr019lbl"
-        },
-        {
-          "_$ref": "sbr020lbl"
-        },
-        {
-          "_$ref": "sbr021lbl"
-        },
-        {
-          "_$ref": "sbr022lbl"
-        },
-        {
-          "_$ref": "sbr023lbl"
-        },
-        {
-          "_$ref": "sbr024lbl"
-        },
-        {
-          "_$ref": "sbr025lbl"
-        },
-        {
-          "_$ref": "sbr026lbl"
-        },
-        {
-          "_$ref": "sbr027lbl"
-        },
-        {
-          "_$ref": "sbr028lbl"
-        },
-        {
-          "_$ref": "sbr029lbl"
-        },
-        {
-          "_$ref": "sbr030lbl"
-        },
-        {
-          "_$ref": "sbr031lbl"
-        },
-        {
-          "_$ref": "sbr032lbl"
-        },
-        {
-          "_$ref": "sbr033actor"
-        },
-        {
-          "_$ref": "sbr034actor"
-        },
-        {
-          "_$ref": "sbr035num"
-        },
-        {
-          "_$ref": "sbr036bar"
-        },
-        {
-          "_$ref": "sbr037bar"
+          "_$ref": "region_74"
         },
         {
           "_$ref": "sbr038ico"
@@ -138,24 +1167,6 @@
           "_$ref": "sbr042ico"
         },
         {
-          "_$ref": "sbr044btn"
-        },
-        {
-          "_$ref": "sbr043txt"
-        },
-        {
-          "_$ref": "sbr046btn"
-        },
-        {
-          "_$ref": "sbr045txt"
-        },
-        {
-          "_$ref": "sbr048btn"
-        },
-        {
-          "_$ref": "sbr047txt"
-        },
-        {
           "_$ref": "sbr050btn"
         },
         {
@@ -166,84 +1177,6 @@
         },
         {
           "_$ref": "sbr051txt"
-        },
-        {
-          "_$ref": "sbr054btn"
-        },
-        {
-          "_$ref": "sbr053txt"
-        },
-        {
-          "_$ref": "sbr056btn"
-        },
-        {
-          "_$ref": "sbr055txt"
-        },
-        {
-          "_$ref": "sbr058btn"
-        },
-        {
-          "_$ref": "sbr057txt"
-        },
-        {
-          "_$ref": "sbr060btn"
-        },
-        {
-          "_$ref": "sbr059txt"
-        },
-        {
-          "_$ref": "sbr062btn"
-        },
-        {
-          "_$ref": "sbr061txt"
-        },
-        {
-          "_$ref": "sbr064btn"
-        },
-        {
-          "_$ref": "sbr063txt"
-        },
-        {
-          "_$ref": "sbr066btn"
-        },
-        {
-          "_$ref": "sbr065txt"
-        },
-        {
-          "_$ref": "sbr068btn"
-        },
-        {
-          "_$ref": "sbr067txt"
-        },
-        {
-          "_$ref": "sbr070btn"
-        },
-        {
-          "_$ref": "sbr069txt"
-        },
-        {
-          "_$ref": "sbr072btn"
-        },
-        {
-          "_$ref": "sbr071txt"
-        },
-        {
-          "_$ref": "sbr074btn"
-        },
-        {
-          "_$ref": "sbr073txt"
-        },
-        {
-          "_$ref": "sbr076btn"
-        },
-        {
-          "_$ref": "sbr075txt"
-        },
-        {
-          "_$ref": "sbr078btn"
-        },
-        {
-          "_$ref": "sbr077txt"
         },
         {
           "_$ref": "sbr080btn"
@@ -306,36 +1239,6 @@
           "_$ref": "sbr097txt"
         },
         {
-          "_$ref": "sbr100btn"
-        },
-        {
-          "_$ref": "sbr099txt"
-        },
-        {
-          "_$ref": "sbr102btn"
-        },
-        {
-          "_$ref": "sbr101txt"
-        },
-        {
-          "_$ref": "sbr103lbl"
-        },
-        {
-          "_$ref": "sbr104lbl"
-        },
-        {
-          "_$ref": "sbr105lbl"
-        },
-        {
-          "_$ref": "sbr106lbl"
-        },
-        {
-          "_$ref": "sbr107lbl"
-        },
-        {
-          "_$ref": "sbr108lbl"
-        },
-        {
           "_$ref": "inventory_pouch_quality_0"
         },
         {
@@ -349,1612 +1252,18 @@
         },
         {
           "_$ref": "inventory_pouch_quality_4"
+        },
+        {
+          "_$ref": "region_75"
+        },
+        {
+          "_$ref": "sbr010lbl"
+        },
+        {
+          "_$ref": "sbr035num"
         }
       ],
       "mapperType": 4
-    }
-  ],
-  "_$child": [
-    {
-      "_$id": "battle_background",
-      "_$type": "GImage",
-      "name": "screenBackground",
-      "width": 1280,
-      "height": 720,
-      "zOrder": -10,
-      "mouseEnabled": false,
-      "autoSize": false,
-      "alpha": 0.36,
-      "src": "ui/texture/skillBattle/battle_background.png"
-    },
-    {
-      "_$id": "sbr001res",
-      "_$type": "GWidget",
-      "name": "result",
-      "x": 0,
-      "y": 0,
-      "width": 1280,
-      "height": 720,
-      "visible": false
-    },
-    {
-      "_$id": "sbr002lbl",
-      "_$type": "GTextField",
-      "name": "brand",
-      "x": 24,
-      "y": 12,
-      "width": 360,
-      "height": 52,
-      "text": "",
-      "zOrder": 1,
-      "fontSize": 32,
-      "color": "#e3e8de",
-      "align": "left",
-      "valign": "middle",
-      "wordWrap": true
-    },
-    {
-      "_$id": "sbr003lbl",
-      "_$type": "GTextField",
-      "name": "round",
-      "x": 420,
-      "y": 16,
-      "width": 270,
-      "height": 46,
-      "text": "",
-      "zOrder": 1,
-      "fontSize": 22,
-      "color": "#e3e8de",
-      "align": "center",
-      "valign": "middle",
-      "wordWrap": true
-    },
-    {
-      "_$id": "sbr004lbl",
-      "_$type": "GTextField",
-      "name": "upgrades",
-      "x": 704,
-      "y": 16,
-      "width": 300,
-      "height": 46,
-      "text": "",
-      "zOrder": 1,
-      "fontSize": 22,
-      "color": "#e3e8de",
-      "align": "center",
-      "valign": "middle",
-      "wordWrap": true
-    },
-    {
-      "_$id": "sbr005lbl",
-      "_$type": "GTextField",
-      "name": "enemyName",
-      "x": 720,
-      "y": 128,
-      "width": 284,
-      "height": 50,
-      "text": "",
-      "zOrder": 1,
-      "fontSize": 22,
-      "color": "#e3e8de",
-      "align": "center",
-      "valign": "middle",
-      "wordWrap": true
-    },
-    {
-      "_$id": "sbr006lbl",
-      "_$type": "GTextField",
-      "name": "enemyBlock",
-      "x": 800,
-      "y": 184,
-      "width": 204,
-      "height": 42,
-      "text": "",
-      "zOrder": 1,
-      "fontSize": 22,
-      "color": "#e3e8de",
-      "align": "center",
-      "valign": "middle",
-      "wordWrap": true
-    },
-    {
-      "_$id": "sbr007lbl",
-      "_$type": "GTextField",
-      "name": "enemyHp",
-      "x": 720,
-      "y": 224,
-      "width": 284,
-      "height": 42,
-      "text": "",
-      "zOrder": 1,
-      "fontSize": 22,
-      "color": "#e3e8de",
-      "align": "center",
-      "valign": "middle",
-      "wordWrap": true
-    },
-    {
-      "_$id": "sbr008lbl",
-      "_$type": "GTextField",
-      "name": "intent",
-      "x": 410,
-      "y": 232,
-      "width": 280,
-      "height": 46,
-      "text": "",
-      "zOrder": 1,
-      "fontSize": 22,
-      "color": "#e3e8de",
-      "align": "center",
-      "valign": "middle",
-      "wordWrap": true
-    },
-    {
-      "_$id": "sbr009lbl",
-      "_$type": "GTextField",
-      "name": "interrupt",
-      "x": 410,
-      "y": 280,
-      "width": 280,
-      "height": 42,
-      "text": "",
-      "zOrder": 1,
-      "fontSize": 22,
-      "color": "#e3e8de",
-      "align": "center",
-      "valign": "middle",
-      "wordWrap": true
-    },
-    {
-      "_$id": "sbr010lbl",
-      "_$type": "GTextField",
-      "name": "event",
-      "x": 390,
-      "y": 342,
-      "width": 500,
-      "height": 44,
-      "text": "",
-      "zOrder": 1,
-      "fontSize": 22,
-      "color": "#e3e8de",
-      "align": "center",
-      "valign": "middle",
-      "wordWrap": true
-    },
-    {
-      "_$id": "sbr011lbl",
-      "_$type": "GTextField",
-      "name": "playerName",
-      "x": 120,
-      "y": 412,
-      "width": 430,
-      "height": 46,
-      "text": "",
-      "zOrder": 1,
-      "fontSize": 22,
-      "color": "#e3e8de",
-      "align": "center",
-      "valign": "middle",
-      "wordWrap": true
-    },
-    {
-      "_$id": "sbr012lbl",
-      "_$type": "GTextField",
-      "name": "durability",
-      "x": 30,
-      "y": 476,
-      "width": 390,
-      "height": 40,
-      "text": "",
-      "zOrder": 1,
-      "fontSize": 22,
-      "color": "#e3e8de",
-      "align": "center",
-      "valign": "middle",
-      "wordWrap": true
-    },
-    {
-      "_$id": "sbr013lbl",
-      "_$type": "GTextField",
-      "name": "playerHp",
-      "x": 30,
-      "y": 516,
-      "width": 390,
-      "height": 40,
-      "text": "",
-      "zOrder": 1,
-      "fontSize": 22,
-      "color": "#e3e8de",
-      "align": "center",
-      "valign": "middle",
-      "wordWrap": true
-    },
-    {
-      "_$id": "sbr014lbl",
-      "_$type": "GTextField",
-      "name": "playerBlock",
-      "x": 30,
-      "y": 554,
-      "width": 390,
-      "height": 38,
-      "text": "",
-      "zOrder": 1,
-      "fontSize": 22,
-      "color": "#e3e8de",
-      "align": "center",
-      "valign": "middle",
-      "wordWrap": true
-    },
-    {
-      "_$id": "sbr015lbl",
-      "_$type": "GTextField",
-      "name": "qi",
-      "x": 30,
-      "y": 594,
-      "width": 390,
-      "height": 38,
-      "text": "",
-      "zOrder": 1,
-      "fontSize": 22,
-      "color": "#e3e8de",
-      "align": "center",
-      "valign": "middle",
-      "wordWrap": true
-    },
-    {
-      "_$id": "sbr016lbl",
-      "_$type": "GTextField",
-      "name": "previewTitle",
-      "x": 454,
-      "y": 446,
-      "width": 500,
-      "height": 28,
-      "text": "",
-      "zOrder": 1,
-      "fontSize": 22,
-      "color": "#e3e8de",
-      "align": "center",
-      "valign": "middle",
-      "wordWrap": true
-    },
-    {
-      "_$id": "sbr017lbl",
-      "_$type": "GTextField",
-      "name": "preview",
-      "x": 454,
-      "y": 476,
-      "width": 500,
-      "height": 50,
-      "text": "",
-      "zOrder": 1,
-      "fontSize": 22,
-      "color": "#e3e8de",
-      "align": "center",
-      "valign": "middle",
-      "wordWrap": true
-    },
-    {
-      "_$id": "sbr018lbl",
-      "_$type": "GTextField",
-      "name": "overlayBrand",
-      "x": 24,
-      "y": 16,
-      "width": 420,
-      "height": 48,
-      "text": "",
-      "zOrder": 1,
-      "fontSize": 22,
-      "color": "#e3e8de",
-      "align": "center",
-      "valign": "middle",
-      "wordWrap": true
-    },
-    {
-      "_$id": "sbr019lbl",
-      "_$type": "GTextField",
-      "name": "currency",
-      "x": 960,
-      "y": 20,
-      "width": 296,
-      "height": 38,
-      "text": "",
-      "zOrder": 1,
-      "fontSize": 22,
-      "color": "#e3e8de",
-      "align": "right",
-      "valign": "middle",
-      "wordWrap": true
-    },
-    {
-      "_$id": "sbr020lbl",
-      "_$type": "GTextField",
-      "name": "resultTitle",
-      "x": 290,
-      "y": 72,
-      "width": 700,
-      "height": 58,
-      "text": "",
-      "zOrder": 1,
-      "fontSize": 32,
-      "color": "#e3e8de",
-      "align": "center",
-      "valign": "middle",
-      "wordWrap": true
-    },
-    {
-      "_$id": "sbr021lbl",
-      "_$type": "GTextField",
-      "name": "resultDetail",
-      "x": 250,
-      "y": 136,
-      "width": 780,
-      "height": 112,
-      "text": "",
-      "zOrder": 1,
-      "fontSize": 22,
-      "color": "#e3e8de",
-      "align": "center",
-      "valign": "middle",
-      "wordWrap": true
-    },
-    {
-      "_$id": "sbr022lbl",
-      "_$type": "GTextField",
-      "name": "section",
-      "x": 150,
-      "y": 264,
-      "width": 980,
-      "height": 38,
-      "text": "",
-      "zOrder": 1,
-      "fontSize": 22,
-      "color": "#e3e8de",
-      "align": "left",
-      "valign": "middle",
-      "wordWrap": true
-    },
-    {
-      "_$id": "sbr023lbl",
-      "_$type": "GTextField",
-      "name": "overlayMessage",
-      "x": 190,
-      "y": 490,
-      "width": 900,
-      "height": 40,
-      "text": "",
-      "zOrder": 1,
-      "fontSize": 22,
-      "color": "#e3e8de",
-      "align": "center",
-      "valign": "middle",
-      "wordWrap": true
-    },
-    {
-      "_$id": "sbr024lbl",
-      "_$type": "GTextField",
-      "name": "choiceTitle",
-      "x": 250,
-      "y": 326,
-      "width": 780,
-      "height": 48,
-      "text": "",
-      "zOrder": 1,
-      "fontSize": 22,
-      "color": "#e3e8de",
-      "align": "center",
-      "valign": "middle",
-      "wordWrap": true
-    },
-    {
-      "_$id": "sbr025lbl",
-      "_$type": "GTextField",
-      "name": "reportBody",
-      "x": 240,
-      "y": 190,
-      "width": 800,
-      "height": 280,
-      "text": "",
-      "zOrder": 1,
-      "fontSize": 22,
-      "color": "#e3e8de",
-      "align": "center",
-      "valign": "middle",
-      "wordWrap": true
-    },
-    {
-      "_$id": "sbr026lbl",
-      "_$type": "GTextField",
-      "name": "page",
-      "x": 570,
-      "y": 530,
-      "width": 140,
-      "height": 38,
-      "text": "",
-      "zOrder": 1,
-      "fontSize": 22,
-      "color": "#e3e8de",
-      "align": "center",
-      "valign": "middle",
-      "wordWrap": true
-    },
-    {
-      "_$id": "sbr027lbl",
-      "_$type": "GTextField",
-      "name": "lootSlot0",
-      "x": 220,
-      "y": 390,
-      "width": 130,
-      "height": 84,
-      "text": "",
-      "zOrder": 1,
-      "fontSize": 22,
-      "color": "#e3e8de",
-      "align": "center",
-      "valign": "middle",
-      "wordWrap": true
-    },
-    {
-      "_$id": "sbr028lbl",
-      "_$type": "GTextField",
-      "name": "lootSlot1",
-      "x": 365,
-      "y": 390,
-      "width": 130,
-      "height": 84,
-      "text": "",
-      "zOrder": 1,
-      "fontSize": 22,
-      "color": "#e3e8de",
-      "align": "center",
-      "valign": "middle",
-      "wordWrap": true
-    },
-    {
-      "_$id": "sbr029lbl",
-      "_$type": "GTextField",
-      "name": "lootSlot2",
-      "x": 510,
-      "y": 390,
-      "width": 130,
-      "height": 84,
-      "text": "",
-      "zOrder": 1,
-      "fontSize": 22,
-      "color": "#e3e8de",
-      "align": "center",
-      "valign": "middle",
-      "wordWrap": true
-    },
-    {
-      "_$id": "sbr030lbl",
-      "_$type": "GTextField",
-      "name": "lootSlot3",
-      "x": 655,
-      "y": 390,
-      "width": 130,
-      "height": 84,
-      "text": "",
-      "zOrder": 1,
-      "fontSize": 22,
-      "color": "#e3e8de",
-      "align": "center",
-      "valign": "middle",
-      "wordWrap": true
-    },
-    {
-      "_$id": "sbr031lbl",
-      "_$type": "GTextField",
-      "name": "lootSlot4",
-      "x": 800,
-      "y": 390,
-      "width": 130,
-      "height": 84,
-      "text": "",
-      "zOrder": 1,
-      "fontSize": 22,
-      "color": "#e3e8de",
-      "align": "center",
-      "valign": "middle",
-      "wordWrap": true
-    },
-    {
-      "_$id": "sbr032lbl",
-      "_$type": "GTextField",
-      "name": "lootSlot5",
-      "x": 945,
-      "y": 390,
-      "width": 130,
-      "height": 84,
-      "text": "",
-      "zOrder": 1,
-      "fontSize": 22,
-      "color": "#e3e8de",
-      "align": "center",
-      "valign": "middle",
-      "wordWrap": true
-    },
-    {
-      "_$id": "sbr033actor",
-      "_$type": "GWidget",
-      "name": "player",
-      "x": 250,
-      "y": 350,
-      "width": 1,
-      "height": 1
-    },
-    {
-      "_$id": "sbr034actor",
-      "_$type": "GWidget",
-      "name": "enemy",
-      "x": 970,
-      "y": 300,
-      "width": 1,
-      "height": 1
-    },
-    {
-      "_$id": "sbr035num",
-      "_$type": "GTextField",
-      "name": "numbers",
-      "x": 770,
-      "y": 260,
-      "width": 220,
-      "height": 60,
-      "text": "",
-      "fontSize": 28
-    },
-    {
-      "_$id": "sbr036bar",
-      "_$type": "GWidget",
-      "name": "enemyHpBar",
-      "x": 720,
-      "y": 226,
-      "width": 284,
-      "height": 8
-    },
-    {
-      "_$id": "sbr037bar",
-      "_$type": "GWidget",
-      "name": "playerHpBar",
-      "x": 30,
-      "y": 516,
-      "width": 430,
-      "height": 8
-    },
-    {
-      "_$id": "sbr038ico",
-      "_$type": "GImage",
-      "name": "pouchIcon0",
-      "autoSize": false,
-      "mouseEnabled": false,
-      "x": 458,
-      "y": 536,
-      "width": 24,
-      "height": 24,
-      "zOrder": 2
-    },
-    {
-      "_$id": "sbr039ico",
-      "_$type": "GImage",
-      "name": "pouchIcon1",
-      "autoSize": false,
-      "mouseEnabled": false,
-      "x": 570,
-      "y": 536,
-      "width": 24,
-      "height": 24,
-      "zOrder": 2
-    },
-    {
-      "_$id": "sbr040ico",
-      "_$type": "GImage",
-      "name": "pouchIcon2",
-      "autoSize": false,
-      "mouseEnabled": false,
-      "x": 682,
-      "y": 536,
-      "width": 24,
-      "height": 24,
-      "zOrder": 2
-    },
-    {
-      "_$id": "sbr041ico",
-      "_$type": "GImage",
-      "name": "pouchIcon3",
-      "autoSize": false,
-      "mouseEnabled": false,
-      "x": 794,
-      "y": 536,
-      "width": 24,
-      "height": 24,
-      "zOrder": 2
-    },
-    {
-      "_$id": "sbr042ico",
-      "_$type": "GImage",
-      "name": "pouchIcon4",
-      "autoSize": false,
-      "mouseEnabled": false,
-      "x": 906,
-      "y": 536,
-      "width": 24,
-      "height": 24,
-      "zOrder": 2
-    },
-    {
-      "_$id": "sbr044btn",
-      "_$type": "GWidget",
-      "name": "battleReport",
-      "x": 1034,
-      "y": 24,
-      "width": 176,
-      "height": 54,
-      "_$child": [
-        {
-          "_$id": "sbr043txt",
-          "_$type": "GTextField",
-          "name": "battleReportText",
-          "x": 0,
-          "y": 0,
-          "width": 176,
-          "height": 54,
-          "text": "",
-          "zOrder": 1,
-          "fontSize": 22,
-          "color": "#e3e8de",
-          "align": "center",
-          "valign": "middle",
-          "wordWrap": true
-        }
-      ]
-    },
-    {
-      "_$id": "sbr046btn",
-      "_$type": "GWidget",
-      "name": "loot",
-      "x": 1034,
-      "y": 88,
-      "width": 176,
-      "height": 54,
-      "_$child": [
-        {
-          "_$id": "sbr045txt",
-          "_$type": "GTextField",
-          "name": "lootText",
-          "x": 0,
-          "y": 0,
-          "width": 176,
-          "height": 54,
-          "text": "",
-          "zOrder": 1,
-          "fontSize": 22,
-          "color": "#e3e8de",
-          "align": "center",
-          "valign": "middle",
-          "wordWrap": true
-        }
-      ]
-    },
-    {
-      "_$id": "sbr048btn",
-      "_$type": "GWidget",
-      "name": "skip",
-      "x": 1034,
-      "y": 152,
-      "width": 176,
-      "height": 54,
-      "_$child": [
-        {
-          "_$id": "sbr047txt",
-          "_$type": "GTextField",
-          "name": "skipText",
-          "x": 0,
-          "y": 0,
-          "width": 176,
-          "height": 54,
-          "text": "",
-          "zOrder": 1,
-          "fontSize": 22,
-          "color": "#e3e8de",
-          "align": "center",
-          "valign": "middle",
-          "wordWrap": true
-        }
-      ]
-    },
-    {
-      "_$id": "sbr050btn",
-      "_$type": "GWidget",
-      "name": "cancel",
-      "x": 1034,
-      "y": 466,
-      "width": 176,
-      "height": 54,
-      "_$child": [
-        {
-          "_$id": "sbr049txt",
-          "_$type": "GTextField",
-          "name": "cancelText",
-          "x": 0,
-          "y": 0,
-          "width": 176,
-          "height": 54,
-          "text": "",
-          "zOrder": 1,
-          "fontSize": 22,
-          "color": "#e3e8de",
-          "align": "center",
-          "valign": "middle",
-          "wordWrap": true
-        }
-      ]
-    },
-    {
-      "_$id": "sbr052btn",
-      "_$type": "GWidget",
-      "name": "confirm",
-      "x": 1034,
-      "y": 530,
-      "width": 176,
-      "height": 54,
-      "_$child": [
-        {
-          "_$id": "sbr051txt",
-          "_$type": "GTextField",
-          "name": "confirmText",
-          "x": 0,
-          "y": 0,
-          "width": 176,
-          "height": 54,
-          "text": "",
-          "zOrder": 1,
-          "fontSize": 22,
-          "color": "#e3e8de",
-          "align": "center",
-          "valign": "middle",
-          "wordWrap": true
-        }
-      ]
-    },
-    {
-      "_$id": "sbr054btn",
-      "_$type": "GWidget",
-      "name": "continue",
-      "x": 800,
-      "y": 530,
-      "width": 176,
-      "height": 54,
-      "_$child": [
-        {
-          "_$id": "sbr053txt",
-          "_$type": "GTextField",
-          "name": "continueText",
-          "x": 0,
-          "y": 0,
-          "width": 176,
-          "height": 54,
-          "text": "",
-          "zOrder": 1,
-          "fontSize": 22,
-          "color": "#e3e8de",
-          "align": "center",
-          "valign": "middle",
-          "wordWrap": true
-        }
-      ]
-    },
-    {
-      "_$id": "sbr056btn",
-      "_$type": "GWidget",
-      "name": "extract",
-      "x": 1000,
-      "y": 530,
-      "width": 176,
-      "height": 54,
-      "_$child": [
-        {
-          "_$id": "sbr055txt",
-          "_$type": "GTextField",
-          "name": "extractText",
-          "x": 0,
-          "y": 0,
-          "width": 176,
-          "height": 54,
-          "text": "",
-          "zOrder": 1,
-          "fontSize": 22,
-          "color": "#e3e8de",
-          "align": "center",
-          "valign": "middle",
-          "wordWrap": true
-        }
-      ]
-    },
-    {
-      "_$id": "sbr058btn",
-      "_$type": "GWidget",
-      "name": "hub",
-      "x": 800,
-      "y": 614,
-      "width": 176,
-      "height": 54,
-      "_$child": [
-        {
-          "_$id": "sbr057txt",
-          "_$type": "GTextField",
-          "name": "hubText",
-          "x": 0,
-          "y": 0,
-          "width": 176,
-          "height": 54,
-          "text": "",
-          "zOrder": 1,
-          "fontSize": 22,
-          "color": "#e3e8de",
-          "align": "center",
-          "valign": "middle",
-          "wordWrap": true
-        }
-      ]
-    },
-    {
-      "_$id": "sbr060btn",
-      "_$type": "GWidget",
-      "name": "lootClose",
-      "x": 1000,
-      "y": 614,
-      "width": 176,
-      "height": 54,
-      "_$child": [
-        {
-          "_$id": "sbr059txt",
-          "_$type": "GTextField",
-          "name": "lootCloseText",
-          "x": 0,
-          "y": 0,
-          "width": 176,
-          "height": 54,
-          "text": "",
-          "zOrder": 1,
-          "fontSize": 22,
-          "color": "#e3e8de",
-          "align": "center",
-          "valign": "middle",
-          "wordWrap": true
-        }
-      ]
-    },
-    {
-      "_$id": "sbr062btn",
-      "_$type": "GWidget",
-      "name": "report",
-      "x": 80,
-      "y": 560,
-      "width": 176,
-      "height": 54,
-      "_$child": [
-        {
-          "_$id": "sbr061txt",
-          "_$type": "GTextField",
-          "name": "reportText",
-          "x": 0,
-          "y": 0,
-          "width": 176,
-          "height": 54,
-          "text": "",
-          "zOrder": 1,
-          "fontSize": 22,
-          "color": "#e3e8de",
-          "align": "center",
-          "valign": "middle",
-          "wordWrap": true
-        }
-      ]
-    },
-    {
-      "_$id": "sbr064btn",
-      "_$type": "GWidget",
-      "name": "summary",
-      "x": 420,
-      "y": 560,
-      "width": 176,
-      "height": 54,
-      "_$child": [
-        {
-          "_$id": "sbr063txt",
-          "_$type": "GTextField",
-          "name": "summaryText",
-          "x": 0,
-          "y": 0,
-          "width": 176,
-          "height": 54,
-          "text": "",
-          "zOrder": 1,
-          "fontSize": 22,
-          "color": "#e3e8de",
-          "align": "center",
-          "valign": "middle",
-          "wordWrap": true
-        }
-      ]
-    },
-    {
-      "_$id": "sbr066btn",
-      "_$type": "GWidget",
-      "name": "actions",
-      "x": 610,
-      "y": 560,
-      "width": 176,
-      "height": 54,
-      "_$child": [
-        {
-          "_$id": "sbr065txt",
-          "_$type": "GTextField",
-          "name": "actionsText",
-          "x": 0,
-          "y": 0,
-          "width": 176,
-          "height": 54,
-          "text": "",
-          "zOrder": 1,
-          "fontSize": 22,
-          "color": "#e3e8de",
-          "align": "center",
-          "valign": "middle",
-          "wordWrap": true
-        }
-      ]
-    },
-    {
-      "_$id": "sbr068btn",
-      "_$type": "GWidget",
-      "name": "olderReport",
-      "x": 80,
-      "y": 614,
-      "width": 176,
-      "height": 54,
-      "_$child": [
-        {
-          "_$id": "sbr067txt",
-          "_$type": "GTextField",
-          "name": "olderReportText",
-          "x": 0,
-          "y": 0,
-          "width": 176,
-          "height": 54,
-          "text": "",
-          "zOrder": 1,
-          "fontSize": 22,
-          "color": "#e3e8de",
-          "align": "center",
-          "valign": "middle",
-          "wordWrap": true
-        }
-      ]
-    },
-    {
-      "_$id": "sbr070btn",
-      "_$type": "GWidget",
-      "name": "newerReport",
-      "x": 270,
-      "y": 614,
-      "width": 176,
-      "height": 54,
-      "_$child": [
-        {
-          "_$id": "sbr069txt",
-          "_$type": "GTextField",
-          "name": "newerReportText",
-          "x": 0,
-          "y": 0,
-          "width": 176,
-          "height": 54,
-          "text": "",
-          "zOrder": 1,
-          "fontSize": 22,
-          "color": "#e3e8de",
-          "align": "center",
-          "valign": "middle",
-          "wordWrap": true
-        }
-      ]
-    },
-    {
-      "_$id": "sbr072btn",
-      "_$type": "GWidget",
-      "name": "reportClose",
-      "x": 1034,
-      "y": 614,
-      "width": 176,
-      "height": 54,
-      "_$child": [
-        {
-          "_$id": "sbr071txt",
-          "_$type": "GTextField",
-          "name": "reportCloseText",
-          "x": 0,
-          "y": 0,
-          "width": 176,
-          "height": 54,
-          "text": "",
-          "zOrder": 1,
-          "fontSize": 22,
-          "color": "#e3e8de",
-          "align": "center",
-          "valign": "middle",
-          "wordWrap": true
-        }
-      ]
-    },
-    {
-      "_$id": "sbr074btn",
-      "_$type": "GWidget",
-      "name": "previousPage",
-      "x": 340,
-      "y": 568,
-      "width": 176,
-      "height": 54,
-      "_$child": [
-        {
-          "_$id": "sbr073txt",
-          "_$type": "GTextField",
-          "name": "previousPageText",
-          "x": 0,
-          "y": 0,
-          "width": 176,
-          "height": 54,
-          "text": "",
-          "zOrder": 1,
-          "fontSize": 22,
-          "color": "#e3e8de",
-          "align": "center",
-          "valign": "middle",
-          "wordWrap": true
-        }
-      ]
-    },
-    {
-      "_$id": "sbr076btn",
-      "_$type": "GWidget",
-      "name": "nextPage",
-      "x": 540,
-      "y": 568,
-      "width": 176,
-      "height": 54,
-      "_$child": [
-        {
-          "_$id": "sbr075txt",
-          "_$type": "GTextField",
-          "name": "nextPageText",
-          "x": 0,
-          "y": 0,
-          "width": 176,
-          "height": 54,
-          "text": "",
-          "zOrder": 1,
-          "fontSize": 22,
-          "color": "#e3e8de",
-          "align": "center",
-          "valign": "middle",
-          "wordWrap": true
-        }
-      ]
-    },
-    {
-      "_$id": "sbr078btn",
-      "_$type": "GWidget",
-      "name": "build",
-      "x": 1034,
-      "y": 216,
-      "width": 176,
-      "height": 54,
-      "_$child": [
-        {
-          "_$id": "sbr077txt",
-          "_$type": "GTextField",
-          "name": "buildText",
-          "x": 0,
-          "y": 0,
-          "width": 176,
-          "height": 54,
-          "text": "",
-          "zOrder": 1,
-          "fontSize": 22,
-          "color": "#e3e8de",
-          "align": "center",
-          "valign": "middle",
-          "wordWrap": true
-        }
-      ]
-    },
-    {
-      "_$id": "sbr080btn",
-      "_$type": "GWidget",
-      "name": "skill1",
-      "x": 454,
-      "y": 614,
-      "width": 180,
-      "height": 76,
-      "_$child": [
-        {
-          "_$id": "sbr079txt",
-          "_$type": "GTextField",
-          "name": "skill1Text",
-          "x": 0,
-          "y": 0,
-          "width": 180,
-          "height": 76,
-          "text": "",
-          "zOrder": 1,
-          "fontSize": 22,
-          "color": "#e3e8de",
-          "align": "center",
-          "valign": "middle",
-          "wordWrap": true
-        }
-      ]
-    },
-    {
-      "_$id": "sbr082btn",
-      "_$type": "GWidget",
-      "name": "skill2",
-      "x": 644,
-      "y": 614,
-      "width": 180,
-      "height": 76,
-      "_$child": [
-        {
-          "_$id": "sbr081txt",
-          "_$type": "GTextField",
-          "name": "skill2Text",
-          "x": 0,
-          "y": 0,
-          "width": 180,
-          "height": 76,
-          "text": "",
-          "zOrder": 1,
-          "fontSize": 22,
-          "color": "#e3e8de",
-          "align": "center",
-          "valign": "middle",
-          "wordWrap": true
-        }
-      ]
-    },
-    {
-      "_$id": "sbr084btn",
-      "_$type": "GWidget",
-      "name": "skill3",
-      "x": 834,
-      "y": 614,
-      "width": 180,
-      "height": 76,
-      "_$child": [
-        {
-          "_$id": "sbr083txt",
-          "_$type": "GTextField",
-          "name": "skill3Text",
-          "x": 0,
-          "y": 0,
-          "width": 180,
-          "height": 76,
-          "text": "",
-          "zOrder": 1,
-          "fontSize": 22,
-          "color": "#e3e8de",
-          "align": "center",
-          "valign": "middle",
-          "wordWrap": true
-        }
-      ]
-    },
-    {
-      "_$id": "sbr086btn",
-      "_$type": "GWidget",
-      "name": "skill4",
-      "x": 1024,
-      "y": 614,
-      "width": 180,
-      "height": 76,
-      "_$child": [
-        {
-          "_$id": "sbr085txt",
-          "_$type": "GTextField",
-          "name": "skill4Text",
-          "x": 0,
-          "y": 0,
-          "width": 180,
-          "height": 76,
-          "text": "",
-          "zOrder": 1,
-          "fontSize": 22,
-          "color": "#e3e8de",
-          "align": "center",
-          "valign": "middle",
-          "wordWrap": true
-        }
-      ]
-    },
-    {
-      "_$id": "sbr088btn",
-      "_$type": "GWidget",
-      "name": "pouch0",
-      "x": 454,
-      "y": 530,
-      "width": 102,
-      "height": 68,
-      "_$child": [
-        {
-          "_$id": "sbr087txt",
-          "_$type": "GTextField",
-          "name": "pouch0Text",
-          "x": 32,
-          "y": 0,
-          "width": 66,
-          "height": 68,
-          "text": "",
-          "zOrder": 1,
-          "fontSize": 18,
-          "color": "#e3e8de",
-          "align": "center",
-          "valign": "middle",
-          "wordWrap": true
-        }
-      ]
-    },
-    {
-      "_$id": "sbr090btn",
-      "_$type": "GWidget",
-      "name": "pouch1",
-      "x": 566,
-      "y": 530,
-      "width": 102,
-      "height": 68,
-      "_$child": [
-        {
-          "_$id": "sbr089txt",
-          "_$type": "GTextField",
-          "name": "pouch1Text",
-          "x": 32,
-          "y": 0,
-          "width": 66,
-          "height": 68,
-          "text": "",
-          "zOrder": 1,
-          "fontSize": 18,
-          "color": "#e3e8de",
-          "align": "center",
-          "valign": "middle",
-          "wordWrap": true
-        }
-      ]
-    },
-    {
-      "_$id": "sbr092btn",
-      "_$type": "GWidget",
-      "name": "pouch2",
-      "x": 678,
-      "y": 530,
-      "width": 102,
-      "height": 68,
-      "_$child": [
-        {
-          "_$id": "sbr091txt",
-          "_$type": "GTextField",
-          "name": "pouch2Text",
-          "x": 32,
-          "y": 0,
-          "width": 66,
-          "height": 68,
-          "text": "",
-          "zOrder": 1,
-          "fontSize": 18,
-          "color": "#e3e8de",
-          "align": "center",
-          "valign": "middle",
-          "wordWrap": true
-        }
-      ]
-    },
-    {
-      "_$id": "sbr094btn",
-      "_$type": "GWidget",
-      "name": "pouch3",
-      "x": 790,
-      "y": 530,
-      "width": 102,
-      "height": 68,
-      "_$child": [
-        {
-          "_$id": "sbr093txt",
-          "_$type": "GTextField",
-          "name": "pouch3Text",
-          "x": 32,
-          "y": 0,
-          "width": 66,
-          "height": 68,
-          "text": "",
-          "zOrder": 1,
-          "fontSize": 18,
-          "color": "#e3e8de",
-          "align": "center",
-          "valign": "middle",
-          "wordWrap": true
-        }
-      ]
-    },
-    {
-      "_$id": "sbr096btn",
-      "_$type": "GWidget",
-      "name": "pouch4",
-      "x": 902,
-      "y": 530,
-      "width": 102,
-      "height": 68,
-      "_$child": [
-        {
-          "_$id": "sbr095txt",
-          "_$type": "GTextField",
-          "name": "pouch4Text",
-          "x": 32,
-          "y": 0,
-          "width": 66,
-          "height": 68,
-          "text": "",
-          "zOrder": 1,
-          "fontSize": 18,
-          "color": "#e3e8de",
-          "align": "center",
-          "valign": "middle",
-          "wordWrap": true
-        }
-      ]
-    },
-    {
-      "_$id": "sbr098btn",
-      "_$type": "GWidget",
-      "name": "upgrade0",
-      "x": 80,
-      "y": 386,
-      "width": 360,
-      "height": 76,
-      "_$child": [
-        {
-          "_$id": "sbr097txt",
-          "_$type": "GTextField",
-          "name": "upgrade0Text",
-          "x": 0,
-          "y": 0,
-          "width": 360,
-          "height": 76,
-          "text": "",
-          "zOrder": 1,
-          "fontSize": 22,
-          "color": "#e3e8de",
-          "align": "center",
-          "valign": "middle",
-          "wordWrap": true
-        }
-      ]
-    },
-    {
-      "_$id": "sbr100btn",
-      "_$type": "GWidget",
-      "name": "upgrade1",
-      "x": 470,
-      "y": 386,
-      "width": 360,
-      "height": 76,
-      "_$child": [
-        {
-          "_$id": "sbr099txt",
-          "_$type": "GTextField",
-          "name": "upgrade1Text",
-          "x": 0,
-          "y": 0,
-          "width": 360,
-          "height": 76,
-          "text": "",
-          "zOrder": 1,
-          "fontSize": 22,
-          "color": "#e3e8de",
-          "align": "center",
-          "valign": "middle",
-          "wordWrap": true
-        }
-      ]
-    },
-    {
-      "_$id": "sbr102btn",
-      "_$type": "GWidget",
-      "name": "upgrade2",
-      "x": 860,
-      "y": 386,
-      "width": 360,
-      "height": 76,
-      "_$child": [
-        {
-          "_$id": "sbr101txt",
-          "_$type": "GTextField",
-          "name": "upgrade2Text",
-          "x": 0,
-          "y": 0,
-          "width": 360,
-          "height": 76,
-          "text": "",
-          "zOrder": 1,
-          "fontSize": 22,
-          "color": "#e3e8de",
-          "align": "center",
-          "valign": "middle",
-          "wordWrap": true
-        }
-      ]
-    },
-    {
-      "_$id": "sbr103lbl",
-      "_$type": "GTextField",
-      "name": "lootSlot0",
-      "x": 220,
-      "y": 390,
-      "width": 130,
-      "height": 84,
-      "text": "",
-      "zOrder": 1,
-      "fontSize": 22,
-      "color": "#e3e8de",
-      "align": "center",
-      "valign": "middle",
-      "wordWrap": true
-    },
-    {
-      "_$id": "sbr104lbl",
-      "_$type": "GTextField",
-      "name": "lootSlot1",
-      "x": 365,
-      "y": 390,
-      "width": 130,
-      "height": 84,
-      "text": "",
-      "zOrder": 1,
-      "fontSize": 22,
-      "color": "#e3e8de",
-      "align": "center",
-      "valign": "middle",
-      "wordWrap": true
-    },
-    {
-      "_$id": "sbr105lbl",
-      "_$type": "GTextField",
-      "name": "lootSlot2",
-      "x": 510,
-      "y": 390,
-      "width": 130,
-      "height": 84,
-      "text": "",
-      "zOrder": 1,
-      "fontSize": 22,
-      "color": "#e3e8de",
-      "align": "center",
-      "valign": "middle",
-      "wordWrap": true
-    },
-    {
-      "_$id": "sbr106lbl",
-      "_$type": "GTextField",
-      "name": "lootSlot3",
-      "x": 655,
-      "y": 390,
-      "width": 130,
-      "height": 84,
-      "text": "",
-      "zOrder": 1,
-      "fontSize": 22,
-      "color": "#e3e8de",
-      "align": "center",
-      "valign": "middle",
-      "wordWrap": true
-    },
-    {
-      "_$id": "sbr107lbl",
-      "_$type": "GTextField",
-      "name": "lootSlot4",
-      "x": 800,
-      "y": 390,
-      "width": 130,
-      "height": 84,
-      "text": "",
-      "zOrder": 1,
-      "fontSize": 22,
-      "color": "#e3e8de",
-      "align": "center",
-      "valign": "middle",
-      "wordWrap": true
-    },
-    {
-      "_$id": "sbr108lbl",
-      "_$type": "GTextField",
-      "name": "lootSlot5",
-      "x": 945,
-      "y": 390,
-      "width": 130,
-      "height": 84,
-      "text": "",
-      "zOrder": 1,
-      "fontSize": 22,
-      "color": "#e3e8de",
-      "align": "center",
-      "valign": "middle",
-      "wordWrap": true
-    },
-    {
-      "_$id": "inventory_pouch_quality_0",
-      "_$type": "GImage",
-      "name": "pouchQuality0",
-      "src": "ui/atlas/module/inventory/quality-1.png",
-      "x": 458,
-      "y": 544,
-      "width": 30,
-      "height": 30,
-      "autoSize": false,
-      "mouseEnabled": false,
-      "visible": false,
-      "zOrder": 1
-    },
-    {
-      "_$id": "inventory_pouch_quality_1",
-      "_$type": "GImage",
-      "name": "pouchQuality1",
-      "src": "ui/atlas/module/inventory/quality-1.png",
-      "x": 570,
-      "y": 544,
-      "width": 30,
-      "height": 30,
-      "autoSize": false,
-      "mouseEnabled": false,
-      "visible": false,
-      "zOrder": 1
-    },
-    {
-      "_$id": "inventory_pouch_quality_2",
-      "_$type": "GImage",
-      "name": "pouchQuality2",
-      "src": "ui/atlas/module/inventory/quality-1.png",
-      "x": 682,
-      "y": 544,
-      "width": 30,
-      "height": 30,
-      "autoSize": false,
-      "mouseEnabled": false,
-      "visible": false,
-      "zOrder": 1
-    },
-    {
-      "_$id": "inventory_pouch_quality_3",
-      "_$type": "GImage",
-      "name": "pouchQuality3",
-      "src": "ui/atlas/module/inventory/quality-1.png",
-      "x": 794,
-      "y": 544,
-      "width": 30,
-      "height": 30,
-      "autoSize": false,
-      "mouseEnabled": false,
-      "visible": false,
-      "zOrder": 1
-    },
-    {
-      "_$id": "inventory_pouch_quality_4",
-      "_$type": "GImage",
-      "name": "pouchQuality4",
-      "src": "ui/atlas/module/inventory/quality-1.png",
-      "x": 906,
-      "y": 544,
-      "width": 30,
-      "height": 30,
-      "autoSize": false,
-      "mouseEnabled": false,
-      "visible": false,
-      "zOrder": 1
     }
   ]
 }

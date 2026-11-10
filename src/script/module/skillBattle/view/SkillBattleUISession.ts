@@ -16,6 +16,7 @@ import { NewExpeditionSession } from "../newRules/NewExpeditionSession";
 import { NewExpeditionConfigUtils } from "../newRules/NewExpeditionConfigUtils";
 import { NewExpeditionPanel } from "./NewExpeditionPanel";
 import type { UIBaseView } from "../../../games/ui/UIBaseView";
+import type { SkillBattlePage } from "./SkillBattleUILayout";
 
 /** Shared model for the independently opened start, battle, and settlement views. */
 export class SkillBattleUISession {
@@ -83,11 +84,11 @@ export class SkillBattleUISession {
         return this.build;
     }
     static createPanel(view: UIBaseView, screen: "start" | "battle" | "settlement",
-        navigate: (screen: "start" | "battle" | "settlement") => void): NewBattlePanel {
-        return this.previewSingleTrial ? new NewBattlePanel(view, this.getTrial(), this.trialOptions, navigate, screen) :
-            this.previewBuildTrial ? new NewBuildPanel(view, this.getBuild(), navigate, screen) :
-            this.previewInventoryTrial ? new NewInventoryPanel(view,this.getInventory(),navigate,screen) :
-            new NewExpeditionPanel(view,this.getMapTrial(),navigate,screen);
+        navigate: (screen: SkillBattlePage) => void, page: SkillBattlePage = screen): NewBattlePanel {
+        return this.previewSingleTrial ? new NewBattlePanel(view, this.getTrial(), this.trialOptions, navigate, screen, page) :
+            this.previewBuildTrial ? new NewBuildPanel(view, this.getBuild(), navigate, screen, page) :
+            this.previewInventoryTrial ? new NewInventoryPanel(view,this.getInventory(),navigate,screen,page) :
+            new NewExpeditionPanel(view,this.getMapTrial(),navigate,screen,page);
     }
     private static trial: NewBattleSession;
     static readonly trialOptions = NewBattleConfigUtils.defaults();

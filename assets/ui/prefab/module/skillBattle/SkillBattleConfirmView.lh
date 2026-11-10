@@ -1,0 +1,244 @@
+{
+  "_$ver": 1,
+  "_$id": "page_SkillBattleConfirmView",
+  "_$type": "GWidget",
+  "name": "SkillBattleConfirmView",
+  "width": 1280,
+  "height": 720,
+  "_$child": [
+    {
+      "_$id": "region_94",
+      "_$type": "GWidget",
+      "name": "adapter",
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 720,
+      "mouseThrough": true,
+      "_$child": [
+        {
+          "_$id": "region_93",
+          "_$type": "GWidget",
+          "name": "dialogArea",
+          "x": 320,
+          "y": 180,
+          "width": 640,
+          "height": 360,
+          "mouseThrough": false,
+          "_$child": [
+            {
+              "_$id": "dialog_82",
+              "_$type": "GImage",
+              "name": "dialogBackground",
+              "x": 0,
+              "y": 0,
+              "width": 640,
+              "height": 360,
+              "src": "ui/texture/inventory/warehouse-body.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "dialog_83",
+              "_$type": "GTextField",
+              "name": "dialogTitle",
+              "x": 32,
+              "y": 24,
+              "width": 576,
+              "height": 44,
+              "text": "确认",
+              "fontSize": 28,
+              "color": "#ecefe7",
+              "wordWrap": true,
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            },
+            {
+              "_$id": "dialog_84",
+              "_$type": "GTextField",
+              "name": "dialogDetail",
+              "x": 32,
+              "y": 88,
+              "width": 576,
+              "height": 104,
+              "text": "",
+              "fontSize": 22,
+              "color": "#ecefe7",
+              "wordWrap": true,
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            },
+            {
+              "_$id": "dialog_85",
+              "_$type": "GTextField",
+              "name": "dialogError",
+              "x": 32,
+              "y": 200,
+              "width": 576,
+              "height": 54,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "wordWrap": true,
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            },
+            {
+              "_$id": "region_92",
+              "_$type": "GWidget",
+              "name": "dialogActionsArea",
+              "x": 32,
+              "y": 276,
+              "width": 576,
+              "height": 54,
+              "mouseThrough": true,
+              "_$child": [
+                {
+                  "_$id": "dialog_87",
+                  "_$type": "GWidget",
+                  "name": "dialogCancel",
+                  "x": 48,
+                  "y": 0,
+                  "width": 200,
+                  "height": 54,
+                  "mouseEnabled": true,
+                  "_$child": [
+                    {
+                      "_$id": "dialog_88",
+                      "_$type": "GImage",
+                      "name": "dialogCancelSkin",
+                      "width": 200,
+                      "height": 54,
+                      "src": "ui/texture/inventory/tooltip.png",
+                      "autoSize": false,
+                      "mouseEnabled": false
+                    },
+                    {
+                      "_$id": "dialog_86",
+                      "_$type": "GTextField",
+                      "name": "dialogCancelText",
+                      "x": 8,
+                      "y": 4,
+                      "width": 184,
+                      "height": 46,
+                      "text": "取消",
+                      "fontSize": 18,
+                      "color": "#ecefe7",
+                      "wordWrap": true,
+                      "mouseEnabled": false,
+                      "align": "center",
+                      "valign": "middle",
+                      "overflow": "shrink"
+                    }
+                  ]
+                },
+                {
+                  "_$id": "dialog_90",
+                  "_$type": "GWidget",
+                  "name": "dialogConfirm",
+                  "x": 328,
+                  "y": 0,
+                  "width": 200,
+                  "height": 54,
+                  "mouseEnabled": true,
+                  "_$child": [
+                    {
+                      "_$id": "dialog_91",
+                      "_$type": "GImage",
+                      "name": "dialogConfirmSkin",
+                      "width": 200,
+                      "height": 54,
+                      "src": "ui/texture/inventory/tooltip.png",
+                      "autoSize": false,
+                      "mouseEnabled": false
+                    },
+                    {
+                      "_$id": "dialog_89",
+                      "_$type": "GTextField",
+                      "name": "dialogConfirmText",
+                      "x": 8,
+                      "y": 4,
+                      "width": 184,
+                      "height": 46,
+                      "text": "确认",
+                      "fontSize": 18,
+                      "color": "#ecefe7",
+                      "wordWrap": true,
+                      "mouseEnabled": false,
+                      "align": "center",
+                      "valign": "middle",
+                      "overflow": "shrink"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "relations": [
+        {
+          "_$type": "Relation",
+          "target": {
+            "_$ref": "page_SkillBattleConfirmView"
+          },
+          "data": [
+            100,
+            0
+          ]
+        }
+      ]
+    }
+  ],
+  "_$comp": [
+    {
+      "_$type": "3593fc26-337e-42e3-92dc-1b9c2bb8f988",
+      "scriptPath": "../src/script/games/ui/components/ElementMapper.ts",
+      "adapter": {
+        "_$ref": "region_94"
+      },
+      "elements": [
+        {
+          "_$ref": "region_94"
+        },
+        {
+          "_$ref": "region_93"
+        },
+        {
+          "_$ref": "dialog_82"
+        },
+        {
+          "_$ref": "dialog_83"
+        },
+        {
+          "_$ref": "dialog_84"
+        },
+        {
+          "_$ref": "dialog_85"
+        },
+        {
+          "_$ref": "region_92"
+        },
+        {
+          "_$ref": "dialog_87"
+        },
+        {
+          "_$ref": "dialog_88"
+        },
+        {
+          "_$ref": "dialog_86"
+        },
+        {
+          "_$ref": "dialog_90"
+        },
+        {
+          "_$ref": "dialog_91"
+        },
+        {
+          "_$ref": "dialog_89"
+        }
+      ],
+      "mapperType": 2
+    }
+  ]
+}

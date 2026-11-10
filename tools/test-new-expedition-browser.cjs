@@ -2,16 +2,18 @@ const {chromium}=require("playwright"),sharp=require("sharp"),assert=require("no
 const fs=require("node:fs/promises"),path=require("node:path");
 const url=process.env.SKILL_BATTLE_URL||"http://127.0.0.1:18124",out=path.resolve(__dirname,"../bin/stage4-browser");
 const state=p=>p.evaluate(()=>window.__skillBattlePreview.trial.inventory);
-async function ready(p){await p.waitForFunction(()=>window.__skillBattlePreview?.panel?.opened);}
+async function ready(p){await p.waitForFunction(()=>window.__skillBattlePreview?.panel?.opened&&window.__skillBattlePreview.view.isOpened);}
 async function click(p,key,settle=true) {
     const pt=await p.evaluate(key=>{
-        const b=window.__skillBattlePreview.panel.buttons[key];
+        const preview=window.__skillBattlePreview;
+        const b=preview.ui.topView?.getElement(key,false)||preview.panel.buttons[key];
         if(!b?.visible||!b.mouseEnabled)throw Error(`Unavailable ${key}`);
         const a=b.localToGlobal(new Laya.Point(b.width/2,b.height/2)),r=document.querySelector("canvas").getBoundingClientRect();
         return{x:r.left+a.x*r.width/Laya.stage.width,y:r.top+a.y*r.height/Laya.stage.height};
     },key);
     if(p.touchMode)await p.touchscreen.tap(pt.x,pt.y);else await p.mouse.click(pt.x,pt.y);
     await p.waitForTimeout(100);
+    await ready(p);
     if(settle)await p.waitForFunction(()=>!window.__skillBattlePreview.panel.movement);
 }
 async function screenshot(p,name){
@@ -20,7 +22,9 @@ async function screenshot(p,name){
     const bad=await p.evaluate(()=>{
         const {panel}=window.__skillBattlePreview,issues=[];
         for(const [key,n]of Object.entries({...panel.labels,...panel.nodes,...panel.expeditionNodes})){
-            if(!n.visible||n.parent&&!n.parent.visible||!(n instanceof Laya.GTextField)||!n.text)continue;
+            if(!n.visible||!(n instanceof Laya.GTextField)||!n.text)continue;
+            let visible=true;for(let a=n.parent;a;a=a.parent)if(!a.visible)visible=false;
+            if(!visible)continue;
             if(!n.textIns.visible)issues.push([key,"Visible field has hidden text"]);
             n.textIns.typeset(true);
             if(n.textIns.textWidth>n.width+3||n.textIns.textHeight>n.height+3)issues.push([key,n.text,n.width,n.height,n.textIns.textWidth,n.textIns.textHeight]);
@@ -246,7 +250,7 @@ async function drag(p,fromKey,toKey) {
             assert.equal((await state(p)).flow.phase,"ready");
             await pan(p,[300,130],[1100,130]);
             await click(p,"expNode2");
-            assert.equal(await p.evaluate(()=>window.__skillBattlePreview.panel.nodes.inventoryRoot.visible),false);
+            assert.equal(await p.evaluate(()=>!!window.__skillBattlePreview.panel.nodes.inventoryRoot?.visible),false);
             assert.equal(await p.evaluate(()=>window.__skillBattlePreview.trial.searching),false);
             assert.equal(await p.evaluate(()=>window.__skillBattlePreview.panel.buttons.expUse.getChildAt(1).text),"搜索");
             await screenshot(p,`${name}-search-action`);
@@ -307,14 +311,14 @@ async function drag(p,fromKey,toKey) {
             await visit(p,4);await choose(p);await openMap(p);
             if((await state(p)).map.present.includes(30)) {
                 await visit(p,30);assert.equal((await state(p)).phase,"active");
-                await click(p,"expAbandon");assert.equal((await state(p)).phase,"active");
+                await click(p,"dialogCancel");assert.equal((await state(p)).phase,"active");
                 await click(p,"expUse");
-                await click(p,"expUse");assert.equal((await state(p)).result,"extract");
+                await click(p,"dialogConfirm");assert.equal((await state(p)).result,"extract");
                 await p.waitForFunction(()=>window.__skillBattlePreview.panel.screen==="settlement");
                 await screenshot(p,`${name}-extracted`);
             } else {
                 await click(p,"expAbandon");assert.equal((await state(p)).phase,"active");
-                await click(p,"expAbandon");assert.equal((await state(p)).result,"abandon");
+                await click(p,"dialogConfirm");assert.equal((await state(p)).result,"abandon");
             }
             assert.equal(await p.evaluate(()=>localStorage.getItem("other-app")),"keep");
             if(name==="desktop"){
@@ -348,7 +352,7 @@ async function drag(p,fromKey,toKey) {
                 assert.deepEqual((await state(p)).map.used,usedBeforeReturn);
                 assert.equal((await state(p)).flow.pending,null,"Revisiting does not grant another reward");
                 await click(p,"expNode17");assert.equal((await state(p)).node,17);
-                assert.equal(await p.evaluate(()=>window.__skillBattlePreview.panel.nodes.inventoryRoot.visible),false);
+                assert.equal(await p.evaluate(()=>!!window.__skillBattlePreview.panel.nodes.inventoryRoot?.visible),false);
                 assert.equal(await p.evaluate(()=>window.__skillBattlePreview.trial.searching),false);
                 await screenshot(p,"desktop-resource-action");
                 const sourceCamera=await p.evaluate(()=>window.__skillBattlePreview.panel.scroller.scrollingPosX);
@@ -373,7 +377,7 @@ async function drag(p,fromKey,toKey) {
                 await visit(p,5);
                 await win(p,false);assert.equal((await state(p)).flow.pending.kind,"passive");
                 await screenshot(p,"desktop-mandatory-passive");
-                assert.equal(await p.evaluate(()=>window.__skillBattlePreview.panel.nodes.inventoryRoot.visible),false);
+                assert.equal(await p.evaluate(()=>!!window.__skillBattlePreview.panel.nodes.inventoryRoot?.visible),false);
                 await choose(p);await openMap(p);assert.equal((await state(p)).flow.paidChoices,1);
                 await screenshot(p,"desktop-third-victory");
                 const recoveryParent=await p.evaluate(()=>{

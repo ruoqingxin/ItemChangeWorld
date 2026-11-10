@@ -7,7 +7,11 @@ import { openSkillBattleScreen } from "./SkillBattleUINavigation";
 /** Entry screen for a run. It is opened and closed independently by UIManager. */
 export class SkillBattleStartView extends UIBaseView {
     get layer(): UILayer { return UILayer.Second; }
-    get path(): string { return "ui/prefab/module/skillBattle/SkillBattleStartView.lh"; }
+    get path(): string {
+        return SkillBattleUISession.previewSingleTrial || SkillBattleUISession.previewBuildTrial ?
+            "ui/prefab/module/skillBattle/SkillBattleTrialView.lh" :
+            "ui/prefab/module/skillBattle/SkillBattleStartView.lh";
+    }
     private panel: NewBattlePanel;
 
     protected onConstruct(): void {

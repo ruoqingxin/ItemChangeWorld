@@ -1,5 +1,8 @@
 const fs = require("node:fs"), path = require("node:path");
 const root = path.resolve(__dirname,"..");
+if(JSON.parse(fs.readFileSync(path.join(root,"assets/ui/prefab/module/skillBattle/SkillBattleStartView.lh"),"utf8"))
+    ._$child.some(n=>n.name==="adapter"))
+    throw Error("UI pages have been split. Edit SkillBattleMapView directly; this historical stacking builder is disabled.");
 for (const view of ["SkillBattleStartView","SkillBattleSettlementView"]) {
     const file = path.join(root,"assets/ui/prefab/module/skillBattle",`${view}.lh`);
     const prefab = JSON.parse(fs.readFileSync(file,"utf8"));

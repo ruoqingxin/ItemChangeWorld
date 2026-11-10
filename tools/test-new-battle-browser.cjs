@@ -16,7 +16,8 @@ async function ready(page, screen) {
 }
 async function click(page, name, twice = false) {
     const point = await page.evaluate(name => {
-        const button = window.__skillBattlePreview.panel.buttons[name];
+        const preview=window.__skillBattlePreview;
+        const button = preview.ui.topView?.getElement(name,false)||preview.panel.buttons[name];
         if (!button?.visible || !button.mouseEnabled) throw new Error(`Disabled/hidden button: ${name}`);
         const point = button.localToGlobal(new Laya.Point(button.width / 2, button.height / 2));
         const canvas = document.querySelector("canvas"), rect = canvas.getBoundingClientRect();
@@ -38,12 +39,12 @@ async function capture(page, name) {
     const { channels } = await sharp(file).stats();
     assert.ok(channels.slice(0,3).some(c => c.stdev > 8 && c.max > 170), `${name} canvas must not be blank`);
     const overlaps = await page.evaluate(() => {
-        const root = window.__skillBattlePreview.view.view, rectangles = [];
-        for (let i = 0; i < root.numChildren; i++) {
-            const node = root.getChildAt(i);
-            if (!node.visible || !node.mouseEnabled || !node.numChildren ||
-                !(node.getChildAt(0) instanceof Laya.GTextField)) continue;
-            rectangles.push({name:node.name,x:node.x,y:node.y,w:node.width,h:node.height});
+        const panel = window.__skillBattlePreview.panel, root=panel.root, rectangles = [];
+        for (const node of Object.values(panel.buttons)) {
+            let visible=true;for(let a=node;a;a=a.parent)if(!a.visible)visible=false;
+            if (!visible || !node.mouseEnabled) continue;
+            const p=root.globalToLocal(node.localToGlobal(new Laya.Point()));
+            rectangles.push({name:node.name,x:p.x,y:p.y,w:node.width,h:node.height});
         }
         return rectangles.flatMap((a,i) => rectangles.slice(i+1).filter(b =>
             Math.min(a.x+a.w,b.x+b.w)>Math.max(a.x,b.x) &&
@@ -132,9 +133,9 @@ async function main() {
         assert.equal(carry.sword.momentum,0);
         await click(page,"battleReport");
         await click(page,"olderReport");
-        assert.match(await page.evaluate(()=>window.__skillBattlePreview.panel.labels.section.text),/第 1 场/);
+        assert.match(await page.evaluate(()=>window.__skillBattlePreview.ui.topView.getElement("reportSection").text),/第 1 场/);
         await click(page,"newerReport");
-        assert.match(await page.evaluate(()=>window.__skillBattlePreview.panel.labels.section.text),/第 2 场/);
+        assert.match(await page.evaluate(()=>window.__skillBattlePreview.ui.topView.getElement("reportSection").text),/第 2 场/);
         await click(page,"reportClose");
         const isolation=await page.evaluate(()=>[localStorage.getItem("nowchange.skill-expedition.current.v2"),localStorage.getItem("other-app")]);
         assert.deepEqual(isolation,["preserve-v2","preserve-other"]);
@@ -212,9 +213,9 @@ async function main() {
         assert.ok(await corrupted.evaluate(()=>window.__skillBattlePreview.trial.error));
         assert.equal(await corrupted.evaluate(k=>localStorage.getItem(k),key),"broken-save");
         await click(corrupted,"reset");await capture(corrupted,"desktop-reset");
-        await click(corrupted,"resetNo");
+        await click(corrupted,"dialogCancel");
         assert.equal(await corrupted.evaluate(k=>localStorage.getItem(k),key),"broken-save");
-        await click(corrupted,"reset");await click(corrupted,"resetYes");await ready(corrupted,"start");
+        await click(corrupted,"reset");await click(corrupted,"dialogConfirm");await ready(corrupted,"start");
         assert.equal(await corrupted.evaluate(k=>localStorage.getItem(k),key),null);
         assert.deepEqual(corrupted.errors,[]);assert.deepEqual(corrupted.failed,[]);
         await corrupted.close();

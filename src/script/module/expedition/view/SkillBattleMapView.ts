@@ -1,33 +1,16 @@
 import { UIBaseView } from "../../../games/ui/UIBaseView";
 import { UILayer } from "../../../games/ui/UILayer";
+import { NewBattlePanel } from "../../skillBattle/view/NewBattlePanel";
 import { SkillBattleUISession } from "../../skillBattle/view/SkillBattleUISession";
 import { openSkillBattleScreen } from "../../skillBattle/view/SkillBattleUINavigation";
-import { SkillBattleMapPanel } from "./SkillBattleMapPanel";
 
 export class SkillBattleMapView extends UIBaseView {
     get layer(): UILayer { return UILayer.Second; }
     get path(): string { return "ui/prefab/module/expedition/SkillBattleMapView.lh"; }
-    private panel: SkillBattleMapPanel;
-
+    private panel: NewBattlePanel;
     protected onConstruct(): void {
-        const expedition = SkillBattleUISession.getExpedition();
-        this.panel = new SkillBattleMapPanel(this, expedition, screen => openSkillBattleScreen(screen));
-        this.view.on(Laya.Event.RESIZE, this, this.resize);
+        this.panel = SkillBattleUISession.createPanel(this,"start",openSkillBattleScreen,"map");
     }
-
-    onOpen(): void {
-        this.panel.open();
-        this.resize();
-        Laya.timer.loop(1000, this, this.tick);
-    }
-
-    protected onClose(): void {
-        Laya.timer.clear(this, this.tick);
-    }
-
-    private tick(): void { this.panel.tick(); }
-
-    private resize(): void {
-        this.panel.resizeTo(this.view);
-    }
+    onOpen(): void { this.panel.openHubScreen(); this.panel.resizeTo(this.view); }
+    protected onClose(): void { this.panel?.suspend(); }
 }

@@ -5,6 +5,12 @@ import { NewBattleConfigUtils, NewTrialOptions } from "../newRules/NewBattleConf
 import { NewBattleSession } from "../newRules/NewBattleSession";
 import type { NewBattleAction, NewBattleEvent, NewBattleResult } from "../newRules/NewBattleTypes";
 import type { NewTrialRecord } from "../newRules/NewBattleSession";
+import { UIManager } from "../../../games/ui/UIManager";
+import { SkillBattleConfirmView } from "./SkillBattleConfirmView";
+import { SkillBattleReportView } from "./SkillBattleReportView";
+import { SkillBattleBuildInfoView } from "./SkillBattleBuildInfoView";
+import { placeInPage, visitRegion } from "./SkillBattleUILayout";
+import type { SkillBattlePage } from "./SkillBattleUILayout";
 
 type Screen = "start" | "battle" | "settlement";
 export type NewBattlePanelSession = Pick<NewBattleSession, "error" | "outcome" | "state" | "record" |
@@ -27,25 +33,29 @@ export class NewBattlePanel {
     private selectedSkill = 1;
     protected resetConfirm = false;
     protected overlay: "log" | "build" | null = null;
-    private logPage = 0;
-    private reportIndex = 0;
     private queue: NewBattleEvent[] = [];
     protected root: Laya.GWidget;
     protected elements: { [key: string]: Laya.GWidget } = {};
+    protected modalOpen = false;
+    private popup: UIBaseView;
     constructor(view: UIBaseView, readonly session: NewBattlePanelSession, readonly options: NewTrialOptions,
-        protected readonly navigate: (screen: Screen) => void, readonly screen: Screen) {
+        protected readonly navigate: (screen: SkillBattlePage) => void, readonly screen: Screen,
+        readonly pageRole: SkillBattlePage = screen) {
         this.root = view.view;
-        for (let i = 0; i < this.root.numChildren; i++) {
-            const child = this.root.getChildAt(i) as Laya.GWidget;
+        visitRegion(view, this.root, child => {
             this.elements[child.name] = child;
+            if (child.name === "inventoryRoot" || child.name === "expeditionRoot") return false;
             if (child instanceof Laya.GTextField) {
                 this.labels[child.name] = child;
                 child.color = colors.text;
                 child.fontSize = 20;
                 child.textIns.bgColor = null as any;
                 child.textIns.borderColor = null as any;
-            } else if (child.numChildren > 0 && child.getChildAt(0) instanceof Laya.GTextField) this.buttons[child.name] = child;
-        }
+            } else if (child.numChildren > 0 && child.getChildAt(0) instanceof Laya.GTextField) {
+                this.buttons[child.name] = child;
+                return false;
+            }
+        });
         // Bind through ElementMapper, just like the existing panels.
         for (const key of Object.keys(this.buttons)) {
             const button = view.getElement<Laya.GWidget>(key, false);
@@ -60,6 +70,8 @@ export class NewBattlePanel {
     resizeTo(_view: Laya.GWidget): void { this.root.pos(0, 0); this.root.scale(1, 1); }
     suspend(): void {
         this.opened = false; this.busy = false; this.queue = [];
+        this.popup?.close();
+        this.popup = null; this.modalOpen = false;
         Laya.timer.clearAll(this);
         const numbers = this.labels.numbers;
         if (numbers) Laya.Tween.clearAll(numbers);
@@ -99,6 +111,7 @@ export class NewBattlePanel {
         if (this.opened && refresh) this.refresh();
     }
     protected command(key: string): void {
+        if (this.modalOpen) return;
         this.run(() => {
             if (this.busy) return;
             if (this.resetConfirm) {
@@ -106,23 +119,14 @@ export class NewBattlePanel {
                 if (key === "resetYes") { this.session.resetConfirmed(); this.resetConfirm = false; this.navigate("start"); }
                 return;
             }
-            if (this.overlay) {
-                if (key === "reportClose") this.overlay = null;
-                if (key === "previousPage") this.logPage = Math.max(0, this.logPage - 1);
-                if (key === "nextPage") this.logPage++;
-                if (key === "olderReport") { this.reportIndex = Math.max(0, this.reportIndex - 1); this.logPage = 0; }
-                if (key === "newerReport") { this.reportIndex++; this.logPage = 0; }
-                return;
-            }
             if (key === "reset") { this.resetConfirm = true; return; }
             if (key === "newRun") { this.startRun(); return; }
             if (key === "hub" || key === "loot") { this.navigate("start"); return; }
             if (key === "lootClose") { (this.session as NewBattleSession).continueBattle(); this.navigate("battle"); return; }
             if (key === "battleReport" || (key === "report" && this.screen !== "start")) {
-                this.overlay = "log"; this.logPage = 0;
-                this.reportIndex = Math.max(0, this.session.records.length - 1); return;
+                this.openReport(); return;
             }
-            if (key === "build" && this.screen !== "start") { this.overlay = "build"; return; }
+            if (key === "build" && this.screen !== "start") { this.openReport(true); return; }
             if (this.screen === "start") { this.configure(key); return; }
             if (this.screen !== "battle") return;
             if (key === "cancel") { this.selected = null; this.selection = null; this.notice = ""; return; }
@@ -198,17 +202,17 @@ export class NewBattlePanel {
             const numbers = this.labels.numbers;
             numbers.visible = true; numbers.text = `-${f(event.hpLoss)}${event.absorbed ? `  盾 -${f(event.absorbed)}` : ""}`;
             numbers.color = event.target === "player" ? colors.red : colors.gold;
-            numbers.fontSize = 24; numbers.pos(event.target === "player" ? 140 : 850, 300); numbers.alpha = 1;
+            numbers.fontSize = 24; placeInPage(numbers, this.root, event.target === "player" ? 140 : 850, 300); numbers.alpha = 1;
             Laya.Tween.clearAll(numbers);
-            Laya.Tween.to(numbers, { y: 260, alpha: 0 }, 280);
+            Laya.Tween.to(numbers, { y: numbers.y - 40, alpha: 0 }, 280);
             this.text("event", this.eventText(event), 400, 348, 600, 48, 18, colors.gold);
         }
         Laya.timer.once(event.type === "damage" ? 300 : 20, this, this.playNext);
     }
     refresh(): void {
-        for (const key of Object.keys(this.elements)) this.elements[key].visible = key === "screenBackground";
         if (this.resetConfirm) { this.renderReset(); return; }
         if (this.overlay) { this.renderOverlay(); return; }
+        for (const key of Object.keys(this.elements)) this.elements[key].visible = key === "screenBackground";
         if (this.screen === "start") this.renderStart();
         else if (this.screen === "battle") this.renderBattle();
         else this.renderSettlement();
@@ -217,7 +221,7 @@ export class NewBattlePanel {
         fontSize = 20, color: string = colors.text): void {
         const label = this.labels[key];
         if (!label) throw new Error(`预制缺少文本 ${key}`);
-        label.visible = true; label.pos(x, y); label.size(w, h);
+        label.visible = true; placeInPage(label, this.root, x, y); label.size(w, h);
         label.text = value; label.fontSize = fontSize; label.color = color;
         label.textIns.color = color; label.textIns.wordWrap = true;
     }
@@ -225,7 +229,7 @@ export class NewBattlePanel {
         enabled = true, selected = false): void {
         const button = this.buttons[key];
         if (!button) throw new Error(`预制缺少按钮 ${key}`);
-        button.visible = true; button.pos(x, y); button.size(w, h); button.alpha = enabled ? 1 : 0.48;
+        button.visible = true; placeInPage(button, this.root, x, y); button.size(w, h); button.alpha = enabled ? 1 : 0.48;
         button.mouseEnabled = enabled;
         button.graphics.clear();
         button.graphics.drawRect(0, 0, w, h, selected ? "#314e3e" : colors.fill,
@@ -374,28 +378,35 @@ export class NewBattlePanel {
         this.button("hub", "返回据点", 860, 600, 240);
     }
     protected renderReset(): void {
-        this.backdrop();
-        this.text("currency", this.timeText(), 1000, 24, 248, 40, 20, colors.muted);
-        this.text("resultTitle", "清除本次试炼？", 240, 190, 800, 60, 30, colors.gold);
-        this.text("resultDetail", "仅清除剑道试炼档，正式探索档不变。", 200, 284, 880, 90, 22);
-        this.text("overlayMessage", this.notice, 170, 420, 940, 70, 18, colors.red);
-        this.button("resetYes", "确认清除", 350, 540, 250);
-        this.button("resetNo", "取消", 680, 540, 250);
+        this.requestConfirmation("清除本次试炼？", "仅清除当前试炼档，其他存档保留。", () => {
+            this.session.resetConfirmed(); this.resetConfirm = false; this.navigate("start");
+        }, "确认清除");
+    }
+    protected requestConfirmation(title: string, detail: string, confirm: () => void, confirmText = "确认"): void {
+        if (this.modalOpen || !this.opened) return;
+        this.modalOpen = true;
+        this.popup = UIManager.ins().openForm(SkillBattleConfirmView, {
+            title, detail, confirmText, confirm,
+            closed: () => {
+                this.modalOpen = false; this.popup = null; this.resetConfirm = false;
+                if (this.opened) this.refresh();
+            },
+        });
+    }
+    protected openReport(build = false): void {
+        this.overlay = build ? "build" : "log";
+        this.renderOverlay();
     }
     protected renderOverlay(): void {
-        this.backdrop();
-        const records = this.session.records;
-        this.reportIndex = Math.min(this.reportIndex, Math.max(0, records.length - 1));
-        const record = this.overlay === "build" ? this.session.record : records[this.reportIndex];
-        this.text("currency", this.timeText(), 1000, 24, 248, 40, 20, colors.muted);
-        this.text("resultTitle", this.overlay === "build" ? "当前构筑" : "战斗记录", 240, 70, 800, 60, 30, colors.gold);
-        let lines: string[] = [];
-        if (record && this.overlay === "build") {
-            lines = [record.setup.build.schools.map(s => s === "earth" ? "土道 · 承岳" : "剑道 · 养锋").join(" / "), ...record.setup.build.actives.map(a =>
-                `${record.setup.skills.find(s => s.id === a.skillId)!.name} +${a.level}`),
-            record.setup.build.passiveIds.map(id => record.setup.passives.find(row => row.id === id)!.name).join(" / ") || "无被动"];
-            if (!record.setup.build.schools.length) lines = ["未借剑道"];
-        } else if (record) {
+        if (this.modalOpen || !this.opened) return;
+        const build = this.overlay === "build";
+        const records = (build ? [this.session.record].filter(Boolean) : this.session.records).map((record,index) => {
+            let lines: string[] = [];
+            if (build) {
+                lines = [record.setup.build.schools.map(s => s === "earth" ? "土道 · 承岳" : "剑道 · 养锋").join(" / "),
+                    ...record.setup.build.actives.map(a => `${record.setup.skills.find(s => s.id === a.skillId)!.name} +${a.level}`),
+                    ...record.setup.build.passiveIds.map(id => record.setup.passives.find(row => row.id === id)!.name)];
+            } else {
             let state = NewBattleCore.clone(record.initial);
             for (const row of record.actions) {
                 const result = NewBattleCore.resolve(record.setup, state, row.action);
@@ -404,21 +415,17 @@ export class NewBattlePanel {
                 lines.push(...result.events.filter(e => e.type === "damage" || e.type === "passive").map(e => this.eventText(e)));
                 state = result.state;
             }
-        }
-        const pages = Math.max(1, Math.ceil(lines.length / 10));
-        this.logPage = Math.min(this.logPage, pages - 1);
-        this.text("reportBody", lines.slice(this.logPage * 10, this.logPage * 10 + 10).join("\n") || "暂无记录",
-            180, 170, 920, 360, 22);
-        this.text("page", `${this.logPage + 1}/${pages}`, 570, 550, 140, 38, 18, colors.muted);
-        this.button("previousPage", "<", 340, 610, 150, 54, this.logPage > 0);
-        this.button("nextPage", ">", 530, 610, 150, 54, this.logPage + 1 < pages);
-        this.button("reportClose", "返回", 950, 610, 150);
-        if (this.overlay === "log") {
-            this.button("olderReport", "上一场", 170, 550, 180, 44, this.reportIndex > 0);
-            this.button("newerReport", "下一场", 930, 550, 180, 44, this.reportIndex + 1 < records.length);
-            this.text("section", `第 ${this.reportIndex + 1} 场 · ${record?.setup.enemy.name || ""}`,
-                350, 126, 580, 36, 20, colors.jade);
-        }
+            }
+            return { title: build ? record.setup.enemy.name : `第 ${index + 1} 场 · ${record.setup.enemy.name}`, lines };
+        });
+        this.modalOpen = true;
+        this.popup = UIManager.ins().openForm(build ? SkillBattleBuildInfoView : SkillBattleReportView, {
+            title: build ? "当前构筑" : "战斗记录", records,
+            closed: () => {
+                this.overlay = null; this.modalOpen = false; this.popup = null;
+                if (this.opened) this.refresh();
+            },
+        });
     }
     private eventText(event: NewBattleEvent): string {
         if (event.type === "damage") return `${{ body: "本体", keen: "锋意", difeng: "递锋", guanxi: "贯隙",
@@ -427,13 +434,14 @@ export class NewBattlePanel {
         return "";
     }
     private bar(key: string, ratio: number, x: number, y: number, width: number, color: string): void {
-        const bar = this.elements[key]; bar.visible = true; bar.pos(x, y); bar.size(width, 8);
+        const bar = this.elements[key]; bar.visible = true; placeInPage(bar, this.root, x, y); bar.size(width, 8);
         bar.graphics.clear(); bar.graphics.drawRect(0, 0, width, 8, "#39443c");
         if (ratio > 0) bar.graphics.drawRect(0, 0, width * ratio, 8, color);
     }
     private drawActors(enemyId: number): void {
         const player = this.elements.player, enemy = this.elements.enemy;
-        player.visible = enemy.visible = true; player.pos(250, 340); enemy.pos(970, 350);
+        player.visible = enemy.visible = true;
+        placeInPage(player, this.root, 250, 340); placeInPage(enemy, this.root, 970, 350);
         for (const actor of [player, enemy]) {
             const g = actor.graphics, isPlayer = actor === player;
             g.clear(); g.drawEllipse(-61, 64, 122, 22, "#18201a", null, 0);

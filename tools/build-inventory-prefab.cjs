@@ -1,5 +1,8 @@
 const fs=require("node:fs"),path=require("node:path"),crypto=require("node:crypto");
 const root=path.resolve(__dirname,".."),assets=path.join(root,"assets");
+if(JSON.parse(fs.readFileSync(path.join(assets,"ui/prefab/module/skillBattle/SkillBattleStartView.lh"),"utf8"))
+    ._$child.some(n=>n.name==="adapter"))
+    throw Error("UI pages have been split. Edit their individual prefabs; this historical stacking builder is disabled.");
 const read=p=>JSON.parse(fs.readFileSync(p,"utf8"));
 const write=(p,v)=>fs.writeFileSync(p,JSON.stringify(v,null,2)+"\n");
 const out=path.join(assets,"ui/atlas/module/inventory");
