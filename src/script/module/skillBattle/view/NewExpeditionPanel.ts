@@ -279,9 +279,10 @@ export class NewExpeditionPanel extends NewInventoryPanel {
     protected button(key: string, value: string, x: number, y: number, w: number, h=54, enabled=true, selected=false): void {
         if (!key.startsWith("exp")) { super.button(key,value,x,y,w,h,enabled,selected); return; }
         const n=this.buttons[key],label=n.getChildAt(1) as Laya.GTextField;
+        const mapNode=/^expNode\d+$/.test(key);
         n.visible=true;
-        if (/^expNode\d+$/.test(key)) n.pos(x,y); else placeInDesign(n,this.root,x,y);
-        n.size(w,h);n.mouseEnabled=enabled;n.alpha=enabled||selected?1:0.55;
+        if (mapNode) n.pos(x,y); else placeInDesign(n,this.root,x,y);
+        n.size(w,h);n.mouseEnabled=enabled;n.alpha=mapNode||enabled||selected?1:0.55;
         const skin=n.getChildAt(0) as Laya.GImage;skin.size(w,h);
         label.text=value;label.pos(4,2);label.size(w-8,h-4);label.fontSize=18;
         label.color=selected?"#ffd879":"#e8edf0";label.textIns.color=label.color;
@@ -303,6 +304,9 @@ export class NewExpeditionPanel extends NewInventoryPanel {
     }
     private updateMapBackground(): void {
         if(this.opened && this.expeditionNodes.expeditionRoot.visible)this.backdrop();
+    }
+    private get mapBandTop(): number {
+        return 112+(this.expeditionNodes.expViewport.height-720)/2;
     }
     protected backdrop(): void {
         if(this.pageRole!=="map") { super.backdrop();return; }
@@ -346,18 +350,24 @@ export class NewExpeditionPanel extends NewInventoryPanel {
         this.text("expResources",`生命 ${Core.format(s.hp)} / ${Core.format(c.build.setup.player.maxHp)}    灵力 ${Core.format(s.mp)} / ${Core.format(c.build.setup.player.maxMp)}    耐久 ${weapon?.durability ?? "无武器"}    已胜 ${s.map.cleared.length} 场`,
             32,64,1216,38,20,"#c7d9d5");
         const reach=Rules.reachable(c,s),points=new Map<number,MapPoint>();
+        const viewport=this.expeditionNodes.expViewport as Laya.GPanel;
         this.expeditionNodes.expViewport.visible=true;
         this.expeditionNodes.expMapContent.visible=true;
-        for(const id of s.map.visible) {
+        const positions=new Map<number,MapPoint>();
+        for(const id of s.map.present) {
             const n=Rules.node(c,id),edge=id>27?s.map.edges.find(e=>e.includes(id)):null;
             const parent=edge?Rules.node(c,edge[0]===id?edge[1]:edge[0]):null;
             const x=id===28 ? parent!.x+(parent!.id===7?0.9:-0.5) :
                 id===29 ? parent!.x-0.5 : parent?.x??n.x;
             const y=id>=30 ? id===30?-1.1:1.1 : id>=28?-1.1:n.y;
-            const px=80+x*242,py=198+y*128;
+            positions.set(id,{x:112+x*242,y:this.mapBandTop+198+y*128});
+        }
+        for(const id of s.map.visible) {
+            const n=Rules.node(c,id),{x:px,y:py}=positions.get(id)!;
             points.set(id,{x:px,y:py});
             const cleared=!!n.enemy&&s.map.cleared.includes(id),source=s.map.sources.find(box=>box.node===id);
-            const depleted=s.map.used.includes(id)||!!source&&source.revealed===source.entries.length&&
+            const explored=!!source&&source.revealed===source.entries.length;
+            const depleted=s.map.used.includes(id)||explored&&
                 !s.items.some(item=>item.location.space==="ground"&&item.location.node===id);
             const key=`expNode${id}`,kind=cleared?"遗藏":({normal:"普通",elite:"精英",boss:"首领",search:n.pool.startsWith("supply")?"补给":"搜索",
                 borrow:"借法",insight:"悟道",extract:"撤离",recovery:"恢复",start:"入境处",transit:"岔口"})[n.kind];
@@ -367,19 +377,23 @@ export class NewExpeditionPanel extends NewInventoryPanel {
             // Image-backed mapped node controls have their caption after the skin.
             (b.getChildAt(0) as Laya.GImage).visible=false;
             l.text=caption;
-            l.pos(0,104);l.size(116,28);l.fontSize=17;l.textIns.color=id===s.node?"#ffd879":depleted?"#9ca9a0":"#e8edf0";
+            l.pos(0,104);l.size(116,28);l.fontSize=17;
+            l.textIns.color=id===s.node?"#ffd879":explored?"#9ca9a0":"#e8edf0";
             const image=b.getChildAt(2) as Laya.GImage;
             const art=cleared?"battle-loot":n.kind==="search"?(n.pool.startsWith("supply")?"supply":"search"):
                 ({normal:"enemy-normal",elite:"enemy-elite",boss:"enemy-boss",borrow:"borrow",insight:"insight",
                     extract:"extract",recovery:"recovery",start:"start",transit:"transit"})[n.kind];
             image.src=`ui/image/expeditionNodes/node-${art}.png`;
             image.pos(6,0);image.size(104,104);image.visible=true;
-            image.grayed=depleted;image.alpha=depleted?0.68:1;
+            image.grayed=explored;image.alpha=1;image.color="#ffffff";
             b.graphics.clear();
         }
-        const viewport=this.expeditionNodes.expViewport as Laya.GPanel;
-        const width=Math.max(viewport.width,...[...points.values()].map(p=>p.x+80));
-        this.expeditionNodes.expMapContent.size(width,MAP_HEIGHT);
+        // Actual arrival history opens whole screens; revealing or dragging never extends them.
+        const furthest=Math.max(...s.revealed.map(id=>positions.get(id)?.x??0));
+        const screens=Math.max(1,Math.floor(furthest/viewport.width+0.5)+1);
+        const totalScreens=Math.ceil(Math.max(...[...positions.values()].map(p=>p.x+80))/viewport.width);
+        const width=Math.min(screens,totalScreens)*viewport.width;
+        this.expeditionNodes.expMapContent.size(width,viewport.height);
         viewport.layout.refresh(true);
         if(this.centerMap) {
             this.scroller.posX=Math.max(0,points.get(s.node)!.x-viewport.width*0.42);
@@ -515,7 +529,7 @@ export class NewExpeditionPanel extends NewInventoryPanel {
                 for(const x of new Set([p.x,q.x,(p.x+q.x)/2,...obstacles.flatMap(n=>[n.x-66,n.x+66])]))
                     options.push([p,{x,y:p.y},{x,y:q.y},q]);
                 for(const y of new Set([p.y,q.y,(p.y+q.y)/2,...obstacles.flatMap(n=>[n.y-60,n.y+90])]))
-                    if(y>=4&&y<=MAP_HEIGHT-4)options.push([p,{x:p.x,y},{x:q.x,y},q]);
+                    if(y>=this.mapBandTop+4&&y<=this.mapBandTop+MAP_HEIGHT-4)options.push([p,{x:p.x,y},{x:q.x,y},q]);
                 let shortest=Infinity;
                 for(const option of options) {
                     const path=candidate(option);

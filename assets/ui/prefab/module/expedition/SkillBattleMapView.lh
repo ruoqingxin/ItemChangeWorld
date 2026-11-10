@@ -608,6 +608,7 @@
               "_$id": "region_78",
               "_$type": "GWidget",
               "name": "mapHeaderArea",
+              "zOrder": 1,
               "relations": [{"_$type": "Relation", "target": {"_$ref": "exp_SkillBattleStartView_1"}, "data": [1, 0, 10, 0]}],
               "x": 32,
               "y": 14,
@@ -671,19 +672,17 @@
               "_$id": "exp_SkillBattleStartView_7",
               "_$type": "GPanel",
               "name": "expViewport",
-              "relations": [{"_$type": "Relation", "target": {"_$ref": "exp_SkillBattleStartView_1"}, "data": [1, 0, 13, 0]}],
-              "x": 32,
-              "y": 112,
-              "width": 936,
-              "height": 430,
+              "relations": [{"_$type": "Relation", "target": {"_$ref": "exp_SkillBattleStartView_1"}, "data": [1, 0, 2, 0]}],
+              "width": 1280,
+              "height": 720,
               "_mouseState": 2,
               "_$child": [
                 {
                   "_$id": "exp_SkillBattleStartView_8",
                   "_$type": "GWidget",
                   "name": "expMapContent",
-                  "width": 936,
-                  "height": 430,
+                  "width": 1280,
+                  "height": 720,
                   "mouseThrough": true,
                   "_$child": [
                     {

@@ -41,6 +41,16 @@ async function inspect(p, name) {
             for (let i = 0; i < n.numChildren; i++) scan(n.getChildAt(i));
         };
         scan(v.view.view);
+        const opacityIssues=[],colorIssues=[];
+        for(const id of v.trial.inventory.map.visible) {
+            const button=v.panel.buttons[`expNode${id}`],icon=button.getChildAt(2);
+            if(button.alpha!==1||icon.alpha!==1)opacityIssues.push([id,button.alpha,icon.alpha]);
+            const source=v.trial.inventory.map.sources.find(box=>box.node===id);
+            const explored=!!source&&source.revealed===source.entries.length;
+            if(icon.color!=="#ffffff"||icon.grayed!==explored)colorIssues.push([id,icon.color,icon.grayed,explored]);
+        }
+        const viewport=v.panel.expeditionNodes.expViewport;
+        const corner=viewport.localToGlobal(new Laya.Point());
         const r = document.querySelector("canvas").getBoundingClientRect();
         return {
             fillCount: fill.length, commandCount: commands.length, children: g.numChildren,
@@ -49,7 +59,8 @@ async function inspect(p, name) {
             stage: [Laya.stage.width, Laya.stage.height], phase: [c.offset.x, c.offset.y],
             expected: [phase(anchor.x - v.panel.scroller.scrollingPosX), phase(anchor.y)],
             scroll: v.panel.scroller.scrollingPosX, content: v.panel.scroller.contentWidth, view: v.panel.scroller.viewWidth,
-            textIssues, cssScale: r.width / Laya.stage.width,
+            textIssues, opacityIssues, colorIssues, viewport:[corner.x,corner.y,viewport.width,viewport.height],
+            cssScale: r.width / Laya.stage.width,
         };
     });
     assert.equal(result.fillCount, 1, "One repeating texture regardless of map length");
@@ -61,6 +72,9 @@ async function inspect(p, name) {
     assert.deepEqual(result.bounds, [0, 0, ...result.stage], "No exposed margins after scrolling or resizing");
     assert.deepEqual(result.phase, result.expected, "Ground follows actual native scroll position");
     assert.deepEqual(result.textIssues, []);
+    assert.deepEqual(result.opacityIssues, [], "Reachable, blocked and depleted nodes never fade through the ground");
+    assert.deepEqual(result.colorIssues, [], "Only fully searched sources are gray; reachability and used rewards never tint icons");
+    assert.deepEqual(result.viewport,[0,0,...result.stage],"Map input spans the whole page behind overlay UI");
     const image = await p.screenshot({ path: path.join(out, `${name}.png`) });
     assert.ok((await sharp(image).stats()).channels.slice(0, 3).some(c => c.stdev > 12));
     // The empty upper map band exposes the same ground pixel one native tile apart.
@@ -80,9 +94,9 @@ async function pan(p, reverse = false) {
     const points = await p.evaluate(reverse => {
         const v = window.__skillBattlePreview, n = v.panel.expeditionNodes.expViewport;
         const r = document.querySelector("canvas").getBoundingClientRect();
-        const xs = reverse ? [120, 850] : [850, 120];
+        const xs = reverse ? [n.width*0.15, n.width*0.85] : [n.width*0.85, n.width*0.15];
         return xs.map(x => {
-            const a = n.localToGlobal(new Laya.Point(x, 18));
+            const a = n.localToGlobal(new Laya.Point(x, 116));
             return { x: r.left + a.x * r.width / Laya.stage.width, y: r.top + a.y * r.height / Laya.stage.height };
         });
     }, reverse);
@@ -125,6 +139,9 @@ async function pan(p, reverse = false) {
             await p.waitForFunction(() => window.__skillBattlePreview.panel.pageRole === "map");
             const saved = await p.evaluate(key => localStorage.getItem(key), key);
             const initial = await inspect(p, `${name}-initial`);
+            assert.ok(Math.abs(initial.content-initial.view)<1,"Exactly one screen is open at the start");
+            assert.equal(await p.evaluate(() => window.__skillBattlePreview.panel.buttons.expNode4.mouseEnabled),false,
+                "Opaque future nodes remain blocked");
             await pan(p);
             const moved = await inspect(p, `${name}-panned`);
             if (initial.content > initial.view + 20)
@@ -152,21 +169,60 @@ async function pan(p, reverse = false) {
             assert.equal(await p.evaluate(() => window.__skillBattlePreview.trial.inventory.node), 2, "Background does not intercept node input");
             assert.equal(await p.evaluate(() => window.__skillBattlePreview.trial.inventory.flow.phase), "ready", "Travel does not trigger combat");
             await inspect(p, `${name}-node-action`);
+            await p.reload(); await ready(p);
+            assert.ok(Math.abs((await inspect(p,`${name}-restored-arrival`)).content-initial.content)<1,
+                "Reload derives the same unlocked screens from saved arrival history");
             const beforeFixture = await p.evaluate(key => localStorage.getItem(key), key);
             await p.evaluate(() => {
                 const v = window.__skillBattlePreview;
-                window.__groundFixtureRestore = [...v.trial.save.state.map.visible];
+                window.__groundStateRestore = JSON.parse(JSON.stringify(v.trial.save.state));
                 v.trial.save.state.map.visible = [...v.trial.save.state.map.present];
+                v.trial.save.state.map.used = [...new Set([...v.trial.save.state.map.used,4])];
                 v.panel.refresh();
             });
+            assert.ok(Math.abs((await inspect(p,`${name}-revealed-only-fixture`)).content-initial.content)<1,
+                "Revealing future nodes does not extend screen bounds");
+            assert.equal(await p.evaluate(() => window.__skillBattlePreview.panel.buttons.expNode4.getChildAt(2).grayed),false,
+                "Using a borrow point does not gray it");
+            const screenProgress=await p.evaluate(() => {
+                const {trial,panel}=window.__skillBattlePreview;
+                const node=trial.save.state.map.present.find(id=> {
+                    const b=panel.buttons[`expNode${id}`],x=b.x+b.width/2,w=panel.scroller.viewWidth;
+                    return x>=w/2&&x<w*1.5;
+                });
+                trial.save.state.revealed.push(node);
+                trial.save.state.node=node;panel.refresh();
+                const forward=panel.scroller.contentWidth;
+                trial.save.state.node=1;panel.refresh();
+                return{forward,back:panel.scroller.contentWidth,view:panel.scroller.viewWidth};
+            });
+            assert.ok(Math.abs(screenProgress.forward-screenProgress.view*2)<1,"Arrival in the front half opens the next whole screen");
+            assert.equal(screenProgress.back,screenProgress.forward,"Retreat never closes unlocked screens");
+            await p.evaluate(() => {
+                const {trial,panel}=window.__skillBattlePreview;
+                trial.save.state.revealed=[...trial.save.state.map.present];
+                trial.save.state.node=2;
+                trial.save.state.map.sources.push({node:17,entries:[{}],revealed:0,opened:true,progressMs:0});
+                panel.refresh();
+            });
+            await inspect(p,`${name}-unfinished-search-fixture`);
+            await p.evaluate(() => {
+                const {trial,panel}=window.__skillBattlePreview;
+                trial.save.state.map.sources.find(box=>box.node===17).revealed=1;
+                const ground=JSON.parse(JSON.stringify(trial.save.state.items[0]));
+                ground.uid="visual-ground-fixture";ground.location={space:"ground",node:17};
+                trial.save.state.items.push(ground);panel.refresh();
+            });
+            assert.equal(await p.evaluate(() => window.__skillBattlePreview.panel.buttons.expNode17.getChildAt(2).grayed),true,
+                "Completed search grays the source even while revealed loot remains");
             await pan(p); await pan(p);
             const long = await inspect(p, `${name}-long-map-fixture`);
             assert.ok(long.scroll > 768, "Cross at least one entire texture period");
             assert.equal(await p.evaluate(key => localStorage.getItem(key), key), beforeFixture, "Visual fixture/pan does not save");
             await p.evaluate(() => {
                 const v = window.__skillBattlePreview;
-                v.trial.save.state.map.visible = window.__groundFixtureRestore;
-                delete window.__groundFixtureRestore;
+                v.trial.save.state = window.__groundStateRestore;
+                delete window.__groundStateRestore;
                 v.panel.refresh();
             });
             assert.equal(await p.evaluate(() => localStorage.getItem("other-app")), "keep");

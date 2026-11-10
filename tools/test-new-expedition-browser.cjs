@@ -239,9 +239,8 @@ async function drag(p,fromKey,toKey) {
                 const {panel}=window.__skillBattlePreview;
                 return{x:panel.scroller.posX,width:panel.scroller.contentWidth,view:panel.scroller.viewWidth};
             });
-            assert.ok(scroll.x>20,"Mouse/touch pans the unlocked map");
-            assert.ok(scroll.x<=scroll.width-scroll.view+1,"Scroll stops at revealed boundary");
-            assert.ok(scroll.width<1800,"Unrevealed far map does not reserve scroll space");
+            assert.ok(scroll.x<1,"The initial fixed screen cannot be dragged into locked screens");
+            assert.ok(Math.abs(scroll.width-scroll.view)<1,"The first screen stays fixed until actual progress");
             assert.deepEqual((await state(p)).map,beforePan.map,"Panning reveals no nodes or rewards");
             await screenshot(p,`${name}-map-scrolled`);
             await pan(p,[300,130],[1100,130]);
@@ -346,8 +345,8 @@ async function drag(p,fromKey,toKey) {
                 assert.ok(Math.abs(cameraAfter-cameraDuring.target)<1);
                 assert.equal(await p.evaluate(()=>window.__skillBattlePreview.panel.buttons.expUse.getChildAt(1).text),"已使用");
                 assert.equal(await p.evaluate(()=>window.__skillBattlePreview.panel.buttons.expUse.mouseEnabled),false);
-                assert.equal(await p.evaluate(()=>window.__skillBattlePreview.panel.buttons.expNode4.getChildAt(2).grayed),true,
-                    "Used reward retains its node image with a depleted visual state");
+                assert.equal(await p.evaluate(()=>window.__skillBattlePreview.panel.buttons.expNode4.getChildAt(2).grayed),false,
+                    "A used reward is not a fully searched exploration source");
                 assert.equal((await state(p)).node,4,"Used reward node remains a travel destination");
                 assert.deepEqual((await state(p)).map.used,usedBeforeReturn);
                 assert.equal((await state(p)).flow.pending,null,"Revisiting does not grant another reward");

@@ -108,9 +108,11 @@ for (const [file, type, content] of files) {
         assert.deepEqual([image.readUInt32BE(16),image.readUInt32BE(20)],[768,768],"Keep approved texture at native resolution");
         const meta=JSON.parse(fs.readFileSync(path.join(root,"assets",ground.src+".meta"),"utf8"));
         assert.deepEqual(meta.importer,{textureType:2,sRGB:true,premultiplyAlpha:true});
-        assert.equal(nodes.get("expViewport").height,430);
+        assert.equal(nodes.get("expViewport").width,1280);
+        assert.equal(nodes.get("expViewport").height,720);
+        assert.equal(nodes.get("mapHeaderArea").zOrder,1,"Header stays above the full-screen map");
         assert.deepEqual(nodes.get("expeditionRoot").relations[0].data, [1, 0, 2, 0]);
-        assert.deepEqual(nodes.get("expViewport").relations[0].data, [1, 0, 13, 0]);
+        assert.deepEqual(nodes.get("expViewport").relations[0].data, [1, 0, 2, 0]);
         assert.deepEqual(nodes.get("nodeActionArea").relations[0].data, [9, 0, 13, 0]);
         assert.deepEqual(nodes.get("mapActionsArea").relations[0].data, [1, 0, 16, 0]);
         assert.ok(nodes.get("nodeActionArea")._$child.some(n=>n.name==="expUse"));

@@ -102,7 +102,7 @@ async function inspect(p, name, popup = false) {
     }
     if (r.expeditionRoot) {
         assert.deepEqual(r.expeditionRoot, [0, 0, w, h]);
-        assert.deepEqual(r.expViewport, [32, 112 + dy, w-312, 542 + dy]);
+        assert.deepEqual(r.expViewport, [0, 0, w, h]);
         assert.deepEqual(r.nodeActionArea, [w-280, 192 + dy, w-32, 474 + dy]);
         assert.deepEqual(r.mapActionsArea, [32, h-172, w-32, h-32]);
         assert.deepEqual(r.expClock, [w-200, 16, w-32, 56]);
