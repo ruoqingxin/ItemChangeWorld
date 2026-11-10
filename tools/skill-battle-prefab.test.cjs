@@ -29,8 +29,14 @@ for (const [file, type, content] of files) {
         positions.set(node.name, { x: px + x, y: py + y });
         if (parent) {
             assert.ok([x,y,node.width,node.height].every(Number.isFinite), `${file}: invalid dimensions ${node.name}`);
-            assert.ok(x >= 0 && y >= 0 && x + node.width <= parent.width && y + node.height <= parent.height,
-                `${file}: ${node.name} exceeds ${parent.name}`);
+            const backdrop = parent === prefab && ["screenBackground", "mapBackdropArea"].includes(node.name);
+            if (backdrop) {
+                assert.ok(x <= 0 && x + node.width >= parent.width && y === 0 && node.height === parent.height,
+                    `${file}: extended background must cover the authored page`);
+            } else {
+                assert.ok(x >= 0 && y >= 0 && x + node.width <= parent.width && y + node.height <= parent.height,
+                    `${file}: ${node.name} exceeds ${parent.name}`);
+            }
         }
         for (const child of node._$child || []) walk(child, node, px + x, py + y);
     }
@@ -41,9 +47,14 @@ for (const [file, type, content] of files) {
     }
     walk(prefab); refs(prefab);
     assert.deepEqual([prefab.width,prefab.height,prefab.scaleX || 1,prefab.scaleY || 1], [1280,720,1,1], file);
-    assert.equal(prefab._$child.length, 1, `${file}: content must be under the adapter`);
+    assert.ok(prefab._$child.every(n => ["adapter", "screenBackground", "mapBackdropArea"].includes(n.name)),
+        `${file}: only independent backgrounds may sit outside the adapter`);
+    assert.equal(prefab._$child.filter(n => n.name === "adapter").length, 1, `${file}: one content adapter`);
     const adapter = nodes.get("adapter"), mapper = prefab._$comp.find(c => c.scriptPath?.endsWith("/ElementMapper.ts"));
     assert.equal(mapper.adapter._$ref, adapter._$id, `${file}: adapter must actually be bound`);
+    assert.deepEqual(adapter.relations, [
+        { _$type: "Relation", target: { _$ref: prefab._$id }, data: [1, 0, 2, 0] },
+    ], `${file}: native Width/Height relations, not the runtime-only Size shorthand`);
     assert.equal(mapper.mapperType, type, `${file}: fullscreen pages and masked popups must be distinct`);
     assert.ok(nodes.has(content), `${file}: missing ${content}`);
     for (const ref of references) assert.ok(ids.has(ref), `${file}: unresolved reference ${ref}`);
@@ -51,6 +62,9 @@ for (const [file, type, content] of files) {
         if (type === 4) assert.ok(!nodes.has(name), `${file}: embedded popup control ${name}`);
     }
     if (nodes.has("inventoryRoot")) {
+        assert.deepEqual(nodes.get("inventoryRoot").relations[0].data, [1, 0, 2, 0]);
+        assert.deepEqual(nodes.get("bagArea").relations[0].data, [6, 0, 13, 0]);
+        assert.deepEqual(nodes.get("sourceArea").relations[0].data, [9, 0, 13, 0]);
         for (const name of ["expeditionRoot","candidateArea","reportBody"])
             assert.ok(!nodes.has(name), `${file}: must not contain the ${name} page`);
         for (const name of ["equipmentArea","battleItemsArea","safeItemsArea","bagItemsArea","sourceItemsArea","sourcePagesArea","actionsArea"])
@@ -86,12 +100,26 @@ for (const [file, type, content] of files) {
         assert.ok(!nodes.has("inventoryRoot")&&!nodes.has("expeditionRoot"), "Build owns no storage or map subtree");
     if (file.endsWith("SkillBattleMapView")) {
         assert.ok(!nodes.has("inventoryRoot")&&!nodes.has("warehouse0"), "Map owns no other full page");
+        assert.equal(nodes.get("screenBackground")._$type,"GWidget","Map uses viewport-sized repeated drawing, not cover stretching");
+        const ground=nodes.get("mapGroundTexture");
+        assert.equal(ground.visible,false,"Texture source must not render a second image");
+        assert.equal(ground.src,"ui/texture/expedition/ancient-sect-ground.png");
+        const image=fs.readFileSync(path.join(root,"assets",ground.src));
+        assert.deepEqual([image.readUInt32BE(16),image.readUInt32BE(20)],[768,768],"Keep approved texture at native resolution");
+        const meta=JSON.parse(fs.readFileSync(path.join(root,"assets",ground.src+".meta"),"utf8"));
+        assert.deepEqual(meta.importer,{textureType:2,sRGB:true,premultiplyAlpha:true});
         assert.equal(nodes.get("expViewport").height,430);
+        assert.deepEqual(nodes.get("expeditionRoot").relations[0].data, [1, 0, 2, 0]);
+        assert.deepEqual(nodes.get("expViewport").relations[0].data, [1, 0, 13, 0]);
+        assert.deepEqual(nodes.get("nodeActionArea").relations[0].data, [9, 0, 13, 0]);
+        assert.deepEqual(nodes.get("mapActionsArea").relations[0].data, [1, 0, 16, 0]);
         assert.ok(nodes.get("nodeActionArea")._$child.some(n=>n.name==="expUse"));
         for(let i=1;i<=32;i++) {
             const icon=nodes.get(`expNode${i}Icon`); assert.deepEqual([icon.width,icon.height],[104,104]);
         }
     }
+    if (type !== 4) assert.deepEqual(nodes.get(content).relations[0].data, [6, 0, 13, 0],
+        `${file}: native centered dialog contents inside a fluid adapter`);
     if (file.endsWith("SkillBattleBattleView")) {
         for(const name of ["reportBody","resultTitle","lootSlot0","inventoryRoot","expeditionRoot"])
             assert.ok(!nodes.has(name),`Battle must not carry ${name}`);

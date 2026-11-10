@@ -18,6 +18,7 @@
       "_$child": [
         {
           "_$id": "region_143",
+          "relations": [{"_$type": "Relation", "target": {"_$ref": "region_144"}, "data": [6, 0, 13, 0]}],
           "_$prefab": "2255efde-79f2-41ec-91aa-521cbd3dd215",
           "x": 128,
           "y": 48,
@@ -36,7 +37,9 @@
             "_$ref": "page_SkillBattleBuildInfoView"
           },
           "data": [
-            100,
+            1,
+            0,
+            2,
             0
           ]
         }

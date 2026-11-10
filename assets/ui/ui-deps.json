@@ -68,7 +68,7 @@
     "ui/image/expeditionNodes/node-start.png",
     "ui/image/expeditionNodes/node-supply.png",
     "ui/image/expeditionNodes/node-transit.png",
-    "ui/texture/common/hub_background.png",
+    "ui/texture/expedition/ancient-sect-ground.png",
     "ui/texture/inventory/tooltip.png"
   ],
   "ui/prefab/module/skillBattle/SkillBattleBattleView.lh": [

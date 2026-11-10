@@ -32,6 +32,7 @@
           "_$id": "region_66",
           "_$type": "GWidget",
           "name": "trialResultArea",
+          "relations": [{"_$type": "Relation", "target": {"_$ref": "region_67"}, "data": [6, 0, 13, 0]}],
           "x": 0,
           "y": 0,
           "width": 1280,
@@ -235,7 +236,9 @@
             "_$ref": "page_SkillBattleTrialResultView"
           },
           "data": [
-            100,
+            1,
+            0,
+            2,
             0
           ]
         }

@@ -125,61 +125,11 @@ export class UIManager extends Laya.EventDispatcher {
         this._uiRoot.name = "adapter";
         Laya.GRoot.inst.addChild(this._uiRoot);
 
-        // 创建左右遮罩图
-        const leftMask = new Laya.GWidget();
-        leftMask.name = "leftMask";
-        leftMask.graphics.drawRect(0, 0, 1, 1, "#000000", null, 1, true);
-
-        const rightMask = new Laya.GWidget();
-        rightMask.name = "rightMask";
-        rightMask.graphics.drawRect(0, 0, 1, 1, "#000000", null, 1, true);
-
-        Laya.GRoot.inst.addChild(leftMask);
-        Laya.GRoot.inst.addChild(rightMask);
-
-        // stage变化时，调整ui适配
+        // Backgrounds and modal masks use the viewport; page adapters own content layout.
         const autoSize = () => {
-            const ratio = Laya.stage.designWidth / Laya.stage.designHeight;
-            if (Laya.stage.width / Laya.stage.height > ratio) {
-                this._uiRoot.height = Laya.stage.height;
-                this._uiRoot.width = ratio * Laya.stage.height;
-                const widthOffset = (Laya.stage.width - this._uiRoot.width) / 2;
-                this._uiRoot.pos(widthOffset, 0);
-
-                UIUtils.setActive(leftMask, true);
-                UIUtils.setActive(rightMask, true);
-                leftMask.size(widthOffset, this._uiRoot.height);
-                rightMask.size(widthOffset, this._uiRoot.height);
-                leftMask.pos(0, 0);
-                rightMask.pos(widthOffset + this._uiRoot.width, 0);
-                this._isAdapterMaskActive = true;
-            }
-            else {
-                // 限制最高
-                const limit = ratio;
-                if (Laya.stage.width / Laya.stage.height < limit) {
-                    this._uiRoot.width = Laya.stage.width;
-                    this._uiRoot.height = Laya.stage.width / limit;
-
-                    const heightOffset = (Laya.stage.height - this._uiRoot.height) / 2;
-                    this._uiRoot.pos(0, heightOffset);
-
-                    UIUtils.setActive(leftMask, true);
-                    UIUtils.setActive(rightMask, true);
-                    leftMask.size(this._uiRoot.width, heightOffset);
-                    rightMask.size(this._uiRoot.width, heightOffset);
-                    leftMask.pos(0, 0);
-                    rightMask.pos(0, heightOffset + this._uiRoot.height);
-                    this._isAdapterMaskActive = true;
-                }
-                else {
-                    this._uiRoot.pos(0, 0);
-                    this._uiRoot.makeFullSize();
-                    UIUtils.setActive(leftMask, false);
-                    UIUtils.setActive(rightMask, false);
-                    this._isAdapterMaskActive = false;
-                }
-            }
+            this._uiRoot.pos(0, 0);
+            this._uiRoot.size(Laya.stage.width, Laya.stage.height);
+            this._isAdapterMaskActive = false;
             this.event(Laya.Event.RESIZE);
         }
         autoSize();

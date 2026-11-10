@@ -42,6 +42,7 @@
           "_$id": "region_55",
           "_$type": "GWidget",
           "name": "buildHeaderArea",
+          "relations": [{"_$type": "Relation", "target": {"_$ref": "region_60"}, "data": [6, 0, 10, 0]}],
           "x": 24,
           "y": 16,
           "width": 1232,
@@ -124,6 +125,7 @@
         },
         {
           "_$id": "region_56",
+          "relations": [{"_$type": "Relation", "target": {"_$ref": "region_60"}, "data": [6, 0, 13, 0]}],
           "_$prefab": "2a420fff-368c-4e98-83f4-c3197f3a1107",
           "x": 170,
           "y": 246
@@ -132,6 +134,7 @@
           "_$id": "region_57",
           "_$type": "GWidget",
           "name": "buildDetailsArea",
+          "relations": [{"_$type": "Relation", "target": {"_$ref": "region_60"}, "data": [6, 0, 13, 0]}],
           "x": 150,
           "y": 184,
           "width": 980,
@@ -361,6 +364,7 @@
           "_$id": "region_58",
           "_$type": "GWidget",
           "name": "buildActionsArea",
+          "relations": [{"_$type": "Relation", "target": {"_$ref": "region_60"}, "data": [6, 0, 16, 0]}],
           "x": 170,
           "y": 600,
           "width": 940,
@@ -478,6 +482,7 @@
           "_$id": "region_59",
           "_$type": "GWidget",
           "name": "navigationArea",
+          "relations": [{"_$type": "Relation", "target": {"_$ref": "region_60"}, "data": [3, 0, 10, 0]}],
           "x": 24,
           "y": 78,
           "width": 128,
@@ -520,7 +525,9 @@
             "_$ref": "page_SkillBattleBuildView"
           },
           "data": [
-            100,
+            1,
+            0,
+            2,
             0
           ]
         }

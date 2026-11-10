@@ -2,6 +2,7 @@
   "resolution": {
     "designWidth": 1280,
     "designHeight": 720,
+    "scaleMode": "fixedauto",
     "backgroundColor": "#303030"
   },
   "2D": {

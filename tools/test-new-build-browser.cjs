@@ -40,7 +40,7 @@ async function capture(page,name){
         });
         const overlap=rects.flatMap((a,i)=>rects.slice(i+1).filter(b=>
             Math.min(a.x+a.w,b.x+b.w)>Math.max(a.x,b.x)&&Math.min(a.y+a.h,b.y+b.h)>Math.max(a.y,b.y)).map(b=>`${a.name}/${b.name}`));
-        const bounds=rects.filter(r=>r.x<0||r.y<0||r.x+r.w>1280||r.y+r.h>720).map(r=>r.name);
+        const bounds=rects.filter(r=>r.x<0||r.y<0||r.x+r.w>panel.root.width||r.y+r.h>panel.root.height).map(r=>r.name);
         const clipped=Object.entries(panel.labels).filter(([,l])=>visible(l)&&l.text&&
             (l.textIns.textWidth>l.width+2||l.textIns.textHeight>l.height+2)).map(([name,l])=>
                 ({name,w:l.width,h:l.height,tw:l.textIns.textWidth,th:l.textIns.textHeight}));

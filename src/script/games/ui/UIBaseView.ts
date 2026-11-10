@@ -8,6 +8,7 @@ import EventEngine from "src/script/games/eventSystem/EventEngine";
 import { UIUtils } from "src/script/games/utils/UIUtils";
 import { ErrorReportManager } from "../report/ErrorReportManager";
 import { MapperTypeEnum } from "./components/ElementMapper";
+import { UIViewportLayout } from "./UIViewportLayout";
 /**
  * ui界面基类
  */
@@ -340,6 +341,8 @@ export abstract class UIBaseView {
             this._view.makeFullSize();
             this._view.clearRelations();
             this._view.addRelation(panelRoot, Laya.RelationType.Size);
+            const background = this.elems.getElement<Laya.GImage>("screenBackground", false);
+            if (background instanceof Laya.GImage) UIViewportLayout.coverBackground(background, this._view);
             if (this._opened) {
                 this._manualActive = true;
                 this._fullscreenActive = true;

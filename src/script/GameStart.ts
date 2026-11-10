@@ -11,10 +11,9 @@ import DeviceUtils from "./utils/DeviceUtils";
 
 export class GameStart {
     constructor() {
-        // Keep the runtime coordinate system at the authored landscape size.
-        // SHOW_ALL letterboxes the canvas instead of stretching the UI roots.
+        // Expand the stage without stretching the authored landscape content.
         Laya.stage.screenMode = Laya.Stage.SCREEN_HORIZONTAL;
-        Laya.stage.scaleMode = Laya.Stage.SCALE_SHOWALL;
+        Laya.stage.scaleMode = Laya.Stage.SCALE_FIXED_AUTO;
         Laya.stage.alignH = Laya.Stage.ALIGN_CENTER;
         Laya.stage.alignV = Laya.Stage.ALIGN_MIDDLE;
         Laya.stage.size(Laya.stage.designWidth, Laya.stage.designHeight);

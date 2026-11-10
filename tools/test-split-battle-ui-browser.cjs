@@ -62,7 +62,8 @@ async function capture(p, name) {
         check(v.view.view);
         if (v.ui.topView !== v.view) check(v.ui.topView.view);
         const adapter = v.view.view.getChildByName("adapter");
-        if (!adapter || adapter.width !== 1280 || adapter.height !== 720) issues.push("Invalid page adapter");
+        if (!adapter || adapter.width !== v.view.view.width || adapter.height !== v.view.view.height)
+            issues.push("Invalid native page adapter");
         for(let i=0;i<v.ui.uiRoot.numChildren;i++){
             const node=v.ui.uiRoot.getChildAt(i);
             if(node.visible&&node.name.startsWith("SkillBattle")&&node!==v.view.view&&node!==v.ui.topView.view)
@@ -70,7 +71,7 @@ async function capture(p, name) {
         }
         return issues;
     });
-    assert.deepEqual(issues, [], "Visible text fits and adapter remains 1280x720");
+    assert.deepEqual(issues, [], "Visible text fits and adapter follows its page");
 }
 async function choose(p) {
     while ((await state(p)).flow.pending) {
@@ -105,7 +106,7 @@ async function drag(p, from, to) {
     await fs.mkdir(out, { recursive: true });
     const browser = await chromium.launch({ headless: true, channel: "chromium" });
     try {
-        for (const [name, width, height, touch] of [["desktop",1280,720,false],["wide",1920,1080,false],["mobile",844,390,true]]) {
+        for (const [name, width, height, touch] of [["desktop",1280,720,false],["window",1560,720,false],["wide",1920,1080,false],["mobile",844,390,true]]) {
             const context = await browser.newContext({ viewport: { width, height }, hasTouch: touch, isMobile: touch });
             const p = await context.newPage(); p.touchMode = touch;
             const errors = [], failed = [];

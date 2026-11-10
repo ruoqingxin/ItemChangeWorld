@@ -17,7 +17,7 @@ async function main(): Promise<void> {
     Laya.AssetDb.inst.UUID_to_URL_async = uuid => uuidMap[uuid] ?
         Promise.resolve(uuidMap[uuid]) : resolveUUID(uuid);
     await Laya.init(1280, 720);
-    Laya.stage.scaleMode = Laya.Stage.SCALE_SHOWALL;
+    Laya.stage.scaleMode = Laya.Stage.SCALE_FIXED_AUTO;
     Laya.stage.screenMode = Laya.Stage.SCREEN_HORIZONTAL;
     Laya.stage.alignH = Laya.Stage.ALIGN_CENTER;
     Laya.stage.alignV = Laya.Stage.ALIGN_MIDDLE;

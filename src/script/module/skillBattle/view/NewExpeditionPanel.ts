@@ -6,7 +6,7 @@ import { NewExpeditionConfigUtils } from "../newRules/NewExpeditionConfigUtils";
 import { NewExpeditionRules as Rules } from "../newRules/NewExpeditionRules";
 import { NewExpeditionSession } from "../newRules/NewExpeditionSession";
 import { NewInventoryPanel } from "./NewInventoryPanel";
-import { visitRegion } from "./SkillBattleUILayout";
+import { placeInDesign, visitRegion } from "./SkillBattleUILayout";
 import type { SkillBattlePage } from "./SkillBattleUILayout";
 
 type MapPoint = { x: number; y: number };
@@ -55,6 +55,8 @@ export class NewExpeditionPanel extends NewInventoryPanel {
         this.scroller.touchEffect=Laya.ScrollTouchEffect.On;
         this.scroller.bouncebackEffect=Laya.ScrollBounceBackEffect.Off;
         viewport.scroller=this.scroller;
+        viewport.on(Laya.UIEvent.Scroll,this,this.updateMapBackground);
+        this.elements.mapGroundTexture.on(Laya.Event.LOADED,this,this.updateMapBackground);
     }
     openHubScreen(): void { super.openHubScreen(); Laya.timer.loop(50,this,this.searchTick); }
     openSettlementScreen(): void { super.openSettlementScreen(); Laya.timer.loop(50,this,this.searchTick); }
@@ -235,7 +237,7 @@ export class NewExpeditionPanel extends NewInventoryPanel {
                 this.nodes.invExtract.visible=n.kind==="extract" && !s.flow?.pending;
                 for(const key of ["invAll","invMedicine","invMaterials","invEquipment","invPrev","invNext","invPage"])
                     this.nodes[key].visible=false;
-                this.place(this.nodes.invReveal,804,112);this.nodes.invReveal.size(180,30);
+                placeInDesign(this.nodes.invReveal,this.root,804,112);this.nodes.invReveal.size(180,30);
                 for(let i=1;i<=7;i++) this.button(`expLootPage${i}`,String(i),
                     800+(i-1)*64,550,58,38,!this.held,this.inventoryPage===i-1);
             }
@@ -278,7 +280,7 @@ export class NewExpeditionPanel extends NewInventoryPanel {
         if (!key.startsWith("exp")) { super.button(key,value,x,y,w,h,enabled,selected); return; }
         const n=this.buttons[key],label=n.getChildAt(1) as Laya.GTextField;
         n.visible=true;
-        if (/^expNode\d+$/.test(key)) n.pos(x,y); else this.place(n,x,y);
+        if (/^expNode\d+$/.test(key)) n.pos(x,y); else placeInDesign(n,this.root,x,y);
         n.size(w,h);n.mouseEnabled=enabled;n.alpha=enabled||selected?1:0.55;
         const skin=n.getChildAt(0) as Laya.GImage;skin.size(w,h);
         label.text=value;label.pos(4,2);label.size(w-8,h-4);label.fontSize=18;
@@ -299,6 +301,38 @@ export class NewExpeditionPanel extends NewInventoryPanel {
                 22+18*Math.cos(next),22+18*Math.sin(next),color,2);
         }
     }
+    private updateMapBackground(): void {
+        if(this.opened && this.expeditionNodes.expeditionRoot.visible)this.backdrop();
+    }
+    protected backdrop(): void {
+        if(this.pageRole!=="map") { super.backdrop();return; }
+        const page=this.root.parent as Laya.GWidget,ground=this.elements.screenBackground;
+        const shade=this.elements.result,texture=(this.elements.mapGroundTexture as Laya.GImage).texture;
+        const origin=page.localToGlobal(new Laya.Point());
+        const start=ground.globalToLocal(origin,true);
+        ground.visible=true;ground.graphics.clear();
+        ground.graphics.drawRect(start.x,start.y,page.width,page.height,"#3d4640");
+        if(texture) {
+            // Texture phase is in map coordinates, independent of revealed map length.
+            const anchor=page.globalToLocal(this.root.localToGlobal(new Laya.Point()));
+            const x=anchor.x-(this.scroller?.scrollingPosX||0);
+            const offset=(value:number,size:number)=>-((-value%size+size)%size);
+            ground.graphics.fillTexture(texture,start.x,start.y,page.width,page.height,"repeat",
+                new Laya.Point(offset(x,texture.width),offset(anchor.y,texture.height)));
+        }
+        const at=shade.globalToLocal(origin,true);
+        shade.visible=true;shade.graphics.clear();
+        shade.graphics.drawRect(at.x,at.y,page.width,page.height,"rgba(12,20,16,0.28)");
+        const regions=this.expeditionNodes.expeditionRoot;
+        const headerArea=regions.getChildByName("mapHeaderArea") as Laya.GWidget;
+        const footerArea=regions.getChildByName("mapActionsArea") as Laya.GWidget;
+        const headerEnd=page.globalToLocal(headerArea.localToGlobal(new Laya.Point(0,headerArea.height)));
+        const footerStart=page.globalToLocal(footerArea.localToGlobal(new Laya.Point()));
+        const header=Math.max(0,Math.min(page.height,headerEnd.y+6));
+        const footer=Math.max(0,Math.min(page.height,footerStart.y-6));
+        shade.graphics.drawRect(at.x,at.y,page.width,header,"rgba(12,20,16,0.55)");
+        shade.graphics.drawRect(at.x,at.y+footer,page.width,page.height-footer,"rgba(12,20,16,0.55)");
+    }
     private renderMap(): void {
         this.backdrop();
         const c=this.expedition.archive!.config,s=this.expedition.inventory!,current=Rules.node(c,s.node);
@@ -306,7 +340,7 @@ export class NewExpeditionPanel extends NewInventoryPanel {
             this.presentedMapRunId=s.runId;this.selectedNode=null;this.centerMap=true;
         }
         this.expeditionNodes.expeditionRoot.visible=true;
-        this.text("expTitle","末法寻仙 · 忆境",32,14,620,42,26,"#e3c98c");
+        this.text("expTitle","末法寻仙 · 古宗山门外围",32,14,620,42,26,"#e3c98c");
         this.text("expClock",this.timeText(),1080,16,168,40,22);
         const weapon=s.items.find(i=>i.location.space==="weapon");
         this.text("expResources",`生命 ${Core.format(s.hp)} / ${Core.format(c.build.setup.player.maxHp)}    灵力 ${Core.format(s.mp)} / ${Core.format(c.build.setup.player.maxMp)}    耐久 ${weapon?.durability ?? "无武器"}    已胜 ${s.map.cleared.length} 场`,

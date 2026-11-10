@@ -52,12 +52,14 @@
         },
         {
           "_$id": "invstart_1",
-          "_$prefab": "fe47cb4b-cc80-4083-a729-f683d864ad30"
+          "_$prefab": "fe47cb4b-cc80-4083-a729-f683d864ad30",
+          "relations": [{"_$type": "Relation", "target": {"_$ref": "region_18"}, "data": [1, 0, 2, 0]}]
         },
         {
           "_$id": "region_17",
           "_$type": "GWidget",
           "name": "navigationArea",
+          "relations": [{"_$type": "Relation", "target": {"_$ref": "region_18"}, "data": [6, 0, 10, 0]}],
           "x": 630,
           "y": 16,
           "width": 128,
@@ -100,7 +102,9 @@
             "_$ref": "sbr049root"
           },
           "data": [
-            100,
+            1,
+            0,
+            2,
             0
           ]
         }

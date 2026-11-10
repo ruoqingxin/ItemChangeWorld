@@ -20,6 +20,7 @@
           "_$id": "region_93",
           "_$type": "GWidget",
           "name": "dialogArea",
+          "relations": [{"_$type": "Relation", "target": {"_$ref": "region_94"}, "data": [6, 0, 13, 0]}],
           "x": 320,
           "y": 180,
           "width": 640,
@@ -183,7 +184,9 @@
             "_$ref": "page_SkillBattleConfirmView"
           },
           "data": [
-            100,
+            1,
+            0,
+            2,
             0
           ]
         }

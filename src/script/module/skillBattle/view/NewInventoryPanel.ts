@@ -84,6 +84,11 @@ export class NewInventoryPanel extends NewBuildPanel {
         super.suspend();
         this.dragController?.cancel();
     }
+    protected resizeLayout(): void {
+        if (!this.opened) return;
+        this.dragController?.cancel();
+        super.resizeLayout();
+    }
     refresh(): void {
         if (this.modalOpen || this.resetConfirm || this.overlay) { super.refresh(); return; }
         if (this.nodes) for (const key of Object.keys(this.nodes)) this.nodes[key].visible = false;

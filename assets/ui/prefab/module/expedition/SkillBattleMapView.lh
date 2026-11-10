@@ -5,2084 +5,6 @@
   "name": "SkillBattleMapView",
   "width": 1280,
   "height": 720,
-  "_$child": [
-    {
-      "_$id": "region_81",
-      "_$type": "GWidget",
-      "name": "adapter",
-      "x": 0,
-      "y": 0,
-      "width": 1280,
-      "height": 720,
-      "mouseThrough": true,
-      "_$child": [
-        {
-          "_$id": "start_background",
-          "_$type": "GImage",
-          "name": "screenBackground",
-          "width": 1280,
-          "height": 720,
-          "zOrder": -10,
-          "mouseEnabled": false,
-          "autoSize": false,
-          "alpha": 0.36,
-          "src": "ui/texture/common/hub_background.png"
-        },
-        {
-          "_$id": "region_77",
-          "_$type": "GWidget",
-          "name": "mapBackdropArea",
-          "x": 0,
-          "y": 0,
-          "width": 1280,
-          "height": 720,
-          "mouseThrough": true,
-          "_$child": [
-            {
-              "_$id": "sbr001res",
-              "_$type": "GWidget",
-              "name": "result",
-              "x": 0,
-              "y": 0,
-              "width": 1280,
-              "height": 720,
-              "visible": false
-            }
-          ]
-        },
-        {
-          "_$id": "exp_SkillBattleStartView_1",
-          "_$type": "GWidget",
-          "name": "expeditionRoot",
-          "x": 0,
-          "y": 0,
-          "width": 1280,
-          "height": 720,
-          "visible": true,
-          "mouseThrough": true,
-          "_$child": [
-            {
-              "_$id": "region_78",
-              "_$type": "GWidget",
-              "name": "mapHeaderArea",
-              "x": 32,
-              "y": 14,
-              "width": 1216,
-              "height": 88,
-              "mouseThrough": true,
-              "_$child": [
-                {
-                  "_$id": "exp_SkillBattleStartView_2",
-                  "_$type": "GTextField",
-                  "name": "expTitle",
-                  "x": 0,
-                  "y": 0,
-                  "width": 620,
-                  "height": 42,
-                  "text": "末法寻仙 · 忆境",
-                  "fontSize": 26,
-                  "color": "#e8edf0",
-                  "mouseEnabled": false,
-                  "overflow": "shrink"
-                },
-                {
-                  "_$id": "exp_SkillBattleStartView_3",
-                  "_$type": "GTextField",
-                  "name": "expClock",
-                  "x": 1048,
-                  "y": 2,
-                  "width": 168,
-                  "height": 40,
-                  "text": "20:00",
-                  "fontSize": 22,
-                  "color": "#e8edf0",
-                  "mouseEnabled": false,
-                  "overflow": "shrink"
-                },
-                {
-                  "_$id": "exp_SkillBattleStartView_4",
-                  "_$type": "GTextField",
-                  "name": "expResources",
-                  "x": 0,
-                  "y": 50,
-                  "width": 1216,
-                  "height": 38,
-                  "text": "",
-                  "fontSize": 20,
-                  "color": "#e8edf0",
-                  "mouseEnabled": false,
-                  "overflow": "shrink"
-                }
-              ]
-            },
-            {
-              "_$id": "exp_SkillBattleStartView_7",
-              "_$type": "GPanel",
-              "name": "expViewport",
-              "x": 32,
-              "y": 112,
-              "width": 936,
-              "height": 430,
-              "clipping": true,
-              "mouseEnabled": true,
-              "_$child": [
-                {
-                  "_$id": "exp_SkillBattleStartView_8",
-                  "_$type": "GWidget",
-                  "name": "expMapContent",
-                  "x": 0,
-                  "y": 0,
-                  "width": 936,
-                  "height": 430,
-                  "mouseThrough": true,
-                  "_$child": [
-                    {
-                      "_$id": "exp_SkillBattleStartView_9",
-                      "_$type": "GWidget",
-                      "name": "expLines",
-                      "x": 0,
-                      "y": 0,
-                      "width": 936,
-                      "height": 430,
-                      "mouseEnabled": false
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_12",
-                      "_$type": "GWidget",
-                      "name": "expNode1",
-                      "x": 0,
-                      "y": 0,
-                      "width": 116,
-                      "height": 132,
-                      "mouseEnabled": true,
-                      "_$child": [
-                        {
-                          "_$id": "exp_SkillBattleStartView_10",
-                          "_$type": "GImage",
-                          "name": "expNode1Skin",
-                          "x": 0,
-                          "y": 0,
-                          "width": 116,
-                          "height": 132,
-                          "src": "ui/texture/inventory/tooltip.png",
-                          "autoSize": false,
-                          "mouseEnabled": false,
-                          "visible": false
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_11",
-                          "_$type": "GTextField",
-                          "name": "expNode1Text",
-                          "x": 0,
-                          "y": 4,
-                          "width": 116,
-                          "height": 124,
-                          "text": "",
-                          "fontSize": 18,
-                          "color": "#e8edf0",
-                          "mouseEnabled": false,
-                          "overflow": "shrink"
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_13",
-                          "_$type": "GImage",
-                          "name": "expNode1Icon",
-                          "x": 6,
-                          "y": 0,
-                          "width": 104,
-                          "height": 104,
-                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
-                          "autoSize": false,
-                          "mouseEnabled": false
-                        }
-                      ],
-                      "visible": false
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_16",
-                      "_$type": "GWidget",
-                      "name": "expNode2",
-                      "x": 0,
-                      "y": 0,
-                      "width": 116,
-                      "height": 132,
-                      "mouseEnabled": true,
-                      "_$child": [
-                        {
-                          "_$id": "exp_SkillBattleStartView_14",
-                          "_$type": "GImage",
-                          "name": "expNode2Skin",
-                          "x": 0,
-                          "y": 0,
-                          "width": 116,
-                          "height": 132,
-                          "src": "ui/texture/inventory/tooltip.png",
-                          "autoSize": false,
-                          "mouseEnabled": false,
-                          "visible": false
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_15",
-                          "_$type": "GTextField",
-                          "name": "expNode2Text",
-                          "x": 0,
-                          "y": 4,
-                          "width": 116,
-                          "height": 124,
-                          "text": "",
-                          "fontSize": 18,
-                          "color": "#e8edf0",
-                          "mouseEnabled": false,
-                          "overflow": "shrink"
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_17",
-                          "_$type": "GImage",
-                          "name": "expNode2Icon",
-                          "x": 6,
-                          "y": 0,
-                          "width": 104,
-                          "height": 104,
-                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
-                          "autoSize": false,
-                          "mouseEnabled": false
-                        }
-                      ],
-                      "visible": false
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_20",
-                      "_$type": "GWidget",
-                      "name": "expNode3",
-                      "x": 0,
-                      "y": 0,
-                      "width": 116,
-                      "height": 132,
-                      "mouseEnabled": true,
-                      "_$child": [
-                        {
-                          "_$id": "exp_SkillBattleStartView_18",
-                          "_$type": "GImage",
-                          "name": "expNode3Skin",
-                          "x": 0,
-                          "y": 0,
-                          "width": 116,
-                          "height": 132,
-                          "src": "ui/texture/inventory/tooltip.png",
-                          "autoSize": false,
-                          "mouseEnabled": false,
-                          "visible": false
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_19",
-                          "_$type": "GTextField",
-                          "name": "expNode3Text",
-                          "x": 0,
-                          "y": 4,
-                          "width": 116,
-                          "height": 124,
-                          "text": "",
-                          "fontSize": 18,
-                          "color": "#e8edf0",
-                          "mouseEnabled": false,
-                          "overflow": "shrink"
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_21",
-                          "_$type": "GImage",
-                          "name": "expNode3Icon",
-                          "x": 6,
-                          "y": 0,
-                          "width": 104,
-                          "height": 104,
-                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
-                          "autoSize": false,
-                          "mouseEnabled": false
-                        }
-                      ],
-                      "visible": false
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_24",
-                      "_$type": "GWidget",
-                      "name": "expNode4",
-                      "x": 0,
-                      "y": 0,
-                      "width": 116,
-                      "height": 132,
-                      "mouseEnabled": true,
-                      "_$child": [
-                        {
-                          "_$id": "exp_SkillBattleStartView_22",
-                          "_$type": "GImage",
-                          "name": "expNode4Skin",
-                          "x": 0,
-                          "y": 0,
-                          "width": 116,
-                          "height": 132,
-                          "src": "ui/texture/inventory/tooltip.png",
-                          "autoSize": false,
-                          "mouseEnabled": false,
-                          "visible": false
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_23",
-                          "_$type": "GTextField",
-                          "name": "expNode4Text",
-                          "x": 0,
-                          "y": 4,
-                          "width": 116,
-                          "height": 124,
-                          "text": "",
-                          "fontSize": 18,
-                          "color": "#e8edf0",
-                          "mouseEnabled": false,
-                          "overflow": "shrink"
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_25",
-                          "_$type": "GImage",
-                          "name": "expNode4Icon",
-                          "x": 6,
-                          "y": 0,
-                          "width": 104,
-                          "height": 104,
-                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
-                          "autoSize": false,
-                          "mouseEnabled": false
-                        }
-                      ],
-                      "visible": false
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_28",
-                      "_$type": "GWidget",
-                      "name": "expNode5",
-                      "x": 0,
-                      "y": 0,
-                      "width": 116,
-                      "height": 132,
-                      "mouseEnabled": true,
-                      "_$child": [
-                        {
-                          "_$id": "exp_SkillBattleStartView_26",
-                          "_$type": "GImage",
-                          "name": "expNode5Skin",
-                          "x": 0,
-                          "y": 0,
-                          "width": 116,
-                          "height": 132,
-                          "src": "ui/texture/inventory/tooltip.png",
-                          "autoSize": false,
-                          "mouseEnabled": false,
-                          "visible": false
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_27",
-                          "_$type": "GTextField",
-                          "name": "expNode5Text",
-                          "x": 0,
-                          "y": 4,
-                          "width": 116,
-                          "height": 124,
-                          "text": "",
-                          "fontSize": 18,
-                          "color": "#e8edf0",
-                          "mouseEnabled": false,
-                          "overflow": "shrink"
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_29",
-                          "_$type": "GImage",
-                          "name": "expNode5Icon",
-                          "x": 6,
-                          "y": 0,
-                          "width": 104,
-                          "height": 104,
-                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
-                          "autoSize": false,
-                          "mouseEnabled": false
-                        }
-                      ],
-                      "visible": false
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_32",
-                      "_$type": "GWidget",
-                      "name": "expNode6",
-                      "x": 0,
-                      "y": 0,
-                      "width": 116,
-                      "height": 132,
-                      "mouseEnabled": true,
-                      "_$child": [
-                        {
-                          "_$id": "exp_SkillBattleStartView_30",
-                          "_$type": "GImage",
-                          "name": "expNode6Skin",
-                          "x": 0,
-                          "y": 0,
-                          "width": 116,
-                          "height": 132,
-                          "src": "ui/texture/inventory/tooltip.png",
-                          "autoSize": false,
-                          "mouseEnabled": false,
-                          "visible": false
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_31",
-                          "_$type": "GTextField",
-                          "name": "expNode6Text",
-                          "x": 0,
-                          "y": 4,
-                          "width": 116,
-                          "height": 124,
-                          "text": "",
-                          "fontSize": 18,
-                          "color": "#e8edf0",
-                          "mouseEnabled": false,
-                          "overflow": "shrink"
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_33",
-                          "_$type": "GImage",
-                          "name": "expNode6Icon",
-                          "x": 6,
-                          "y": 0,
-                          "width": 104,
-                          "height": 104,
-                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
-                          "autoSize": false,
-                          "mouseEnabled": false
-                        }
-                      ],
-                      "visible": false
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_36",
-                      "_$type": "GWidget",
-                      "name": "expNode7",
-                      "x": 0,
-                      "y": 0,
-                      "width": 116,
-                      "height": 132,
-                      "mouseEnabled": true,
-                      "_$child": [
-                        {
-                          "_$id": "exp_SkillBattleStartView_34",
-                          "_$type": "GImage",
-                          "name": "expNode7Skin",
-                          "x": 0,
-                          "y": 0,
-                          "width": 116,
-                          "height": 132,
-                          "src": "ui/texture/inventory/tooltip.png",
-                          "autoSize": false,
-                          "mouseEnabled": false,
-                          "visible": false
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_35",
-                          "_$type": "GTextField",
-                          "name": "expNode7Text",
-                          "x": 0,
-                          "y": 4,
-                          "width": 116,
-                          "height": 124,
-                          "text": "",
-                          "fontSize": 18,
-                          "color": "#e8edf0",
-                          "mouseEnabled": false,
-                          "overflow": "shrink"
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_37",
-                          "_$type": "GImage",
-                          "name": "expNode7Icon",
-                          "x": 6,
-                          "y": 0,
-                          "width": 104,
-                          "height": 104,
-                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
-                          "autoSize": false,
-                          "mouseEnabled": false
-                        }
-                      ],
-                      "visible": false
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_40",
-                      "_$type": "GWidget",
-                      "name": "expNode8",
-                      "x": 0,
-                      "y": 0,
-                      "width": 116,
-                      "height": 132,
-                      "mouseEnabled": true,
-                      "_$child": [
-                        {
-                          "_$id": "exp_SkillBattleStartView_38",
-                          "_$type": "GImage",
-                          "name": "expNode8Skin",
-                          "x": 0,
-                          "y": 0,
-                          "width": 116,
-                          "height": 132,
-                          "src": "ui/texture/inventory/tooltip.png",
-                          "autoSize": false,
-                          "mouseEnabled": false,
-                          "visible": false
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_39",
-                          "_$type": "GTextField",
-                          "name": "expNode8Text",
-                          "x": 0,
-                          "y": 4,
-                          "width": 116,
-                          "height": 124,
-                          "text": "",
-                          "fontSize": 18,
-                          "color": "#e8edf0",
-                          "mouseEnabled": false,
-                          "overflow": "shrink"
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_41",
-                          "_$type": "GImage",
-                          "name": "expNode8Icon",
-                          "x": 6,
-                          "y": 0,
-                          "width": 104,
-                          "height": 104,
-                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
-                          "autoSize": false,
-                          "mouseEnabled": false
-                        }
-                      ],
-                      "visible": false
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_44",
-                      "_$type": "GWidget",
-                      "name": "expNode9",
-                      "x": 0,
-                      "y": 0,
-                      "width": 116,
-                      "height": 132,
-                      "mouseEnabled": true,
-                      "_$child": [
-                        {
-                          "_$id": "exp_SkillBattleStartView_42",
-                          "_$type": "GImage",
-                          "name": "expNode9Skin",
-                          "x": 0,
-                          "y": 0,
-                          "width": 116,
-                          "height": 132,
-                          "src": "ui/texture/inventory/tooltip.png",
-                          "autoSize": false,
-                          "mouseEnabled": false,
-                          "visible": false
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_43",
-                          "_$type": "GTextField",
-                          "name": "expNode9Text",
-                          "x": 0,
-                          "y": 4,
-                          "width": 116,
-                          "height": 124,
-                          "text": "",
-                          "fontSize": 18,
-                          "color": "#e8edf0",
-                          "mouseEnabled": false,
-                          "overflow": "shrink"
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_45",
-                          "_$type": "GImage",
-                          "name": "expNode9Icon",
-                          "x": 6,
-                          "y": 0,
-                          "width": 104,
-                          "height": 104,
-                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
-                          "autoSize": false,
-                          "mouseEnabled": false
-                        }
-                      ],
-                      "visible": false
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_48",
-                      "_$type": "GWidget",
-                      "name": "expNode10",
-                      "x": 0,
-                      "y": 0,
-                      "width": 116,
-                      "height": 132,
-                      "mouseEnabled": true,
-                      "_$child": [
-                        {
-                          "_$id": "exp_SkillBattleStartView_46",
-                          "_$type": "GImage",
-                          "name": "expNode10Skin",
-                          "x": 0,
-                          "y": 0,
-                          "width": 116,
-                          "height": 132,
-                          "src": "ui/texture/inventory/tooltip.png",
-                          "autoSize": false,
-                          "mouseEnabled": false,
-                          "visible": false
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_47",
-                          "_$type": "GTextField",
-                          "name": "expNode10Text",
-                          "x": 0,
-                          "y": 4,
-                          "width": 116,
-                          "height": 124,
-                          "text": "",
-                          "fontSize": 18,
-                          "color": "#e8edf0",
-                          "mouseEnabled": false,
-                          "overflow": "shrink"
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_49",
-                          "_$type": "GImage",
-                          "name": "expNode10Icon",
-                          "x": 6,
-                          "y": 0,
-                          "width": 104,
-                          "height": 104,
-                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
-                          "autoSize": false,
-                          "mouseEnabled": false
-                        }
-                      ],
-                      "visible": false
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_52",
-                      "_$type": "GWidget",
-                      "name": "expNode11",
-                      "x": 0,
-                      "y": 0,
-                      "width": 116,
-                      "height": 132,
-                      "mouseEnabled": true,
-                      "_$child": [
-                        {
-                          "_$id": "exp_SkillBattleStartView_50",
-                          "_$type": "GImage",
-                          "name": "expNode11Skin",
-                          "x": 0,
-                          "y": 0,
-                          "width": 116,
-                          "height": 132,
-                          "src": "ui/texture/inventory/tooltip.png",
-                          "autoSize": false,
-                          "mouseEnabled": false,
-                          "visible": false
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_51",
-                          "_$type": "GTextField",
-                          "name": "expNode11Text",
-                          "x": 0,
-                          "y": 4,
-                          "width": 116,
-                          "height": 124,
-                          "text": "",
-                          "fontSize": 18,
-                          "color": "#e8edf0",
-                          "mouseEnabled": false,
-                          "overflow": "shrink"
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_53",
-                          "_$type": "GImage",
-                          "name": "expNode11Icon",
-                          "x": 6,
-                          "y": 0,
-                          "width": 104,
-                          "height": 104,
-                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
-                          "autoSize": false,
-                          "mouseEnabled": false
-                        }
-                      ],
-                      "visible": false
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_56",
-                      "_$type": "GWidget",
-                      "name": "expNode12",
-                      "x": 0,
-                      "y": 0,
-                      "width": 116,
-                      "height": 132,
-                      "mouseEnabled": true,
-                      "_$child": [
-                        {
-                          "_$id": "exp_SkillBattleStartView_54",
-                          "_$type": "GImage",
-                          "name": "expNode12Skin",
-                          "x": 0,
-                          "y": 0,
-                          "width": 116,
-                          "height": 132,
-                          "src": "ui/texture/inventory/tooltip.png",
-                          "autoSize": false,
-                          "mouseEnabled": false,
-                          "visible": false
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_55",
-                          "_$type": "GTextField",
-                          "name": "expNode12Text",
-                          "x": 0,
-                          "y": 4,
-                          "width": 116,
-                          "height": 124,
-                          "text": "",
-                          "fontSize": 18,
-                          "color": "#e8edf0",
-                          "mouseEnabled": false,
-                          "overflow": "shrink"
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_57",
-                          "_$type": "GImage",
-                          "name": "expNode12Icon",
-                          "x": 6,
-                          "y": 0,
-                          "width": 104,
-                          "height": 104,
-                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
-                          "autoSize": false,
-                          "mouseEnabled": false
-                        }
-                      ],
-                      "visible": false
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_60",
-                      "_$type": "GWidget",
-                      "name": "expNode13",
-                      "x": 0,
-                      "y": 0,
-                      "width": 116,
-                      "height": 132,
-                      "mouseEnabled": true,
-                      "_$child": [
-                        {
-                          "_$id": "exp_SkillBattleStartView_58",
-                          "_$type": "GImage",
-                          "name": "expNode13Skin",
-                          "x": 0,
-                          "y": 0,
-                          "width": 116,
-                          "height": 132,
-                          "src": "ui/texture/inventory/tooltip.png",
-                          "autoSize": false,
-                          "mouseEnabled": false,
-                          "visible": false
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_59",
-                          "_$type": "GTextField",
-                          "name": "expNode13Text",
-                          "x": 0,
-                          "y": 4,
-                          "width": 116,
-                          "height": 124,
-                          "text": "",
-                          "fontSize": 18,
-                          "color": "#e8edf0",
-                          "mouseEnabled": false,
-                          "overflow": "shrink"
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_61",
-                          "_$type": "GImage",
-                          "name": "expNode13Icon",
-                          "x": 6,
-                          "y": 0,
-                          "width": 104,
-                          "height": 104,
-                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
-                          "autoSize": false,
-                          "mouseEnabled": false
-                        }
-                      ],
-                      "visible": false
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_64",
-                      "_$type": "GWidget",
-                      "name": "expNode14",
-                      "x": 0,
-                      "y": 0,
-                      "width": 116,
-                      "height": 132,
-                      "mouseEnabled": true,
-                      "_$child": [
-                        {
-                          "_$id": "exp_SkillBattleStartView_62",
-                          "_$type": "GImage",
-                          "name": "expNode14Skin",
-                          "x": 0,
-                          "y": 0,
-                          "width": 116,
-                          "height": 132,
-                          "src": "ui/texture/inventory/tooltip.png",
-                          "autoSize": false,
-                          "mouseEnabled": false,
-                          "visible": false
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_63",
-                          "_$type": "GTextField",
-                          "name": "expNode14Text",
-                          "x": 0,
-                          "y": 4,
-                          "width": 116,
-                          "height": 124,
-                          "text": "",
-                          "fontSize": 18,
-                          "color": "#e8edf0",
-                          "mouseEnabled": false,
-                          "overflow": "shrink"
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_65",
-                          "_$type": "GImage",
-                          "name": "expNode14Icon",
-                          "x": 6,
-                          "y": 0,
-                          "width": 104,
-                          "height": 104,
-                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
-                          "autoSize": false,
-                          "mouseEnabled": false
-                        }
-                      ],
-                      "visible": false
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_68",
-                      "_$type": "GWidget",
-                      "name": "expNode15",
-                      "x": 0,
-                      "y": 0,
-                      "width": 116,
-                      "height": 132,
-                      "mouseEnabled": true,
-                      "_$child": [
-                        {
-                          "_$id": "exp_SkillBattleStartView_66",
-                          "_$type": "GImage",
-                          "name": "expNode15Skin",
-                          "x": 0,
-                          "y": 0,
-                          "width": 116,
-                          "height": 132,
-                          "src": "ui/texture/inventory/tooltip.png",
-                          "autoSize": false,
-                          "mouseEnabled": false,
-                          "visible": false
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_67",
-                          "_$type": "GTextField",
-                          "name": "expNode15Text",
-                          "x": 0,
-                          "y": 4,
-                          "width": 116,
-                          "height": 124,
-                          "text": "",
-                          "fontSize": 18,
-                          "color": "#e8edf0",
-                          "mouseEnabled": false,
-                          "overflow": "shrink"
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_69",
-                          "_$type": "GImage",
-                          "name": "expNode15Icon",
-                          "x": 6,
-                          "y": 0,
-                          "width": 104,
-                          "height": 104,
-                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
-                          "autoSize": false,
-                          "mouseEnabled": false
-                        }
-                      ],
-                      "visible": false
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_72",
-                      "_$type": "GWidget",
-                      "name": "expNode16",
-                      "x": 0,
-                      "y": 0,
-                      "width": 116,
-                      "height": 132,
-                      "mouseEnabled": true,
-                      "_$child": [
-                        {
-                          "_$id": "exp_SkillBattleStartView_70",
-                          "_$type": "GImage",
-                          "name": "expNode16Skin",
-                          "x": 0,
-                          "y": 0,
-                          "width": 116,
-                          "height": 132,
-                          "src": "ui/texture/inventory/tooltip.png",
-                          "autoSize": false,
-                          "mouseEnabled": false,
-                          "visible": false
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_71",
-                          "_$type": "GTextField",
-                          "name": "expNode16Text",
-                          "x": 0,
-                          "y": 4,
-                          "width": 116,
-                          "height": 124,
-                          "text": "",
-                          "fontSize": 18,
-                          "color": "#e8edf0",
-                          "mouseEnabled": false,
-                          "overflow": "shrink"
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_73",
-                          "_$type": "GImage",
-                          "name": "expNode16Icon",
-                          "x": 6,
-                          "y": 0,
-                          "width": 104,
-                          "height": 104,
-                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
-                          "autoSize": false,
-                          "mouseEnabled": false
-                        }
-                      ],
-                      "visible": false
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_76",
-                      "_$type": "GWidget",
-                      "name": "expNode17",
-                      "x": 0,
-                      "y": 0,
-                      "width": 116,
-                      "height": 132,
-                      "mouseEnabled": true,
-                      "_$child": [
-                        {
-                          "_$id": "exp_SkillBattleStartView_74",
-                          "_$type": "GImage",
-                          "name": "expNode17Skin",
-                          "x": 0,
-                          "y": 0,
-                          "width": 116,
-                          "height": 132,
-                          "src": "ui/texture/inventory/tooltip.png",
-                          "autoSize": false,
-                          "mouseEnabled": false,
-                          "visible": false
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_75",
-                          "_$type": "GTextField",
-                          "name": "expNode17Text",
-                          "x": 0,
-                          "y": 4,
-                          "width": 116,
-                          "height": 124,
-                          "text": "",
-                          "fontSize": 18,
-                          "color": "#e8edf0",
-                          "mouseEnabled": false,
-                          "overflow": "shrink"
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_77",
-                          "_$type": "GImage",
-                          "name": "expNode17Icon",
-                          "x": 6,
-                          "y": 0,
-                          "width": 104,
-                          "height": 104,
-                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
-                          "autoSize": false,
-                          "mouseEnabled": false
-                        }
-                      ],
-                      "visible": false
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_80",
-                      "_$type": "GWidget",
-                      "name": "expNode18",
-                      "x": 0,
-                      "y": 0,
-                      "width": 116,
-                      "height": 132,
-                      "mouseEnabled": true,
-                      "_$child": [
-                        {
-                          "_$id": "exp_SkillBattleStartView_78",
-                          "_$type": "GImage",
-                          "name": "expNode18Skin",
-                          "x": 0,
-                          "y": 0,
-                          "width": 116,
-                          "height": 132,
-                          "src": "ui/texture/inventory/tooltip.png",
-                          "autoSize": false,
-                          "mouseEnabled": false,
-                          "visible": false
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_79",
-                          "_$type": "GTextField",
-                          "name": "expNode18Text",
-                          "x": 0,
-                          "y": 4,
-                          "width": 116,
-                          "height": 124,
-                          "text": "",
-                          "fontSize": 18,
-                          "color": "#e8edf0",
-                          "mouseEnabled": false,
-                          "overflow": "shrink"
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_81",
-                          "_$type": "GImage",
-                          "name": "expNode18Icon",
-                          "x": 6,
-                          "y": 0,
-                          "width": 104,
-                          "height": 104,
-                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
-                          "autoSize": false,
-                          "mouseEnabled": false
-                        }
-                      ],
-                      "visible": false
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_84",
-                      "_$type": "GWidget",
-                      "name": "expNode19",
-                      "x": 0,
-                      "y": 0,
-                      "width": 116,
-                      "height": 132,
-                      "mouseEnabled": true,
-                      "_$child": [
-                        {
-                          "_$id": "exp_SkillBattleStartView_82",
-                          "_$type": "GImage",
-                          "name": "expNode19Skin",
-                          "x": 0,
-                          "y": 0,
-                          "width": 116,
-                          "height": 132,
-                          "src": "ui/texture/inventory/tooltip.png",
-                          "autoSize": false,
-                          "mouseEnabled": false,
-                          "visible": false
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_83",
-                          "_$type": "GTextField",
-                          "name": "expNode19Text",
-                          "x": 0,
-                          "y": 4,
-                          "width": 116,
-                          "height": 124,
-                          "text": "",
-                          "fontSize": 18,
-                          "color": "#e8edf0",
-                          "mouseEnabled": false,
-                          "overflow": "shrink"
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_85",
-                          "_$type": "GImage",
-                          "name": "expNode19Icon",
-                          "x": 6,
-                          "y": 0,
-                          "width": 104,
-                          "height": 104,
-                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
-                          "autoSize": false,
-                          "mouseEnabled": false
-                        }
-                      ],
-                      "visible": false
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_88",
-                      "_$type": "GWidget",
-                      "name": "expNode20",
-                      "x": 0,
-                      "y": 0,
-                      "width": 116,
-                      "height": 132,
-                      "mouseEnabled": true,
-                      "_$child": [
-                        {
-                          "_$id": "exp_SkillBattleStartView_86",
-                          "_$type": "GImage",
-                          "name": "expNode20Skin",
-                          "x": 0,
-                          "y": 0,
-                          "width": 116,
-                          "height": 132,
-                          "src": "ui/texture/inventory/tooltip.png",
-                          "autoSize": false,
-                          "mouseEnabled": false,
-                          "visible": false
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_87",
-                          "_$type": "GTextField",
-                          "name": "expNode20Text",
-                          "x": 0,
-                          "y": 4,
-                          "width": 116,
-                          "height": 124,
-                          "text": "",
-                          "fontSize": 18,
-                          "color": "#e8edf0",
-                          "mouseEnabled": false,
-                          "overflow": "shrink"
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_89",
-                          "_$type": "GImage",
-                          "name": "expNode20Icon",
-                          "x": 6,
-                          "y": 0,
-                          "width": 104,
-                          "height": 104,
-                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
-                          "autoSize": false,
-                          "mouseEnabled": false
-                        }
-                      ],
-                      "visible": false
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_92",
-                      "_$type": "GWidget",
-                      "name": "expNode21",
-                      "x": 0,
-                      "y": 0,
-                      "width": 116,
-                      "height": 132,
-                      "mouseEnabled": true,
-                      "_$child": [
-                        {
-                          "_$id": "exp_SkillBattleStartView_90",
-                          "_$type": "GImage",
-                          "name": "expNode21Skin",
-                          "x": 0,
-                          "y": 0,
-                          "width": 116,
-                          "height": 132,
-                          "src": "ui/texture/inventory/tooltip.png",
-                          "autoSize": false,
-                          "mouseEnabled": false,
-                          "visible": false
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_91",
-                          "_$type": "GTextField",
-                          "name": "expNode21Text",
-                          "x": 0,
-                          "y": 4,
-                          "width": 116,
-                          "height": 124,
-                          "text": "",
-                          "fontSize": 18,
-                          "color": "#e8edf0",
-                          "mouseEnabled": false,
-                          "overflow": "shrink"
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_93",
-                          "_$type": "GImage",
-                          "name": "expNode21Icon",
-                          "x": 6,
-                          "y": 0,
-                          "width": 104,
-                          "height": 104,
-                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
-                          "autoSize": false,
-                          "mouseEnabled": false
-                        }
-                      ],
-                      "visible": false
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_96",
-                      "_$type": "GWidget",
-                      "name": "expNode22",
-                      "x": 0,
-                      "y": 0,
-                      "width": 116,
-                      "height": 132,
-                      "mouseEnabled": true,
-                      "_$child": [
-                        {
-                          "_$id": "exp_SkillBattleStartView_94",
-                          "_$type": "GImage",
-                          "name": "expNode22Skin",
-                          "x": 0,
-                          "y": 0,
-                          "width": 116,
-                          "height": 132,
-                          "src": "ui/texture/inventory/tooltip.png",
-                          "autoSize": false,
-                          "mouseEnabled": false,
-                          "visible": false
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_95",
-                          "_$type": "GTextField",
-                          "name": "expNode22Text",
-                          "x": 0,
-                          "y": 4,
-                          "width": 116,
-                          "height": 124,
-                          "text": "",
-                          "fontSize": 18,
-                          "color": "#e8edf0",
-                          "mouseEnabled": false,
-                          "overflow": "shrink"
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_97",
-                          "_$type": "GImage",
-                          "name": "expNode22Icon",
-                          "x": 6,
-                          "y": 0,
-                          "width": 104,
-                          "height": 104,
-                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
-                          "autoSize": false,
-                          "mouseEnabled": false
-                        }
-                      ],
-                      "visible": false
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_100",
-                      "_$type": "GWidget",
-                      "name": "expNode23",
-                      "x": 0,
-                      "y": 0,
-                      "width": 116,
-                      "height": 132,
-                      "mouseEnabled": true,
-                      "_$child": [
-                        {
-                          "_$id": "exp_SkillBattleStartView_98",
-                          "_$type": "GImage",
-                          "name": "expNode23Skin",
-                          "x": 0,
-                          "y": 0,
-                          "width": 116,
-                          "height": 132,
-                          "src": "ui/texture/inventory/tooltip.png",
-                          "autoSize": false,
-                          "mouseEnabled": false,
-                          "visible": false
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_99",
-                          "_$type": "GTextField",
-                          "name": "expNode23Text",
-                          "x": 0,
-                          "y": 4,
-                          "width": 116,
-                          "height": 124,
-                          "text": "",
-                          "fontSize": 18,
-                          "color": "#e8edf0",
-                          "mouseEnabled": false,
-                          "overflow": "shrink"
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_101",
-                          "_$type": "GImage",
-                          "name": "expNode23Icon",
-                          "x": 6,
-                          "y": 0,
-                          "width": 104,
-                          "height": 104,
-                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
-                          "autoSize": false,
-                          "mouseEnabled": false
-                        }
-                      ],
-                      "visible": false
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_104",
-                      "_$type": "GWidget",
-                      "name": "expNode24",
-                      "x": 0,
-                      "y": 0,
-                      "width": 116,
-                      "height": 132,
-                      "mouseEnabled": true,
-                      "_$child": [
-                        {
-                          "_$id": "exp_SkillBattleStartView_102",
-                          "_$type": "GImage",
-                          "name": "expNode24Skin",
-                          "x": 0,
-                          "y": 0,
-                          "width": 116,
-                          "height": 132,
-                          "src": "ui/texture/inventory/tooltip.png",
-                          "autoSize": false,
-                          "mouseEnabled": false,
-                          "visible": false
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_103",
-                          "_$type": "GTextField",
-                          "name": "expNode24Text",
-                          "x": 0,
-                          "y": 4,
-                          "width": 116,
-                          "height": 124,
-                          "text": "",
-                          "fontSize": 18,
-                          "color": "#e8edf0",
-                          "mouseEnabled": false,
-                          "overflow": "shrink"
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_105",
-                          "_$type": "GImage",
-                          "name": "expNode24Icon",
-                          "x": 6,
-                          "y": 0,
-                          "width": 104,
-                          "height": 104,
-                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
-                          "autoSize": false,
-                          "mouseEnabled": false
-                        }
-                      ],
-                      "visible": false
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_108",
-                      "_$type": "GWidget",
-                      "name": "expNode25",
-                      "x": 0,
-                      "y": 0,
-                      "width": 116,
-                      "height": 132,
-                      "mouseEnabled": true,
-                      "_$child": [
-                        {
-                          "_$id": "exp_SkillBattleStartView_106",
-                          "_$type": "GImage",
-                          "name": "expNode25Skin",
-                          "x": 0,
-                          "y": 0,
-                          "width": 116,
-                          "height": 132,
-                          "src": "ui/texture/inventory/tooltip.png",
-                          "autoSize": false,
-                          "mouseEnabled": false,
-                          "visible": false
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_107",
-                          "_$type": "GTextField",
-                          "name": "expNode25Text",
-                          "x": 0,
-                          "y": 4,
-                          "width": 116,
-                          "height": 124,
-                          "text": "",
-                          "fontSize": 18,
-                          "color": "#e8edf0",
-                          "mouseEnabled": false,
-                          "overflow": "shrink"
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_109",
-                          "_$type": "GImage",
-                          "name": "expNode25Icon",
-                          "x": 6,
-                          "y": 0,
-                          "width": 104,
-                          "height": 104,
-                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
-                          "autoSize": false,
-                          "mouseEnabled": false
-                        }
-                      ],
-                      "visible": false
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_112",
-                      "_$type": "GWidget",
-                      "name": "expNode26",
-                      "x": 0,
-                      "y": 0,
-                      "width": 116,
-                      "height": 132,
-                      "mouseEnabled": true,
-                      "_$child": [
-                        {
-                          "_$id": "exp_SkillBattleStartView_110",
-                          "_$type": "GImage",
-                          "name": "expNode26Skin",
-                          "x": 0,
-                          "y": 0,
-                          "width": 116,
-                          "height": 132,
-                          "src": "ui/texture/inventory/tooltip.png",
-                          "autoSize": false,
-                          "mouseEnabled": false,
-                          "visible": false
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_111",
-                          "_$type": "GTextField",
-                          "name": "expNode26Text",
-                          "x": 0,
-                          "y": 4,
-                          "width": 116,
-                          "height": 124,
-                          "text": "",
-                          "fontSize": 18,
-                          "color": "#e8edf0",
-                          "mouseEnabled": false,
-                          "overflow": "shrink"
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_113",
-                          "_$type": "GImage",
-                          "name": "expNode26Icon",
-                          "x": 6,
-                          "y": 0,
-                          "width": 104,
-                          "height": 104,
-                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
-                          "autoSize": false,
-                          "mouseEnabled": false
-                        }
-                      ],
-                      "visible": false
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_116",
-                      "_$type": "GWidget",
-                      "name": "expNode27",
-                      "x": 0,
-                      "y": 0,
-                      "width": 116,
-                      "height": 132,
-                      "mouseEnabled": true,
-                      "_$child": [
-                        {
-                          "_$id": "exp_SkillBattleStartView_114",
-                          "_$type": "GImage",
-                          "name": "expNode27Skin",
-                          "x": 0,
-                          "y": 0,
-                          "width": 116,
-                          "height": 132,
-                          "src": "ui/texture/inventory/tooltip.png",
-                          "autoSize": false,
-                          "mouseEnabled": false,
-                          "visible": false
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_115",
-                          "_$type": "GTextField",
-                          "name": "expNode27Text",
-                          "x": 0,
-                          "y": 4,
-                          "width": 116,
-                          "height": 124,
-                          "text": "",
-                          "fontSize": 18,
-                          "color": "#e8edf0",
-                          "mouseEnabled": false,
-                          "overflow": "shrink"
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_117",
-                          "_$type": "GImage",
-                          "name": "expNode27Icon",
-                          "x": 6,
-                          "y": 0,
-                          "width": 104,
-                          "height": 104,
-                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
-                          "autoSize": false,
-                          "mouseEnabled": false
-                        }
-                      ],
-                      "visible": false
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_120",
-                      "_$type": "GWidget",
-                      "name": "expNode28",
-                      "x": 0,
-                      "y": 0,
-                      "width": 116,
-                      "height": 132,
-                      "mouseEnabled": true,
-                      "_$child": [
-                        {
-                          "_$id": "exp_SkillBattleStartView_118",
-                          "_$type": "GImage",
-                          "name": "expNode28Skin",
-                          "x": 0,
-                          "y": 0,
-                          "width": 116,
-                          "height": 132,
-                          "src": "ui/texture/inventory/tooltip.png",
-                          "autoSize": false,
-                          "mouseEnabled": false,
-                          "visible": false
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_119",
-                          "_$type": "GTextField",
-                          "name": "expNode28Text",
-                          "x": 0,
-                          "y": 4,
-                          "width": 116,
-                          "height": 124,
-                          "text": "",
-                          "fontSize": 18,
-                          "color": "#e8edf0",
-                          "mouseEnabled": false,
-                          "overflow": "shrink"
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_121",
-                          "_$type": "GImage",
-                          "name": "expNode28Icon",
-                          "x": 6,
-                          "y": 0,
-                          "width": 104,
-                          "height": 104,
-                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
-                          "autoSize": false,
-                          "mouseEnabled": false
-                        }
-                      ],
-                      "visible": false
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_124",
-                      "_$type": "GWidget",
-                      "name": "expNode29",
-                      "x": 0,
-                      "y": 0,
-                      "width": 116,
-                      "height": 132,
-                      "mouseEnabled": true,
-                      "_$child": [
-                        {
-                          "_$id": "exp_SkillBattleStartView_122",
-                          "_$type": "GImage",
-                          "name": "expNode29Skin",
-                          "x": 0,
-                          "y": 0,
-                          "width": 116,
-                          "height": 132,
-                          "src": "ui/texture/inventory/tooltip.png",
-                          "autoSize": false,
-                          "mouseEnabled": false,
-                          "visible": false
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_123",
-                          "_$type": "GTextField",
-                          "name": "expNode29Text",
-                          "x": 0,
-                          "y": 4,
-                          "width": 116,
-                          "height": 124,
-                          "text": "",
-                          "fontSize": 18,
-                          "color": "#e8edf0",
-                          "mouseEnabled": false,
-                          "overflow": "shrink"
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_125",
-                          "_$type": "GImage",
-                          "name": "expNode29Icon",
-                          "x": 6,
-                          "y": 0,
-                          "width": 104,
-                          "height": 104,
-                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
-                          "autoSize": false,
-                          "mouseEnabled": false
-                        }
-                      ],
-                      "visible": false
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_128",
-                      "_$type": "GWidget",
-                      "name": "expNode30",
-                      "x": 0,
-                      "y": 0,
-                      "width": 116,
-                      "height": 132,
-                      "mouseEnabled": true,
-                      "_$child": [
-                        {
-                          "_$id": "exp_SkillBattleStartView_126",
-                          "_$type": "GImage",
-                          "name": "expNode30Skin",
-                          "x": 0,
-                          "y": 0,
-                          "width": 116,
-                          "height": 132,
-                          "src": "ui/texture/inventory/tooltip.png",
-                          "autoSize": false,
-                          "mouseEnabled": false,
-                          "visible": false
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_127",
-                          "_$type": "GTextField",
-                          "name": "expNode30Text",
-                          "x": 0,
-                          "y": 4,
-                          "width": 116,
-                          "height": 124,
-                          "text": "",
-                          "fontSize": 18,
-                          "color": "#e8edf0",
-                          "mouseEnabled": false,
-                          "overflow": "shrink"
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_129",
-                          "_$type": "GImage",
-                          "name": "expNode30Icon",
-                          "x": 6,
-                          "y": 0,
-                          "width": 104,
-                          "height": 104,
-                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
-                          "autoSize": false,
-                          "mouseEnabled": false
-                        }
-                      ],
-                      "visible": false
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_132",
-                      "_$type": "GWidget",
-                      "name": "expNode31",
-                      "x": 0,
-                      "y": 0,
-                      "width": 116,
-                      "height": 132,
-                      "mouseEnabled": true,
-                      "_$child": [
-                        {
-                          "_$id": "exp_SkillBattleStartView_130",
-                          "_$type": "GImage",
-                          "name": "expNode31Skin",
-                          "x": 0,
-                          "y": 0,
-                          "width": 116,
-                          "height": 132,
-                          "src": "ui/texture/inventory/tooltip.png",
-                          "autoSize": false,
-                          "mouseEnabled": false,
-                          "visible": false
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_131",
-                          "_$type": "GTextField",
-                          "name": "expNode31Text",
-                          "x": 0,
-                          "y": 4,
-                          "width": 116,
-                          "height": 124,
-                          "text": "",
-                          "fontSize": 18,
-                          "color": "#e8edf0",
-                          "mouseEnabled": false,
-                          "overflow": "shrink"
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_133",
-                          "_$type": "GImage",
-                          "name": "expNode31Icon",
-                          "x": 6,
-                          "y": 0,
-                          "width": 104,
-                          "height": 104,
-                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
-                          "autoSize": false,
-                          "mouseEnabled": false
-                        }
-                      ],
-                      "visible": false
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_136",
-                      "_$type": "GWidget",
-                      "name": "expNode32",
-                      "x": 0,
-                      "y": 0,
-                      "width": 116,
-                      "height": 132,
-                      "mouseEnabled": true,
-                      "_$child": [
-                        {
-                          "_$id": "exp_SkillBattleStartView_134",
-                          "_$type": "GImage",
-                          "name": "expNode32Skin",
-                          "x": 0,
-                          "y": 0,
-                          "width": 116,
-                          "height": 132,
-                          "src": "ui/texture/inventory/tooltip.png",
-                          "autoSize": false,
-                          "mouseEnabled": false,
-                          "visible": false
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_135",
-                          "_$type": "GTextField",
-                          "name": "expNode32Text",
-                          "x": 0,
-                          "y": 4,
-                          "width": 116,
-                          "height": 124,
-                          "text": "",
-                          "fontSize": 18,
-                          "color": "#e8edf0",
-                          "mouseEnabled": false,
-                          "overflow": "shrink"
-                        },
-                        {
-                          "_$id": "exp_SkillBattleStartView_137",
-                          "_$type": "GImage",
-                          "name": "expNode32Icon",
-                          "x": 6,
-                          "y": 0,
-                          "width": 104,
-                          "height": 104,
-                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
-                          "autoSize": false,
-                          "mouseEnabled": false
-                        }
-                      ],
-                      "visible": false
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_138",
-                      "_$type": "GWidget",
-                      "name": "expPlayer",
-                      "x": 0,
-                      "y": 0,
-                      "width": 116,
-                      "height": 116,
-                      "mouseEnabled": false
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "_$id": "region_79",
-              "_$type": "GWidget",
-              "name": "nodeActionArea",
-              "x": 1000,
-              "y": 192,
-              "width": 248,
-              "height": 282,
-              "mouseThrough": true,
-              "_$child": [
-                {
-                  "_$id": "exp_SkillBattleStartView_139",
-                  "_$type": "GImage",
-                  "name": "expContextBackground",
-                  "x": 0,
-                  "y": 0,
-                  "width": 248,
-                  "height": 282,
-                  "src": "ui/texture/inventory/tooltip.png",
-                  "autoSize": false,
-                  "mouseEnabled": false
-                },
-                {
-                  "_$id": "exp_SkillBattleStartView_140",
-                  "_$type": "GImage",
-                  "name": "expContextIcon",
-                  "x": 72,
-                  "y": 12,
-                  "width": 104,
-                  "height": 104,
-                  "src": "ui/image/expeditionNodes/node-start.png",
-                  "autoSize": false,
-                  "mouseEnabled": false
-                },
-                {
-                  "_$id": "exp_SkillBattleStartView_141",
-                  "_$type": "GTextField",
-                  "name": "expContextTitle",
-                  "x": 12,
-                  "y": 124,
-                  "width": 224,
-                  "height": 56,
-                  "text": "",
-                  "fontSize": 22,
-                  "color": "#e8edf0",
-                  "mouseEnabled": false,
-                  "overflow": "shrink"
-                },
-                {
-                  "_$id": "exp_SkillBattleStartView_144",
-                  "_$type": "GWidget",
-                  "name": "expUse",
-                  "x": 20,
-                  "y": 202,
-                  "width": 208,
-                  "height": 54,
-                  "mouseEnabled": true,
-                  "_$child": [
-                    {
-                      "_$id": "exp_SkillBattleStartView_142",
-                      "_$type": "GImage",
-                      "name": "expUseSkin",
-                      "x": 0,
-                      "y": 0,
-                      "width": 208,
-                      "height": 54,
-                      "src": "ui/texture/inventory/tooltip.png",
-                      "autoSize": false,
-                      "mouseEnabled": false
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_143",
-                      "_$type": "GTextField",
-                      "name": "expUseText",
-                      "x": 4,
-                      "y": 4,
-                      "width": 200,
-                      "height": 46,
-                      "text": "",
-                      "fontSize": 18,
-                      "color": "#e8edf0",
-                      "mouseEnabled": false,
-                      "overflow": "shrink"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "_$id": "region_80",
-              "_$type": "GWidget",
-              "name": "mapActionsArea",
-              "x": 32,
-              "y": 548,
-              "width": 1216,
-              "height": 140,
-              "mouseThrough": true,
-              "_$child": [
-                {
-                  "_$id": "exp_SkillBattleStartView_5",
-                  "_$type": "GTextField",
-                  "name": "expStatus",
-                  "x": 148,
-                  "y": 0,
-                  "width": 920,
-                  "height": 42,
-                  "text": "",
-                  "fontSize": 20,
-                  "color": "#e8edf0",
-                  "mouseEnabled": false,
-                  "overflow": "shrink"
-                },
-                {
-                  "_$id": "exp_SkillBattleStartView_6",
-                  "_$type": "GTextField",
-                  "name": "expNotice",
-                  "x": 0,
-                  "y": 44,
-                  "width": 1216,
-                  "height": 34,
-                  "text": "",
-                  "fontSize": 18,
-                  "color": "#e8edf0",
-                  "mouseEnabled": false,
-                  "overflow": "shrink"
-                },
-                {
-                  "_$id": "exp_SkillBattleStartView_147",
-                  "_$type": "GWidget",
-                  "name": "expStorage",
-                  "x": 98,
-                  "y": 92,
-                  "width": 180,
-                  "height": 48,
-                  "mouseEnabled": true,
-                  "_$child": [
-                    {
-                      "_$id": "exp_SkillBattleStartView_145",
-                      "_$type": "GImage",
-                      "name": "expStorageSkin",
-                      "x": 0,
-                      "y": 0,
-                      "width": 180,
-                      "height": 48,
-                      "src": "ui/texture/inventory/tooltip.png",
-                      "autoSize": false,
-                      "mouseEnabled": false
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_146",
-                      "_$type": "GTextField",
-                      "name": "expStorageText",
-                      "x": 4,
-                      "y": 4,
-                      "width": 172,
-                      "height": 40,
-                      "text": "行囊",
-                      "fontSize": 18,
-                      "color": "#e8edf0",
-                      "mouseEnabled": false,
-                      "overflow": "shrink"
-                    }
-                  ]
-                },
-                {
-                  "_$id": "exp_SkillBattleStartView_150",
-                  "_$type": "GWidget",
-                  "name": "expBuild",
-                  "x": 300,
-                  "y": 92,
-                  "width": 180,
-                  "height": 48,
-                  "mouseEnabled": true,
-                  "_$child": [
-                    {
-                      "_$id": "exp_SkillBattleStartView_148",
-                      "_$type": "GImage",
-                      "name": "expBuildSkin",
-                      "x": 0,
-                      "y": 0,
-                      "width": 180,
-                      "height": 48,
-                      "src": "ui/texture/inventory/tooltip.png",
-                      "autoSize": false,
-                      "mouseEnabled": false
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_149",
-                      "_$type": "GTextField",
-                      "name": "expBuildText",
-                      "x": 4,
-                      "y": 4,
-                      "width": 172,
-                      "height": 40,
-                      "text": "构筑",
-                      "fontSize": 18,
-                      "color": "#e8edf0",
-                      "mouseEnabled": false,
-                      "overflow": "shrink"
-                    }
-                  ]
-                },
-                {
-                  "_$id": "exp_SkillBattleStartView_153",
-                  "_$type": "GWidget",
-                  "name": "expAbandon",
-                  "x": 968,
-                  "y": 92,
-                  "width": 248,
-                  "height": 48,
-                  "mouseEnabled": true,
-                  "_$child": [
-                    {
-                      "_$id": "exp_SkillBattleStartView_151",
-                      "_$type": "GImage",
-                      "name": "expAbandonSkin",
-                      "x": 0,
-                      "y": 0,
-                      "width": 248,
-                      "height": 48,
-                      "src": "ui/texture/inventory/tooltip.png",
-                      "autoSize": false,
-                      "mouseEnabled": false
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_152",
-                      "_$type": "GTextField",
-                      "name": "expAbandonText",
-                      "x": 4,
-                      "y": 4,
-                      "width": 240,
-                      "height": 40,
-                      "text": "放弃本局",
-                      "fontSize": 18,
-                      "color": "#e8edf0",
-                      "mouseEnabled": false,
-                      "overflow": "shrink"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "relations": [
-        {
-          "_$type": "Relation",
-          "target": {
-            "_$ref": "map029_root"
-          },
-          "data": [
-            100,
-            0
-          ]
-        }
-      ]
-    }
-  ],
   "_$comp": [
     {
       "_$type": "3593fc26-337e-42e3-92dc-1b9c2bb8f988",
@@ -2098,6 +20,9 @@
           "_$ref": "start_background"
         },
         {
+          "_$ref": "map_ground_texture"
+        },
+        {
           "_$ref": "region_77"
         },
         {
@@ -2109,6 +34,8 @@
         {
           "_$ref": "region_78"
         },
+        {"_$ref": "map_clock_area"},
+        {"_$ref": "map_exit_area"},
         {
           "_$ref": "exp_SkillBattleStartView_2"
         },
@@ -2572,7 +499,1931 @@
           "_$ref": "exp_SkillBattleStartView_152"
         }
       ],
+      "prefabs": null,
       "mapperType": 4
+    }
+  ],
+  "_$child": [
+    {
+      "_$id": "start_background",
+      "_$type": "GWidget",
+      "name": "screenBackground",
+      "x": -140,
+      "width": 1560,
+      "height": 720,
+      "_mouseState": 1,
+      "relations": [
+        {
+          "_$type": "Relation",
+          "target": {
+            "_$ref": "map029_root"
+          },
+          "data": [
+            6,
+            0,
+            13,
+            0
+          ]
+        }
+      ],
+      "_$child": [
+        {
+          "_$id": "map_ground_texture",
+          "_$type": "GImage",
+          "name": "mapGroundTexture",
+          "width": 1,
+          "height": 1,
+          "visible": false,
+          "_mouseState": 1,
+          "src": "ui/texture/expedition/ancient-sect-ground.png",
+          "autoSize": false
+        }
+      ]
+    },
+    {
+      "_$id": "region_77",
+      "_$type": "GWidget",
+      "name": "mapBackdropArea",
+      "x": -140,
+      "width": 1560,
+      "height": 720,
+      "mouseThrough": true,
+      "relations": [
+        {
+          "_$type": "Relation",
+          "target": {
+            "_$ref": "map029_root"
+          },
+          "data": [
+            6,
+            0,
+            13,
+            0
+          ]
+        }
+      ],
+      "_$child": [
+        {
+          "_$id": "sbr001res",
+          "_$type": "GWidget",
+          "name": "result",
+          "width": 1560,
+          "height": 720,
+          "visible": false
+        }
+      ]
+    },
+    {
+      "_$id": "region_81",
+      "_$type": "GWidget",
+      "name": "adapter",
+      "width": 1280,
+      "height": 720,
+      "mouseThrough": true,
+      "relations": [
+        {
+          "_$type": "Relation",
+          "target": {
+            "_$ref": "map029_root"
+          },
+          "data": [
+            1,
+            0,
+            2,
+            0
+          ]
+        }
+      ],
+      "_$child": [
+        {
+          "_$id": "exp_SkillBattleStartView_1",
+          "_$type": "GWidget",
+          "name": "expeditionRoot",
+          "relations": [{"_$type": "Relation", "target": {"_$ref": "region_81"}, "data": [1, 0, 2, 0]}],
+          "width": 1280,
+          "height": 720,
+          "mouseThrough": true,
+          "_$child": [
+            {
+              "_$id": "region_78",
+              "_$type": "GWidget",
+              "name": "mapHeaderArea",
+              "relations": [{"_$type": "Relation", "target": {"_$ref": "exp_SkillBattleStartView_1"}, "data": [1, 0, 10, 0]}],
+              "x": 32,
+              "y": 14,
+              "width": 1216,
+              "height": 88,
+              "mouseThrough": true,
+              "_$child": [
+                {
+                  "_$id": "exp_SkillBattleStartView_2",
+                  "_$type": "GTextField",
+                  "name": "expTitle",
+                  "width": 620,
+                  "height": 42,
+                  "_mouseState": 1,
+                  "text": "末法寻仙 · 忆境",
+                  "fontSize": 26,
+                  "color": "#e8edf0",
+                  "overflow": "shrink"
+                },
+                {
+                  "_$id": "map_clock_area",
+                  "_$type": "GWidget",
+                  "name": "mapClockArea",
+                  "x": 1048,
+                  "y": 2,
+                  "width": 168,
+                  "height": 40,
+                  "mouseThrough": true,
+                  "relations": [{"_$type": "Relation", "target": {"_$ref": "region_78"}, "data": [9, 0]}],
+                  "_$child": [
+                    {
+                      "_$id": "exp_SkillBattleStartView_3",
+                      "_$type": "GTextField",
+                      "name": "expClock",
+                      "width": 168,
+                      "height": 40,
+                      "_mouseState": 1,
+                      "text": "20:00",
+                      "fontSize": 22,
+                      "color": "#e8edf0",
+                      "overflow": "shrink"
+                    }
+                  ]
+                },
+                {
+                  "_$id": "exp_SkillBattleStartView_4",
+                  "_$type": "GTextField",
+                  "name": "expResources",
+                  "y": 50,
+                  "width": 1216,
+                  "height": 38,
+                  "_mouseState": 1,
+                  "text": "",
+                  "fontSize": 20,
+                  "color": "#e8edf0",
+                  "overflow": "shrink"
+                }
+              ]
+            },
+            {
+              "_$id": "exp_SkillBattleStartView_7",
+              "_$type": "GPanel",
+              "name": "expViewport",
+              "relations": [{"_$type": "Relation", "target": {"_$ref": "exp_SkillBattleStartView_1"}, "data": [1, 0, 13, 0]}],
+              "x": 32,
+              "y": 112,
+              "width": 936,
+              "height": 430,
+              "_mouseState": 2,
+              "_$child": [
+                {
+                  "_$id": "exp_SkillBattleStartView_8",
+                  "_$type": "GWidget",
+                  "name": "expMapContent",
+                  "width": 936,
+                  "height": 430,
+                  "mouseThrough": true,
+                  "_$child": [
+                    {
+                      "_$id": "exp_SkillBattleStartView_9",
+                      "_$type": "GWidget",
+                      "name": "expLines",
+                      "width": 936,
+                      "height": 430,
+                      "_mouseState": 1
+                    },
+                    {
+                      "_$id": "exp_SkillBattleStartView_12",
+                      "_$type": "GWidget",
+                      "name": "expNode1",
+                      "width": 116,
+                      "height": 132,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "exp_SkillBattleStartView_10",
+                          "_$type": "GImage",
+                          "name": "expNode1Skin",
+                          "width": 116,
+                          "height": 132,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/texture/inventory/tooltip.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_11",
+                          "_$type": "GTextField",
+                          "name": "expNode1Text",
+                          "y": 4,
+                          "width": 116,
+                          "height": 124,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_13",
+                          "_$type": "GImage",
+                          "name": "expNode1Icon",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "exp_SkillBattleStartView_16",
+                      "_$type": "GWidget",
+                      "name": "expNode2",
+                      "width": 116,
+                      "height": 132,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "exp_SkillBattleStartView_14",
+                          "_$type": "GImage",
+                          "name": "expNode2Skin",
+                          "width": 116,
+                          "height": 132,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/texture/inventory/tooltip.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_15",
+                          "_$type": "GTextField",
+                          "name": "expNode2Text",
+                          "y": 4,
+                          "width": 116,
+                          "height": 124,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_17",
+                          "_$type": "GImage",
+                          "name": "expNode2Icon",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "exp_SkillBattleStartView_20",
+                      "_$type": "GWidget",
+                      "name": "expNode3",
+                      "width": 116,
+                      "height": 132,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "exp_SkillBattleStartView_18",
+                          "_$type": "GImage",
+                          "name": "expNode3Skin",
+                          "width": 116,
+                          "height": 132,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/texture/inventory/tooltip.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_19",
+                          "_$type": "GTextField",
+                          "name": "expNode3Text",
+                          "y": 4,
+                          "width": 116,
+                          "height": 124,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_21",
+                          "_$type": "GImage",
+                          "name": "expNode3Icon",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "exp_SkillBattleStartView_24",
+                      "_$type": "GWidget",
+                      "name": "expNode4",
+                      "width": 116,
+                      "height": 132,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "exp_SkillBattleStartView_22",
+                          "_$type": "GImage",
+                          "name": "expNode4Skin",
+                          "width": 116,
+                          "height": 132,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/texture/inventory/tooltip.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_23",
+                          "_$type": "GTextField",
+                          "name": "expNode4Text",
+                          "y": 4,
+                          "width": 116,
+                          "height": 124,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_25",
+                          "_$type": "GImage",
+                          "name": "expNode4Icon",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "exp_SkillBattleStartView_28",
+                      "_$type": "GWidget",
+                      "name": "expNode5",
+                      "width": 116,
+                      "height": 132,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "exp_SkillBattleStartView_26",
+                          "_$type": "GImage",
+                          "name": "expNode5Skin",
+                          "width": 116,
+                          "height": 132,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/texture/inventory/tooltip.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_27",
+                          "_$type": "GTextField",
+                          "name": "expNode5Text",
+                          "y": 4,
+                          "width": 116,
+                          "height": 124,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_29",
+                          "_$type": "GImage",
+                          "name": "expNode5Icon",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "exp_SkillBattleStartView_32",
+                      "_$type": "GWidget",
+                      "name": "expNode6",
+                      "width": 116,
+                      "height": 132,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "exp_SkillBattleStartView_30",
+                          "_$type": "GImage",
+                          "name": "expNode6Skin",
+                          "width": 116,
+                          "height": 132,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/texture/inventory/tooltip.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_31",
+                          "_$type": "GTextField",
+                          "name": "expNode6Text",
+                          "y": 4,
+                          "width": 116,
+                          "height": 124,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_33",
+                          "_$type": "GImage",
+                          "name": "expNode6Icon",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "exp_SkillBattleStartView_36",
+                      "_$type": "GWidget",
+                      "name": "expNode7",
+                      "width": 116,
+                      "height": 132,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "exp_SkillBattleStartView_34",
+                          "_$type": "GImage",
+                          "name": "expNode7Skin",
+                          "width": 116,
+                          "height": 132,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/texture/inventory/tooltip.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_35",
+                          "_$type": "GTextField",
+                          "name": "expNode7Text",
+                          "y": 4,
+                          "width": 116,
+                          "height": 124,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_37",
+                          "_$type": "GImage",
+                          "name": "expNode7Icon",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "exp_SkillBattleStartView_40",
+                      "_$type": "GWidget",
+                      "name": "expNode8",
+                      "width": 116,
+                      "height": 132,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "exp_SkillBattleStartView_38",
+                          "_$type": "GImage",
+                          "name": "expNode8Skin",
+                          "width": 116,
+                          "height": 132,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/texture/inventory/tooltip.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_39",
+                          "_$type": "GTextField",
+                          "name": "expNode8Text",
+                          "y": 4,
+                          "width": 116,
+                          "height": 124,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_41",
+                          "_$type": "GImage",
+                          "name": "expNode8Icon",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "exp_SkillBattleStartView_44",
+                      "_$type": "GWidget",
+                      "name": "expNode9",
+                      "width": 116,
+                      "height": 132,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "exp_SkillBattleStartView_42",
+                          "_$type": "GImage",
+                          "name": "expNode9Skin",
+                          "width": 116,
+                          "height": 132,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/texture/inventory/tooltip.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_43",
+                          "_$type": "GTextField",
+                          "name": "expNode9Text",
+                          "y": 4,
+                          "width": 116,
+                          "height": 124,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_45",
+                          "_$type": "GImage",
+                          "name": "expNode9Icon",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "exp_SkillBattleStartView_48",
+                      "_$type": "GWidget",
+                      "name": "expNode10",
+                      "width": 116,
+                      "height": 132,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "exp_SkillBattleStartView_46",
+                          "_$type": "GImage",
+                          "name": "expNode10Skin",
+                          "width": 116,
+                          "height": 132,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/texture/inventory/tooltip.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_47",
+                          "_$type": "GTextField",
+                          "name": "expNode10Text",
+                          "y": 4,
+                          "width": 116,
+                          "height": 124,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_49",
+                          "_$type": "GImage",
+                          "name": "expNode10Icon",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "exp_SkillBattleStartView_52",
+                      "_$type": "GWidget",
+                      "name": "expNode11",
+                      "width": 116,
+                      "height": 132,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "exp_SkillBattleStartView_50",
+                          "_$type": "GImage",
+                          "name": "expNode11Skin",
+                          "width": 116,
+                          "height": 132,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/texture/inventory/tooltip.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_51",
+                          "_$type": "GTextField",
+                          "name": "expNode11Text",
+                          "y": 4,
+                          "width": 116,
+                          "height": 124,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_53",
+                          "_$type": "GImage",
+                          "name": "expNode11Icon",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "exp_SkillBattleStartView_56",
+                      "_$type": "GWidget",
+                      "name": "expNode12",
+                      "width": 116,
+                      "height": 132,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "exp_SkillBattleStartView_54",
+                          "_$type": "GImage",
+                          "name": "expNode12Skin",
+                          "width": 116,
+                          "height": 132,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/texture/inventory/tooltip.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_55",
+                          "_$type": "GTextField",
+                          "name": "expNode12Text",
+                          "y": 4,
+                          "width": 116,
+                          "height": 124,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_57",
+                          "_$type": "GImage",
+                          "name": "expNode12Icon",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "exp_SkillBattleStartView_60",
+                      "_$type": "GWidget",
+                      "name": "expNode13",
+                      "width": 116,
+                      "height": 132,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "exp_SkillBattleStartView_58",
+                          "_$type": "GImage",
+                          "name": "expNode13Skin",
+                          "width": 116,
+                          "height": 132,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/texture/inventory/tooltip.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_59",
+                          "_$type": "GTextField",
+                          "name": "expNode13Text",
+                          "y": 4,
+                          "width": 116,
+                          "height": 124,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_61",
+                          "_$type": "GImage",
+                          "name": "expNode13Icon",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "exp_SkillBattleStartView_64",
+                      "_$type": "GWidget",
+                      "name": "expNode14",
+                      "width": 116,
+                      "height": 132,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "exp_SkillBattleStartView_62",
+                          "_$type": "GImage",
+                          "name": "expNode14Skin",
+                          "width": 116,
+                          "height": 132,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/texture/inventory/tooltip.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_63",
+                          "_$type": "GTextField",
+                          "name": "expNode14Text",
+                          "y": 4,
+                          "width": 116,
+                          "height": 124,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_65",
+                          "_$type": "GImage",
+                          "name": "expNode14Icon",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "exp_SkillBattleStartView_68",
+                      "_$type": "GWidget",
+                      "name": "expNode15",
+                      "width": 116,
+                      "height": 132,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "exp_SkillBattleStartView_66",
+                          "_$type": "GImage",
+                          "name": "expNode15Skin",
+                          "width": 116,
+                          "height": 132,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/texture/inventory/tooltip.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_67",
+                          "_$type": "GTextField",
+                          "name": "expNode15Text",
+                          "y": 4,
+                          "width": 116,
+                          "height": 124,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_69",
+                          "_$type": "GImage",
+                          "name": "expNode15Icon",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "exp_SkillBattleStartView_72",
+                      "_$type": "GWidget",
+                      "name": "expNode16",
+                      "width": 116,
+                      "height": 132,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "exp_SkillBattleStartView_70",
+                          "_$type": "GImage",
+                          "name": "expNode16Skin",
+                          "width": 116,
+                          "height": 132,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/texture/inventory/tooltip.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_71",
+                          "_$type": "GTextField",
+                          "name": "expNode16Text",
+                          "y": 4,
+                          "width": 116,
+                          "height": 124,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_73",
+                          "_$type": "GImage",
+                          "name": "expNode16Icon",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "exp_SkillBattleStartView_76",
+                      "_$type": "GWidget",
+                      "name": "expNode17",
+                      "width": 116,
+                      "height": 132,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "exp_SkillBattleStartView_74",
+                          "_$type": "GImage",
+                          "name": "expNode17Skin",
+                          "width": 116,
+                          "height": 132,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/texture/inventory/tooltip.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_75",
+                          "_$type": "GTextField",
+                          "name": "expNode17Text",
+                          "y": 4,
+                          "width": 116,
+                          "height": 124,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_77",
+                          "_$type": "GImage",
+                          "name": "expNode17Icon",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "exp_SkillBattleStartView_80",
+                      "_$type": "GWidget",
+                      "name": "expNode18",
+                      "width": 116,
+                      "height": 132,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "exp_SkillBattleStartView_78",
+                          "_$type": "GImage",
+                          "name": "expNode18Skin",
+                          "width": 116,
+                          "height": 132,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/texture/inventory/tooltip.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_79",
+                          "_$type": "GTextField",
+                          "name": "expNode18Text",
+                          "y": 4,
+                          "width": 116,
+                          "height": 124,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_81",
+                          "_$type": "GImage",
+                          "name": "expNode18Icon",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "exp_SkillBattleStartView_84",
+                      "_$type": "GWidget",
+                      "name": "expNode19",
+                      "width": 116,
+                      "height": 132,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "exp_SkillBattleStartView_82",
+                          "_$type": "GImage",
+                          "name": "expNode19Skin",
+                          "width": 116,
+                          "height": 132,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/texture/inventory/tooltip.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_83",
+                          "_$type": "GTextField",
+                          "name": "expNode19Text",
+                          "y": 4,
+                          "width": 116,
+                          "height": 124,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_85",
+                          "_$type": "GImage",
+                          "name": "expNode19Icon",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "exp_SkillBattleStartView_88",
+                      "_$type": "GWidget",
+                      "name": "expNode20",
+                      "width": 116,
+                      "height": 132,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "exp_SkillBattleStartView_86",
+                          "_$type": "GImage",
+                          "name": "expNode20Skin",
+                          "width": 116,
+                          "height": 132,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/texture/inventory/tooltip.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_87",
+                          "_$type": "GTextField",
+                          "name": "expNode20Text",
+                          "y": 4,
+                          "width": 116,
+                          "height": 124,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_89",
+                          "_$type": "GImage",
+                          "name": "expNode20Icon",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "exp_SkillBattleStartView_92",
+                      "_$type": "GWidget",
+                      "name": "expNode21",
+                      "width": 116,
+                      "height": 132,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "exp_SkillBattleStartView_90",
+                          "_$type": "GImage",
+                          "name": "expNode21Skin",
+                          "width": 116,
+                          "height": 132,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/texture/inventory/tooltip.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_91",
+                          "_$type": "GTextField",
+                          "name": "expNode21Text",
+                          "y": 4,
+                          "width": 116,
+                          "height": 124,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_93",
+                          "_$type": "GImage",
+                          "name": "expNode21Icon",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "exp_SkillBattleStartView_96",
+                      "_$type": "GWidget",
+                      "name": "expNode22",
+                      "width": 116,
+                      "height": 132,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "exp_SkillBattleStartView_94",
+                          "_$type": "GImage",
+                          "name": "expNode22Skin",
+                          "width": 116,
+                          "height": 132,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/texture/inventory/tooltip.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_95",
+                          "_$type": "GTextField",
+                          "name": "expNode22Text",
+                          "y": 4,
+                          "width": 116,
+                          "height": 124,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_97",
+                          "_$type": "GImage",
+                          "name": "expNode22Icon",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "exp_SkillBattleStartView_100",
+                      "_$type": "GWidget",
+                      "name": "expNode23",
+                      "width": 116,
+                      "height": 132,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "exp_SkillBattleStartView_98",
+                          "_$type": "GImage",
+                          "name": "expNode23Skin",
+                          "width": 116,
+                          "height": 132,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/texture/inventory/tooltip.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_99",
+                          "_$type": "GTextField",
+                          "name": "expNode23Text",
+                          "y": 4,
+                          "width": 116,
+                          "height": 124,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_101",
+                          "_$type": "GImage",
+                          "name": "expNode23Icon",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "exp_SkillBattleStartView_104",
+                      "_$type": "GWidget",
+                      "name": "expNode24",
+                      "width": 116,
+                      "height": 132,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "exp_SkillBattleStartView_102",
+                          "_$type": "GImage",
+                          "name": "expNode24Skin",
+                          "width": 116,
+                          "height": 132,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/texture/inventory/tooltip.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_103",
+                          "_$type": "GTextField",
+                          "name": "expNode24Text",
+                          "y": 4,
+                          "width": 116,
+                          "height": 124,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_105",
+                          "_$type": "GImage",
+                          "name": "expNode24Icon",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "exp_SkillBattleStartView_108",
+                      "_$type": "GWidget",
+                      "name": "expNode25",
+                      "width": 116,
+                      "height": 132,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "exp_SkillBattleStartView_106",
+                          "_$type": "GImage",
+                          "name": "expNode25Skin",
+                          "width": 116,
+                          "height": 132,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/texture/inventory/tooltip.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_107",
+                          "_$type": "GTextField",
+                          "name": "expNode25Text",
+                          "y": 4,
+                          "width": 116,
+                          "height": 124,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_109",
+                          "_$type": "GImage",
+                          "name": "expNode25Icon",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "exp_SkillBattleStartView_112",
+                      "_$type": "GWidget",
+                      "name": "expNode26",
+                      "width": 116,
+                      "height": 132,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "exp_SkillBattleStartView_110",
+                          "_$type": "GImage",
+                          "name": "expNode26Skin",
+                          "width": 116,
+                          "height": 132,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/texture/inventory/tooltip.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_111",
+                          "_$type": "GTextField",
+                          "name": "expNode26Text",
+                          "y": 4,
+                          "width": 116,
+                          "height": 124,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_113",
+                          "_$type": "GImage",
+                          "name": "expNode26Icon",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "exp_SkillBattleStartView_116",
+                      "_$type": "GWidget",
+                      "name": "expNode27",
+                      "width": 116,
+                      "height": 132,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "exp_SkillBattleStartView_114",
+                          "_$type": "GImage",
+                          "name": "expNode27Skin",
+                          "width": 116,
+                          "height": 132,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/texture/inventory/tooltip.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_115",
+                          "_$type": "GTextField",
+                          "name": "expNode27Text",
+                          "y": 4,
+                          "width": 116,
+                          "height": 124,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_117",
+                          "_$type": "GImage",
+                          "name": "expNode27Icon",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "exp_SkillBattleStartView_120",
+                      "_$type": "GWidget",
+                      "name": "expNode28",
+                      "width": 116,
+                      "height": 132,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "exp_SkillBattleStartView_118",
+                          "_$type": "GImage",
+                          "name": "expNode28Skin",
+                          "width": 116,
+                          "height": 132,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/texture/inventory/tooltip.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_119",
+                          "_$type": "GTextField",
+                          "name": "expNode28Text",
+                          "y": 4,
+                          "width": 116,
+                          "height": 124,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_121",
+                          "_$type": "GImage",
+                          "name": "expNode28Icon",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "exp_SkillBattleStartView_124",
+                      "_$type": "GWidget",
+                      "name": "expNode29",
+                      "width": 116,
+                      "height": 132,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "exp_SkillBattleStartView_122",
+                          "_$type": "GImage",
+                          "name": "expNode29Skin",
+                          "width": 116,
+                          "height": 132,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/texture/inventory/tooltip.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_123",
+                          "_$type": "GTextField",
+                          "name": "expNode29Text",
+                          "y": 4,
+                          "width": 116,
+                          "height": 124,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_125",
+                          "_$type": "GImage",
+                          "name": "expNode29Icon",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "exp_SkillBattleStartView_128",
+                      "_$type": "GWidget",
+                      "name": "expNode30",
+                      "width": 116,
+                      "height": 132,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "exp_SkillBattleStartView_126",
+                          "_$type": "GImage",
+                          "name": "expNode30Skin",
+                          "width": 116,
+                          "height": 132,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/texture/inventory/tooltip.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_127",
+                          "_$type": "GTextField",
+                          "name": "expNode30Text",
+                          "y": 4,
+                          "width": 116,
+                          "height": 124,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_129",
+                          "_$type": "GImage",
+                          "name": "expNode30Icon",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "exp_SkillBattleStartView_132",
+                      "_$type": "GWidget",
+                      "name": "expNode31",
+                      "width": 116,
+                      "height": 132,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "exp_SkillBattleStartView_130",
+                          "_$type": "GImage",
+                          "name": "expNode31Skin",
+                          "width": 116,
+                          "height": 132,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/texture/inventory/tooltip.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_131",
+                          "_$type": "GTextField",
+                          "name": "expNode31Text",
+                          "y": 4,
+                          "width": 116,
+                          "height": 124,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_133",
+                          "_$type": "GImage",
+                          "name": "expNode31Icon",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "exp_SkillBattleStartView_136",
+                      "_$type": "GWidget",
+                      "name": "expNode32",
+                      "width": 116,
+                      "height": 132,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "exp_SkillBattleStartView_134",
+                          "_$type": "GImage",
+                          "name": "expNode32Skin",
+                          "width": 116,
+                          "height": 132,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/texture/inventory/tooltip.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_135",
+                          "_$type": "GTextField",
+                          "name": "expNode32Text",
+                          "y": 4,
+                          "width": 116,
+                          "height": 124,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_137",
+                          "_$type": "GImage",
+                          "name": "expNode32Icon",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "exp_SkillBattleStartView_138",
+                      "_$type": "GWidget",
+                      "name": "expPlayer",
+                      "width": 116,
+                      "height": 116,
+                      "_mouseState": 1
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "_$id": "region_79",
+              "_$type": "GWidget",
+              "name": "nodeActionArea",
+              "relations": [{"_$type": "Relation", "target": {"_$ref": "exp_SkillBattleStartView_1"}, "data": [9, 0, 13, 0]}],
+              "x": 1000,
+              "y": 192,
+              "width": 248,
+              "height": 282,
+              "mouseThrough": true,
+              "_$child": [
+                {
+                  "_$id": "exp_SkillBattleStartView_139",
+                  "_$type": "GImage",
+                  "name": "expContextBackground",
+                  "width": 248,
+                  "height": 282,
+                  "_mouseState": 1,
+                  "src": "ui/texture/inventory/tooltip.png",
+                  "autoSize": false
+                },
+                {
+                  "_$id": "exp_SkillBattleStartView_140",
+                  "_$type": "GImage",
+                  "name": "expContextIcon",
+                  "x": 72,
+                  "y": 12,
+                  "width": 104,
+                  "height": 104,
+                  "_mouseState": 1,
+                  "src": "ui/image/expeditionNodes/node-start.png",
+                  "autoSize": false
+                },
+                {
+                  "_$id": "exp_SkillBattleStartView_141",
+                  "_$type": "GTextField",
+                  "name": "expContextTitle",
+                  "x": 12,
+                  "y": 124,
+                  "width": 224,
+                  "height": 56,
+                  "_mouseState": 1,
+                  "text": "",
+                  "fontSize": 22,
+                  "color": "#e8edf0",
+                  "overflow": "shrink"
+                },
+                {
+                  "_$id": "exp_SkillBattleStartView_144",
+                  "_$type": "GWidget",
+                  "name": "expUse",
+                  "x": 20,
+                  "y": 202,
+                  "width": 208,
+                  "height": 54,
+                  "_mouseState": 2,
+                  "_$child": [
+                    {
+                      "_$id": "exp_SkillBattleStartView_142",
+                      "_$type": "GImage",
+                      "name": "expUseSkin",
+                      "width": 208,
+                      "height": 54,
+                      "_mouseState": 1,
+                      "src": "ui/texture/inventory/tooltip.png",
+                      "autoSize": false
+                    },
+                    {
+                      "_$id": "exp_SkillBattleStartView_143",
+                      "_$type": "GTextField",
+                      "name": "expUseText",
+                      "x": 4,
+                      "y": 4,
+                      "width": 200,
+                      "height": 46,
+                      "_mouseState": 1,
+                      "text": "",
+                      "fontSize": 18,
+                      "color": "#e8edf0",
+                      "overflow": "shrink"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "_$id": "region_80",
+              "_$type": "GWidget",
+              "name": "mapActionsArea",
+              "relations": [{"_$type": "Relation", "target": {"_$ref": "exp_SkillBattleStartView_1"}, "data": [1, 0, 16, 0]}],
+              "x": 32,
+              "y": 548,
+              "width": 1216,
+              "height": 140,
+              "mouseThrough": true,
+              "_$child": [
+                {
+                  "_$id": "exp_SkillBattleStartView_5",
+                  "_$type": "GTextField",
+                  "name": "expStatus",
+                  "x": 148,
+                  "width": 920,
+                  "height": 42,
+                  "_mouseState": 1,
+                  "text": "",
+                  "fontSize": 20,
+                  "color": "#e8edf0",
+                  "overflow": "shrink"
+                },
+                {
+                  "_$id": "exp_SkillBattleStartView_6",
+                  "_$type": "GTextField",
+                  "name": "expNotice",
+                  "y": 44,
+                  "width": 1216,
+                  "height": 34,
+                  "_mouseState": 1,
+                  "text": "",
+                  "fontSize": 18,
+                  "color": "#e8edf0",
+                  "overflow": "shrink"
+                },
+                {
+                  "_$id": "exp_SkillBattleStartView_147",
+                  "_$type": "GWidget",
+                  "name": "expStorage",
+                  "x": 98,
+                  "y": 92,
+                  "width": 180,
+                  "height": 48,
+                  "_mouseState": 2,
+                  "_$child": [
+                    {
+                      "_$id": "exp_SkillBattleStartView_145",
+                      "_$type": "GImage",
+                      "name": "expStorageSkin",
+                      "width": 180,
+                      "height": 48,
+                      "_mouseState": 1,
+                      "src": "ui/texture/inventory/tooltip.png",
+                      "autoSize": false
+                    },
+                    {
+                      "_$id": "exp_SkillBattleStartView_146",
+                      "_$type": "GTextField",
+                      "name": "expStorageText",
+                      "x": 4,
+                      "y": 4,
+                      "width": 172,
+                      "height": 40,
+                      "_mouseState": 1,
+                      "text": "行囊",
+                      "fontSize": 18,
+                      "color": "#e8edf0",
+                      "overflow": "shrink"
+                    }
+                  ]
+                },
+                {
+                  "_$id": "exp_SkillBattleStartView_150",
+                  "_$type": "GWidget",
+                  "name": "expBuild",
+                  "x": 300,
+                  "y": 92,
+                  "width": 180,
+                  "height": 48,
+                  "_mouseState": 2,
+                  "_$child": [
+                    {
+                      "_$id": "exp_SkillBattleStartView_148",
+                      "_$type": "GImage",
+                      "name": "expBuildSkin",
+                      "width": 180,
+                      "height": 48,
+                      "_mouseState": 1,
+                      "src": "ui/texture/inventory/tooltip.png",
+                      "autoSize": false
+                    },
+                    {
+                      "_$id": "exp_SkillBattleStartView_149",
+                      "_$type": "GTextField",
+                      "name": "expBuildText",
+                      "x": 4,
+                      "y": 4,
+                      "width": 172,
+                      "height": 40,
+                      "_mouseState": 1,
+                      "text": "构筑",
+                      "fontSize": 18,
+                      "color": "#e8edf0",
+                      "overflow": "shrink"
+                    }
+                  ]
+                },
+                {
+                  "_$id": "map_exit_area",
+                  "_$type": "GWidget",
+                  "name": "mapExitArea",
+                  "x": 968,
+                  "y": 92,
+                  "width": 248,
+                  "height": 48,
+                  "mouseThrough": true,
+                  "relations": [{"_$type": "Relation", "target": {"_$ref": "region_80"}, "data": [9, 0]}],
+                  "_$child": [
+                    {
+                      "_$id": "exp_SkillBattleStartView_153",
+                      "_$type": "GWidget",
+                      "name": "expAbandon",
+                      "width": 248,
+                      "height": 48,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "exp_SkillBattleStartView_151",
+                          "_$type": "GImage",
+                          "name": "expAbandonSkin",
+                          "width": 248,
+                          "height": 48,
+                          "_mouseState": 1,
+                          "src": "ui/texture/inventory/tooltip.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "exp_SkillBattleStartView_152",
+                          "_$type": "GTextField",
+                          "name": "expAbandonText",
+                          "x": 4,
+                          "y": 4,
+                          "width": 240,
+                          "height": 40,
+                          "_mouseState": 1,
+                          "text": "放弃本局",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ]
 }

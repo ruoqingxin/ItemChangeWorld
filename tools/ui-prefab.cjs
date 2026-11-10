@@ -43,15 +43,25 @@ function createPrefabResolver() {
             }
             const source = expand(prefabPath(raw._$prefab), stack);
             const prefix = [...scope, raw._$id];
-            const localIds = new Map();
+            const localIds = new Map(), referenceIds = new Map();
             function scopeNode(n, isRoot) {
                 const localId = n._$id;
                 const scoped = [...prefix, localId].join("/");
                 localIds.set(scoped, n);
                 n._$id = isRoot ? id : scoped;
+                referenceIds.set(localId, n._$id);
                 for (const child of n._$child || []) scopeNode(child, false);
             }
             scopeNode(source, true);
+            function scopeRefs(v) {
+                if (!v || typeof v !== "object") return;
+                if (v._$ref) {
+                    const ref = [v._$ref].flat().join("/");
+                    assert.ok(referenceIds.has(ref), `Unresolved nested reference ${ref} in ${file}`);
+                    v._$ref = referenceIds.get(ref);
+                } else Object.values(v).forEach(scopeRefs);
+            }
+            scopeRefs(source);
             for (const [key, v] of Object.entries(raw)) {
                 if (!key.startsWith("_$")) source[key] = structuredClone(v);
             }

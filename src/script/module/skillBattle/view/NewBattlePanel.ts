@@ -9,7 +9,7 @@ import { UIManager } from "../../../games/ui/UIManager";
 import { SkillBattleConfirmView } from "./SkillBattleConfirmView";
 import { SkillBattleReportView } from "./SkillBattleReportView";
 import { SkillBattleBuildInfoView } from "./SkillBattleBuildInfoView";
-import { placeInPage, visitRegion } from "./SkillBattleUILayout";
+import { placeInDesign, visitRegion } from "./SkillBattleUILayout";
 import type { SkillBattlePage } from "./SkillBattleUILayout";
 
 type Screen = "start" | "battle" | "settlement";
@@ -35,14 +35,16 @@ export class NewBattlePanel {
     protected overlay: "log" | "build" | null = null;
     private queue: NewBattleEvent[] = [];
     protected root: Laya.GWidget;
+    private viewport: Laya.GWidget;
     protected elements: { [key: string]: Laya.GWidget } = {};
     protected modalOpen = false;
     private popup: UIBaseView;
     constructor(view: UIBaseView, readonly session: NewBattlePanelSession, readonly options: NewTrialOptions,
         protected readonly navigate: (screen: SkillBattlePage) => void, readonly screen: Screen,
         readonly pageRole: SkillBattlePage = screen) {
-        this.root = view.view;
-        visitRegion(view, this.root, child => {
+        this.viewport = view.view;
+        this.root = view.getElement<Laya.GWidget>("adapter", false) || view.view;
+        visitRegion(view, view.view, child => {
             this.elements[child.name] = child;
             if (child.name === "inventoryRoot" || child.name === "expeditionRoot") return false;
             if (child instanceof Laya.GTextField) {
@@ -62,12 +64,22 @@ export class NewBattlePanel {
             if (!button) throw new Error(`预制按钮未绑定：${key}`);
             button.on(Laya.Event.CLICK, this, () => this.command(key));
         }
+        const resizeBackdrop = () => {
+            if (this.elements.result?.visible) this.backdrop();
+        };
+        this.viewport.on(Laya.Event.RESIZE, this, resizeBackdrop);
+        this.root.on(Laya.Event.MOVED, this, resizeBackdrop);
+        this.elements.result?.parent.on(Laya.Event.MOVED, this, resizeBackdrop);
+        this.root.on(Laya.Event.RESIZE, this, () => Laya.timer.callLater(this, this.resizeLayout));
         Object.assign(this.root as any, { skillBattleController: this, session, buttons: this.buttons });
     }
     openHubScreen(): void { this.open(); }
     openEncounter(): void { this.open(); }
     openSettlementScreen(): void { this.open(); }
-    resizeTo(_view: Laya.GWidget): void { this.root.pos(0, 0); this.root.scale(1, 1); }
+    resizeTo(_view: Laya.GWidget): void { this.root.scale(1, 1); }
+    protected resizeLayout(): void {
+        if (this.opened) this.refresh();
+    }
     suspend(): void {
         this.opened = false; this.busy = false; this.queue = [];
         this.popup?.close();
@@ -202,7 +214,7 @@ export class NewBattlePanel {
             const numbers = this.labels.numbers;
             numbers.visible = true; numbers.text = `-${f(event.hpLoss)}${event.absorbed ? `  盾 -${f(event.absorbed)}` : ""}`;
             numbers.color = event.target === "player" ? colors.red : colors.gold;
-            numbers.fontSize = 24; placeInPage(numbers, this.root, event.target === "player" ? 140 : 850, 300); numbers.alpha = 1;
+            numbers.fontSize = 24; placeInDesign(numbers, this.root, event.target === "player" ? 140 : 850, 300); numbers.alpha = 1;
             Laya.Tween.clearAll(numbers);
             Laya.Tween.to(numbers, { y: numbers.y - 40, alpha: 0 }, 280);
             this.text("event", this.eventText(event), 400, 348, 600, 48, 18, colors.gold);
@@ -221,7 +233,7 @@ export class NewBattlePanel {
         fontSize = 20, color: string = colors.text): void {
         const label = this.labels[key];
         if (!label) throw new Error(`预制缺少文本 ${key}`);
-        label.visible = true; placeInPage(label, this.root, x, y); label.size(w, h);
+        label.visible = true; placeInDesign(label, this.root, x, y); label.size(w, h);
         label.text = value; label.fontSize = fontSize; label.color = color;
         label.textIns.color = color; label.textIns.wordWrap = true;
     }
@@ -229,7 +241,7 @@ export class NewBattlePanel {
         enabled = true, selected = false): void {
         const button = this.buttons[key];
         if (!button) throw new Error(`预制缺少按钮 ${key}`);
-        button.visible = true; placeInPage(button, this.root, x, y); button.size(w, h); button.alpha = enabled ? 1 : 0.48;
+        button.visible = true; placeInDesign(button, this.root, x, y); button.size(w, h); button.alpha = enabled ? 1 : 0.48;
         button.mouseEnabled = enabled;
         button.graphics.clear();
         button.graphics.drawRect(0, 0, w, h, selected ? "#314e3e" : colors.fill,
@@ -242,7 +254,8 @@ export class NewBattlePanel {
     protected backdrop(): void {
         const result = this.elements.result;
         result.visible = true; result.graphics.clear();
-        result.graphics.drawRect(0, 0, 1280, 720, "rgba(12,20,16,0.88)");
+        const origin = result.globalToLocal(this.viewport.localToGlobal(new Laya.Point()));
+        result.graphics.drawRect(origin.x, origin.y, this.viewport.width, this.viewport.height, "rgba(12,20,16,0.88)");
     }
     protected timeText(): string {
         if (!this.session.snapshot) return "单场试炼";
@@ -434,14 +447,14 @@ export class NewBattlePanel {
         return "";
     }
     private bar(key: string, ratio: number, x: number, y: number, width: number, color: string): void {
-        const bar = this.elements[key]; bar.visible = true; placeInPage(bar, this.root, x, y); bar.size(width, 8);
+        const bar = this.elements[key]; bar.visible = true; placeInDesign(bar, this.root, x, y); bar.size(width, 8);
         bar.graphics.clear(); bar.graphics.drawRect(0, 0, width, 8, "#39443c");
         if (ratio > 0) bar.graphics.drawRect(0, 0, width * ratio, 8, color);
     }
     private drawActors(enemyId: number): void {
         const player = this.elements.player, enemy = this.elements.enemy;
         player.visible = enemy.visible = true;
-        placeInPage(player, this.root, 250, 340); placeInPage(enemy, this.root, 970, 350);
+        placeInDesign(player, this.root, 250, 340); placeInDesign(enemy, this.root, 970, 350);
         for (const actor of [player, enemy]) {
             const g = actor.graphics, isPlayer = actor === player;
             g.clear(); g.drawEllipse(-61, 64, 122, 22, "#18201a", null, 0);
