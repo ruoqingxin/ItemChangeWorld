@@ -1,5 +1,42 @@
 {
   "ui/prefab/common/button/btn_close.lh": [],
+  "ui/prefab/common/choice/ChoiceSlots.lh": [],
+  "ui/prefab/common/dialog/PagedReportPanel.lh": [
+    "ui/texture/inventory/tooltip.png",
+    "ui/texture/inventory/warehouse-body.png"
+  ],
+  "ui/prefab/common/inventory/InventoryBag.lh": [
+    "ui/atlas/module/inventory/cell.png",
+    "ui/texture/inventory/backpack-body.png",
+    "ui/texture/inventory/topbar.png"
+  ],
+  "ui/prefab/common/inventory/InventoryCarry.lh": [
+    "ui/atlas/module/inventory/cell.png",
+    "ui/atlas/module/inventory/gold-sword.png",
+    "ui/atlas/module/inventory/item-frame.png",
+    "ui/atlas/module/inventory/lock.png",
+    "ui/texture/inventory/warehouse-body.png"
+  ],
+  "ui/prefab/common/inventory/InventoryItem.lh": [
+    "ui/atlas/module/inventory/herb-sprig.png",
+    "ui/atlas/module/inventory/quality-1.png"
+  ],
+  "ui/prefab/common/inventory/InventoryPanel.lh": [
+    "ui/atlas/module/inventory/arrow.png",
+    "ui/atlas/module/inventory/quality-1.png",
+    "ui/prefab/common/inventory/InventoryBag.lh",
+    "ui/prefab/common/inventory/InventoryCarry.lh",
+    "ui/prefab/common/inventory/InventoryItem.lh",
+    "ui/prefab/common/inventory/InventorySource.lh",
+    "ui/texture/inventory/tooltip.png"
+  ],
+  "ui/prefab/common/inventory/InventorySource.lh": [
+    "ui/atlas/module/expedition/search_active.png",
+    "ui/atlas/module/inventory/cell.png",
+    "ui/prefab/common/inventory/InventoryItem.lh",
+    "ui/texture/inventory/tooltip.png",
+    "ui/texture/inventory/warehouse-body.png"
+  ],
   "ui/prefab/module/expedition/SkillBattleMapView.lh": [
     "ui/atlas/module/expedition/back.png",
     "ui/atlas/module/expedition/battle_active.png",
@@ -152,6 +189,7 @@
     "ui/image/naxu/naxu-pouch-q1.png",
     "ui/image/naxu/naxu-ring-q4.png",
     "ui/image/naxu/naxu-seal-q4.png",
+    "ui/prefab/common/dialog/PagedReportPanel.lh",
     "ui/texture/inventory/backpack-body.png",
     "ui/texture/inventory/tooltip.png",
     "ui/texture/inventory/topbar.png",
@@ -213,6 +251,7 @@
     "ui/image/naxu/naxu-pouch-q1.png",
     "ui/image/naxu/naxu-ring-q4.png",
     "ui/image/naxu/naxu-seal-q4.png",
+    "ui/prefab/common/choice/ChoiceSlots.lh",
     "ui/texture/common/hub_background.png",
     "ui/texture/inventory/backpack-body.png",
     "ui/texture/inventory/tooltip.png",
@@ -281,7 +320,6 @@
     "ui/texture/inventory/warehouse-body.png"
   ],
   "ui/prefab/module/skillBattle/SkillBattleInventoryView.lh": [
-    "ui/atlas/module/expedition/search_active.png",
     "ui/atlas/module/inventory/arrow.png",
     "ui/atlas/module/inventory/blue-flask.png",
     "ui/atlas/module/inventory/cell.png",
@@ -337,6 +375,7 @@
     "ui/image/naxu/naxu-pouch-q1.png",
     "ui/image/naxu/naxu-ring-q4.png",
     "ui/image/naxu/naxu-seal-q4.png",
+    "ui/prefab/common/inventory/InventoryPanel.lh",
     "ui/texture/common/hub_background.png",
     "ui/texture/inventory/backpack-body.png",
     "ui/texture/inventory/tooltip.png",
@@ -399,13 +438,13 @@
     "ui/image/naxu/naxu-pouch-q1.png",
     "ui/image/naxu/naxu-ring-q4.png",
     "ui/image/naxu/naxu-seal-q4.png",
+    "ui/prefab/common/dialog/PagedReportPanel.lh",
     "ui/texture/inventory/backpack-body.png",
     "ui/texture/inventory/tooltip.png",
     "ui/texture/inventory/topbar.png",
     "ui/texture/inventory/warehouse-body.png"
   ],
   "ui/prefab/module/skillBattle/SkillBattleSettlementView.lh": [
-    "ui/atlas/module/expedition/search_active.png",
     "ui/atlas/module/inventory/arrow.png",
     "ui/atlas/module/inventory/blue-flask.png",
     "ui/atlas/module/inventory/cell.png",
@@ -461,6 +500,7 @@
     "ui/image/naxu/naxu-pouch-q1.png",
     "ui/image/naxu/naxu-ring-q4.png",
     "ui/image/naxu/naxu-seal-q4.png",
+    "ui/prefab/common/inventory/InventoryPanel.lh",
     "ui/texture/common/hub_background.png",
     "ui/texture/inventory/backpack-body.png",
     "ui/texture/inventory/tooltip.png",
@@ -468,7 +508,6 @@
     "ui/texture/inventory/warehouse-body.png"
   ],
   "ui/prefab/module/skillBattle/SkillBattleStartView.lh": [
-    "ui/atlas/module/expedition/search_active.png",
     "ui/atlas/module/inventory/arrow.png",
     "ui/atlas/module/inventory/blue-flask.png",
     "ui/atlas/module/inventory/cell.png",
@@ -524,6 +563,7 @@
     "ui/image/naxu/naxu-pouch-q1.png",
     "ui/image/naxu/naxu-ring-q4.png",
     "ui/image/naxu/naxu-seal-q4.png",
+    "ui/prefab/common/inventory/InventoryPanel.lh",
     "ui/texture/common/hub_background.png",
     "ui/texture/inventory/backpack-body.png",
     "ui/texture/inventory/tooltip.png",
@@ -648,6 +688,7 @@
     "ui/image/naxu/naxu-pouch-q1.png",
     "ui/image/naxu/naxu-ring-q4.png",
     "ui/image/naxu/naxu-seal-q4.png",
+    "ui/prefab/common/choice/ChoiceSlots.lh",
     "ui/texture/common/hub_background.png",
     "ui/texture/inventory/backpack-body.png",
     "ui/texture/inventory/tooltip.png",

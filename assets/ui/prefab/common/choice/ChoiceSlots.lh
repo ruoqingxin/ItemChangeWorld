@@ -1,0 +1,187 @@
+{
+  "_$id": "region_56",
+  "_$type": "GWidget",
+  "name": "candidateArea",
+  "x": 0,
+  "y": 0,
+  "width": 940,
+  "height": 196,
+  "mouseThrough": true,
+  "_$child": [
+    {
+      "_$id": "sbr038btn",
+      "_$type": "GWidget",
+      "name": "warehouse0",
+      "x": 0,
+      "y": 0,
+      "width": 300,
+      "height": 82,
+      "_$child": [
+        {
+          "_$id": "sbr037txt",
+          "_$type": "GTextField",
+          "name": "warehouse0Text",
+          "x": 0,
+          "y": 4,
+          "width": 300,
+          "height": 74,
+          "text": "",
+          "zOrder": 1,
+          "fontSize": 22,
+          "color": "#e3e8de",
+          "align": "center",
+          "valign": "middle",
+          "wordWrap": true,
+          "overflow": "shrink",
+          "mouseEnabled": false
+        }
+      ]
+    },
+    {
+      "_$id": "sbr040btn",
+      "_$type": "GWidget",
+      "name": "warehouse1",
+      "x": 320,
+      "y": 0,
+      "width": 300,
+      "height": 82,
+      "_$child": [
+        {
+          "_$id": "sbr039txt",
+          "_$type": "GTextField",
+          "name": "warehouse1Text",
+          "x": 0,
+          "y": 4,
+          "width": 300,
+          "height": 74,
+          "text": "",
+          "zOrder": 1,
+          "fontSize": 22,
+          "color": "#e3e8de",
+          "align": "center",
+          "valign": "middle",
+          "wordWrap": true,
+          "overflow": "shrink",
+          "mouseEnabled": false
+        }
+      ]
+    },
+    {
+      "_$id": "sbr042btn",
+      "_$type": "GWidget",
+      "name": "warehouse2",
+      "x": 640,
+      "y": 0,
+      "width": 300,
+      "height": 82,
+      "_$child": [
+        {
+          "_$id": "sbr041txt",
+          "_$type": "GTextField",
+          "name": "warehouse2Text",
+          "x": 0,
+          "y": 4,
+          "width": 300,
+          "height": 74,
+          "text": "",
+          "zOrder": 1,
+          "fontSize": 22,
+          "color": "#e3e8de",
+          "align": "center",
+          "valign": "middle",
+          "wordWrap": true,
+          "overflow": "shrink",
+          "mouseEnabled": false
+        }
+      ]
+    },
+    {
+      "_$id": "sbr044btn",
+      "_$type": "GWidget",
+      "name": "warehouse3",
+      "x": 0,
+      "y": 96,
+      "width": 300,
+      "height": 82,
+      "_$child": [
+        {
+          "_$id": "sbr043txt",
+          "_$type": "GTextField",
+          "name": "warehouse3Text",
+          "x": 0,
+          "y": 4,
+          "width": 300,
+          "height": 74,
+          "text": "",
+          "zOrder": 1,
+          "fontSize": 22,
+          "color": "#e3e8de",
+          "align": "center",
+          "valign": "middle",
+          "wordWrap": true,
+          "overflow": "shrink",
+          "mouseEnabled": false
+        }
+      ]
+    },
+    {
+      "_$id": "sbr046btn",
+      "_$type": "GWidget",
+      "name": "warehouse4",
+      "x": 320,
+      "y": 96,
+      "width": 300,
+      "height": 82,
+      "_$child": [
+        {
+          "_$id": "sbr045txt",
+          "_$type": "GTextField",
+          "name": "warehouse4Text",
+          "x": 0,
+          "y": 4,
+          "width": 300,
+          "height": 74,
+          "text": "",
+          "zOrder": 1,
+          "fontSize": 22,
+          "color": "#e3e8de",
+          "align": "center",
+          "valign": "middle",
+          "wordWrap": true,
+          "overflow": "shrink",
+          "mouseEnabled": false
+        }
+      ]
+    },
+    {
+      "_$id": "sbr048btn",
+      "_$type": "GWidget",
+      "name": "warehouse5",
+      "x": 640,
+      "y": 96,
+      "width": 300,
+      "height": 82,
+      "_$child": [
+        {
+          "_$id": "sbr047txt",
+          "_$type": "GTextField",
+          "name": "warehouse5Text",
+          "x": 0,
+          "y": 4,
+          "width": 300,
+          "height": 74,
+          "text": "",
+          "zOrder": 1,
+          "fontSize": 22,
+          "color": "#e3e8de",
+          "align": "center",
+          "valign": "middle",
+          "wordWrap": true,
+          "overflow": "shrink",
+          "mouseEnabled": false
+        }
+      ]
+    }
+  ],
+  "_$ver": 1
+}

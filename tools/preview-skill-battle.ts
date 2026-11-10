@@ -10,6 +10,12 @@ async function main(): Promise<void> {
     // glyphs as opaque quads. Use Laya's regular 2D texture upload path here.
     Laya.TextRenderConfig.useTextureArray = false;
     Laya.Config.useWebGL2 = false;
+    // Native nested prefabs use the same UUID links as IDE/published assets.
+    const uuidMap = await (await fetch("/ui-prefab-uuids.json")).json();
+    Object.assign(Laya.AssetDb.inst.uuidMap, uuidMap);
+    const resolveUUID = Laya.AssetDb.inst.UUID_to_URL_async.bind(Laya.AssetDb.inst);
+    Laya.AssetDb.inst.UUID_to_URL_async = uuid => uuidMap[uuid] ?
+        Promise.resolve(uuidMap[uuid]) : resolveUUID(uuid);
     await Laya.init(1280, 720);
     Laya.stage.scaleMode = Laya.Stage.SCALE_SHOWALL;
     Laya.stage.screenMode = Laya.Stage.SCREEN_HORIZONTAL;

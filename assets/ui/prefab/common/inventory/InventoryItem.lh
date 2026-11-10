@@ -1,0 +1,77 @@
+{
+  "_$id": "inventory_item",
+  "_$type": "GWidget",
+  "name": "InventoryItem",
+  "x": 0,
+  "y": 0,
+  "width": 54,
+  "height": 54,
+  "mouseEnabled": true,
+  "_$child": [
+    {
+      "_$id": "item_background",
+      "_$type": "GImage",
+      "name": "background",
+      "x": 0,
+      "y": 0,
+      "width": 54,
+      "height": 54,
+      "src": "ui/atlas/module/inventory/quality-1.png",
+      "autoSize": false,
+      "mouseEnabled": false
+    },
+    {
+      "_$id": "item_text",
+      "_$type": "GTextField",
+      "name": "text",
+      "x": 8,
+      "y": 4,
+      "width": 38,
+      "height": 46,
+      "text": "",
+      "fontSize": 18,
+      "color": "#ecefe7",
+      "mouseEnabled": false,
+      "overflow": "shrink"
+    },
+    {
+      "_$id": "item_icon",
+      "_$type": "GImage",
+      "name": "icon",
+      "x": 6,
+      "y": 6,
+      "width": 42,
+      "height": 42,
+      "src": "ui/atlas/module/inventory/herb-sprig.png",
+      "autoSize": false,
+      "mouseEnabled": false
+    },
+    {
+      "_$id": "item_caption",
+      "_$type": "GTextField",
+      "name": "caption",
+      "x": 2,
+      "y": 4,
+      "width": 50,
+      "height": 46,
+      "text": "",
+      "fontSize": 12,
+      "color": "#ecefe7",
+      "mouseEnabled": false,
+      "overflow": "shrink"
+    },
+    {
+      "_$id": "item_selection",
+      "_$type": "GWidget",
+      "name": "selection",
+      "x": 0,
+      "y": 0,
+      "width": 54,
+      "height": 54,
+      "visible": false,
+      "mouseEnabled": false
+    }
+  ],
+  "visible": false,
+  "_$ver": 1
+}

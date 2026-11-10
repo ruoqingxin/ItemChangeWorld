@@ -1,6 +1,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const assert = require("node:assert/strict");
+const { createPrefabResolver } = require("./ui-prefab.cjs");
 const root = path.resolve(__dirname, "..");
 const assets = path.join(root, "assets");
 const ui = path.join(assets, "ui");
@@ -18,8 +19,9 @@ for (const file of [...files, ...walk(path.join(root, "src"))].filter(file => fi
     uuidMap.set(meta.uuid, file.slice(0, -5));
 }
 const depMap = {};
+const prefabs = createPrefabResolver();
 for (const file of files.filter(file => file.endsWith(".lh")).sort()) {
-    const prefab = JSON.parse(fs.readFileSync(file, "utf8")), deps = new Set(), ids = new Set(), refs = [];
+    const prefab = JSON.parse(fs.readFileSync(file, "utf8")), deps = new Set(), ids = new Set();
     const visit = value => {
         if (typeof value === "string" && value.startsWith("ui/")) {
             assert.ok(fs.existsSync(path.join(assets, value)), `${relative(file)} missing ${value}`);
@@ -30,12 +32,12 @@ for (const file of files.filter(file => file.endsWith(".lh")).sort()) {
                 assert.ok(!ids.has(value._$id), `${relative(file)} duplicate node ${value._$id}`);
                 ids.add(value._$id);
             }
-            if (value._$ref) refs.push(value._$ref);
             if (value._$uuid) {
                 const target = uuidMap.get(value._$uuid);
                 assert.ok(target && fs.existsSync(target), `${relative(file)} missing UUID ${value._$uuid}`);
                 if (target.startsWith(assets + path.sep)) deps.add(relative(target));
             }
+            if (value._$prefab) deps.add(prefabs.prefabPath(value._$prefab));
             if (value.scriptPath) {
                 assert.ok(fs.existsSync(path.resolve(assets, value.scriptPath)), `Missing script ${value.scriptPath}`);
                 const meta = JSON.parse(fs.readFileSync(path.resolve(assets, value.scriptPath) + ".meta", "utf8"));
@@ -45,7 +47,18 @@ for (const file of files.filter(file => file.endsWith(".lh")).sort()) {
         }
     };
     visit(prefab);
-    for (const ref of refs) assert.ok(ids.has(ref), `${relative(file)} unresolved node ${ref}`);
+    const expandedIds = new Set(), expandedRefs = [];
+    const checkExpanded = value => {
+        if (!value || typeof value !== "object") return;
+        if (value._$id) {
+            assert.ok(!expandedIds.has(value._$id), `${relative(file)} duplicate expanded node ${value._$id}`);
+            expandedIds.add(value._$id);
+        }
+        if (value._$ref) expandedRefs.push(value._$ref);
+        Object.values(value).forEach(checkExpanded);
+    };
+    checkExpanded(prefabs.expand(relative(file)));
+    for (const ref of expandedRefs) assert.ok(expandedIds.has(ref), `${relative(file)} unresolved node ${ref}`);
     // Include runtime-switched icons, which are deliberately not all in the hierarchy.
     const dynamicDirectory = file.includes(`${path.sep}expedition${path.sep}`)
         ? "ui/atlas/module/expedition/" : file.includes(`${path.sep}skillBattle${path.sep}`)
@@ -62,6 +75,13 @@ for (const file of files.filter(file => file.endsWith(".lh")).sort()) {
             relative(candidate).startsWith("ui/image/expeditionNodes/") && candidate.endsWith(".png"))) deps.add(relative(image));
     depMap[relative(file)] = [...deps].sort();
 }
+function checkCycles(file, stack = []) {
+    assert.ok(!stack.includes(file), `Cyclic UI dependency: ${[...stack, file].join(" -> ")}`);
+    for (const dependency of depMap[file] || []) {
+        if (dependency.endsWith(".lh")) checkCycles(dependency, [...stack, file]);
+    }
+}
+for (const file of Object.keys(depMap)) checkCycles(file);
 for (const file of files.filter(file => /\.(png|lh)$/.test(file))) {
     assert.ok(fs.existsSync(file + ".meta"), `Missing asset metadata: ${relative(file)}`);
     assert.doesNotMatch(relative(file), /segment_\d|source_original|generatedRoute|\/ui\/|拷贝/,

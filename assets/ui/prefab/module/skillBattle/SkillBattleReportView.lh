@@ -18,318 +18,9 @@
       "_$child": [
         {
           "_$id": "region_118",
-          "_$type": "GWidget",
-          "name": "reportDialogArea",
+          "_$prefab": "2255efde-79f2-41ec-91aa-521cbd3dd215",
           "x": 128,
-          "y": 48,
-          "width": 1024,
-          "height": 624,
-          "mouseThrough": false,
-          "_$child": [
-            {
-              "_$id": "dialog_95",
-              "_$type": "GImage",
-              "name": "dialogBackground",
-              "x": 0,
-              "y": 0,
-              "width": 1024,
-              "height": 624,
-              "src": "ui/texture/inventory/warehouse-body.png",
-              "autoSize": false,
-              "mouseEnabled": false
-            },
-            {
-              "_$id": "region_98",
-              "_$type": "GWidget",
-              "name": "reportHeaderArea",
-              "x": 32,
-              "y": 24,
-              "width": 960,
-              "height": 88,
-              "mouseThrough": true,
-              "_$child": [
-                {
-                  "_$id": "dialog_96",
-                  "_$type": "GTextField",
-                  "name": "reportTitle",
-                  "x": 0,
-                  "y": 0,
-                  "width": 960,
-                  "height": 44,
-                  "text": "战斗记录",
-                  "fontSize": 28,
-                  "color": "#ecefe7",
-                  "wordWrap": true,
-                  "mouseEnabled": false,
-                  "overflow": "shrink"
-                },
-                {
-                  "_$id": "dialog_97",
-                  "_$type": "GTextField",
-                  "name": "reportSection",
-                  "x": 0,
-                  "y": 52,
-                  "width": 960,
-                  "height": 36,
-                  "text": "",
-                  "fontSize": 20,
-                  "color": "#ecefe7",
-                  "wordWrap": true,
-                  "mouseEnabled": false,
-                  "overflow": "shrink"
-                }
-              ]
-            },
-            {
-              "_$id": "region_100",
-              "_$type": "GWidget",
-              "name": "reportContentArea",
-              "x": 48,
-              "y": 128,
-              "width": 928,
-              "height": 360,
-              "mouseThrough": true,
-              "_$child": [
-                {
-                  "_$id": "dialog_99",
-                  "_$type": "GTextField",
-                  "name": "reportBody",
-                  "x": 0,
-                  "y": 0,
-                  "width": 928,
-                  "height": 360,
-                  "text": "",
-                  "fontSize": 22,
-                  "color": "#ecefe7",
-                  "wordWrap": true,
-                  "mouseEnabled": false,
-                  "overflow": "shrink"
-                }
-              ]
-            },
-            {
-              "_$id": "region_117",
-              "_$type": "GWidget",
-              "name": "reportActionsArea",
-              "x": 32,
-              "y": 504,
-              "width": 960,
-              "height": 96,
-              "mouseThrough": true,
-              "_$child": [
-                {
-                  "_$id": "dialog_101",
-                  "_$type": "GTextField",
-                  "name": "page",
-                  "x": 420,
-                  "y": 0,
-                  "width": 120,
-                  "height": 34,
-                  "text": "1/1",
-                  "fontSize": 18,
-                  "color": "#ecefe7",
-                  "wordWrap": true,
-                  "mouseEnabled": false,
-                  "overflow": "shrink"
-                },
-                {
-                  "_$id": "dialog_103",
-                  "_$type": "GWidget",
-                  "name": "olderReport",
-                  "x": 16,
-                  "y": 0,
-                  "width": 180,
-                  "height": 38,
-                  "mouseEnabled": true,
-                  "_$child": [
-                    {
-                      "_$id": "dialog_104",
-                      "_$type": "GImage",
-                      "name": "olderReportSkin",
-                      "width": 180,
-                      "height": 38,
-                      "src": "ui/texture/inventory/tooltip.png",
-                      "autoSize": false,
-                      "mouseEnabled": false
-                    },
-                    {
-                      "_$id": "dialog_102",
-                      "_$type": "GTextField",
-                      "name": "olderReportText",
-                      "x": 8,
-                      "y": 4,
-                      "width": 164,
-                      "height": 30,
-                      "text": "上一场",
-                      "fontSize": 18,
-                      "color": "#ecefe7",
-                      "wordWrap": true,
-                      "mouseEnabled": false,
-                      "align": "center",
-                      "valign": "middle",
-                      "overflow": "shrink"
-                    }
-                  ]
-                },
-                {
-                  "_$id": "dialog_106",
-                  "_$type": "GWidget",
-                  "name": "newerReport",
-                  "x": 764,
-                  "y": 0,
-                  "width": 180,
-                  "height": 38,
-                  "mouseEnabled": true,
-                  "_$child": [
-                    {
-                      "_$id": "dialog_107",
-                      "_$type": "GImage",
-                      "name": "newerReportSkin",
-                      "width": 180,
-                      "height": 38,
-                      "src": "ui/texture/inventory/tooltip.png",
-                      "autoSize": false,
-                      "mouseEnabled": false
-                    },
-                    {
-                      "_$id": "dialog_105",
-                      "_$type": "GTextField",
-                      "name": "newerReportText",
-                      "x": 8,
-                      "y": 4,
-                      "width": 164,
-                      "height": 30,
-                      "text": "下一场",
-                      "fontSize": 18,
-                      "color": "#ecefe7",
-                      "wordWrap": true,
-                      "mouseEnabled": false,
-                      "align": "center",
-                      "valign": "middle",
-                      "overflow": "shrink"
-                    }
-                  ]
-                },
-                {
-                  "_$id": "dialog_109",
-                  "_$type": "GWidget",
-                  "name": "previousPage",
-                  "x": 180,
-                  "y": 54,
-                  "width": 150,
-                  "height": 42,
-                  "mouseEnabled": true,
-                  "_$child": [
-                    {
-                      "_$id": "dialog_110",
-                      "_$type": "GImage",
-                      "name": "previousPageSkin",
-                      "width": 150,
-                      "height": 42,
-                      "src": "ui/texture/inventory/tooltip.png",
-                      "autoSize": false,
-                      "mouseEnabled": false
-                    },
-                    {
-                      "_$id": "dialog_108",
-                      "_$type": "GTextField",
-                      "name": "previousPageText",
-                      "x": 8,
-                      "y": 4,
-                      "width": 134,
-                      "height": 34,
-                      "text": "<",
-                      "fontSize": 18,
-                      "color": "#ecefe7",
-                      "wordWrap": true,
-                      "mouseEnabled": false,
-                      "align": "center",
-                      "valign": "middle",
-                      "overflow": "shrink"
-                    }
-                  ]
-                },
-                {
-                  "_$id": "dialog_112",
-                  "_$type": "GWidget",
-                  "name": "nextPage",
-                  "x": 370,
-                  "y": 54,
-                  "width": 150,
-                  "height": 42,
-                  "mouseEnabled": true,
-                  "_$child": [
-                    {
-                      "_$id": "dialog_113",
-                      "_$type": "GImage",
-                      "name": "nextPageSkin",
-                      "width": 150,
-                      "height": 42,
-                      "src": "ui/texture/inventory/tooltip.png",
-                      "autoSize": false,
-                      "mouseEnabled": false
-                    },
-                    {
-                      "_$id": "dialog_111",
-                      "_$type": "GTextField",
-                      "name": "nextPageText",
-                      "x": 8,
-                      "y": 4,
-                      "width": 134,
-                      "height": 34,
-                      "text": ">",
-                      "fontSize": 18,
-                      "color": "#ecefe7",
-                      "wordWrap": true,
-                      "mouseEnabled": false,
-                      "align": "center",
-                      "valign": "middle",
-                      "overflow": "shrink"
-                    }
-                  ]
-                },
-                {
-                  "_$id": "dialog_115",
-                  "_$type": "GWidget",
-                  "name": "reportClose",
-                  "x": 764,
-                  "y": 54,
-                  "width": 180,
-                  "height": 42,
-                  "mouseEnabled": true,
-                  "_$child": [
-                    {
-                      "_$id": "dialog_116",
-                      "_$type": "GImage",
-                      "name": "reportCloseSkin",
-                      "width": 180,
-                      "height": 42,
-                      "src": "ui/texture/inventory/tooltip.png",
-                      "autoSize": false,
-                      "mouseEnabled": false
-                    },
-                    {
-                      "_$id": "dialog_114",
-                      "_$type": "GTextField",
-                      "name": "reportCloseText",
-                      "x": 8,
-                      "y": 4,
-                      "width": 164,
-                      "height": 34,
-                      "text": "返回",
-                      "fontSize": 18,
-                      "color": "#ecefe7",
-                      "wordWrap": true,
-                      "mouseEnabled": false,
-                      "align": "center",
-                      "valign": "middle",
-                      "overflow": "shrink"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
+          "y": 48
         }
       ],
       "relations": [
@@ -361,73 +52,142 @@
           "_$ref": "region_118"
         },
         {
-          "_$ref": "dialog_95"
+          "_$ref": [
+            "region_118",
+            "dialog_95"
+          ]
         },
         {
-          "_$ref": "region_98"
+          "_$ref": [
+            "region_118",
+            "region_98"
+          ]
         },
         {
-          "_$ref": "dialog_96"
+          "_$ref": [
+            "region_118",
+            "dialog_96"
+          ]
         },
         {
-          "_$ref": "dialog_97"
+          "_$ref": [
+            "region_118",
+            "dialog_97"
+          ]
         },
         {
-          "_$ref": "region_100"
+          "_$ref": [
+            "region_118",
+            "region_100"
+          ]
         },
         {
-          "_$ref": "dialog_99"
+          "_$ref": [
+            "region_118",
+            "dialog_99"
+          ]
         },
         {
-          "_$ref": "region_117"
+          "_$ref": [
+            "region_118",
+            "region_117"
+          ]
         },
         {
-          "_$ref": "dialog_101"
+          "_$ref": [
+            "region_118",
+            "dialog_101"
+          ]
         },
         {
-          "_$ref": "dialog_103"
+          "_$ref": [
+            "region_118",
+            "dialog_103"
+          ]
         },
         {
-          "_$ref": "dialog_104"
+          "_$ref": [
+            "region_118",
+            "dialog_104"
+          ]
         },
         {
-          "_$ref": "dialog_102"
+          "_$ref": [
+            "region_118",
+            "dialog_102"
+          ]
         },
         {
-          "_$ref": "dialog_106"
+          "_$ref": [
+            "region_118",
+            "dialog_106"
+          ]
         },
         {
-          "_$ref": "dialog_107"
+          "_$ref": [
+            "region_118",
+            "dialog_107"
+          ]
         },
         {
-          "_$ref": "dialog_105"
+          "_$ref": [
+            "region_118",
+            "dialog_105"
+          ]
         },
         {
-          "_$ref": "dialog_109"
+          "_$ref": [
+            "region_118",
+            "dialog_109"
+          ]
         },
         {
-          "_$ref": "dialog_110"
+          "_$ref": [
+            "region_118",
+            "dialog_110"
+          ]
         },
         {
-          "_$ref": "dialog_108"
+          "_$ref": [
+            "region_118",
+            "dialog_108"
+          ]
         },
         {
-          "_$ref": "dialog_112"
+          "_$ref": [
+            "region_118",
+            "dialog_112"
+          ]
         },
         {
-          "_$ref": "dialog_113"
+          "_$ref": [
+            "region_118",
+            "dialog_113"
+          ]
         },
         {
-          "_$ref": "dialog_111"
+          "_$ref": [
+            "region_118",
+            "dialog_111"
+          ]
         },
         {
-          "_$ref": "dialog_115"
+          "_$ref": [
+            "region_118",
+            "dialog_115"
+          ]
         },
         {
-          "_$ref": "dialog_116"
+          "_$ref": [
+            "region_118",
+            "dialog_116"
+          ]
         },
         {
-          "_$ref": "dialog_114"
+          "_$ref": [
+            "region_118",
+            "dialog_114"
+          ]
         }
       ],
       "mapperType": 1

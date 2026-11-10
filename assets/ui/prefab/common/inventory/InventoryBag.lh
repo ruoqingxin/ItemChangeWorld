@@ -1,0 +1,1915 @@
+{
+  "_$id": "region_7",
+  "_$type": "GWidget",
+  "name": "bagArea",
+  "x": 0,
+  "y": 0,
+  "width": 460,
+  "height": 520,
+  "mouseThrough": true,
+  "_$child": [
+    {
+      "_$id": "invstart_3",
+      "_$type": "GImage",
+      "name": "invBagPanel",
+      "x": 0,
+      "y": 36,
+      "width": 460,
+      "height": 350,
+      "src": "ui/texture/inventory/backpack-body.png",
+      "autoSize": false,
+      "mouseEnabled": false
+    },
+    {
+      "_$id": "invstart_4",
+      "_$type": "GImage",
+      "name": "invBagTopbar",
+      "x": 0,
+      "y": 0,
+      "width": 460,
+      "height": 36,
+      "src": "ui/texture/inventory/topbar.png",
+      "autoSize": false,
+      "mouseEnabled": false
+    },
+    {
+      "_$id": "invstart_12",
+      "_$type": "GTextField",
+      "name": "invBagTitle",
+      "x": 8,
+      "y": 4,
+      "width": 444,
+      "height": 30,
+      "text": "纳虚器",
+      "fontSize": 20,
+      "color": "#ecefe7",
+      "mouseEnabled": false,
+      "overflow": "shrink"
+    },
+    {
+      "_$id": "invstart_14",
+      "_$type": "GTextField",
+      "name": "invDetail",
+      "x": 8,
+      "y": 398,
+      "width": 444,
+      "height": 112,
+      "text": "",
+      "fontSize": 18,
+      "color": "#ecefe7",
+      "mouseEnabled": false,
+      "overflow": "shrink"
+    },
+    {
+      "_$id": "region_6",
+      "_$type": "GWidget",
+      "name": "bagItemsArea",
+      "x": 8,
+      "y": 44,
+      "width": 446,
+      "height": 334,
+      "mouseThrough": true,
+      "_$child": [
+        {
+          "_$id": "invstart_19",
+          "_$type": "GTextField",
+          "name": "invEmptyBag",
+          "x": 14,
+          "y": 72,
+          "width": 414,
+          "height": 120,
+          "text": "",
+          "fontSize": 22,
+          "color": "#ecefe7",
+          "mouseEnabled": false,
+          "overflow": "shrink"
+        },
+        {
+          "_$id": "invstart_61",
+          "_$type": "GWidget",
+          "name": "invCell_bag_0",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_59",
+              "_$type": "GImage",
+              "name": "invCell_bag_0Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_60",
+              "_$type": "GTextField",
+              "name": "invCell_bag_0Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_64",
+          "_$type": "GWidget",
+          "name": "invCell_bag_1",
+          "x": 56,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_62",
+              "_$type": "GImage",
+              "name": "invCell_bag_1Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_63",
+              "_$type": "GTextField",
+              "name": "invCell_bag_1Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_67",
+          "_$type": "GWidget",
+          "name": "invCell_bag_2",
+          "x": 112,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_65",
+              "_$type": "GImage",
+              "name": "invCell_bag_2Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_66",
+              "_$type": "GTextField",
+              "name": "invCell_bag_2Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_70",
+          "_$type": "GWidget",
+          "name": "invCell_bag_3",
+          "x": 168,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_68",
+              "_$type": "GImage",
+              "name": "invCell_bag_3Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_69",
+              "_$type": "GTextField",
+              "name": "invCell_bag_3Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_73",
+          "_$type": "GWidget",
+          "name": "invCell_bag_4",
+          "x": 224,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_71",
+              "_$type": "GImage",
+              "name": "invCell_bag_4Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_72",
+              "_$type": "GTextField",
+              "name": "invCell_bag_4Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_76",
+          "_$type": "GWidget",
+          "name": "invCell_bag_5",
+          "x": 280,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_74",
+              "_$type": "GImage",
+              "name": "invCell_bag_5Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_75",
+              "_$type": "GTextField",
+              "name": "invCell_bag_5Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_79",
+          "_$type": "GWidget",
+          "name": "invCell_bag_6",
+          "x": 336,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_77",
+              "_$type": "GImage",
+              "name": "invCell_bag_6Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_78",
+              "_$type": "GTextField",
+              "name": "invCell_bag_6Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_82",
+          "_$type": "GWidget",
+          "name": "invCell_bag_7",
+          "x": 392,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_80",
+              "_$type": "GImage",
+              "name": "invCell_bag_7Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_81",
+              "_$type": "GTextField",
+              "name": "invCell_bag_7Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_85",
+          "_$type": "GWidget",
+          "name": "invCell_bag_8",
+          "x": 0,
+          "y": 56,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_83",
+              "_$type": "GImage",
+              "name": "invCell_bag_8Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_84",
+              "_$type": "GTextField",
+              "name": "invCell_bag_8Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_88",
+          "_$type": "GWidget",
+          "name": "invCell_bag_9",
+          "x": 56,
+          "y": 56,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_86",
+              "_$type": "GImage",
+              "name": "invCell_bag_9Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_87",
+              "_$type": "GTextField",
+              "name": "invCell_bag_9Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_91",
+          "_$type": "GWidget",
+          "name": "invCell_bag_10",
+          "x": 112,
+          "y": 56,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_89",
+              "_$type": "GImage",
+              "name": "invCell_bag_10Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_90",
+              "_$type": "GTextField",
+              "name": "invCell_bag_10Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_94",
+          "_$type": "GWidget",
+          "name": "invCell_bag_11",
+          "x": 168,
+          "y": 56,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_92",
+              "_$type": "GImage",
+              "name": "invCell_bag_11Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_93",
+              "_$type": "GTextField",
+              "name": "invCell_bag_11Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_97",
+          "_$type": "GWidget",
+          "name": "invCell_bag_12",
+          "x": 224,
+          "y": 56,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_95",
+              "_$type": "GImage",
+              "name": "invCell_bag_12Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_96",
+              "_$type": "GTextField",
+              "name": "invCell_bag_12Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_100",
+          "_$type": "GWidget",
+          "name": "invCell_bag_13",
+          "x": 280,
+          "y": 56,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_98",
+              "_$type": "GImage",
+              "name": "invCell_bag_13Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_99",
+              "_$type": "GTextField",
+              "name": "invCell_bag_13Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_103",
+          "_$type": "GWidget",
+          "name": "invCell_bag_14",
+          "x": 336,
+          "y": 56,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_101",
+              "_$type": "GImage",
+              "name": "invCell_bag_14Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_102",
+              "_$type": "GTextField",
+              "name": "invCell_bag_14Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_106",
+          "_$type": "GWidget",
+          "name": "invCell_bag_15",
+          "x": 392,
+          "y": 56,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_104",
+              "_$type": "GImage",
+              "name": "invCell_bag_15Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_105",
+              "_$type": "GTextField",
+              "name": "invCell_bag_15Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_109",
+          "_$type": "GWidget",
+          "name": "invCell_bag_16",
+          "x": 0,
+          "y": 112,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_107",
+              "_$type": "GImage",
+              "name": "invCell_bag_16Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_108",
+              "_$type": "GTextField",
+              "name": "invCell_bag_16Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_112",
+          "_$type": "GWidget",
+          "name": "invCell_bag_17",
+          "x": 56,
+          "y": 112,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_110",
+              "_$type": "GImage",
+              "name": "invCell_bag_17Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_111",
+              "_$type": "GTextField",
+              "name": "invCell_bag_17Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_115",
+          "_$type": "GWidget",
+          "name": "invCell_bag_18",
+          "x": 112,
+          "y": 112,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_113",
+              "_$type": "GImage",
+              "name": "invCell_bag_18Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_114",
+              "_$type": "GTextField",
+              "name": "invCell_bag_18Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_118",
+          "_$type": "GWidget",
+          "name": "invCell_bag_19",
+          "x": 168,
+          "y": 112,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_116",
+              "_$type": "GImage",
+              "name": "invCell_bag_19Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_117",
+              "_$type": "GTextField",
+              "name": "invCell_bag_19Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_121",
+          "_$type": "GWidget",
+          "name": "invCell_bag_20",
+          "x": 224,
+          "y": 112,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_119",
+              "_$type": "GImage",
+              "name": "invCell_bag_20Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_120",
+              "_$type": "GTextField",
+              "name": "invCell_bag_20Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_124",
+          "_$type": "GWidget",
+          "name": "invCell_bag_21",
+          "x": 280,
+          "y": 112,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_122",
+              "_$type": "GImage",
+              "name": "invCell_bag_21Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_123",
+              "_$type": "GTextField",
+              "name": "invCell_bag_21Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_127",
+          "_$type": "GWidget",
+          "name": "invCell_bag_22",
+          "x": 336,
+          "y": 112,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_125",
+              "_$type": "GImage",
+              "name": "invCell_bag_22Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_126",
+              "_$type": "GTextField",
+              "name": "invCell_bag_22Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_130",
+          "_$type": "GWidget",
+          "name": "invCell_bag_23",
+          "x": 392,
+          "y": 112,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_128",
+              "_$type": "GImage",
+              "name": "invCell_bag_23Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_129",
+              "_$type": "GTextField",
+              "name": "invCell_bag_23Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_133",
+          "_$type": "GWidget",
+          "name": "invCell_bag_24",
+          "x": 0,
+          "y": 168,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_131",
+              "_$type": "GImage",
+              "name": "invCell_bag_24Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_132",
+              "_$type": "GTextField",
+              "name": "invCell_bag_24Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_136",
+          "_$type": "GWidget",
+          "name": "invCell_bag_25",
+          "x": 56,
+          "y": 168,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_134",
+              "_$type": "GImage",
+              "name": "invCell_bag_25Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_135",
+              "_$type": "GTextField",
+              "name": "invCell_bag_25Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_139",
+          "_$type": "GWidget",
+          "name": "invCell_bag_26",
+          "x": 112,
+          "y": 168,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_137",
+              "_$type": "GImage",
+              "name": "invCell_bag_26Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_138",
+              "_$type": "GTextField",
+              "name": "invCell_bag_26Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_142",
+          "_$type": "GWidget",
+          "name": "invCell_bag_27",
+          "x": 168,
+          "y": 168,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_140",
+              "_$type": "GImage",
+              "name": "invCell_bag_27Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_141",
+              "_$type": "GTextField",
+              "name": "invCell_bag_27Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_145",
+          "_$type": "GWidget",
+          "name": "invCell_bag_28",
+          "x": 224,
+          "y": 168,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_143",
+              "_$type": "GImage",
+              "name": "invCell_bag_28Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_144",
+              "_$type": "GTextField",
+              "name": "invCell_bag_28Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_148",
+          "_$type": "GWidget",
+          "name": "invCell_bag_29",
+          "x": 280,
+          "y": 168,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_146",
+              "_$type": "GImage",
+              "name": "invCell_bag_29Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_147",
+              "_$type": "GTextField",
+              "name": "invCell_bag_29Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_151",
+          "_$type": "GWidget",
+          "name": "invCell_bag_30",
+          "x": 336,
+          "y": 168,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_149",
+              "_$type": "GImage",
+              "name": "invCell_bag_30Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_150",
+              "_$type": "GTextField",
+              "name": "invCell_bag_30Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_154",
+          "_$type": "GWidget",
+          "name": "invCell_bag_31",
+          "x": 392,
+          "y": 168,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_152",
+              "_$type": "GImage",
+              "name": "invCell_bag_31Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_153",
+              "_$type": "GTextField",
+              "name": "invCell_bag_31Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_157",
+          "_$type": "GWidget",
+          "name": "invCell_bag_32",
+          "x": 0,
+          "y": 224,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_155",
+              "_$type": "GImage",
+              "name": "invCell_bag_32Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_156",
+              "_$type": "GTextField",
+              "name": "invCell_bag_32Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_160",
+          "_$type": "GWidget",
+          "name": "invCell_bag_33",
+          "x": 56,
+          "y": 224,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_158",
+              "_$type": "GImage",
+              "name": "invCell_bag_33Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_159",
+              "_$type": "GTextField",
+              "name": "invCell_bag_33Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_163",
+          "_$type": "GWidget",
+          "name": "invCell_bag_34",
+          "x": 112,
+          "y": 224,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_161",
+              "_$type": "GImage",
+              "name": "invCell_bag_34Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_162",
+              "_$type": "GTextField",
+              "name": "invCell_bag_34Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_166",
+          "_$type": "GWidget",
+          "name": "invCell_bag_35",
+          "x": 168,
+          "y": 224,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_164",
+              "_$type": "GImage",
+              "name": "invCell_bag_35Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_165",
+              "_$type": "GTextField",
+              "name": "invCell_bag_35Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_169",
+          "_$type": "GWidget",
+          "name": "invCell_bag_36",
+          "x": 224,
+          "y": 224,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_167",
+              "_$type": "GImage",
+              "name": "invCell_bag_36Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_168",
+              "_$type": "GTextField",
+              "name": "invCell_bag_36Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_172",
+          "_$type": "GWidget",
+          "name": "invCell_bag_37",
+          "x": 280,
+          "y": 224,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_170",
+              "_$type": "GImage",
+              "name": "invCell_bag_37Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_171",
+              "_$type": "GTextField",
+              "name": "invCell_bag_37Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_175",
+          "_$type": "GWidget",
+          "name": "invCell_bag_38",
+          "x": 336,
+          "y": 224,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_173",
+              "_$type": "GImage",
+              "name": "invCell_bag_38Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_174",
+              "_$type": "GTextField",
+              "name": "invCell_bag_38Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_178",
+          "_$type": "GWidget",
+          "name": "invCell_bag_39",
+          "x": 392,
+          "y": 224,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_176",
+              "_$type": "GImage",
+              "name": "invCell_bag_39Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_177",
+              "_$type": "GTextField",
+              "name": "invCell_bag_39Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_181",
+          "_$type": "GWidget",
+          "name": "invCell_bag_40",
+          "x": 0,
+          "y": 280,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_179",
+              "_$type": "GImage",
+              "name": "invCell_bag_40Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_180",
+              "_$type": "GTextField",
+              "name": "invCell_bag_40Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_184",
+          "_$type": "GWidget",
+          "name": "invCell_bag_41",
+          "x": 56,
+          "y": 280,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_182",
+              "_$type": "GImage",
+              "name": "invCell_bag_41Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_183",
+              "_$type": "GTextField",
+              "name": "invCell_bag_41Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_187",
+          "_$type": "GWidget",
+          "name": "invCell_bag_42",
+          "x": 112,
+          "y": 280,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_185",
+              "_$type": "GImage",
+              "name": "invCell_bag_42Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_186",
+              "_$type": "GTextField",
+              "name": "invCell_bag_42Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_190",
+          "_$type": "GWidget",
+          "name": "invCell_bag_43",
+          "x": 168,
+          "y": 280,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_188",
+              "_$type": "GImage",
+              "name": "invCell_bag_43Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_189",
+              "_$type": "GTextField",
+              "name": "invCell_bag_43Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_193",
+          "_$type": "GWidget",
+          "name": "invCell_bag_44",
+          "x": 224,
+          "y": 280,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_191",
+              "_$type": "GImage",
+              "name": "invCell_bag_44Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_192",
+              "_$type": "GTextField",
+              "name": "invCell_bag_44Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_196",
+          "_$type": "GWidget",
+          "name": "invCell_bag_45",
+          "x": 280,
+          "y": 280,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_194",
+              "_$type": "GImage",
+              "name": "invCell_bag_45Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_195",
+              "_$type": "GTextField",
+              "name": "invCell_bag_45Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_199",
+          "_$type": "GWidget",
+          "name": "invCell_bag_46",
+          "x": 336,
+          "y": 280,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_197",
+              "_$type": "GImage",
+              "name": "invCell_bag_46Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_198",
+              "_$type": "GTextField",
+              "name": "invCell_bag_46Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_202",
+          "_$type": "GWidget",
+          "name": "invCell_bag_47",
+          "x": 392,
+          "y": 280,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_200",
+              "_$type": "GImage",
+              "name": "invCell_bag_47Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_201",
+              "_$type": "GTextField",
+              "name": "invCell_bag_47Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "_$ver": 1
+}

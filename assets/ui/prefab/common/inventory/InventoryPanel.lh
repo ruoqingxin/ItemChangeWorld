@@ -1,0 +1,2866 @@
+{
+  "_$id": "invstart_1",
+  "_$type": "GWidget",
+  "name": "inventoryRoot",
+  "x": 0,
+  "y": 0,
+  "width": 1280,
+  "height": 720,
+  "visible": true,
+  "mouseThrough": true,
+  "_$child": [
+    {
+      "_$id": "region_1",
+      "_$type": "GWidget",
+      "name": "headerArea",
+      "x": 16,
+      "y": 8,
+      "width": 1248,
+      "height": 56,
+      "mouseThrough": true,
+      "_$child": [
+        {
+          "_$id": "invstart_6",
+          "_$type": "GTextField",
+          "name": "invTitle",
+          "x": 8,
+          "y": 6,
+          "width": 590,
+          "height": 46,
+          "text": "末法寻仙 · 行前整备",
+          "fontSize": 26,
+          "color": "#ecefe7",
+          "mouseEnabled": false,
+          "overflow": "shrink"
+        },
+        {
+          "_$id": "invstart_7",
+          "_$type": "GTextField",
+          "name": "invClock",
+          "x": 1064,
+          "y": 8,
+          "width": 174,
+          "height": 40,
+          "text": "整备",
+          "fontSize": 22,
+          "color": "#ecefe7",
+          "mouseEnabled": false,
+          "overflow": "shrink"
+        },
+        {
+          "_$id": "invstart_884",
+          "_$type": "GWidget",
+          "name": "invNodePrev",
+          "x": 778,
+          "y": 8,
+          "width": 56,
+          "height": 40,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_882",
+              "_$type": "GImage",
+              "name": "invNodePrevBg",
+              "x": 0,
+              "y": 0,
+              "width": 56,
+              "height": 40,
+              "src": "ui/texture/inventory/tooltip.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_883",
+              "_$type": "GTextField",
+              "name": "invNodePrevText",
+              "x": 8,
+              "y": 4,
+              "width": 40,
+              "height": 32,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_887",
+          "_$type": "GWidget",
+          "name": "invNodeNext",
+          "x": 840,
+          "y": 8,
+          "width": 56,
+          "height": 40,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_885",
+              "_$type": "GImage",
+              "name": "invNodeNextBg",
+              "x": 0,
+              "y": 0,
+              "width": 56,
+              "height": 40,
+              "src": "ui/texture/inventory/tooltip.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_886",
+              "_$type": "GTextField",
+              "name": "invNodeNextText",
+              "x": 8,
+              "y": 4,
+              "width": 40,
+              "height": 32,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_890",
+          "_$type": "GWidget",
+          "name": "invAbandon",
+          "x": 908,
+          "y": 8,
+          "width": 142,
+          "height": 40,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_888",
+              "_$type": "GImage",
+              "name": "invAbandonBg",
+              "x": 0,
+              "y": 0,
+              "width": 142,
+              "height": 40,
+              "src": "ui/texture/inventory/tooltip.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_889",
+              "_$type": "GTextField",
+              "name": "invAbandonText",
+              "x": 8,
+              "y": 4,
+              "width": 126,
+              "height": 32,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "_$id": "region_5",
+      "_$prefab": "44a31e59-fe4b-4739-8c83-014f0af9f86f",
+      "x": 16,
+      "y": 72
+    },
+    {
+      "_$id": "region_7",
+      "_$prefab": "daca3dd9-144a-4808-aea2-8d865c4ba9d9",
+      "x": 318,
+      "y": 76
+    },
+    {
+      "_$id": "region_11",
+      "_$prefab": "12fd4b2e-c403-4825-b09b-6e464e1c3967",
+      "x": 784,
+      "y": 72
+    },
+    {
+      "_$id": "region_13",
+      "_$type": "GWidget",
+      "name": "noticeArea",
+      "x": 24,
+      "y": 600,
+      "width": 1228,
+      "height": 32,
+      "mouseThrough": true,
+      "_$child": [
+        {
+          "_$id": "invstart_15",
+          "_$type": "GTextField",
+          "name": "invNotice",
+          "x": 0,
+          "y": 0,
+          "width": 1228,
+          "height": 32,
+          "text": "",
+          "fontSize": 18,
+          "color": "#ecefe7",
+          "mouseEnabled": false,
+          "overflow": "shrink"
+        }
+      ]
+    },
+    {
+      "_$id": "region_12",
+      "_$type": "GWidget",
+      "name": "actionsArea",
+      "x": 24,
+      "y": 640,
+      "width": 1216,
+      "height": 54,
+      "mouseThrough": true,
+      "_$child": [
+        {
+          "_$id": "invstart_860",
+          "_$type": "GWidget",
+          "name": "invRotate",
+          "x": 326,
+          "y": 0,
+          "width": 56,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_858",
+              "_$type": "GImage",
+              "name": "invRotateBg",
+              "x": 0,
+              "y": 0,
+              "width": 56,
+              "height": 54,
+              "src": "ui/texture/inventory/tooltip.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_859",
+              "_$type": "GTextField",
+              "name": "invRotateText",
+              "x": 8,
+              "y": 4,
+              "width": 40,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            },
+            {
+              "_$id": "invstart_891",
+              "_$type": "GImage",
+              "name": "invRotateIcon",
+              "x": 17,
+              "y": 12,
+              "width": 22,
+              "height": 30,
+              "src": "ui/atlas/module/inventory/arrow.png",
+              "autoSize": false,
+              "mouseEnabled": false,
+              "rotation": 90
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_863",
+          "_$type": "GWidget",
+          "name": "invCancel",
+          "x": 394,
+          "y": 0,
+          "width": 108,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_861",
+              "_$type": "GImage",
+              "name": "invCancelBg",
+              "x": 0,
+              "y": 0,
+              "width": 108,
+              "height": 54,
+              "src": "ui/texture/inventory/tooltip.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_862",
+              "_$type": "GTextField",
+              "name": "invCancelText",
+              "x": 8,
+              "y": 4,
+              "width": 92,
+              "height": 46,
+              "text": "取消",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_866",
+          "_$type": "GWidget",
+          "name": "invConfirm",
+          "x": 514,
+          "y": 0,
+          "width": 226,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_864",
+              "_$type": "GImage",
+              "name": "invConfirmBg",
+              "x": 0,
+              "y": 0,
+              "width": 226,
+              "height": 54,
+              "src": "ui/texture/inventory/tooltip.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_865",
+              "_$type": "GTextField",
+              "name": "invConfirmText",
+              "x": 8,
+              "y": 4,
+              "width": 210,
+              "height": 46,
+              "text": "确认提交",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_869",
+          "_$type": "GWidget",
+          "name": "invUse",
+          "x": 10,
+          "y": 0,
+          "width": 134,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_867",
+              "_$type": "GImage",
+              "name": "invUseBg",
+              "x": 0,
+              "y": 0,
+              "width": 134,
+              "height": 54,
+              "src": "ui/texture/inventory/tooltip.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_868",
+              "_$type": "GTextField",
+              "name": "invUseText",
+              "x": 8,
+              "y": 4,
+              "width": 118,
+              "height": 46,
+              "text": "使用",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_872",
+          "_$type": "GWidget",
+          "name": "invDrop",
+          "x": 156,
+          "y": 0,
+          "width": 134,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_870",
+              "_$type": "GImage",
+              "name": "invDropBg",
+              "x": 0,
+              "y": 0,
+              "width": 134,
+              "height": 54,
+              "src": "ui/texture/inventory/tooltip.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_871",
+              "_$type": "GTextField",
+              "name": "invDropText",
+              "x": 8,
+              "y": 4,
+              "width": 118,
+              "height": 46,
+              "text": "放回仓库",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_875",
+          "_$type": "GWidget",
+          "name": "invPrimary",
+          "x": 978,
+          "y": 0,
+          "width": 238,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_873",
+              "_$type": "GImage",
+              "name": "invPrimaryBg",
+              "x": 0,
+              "y": 0,
+              "width": 238,
+              "height": 54,
+              "src": "ui/texture/inventory/tooltip.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_874",
+              "_$type": "GTextField",
+              "name": "invPrimaryText",
+              "x": 8,
+              "y": 4,
+              "width": 222,
+              "height": 46,
+              "text": "入境",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_878",
+          "_$type": "GWidget",
+          "name": "invExtract",
+          "x": 770,
+          "y": 0,
+          "width": 192,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_876",
+              "_$type": "GImage",
+              "name": "invExtractBg",
+              "x": 0,
+              "y": 0,
+              "width": 192,
+              "height": 54,
+              "src": "ui/texture/inventory/tooltip.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_877",
+              "_$type": "GTextField",
+              "name": "invExtractText",
+              "x": 8,
+              "y": 4,
+              "width": 176,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "_$id": "region_14",
+      "_$type": "GWidget",
+      "name": "itemPoolArea",
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 720,
+      "mouseThrough": true,
+      "_$child": [
+        {
+          "_$id": "invstart_205",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem0",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem0Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem0Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem0Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem0Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem0Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_210",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem1",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem1Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem1Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem1Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem1Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem1Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_215",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem2",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem2Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem2Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem2Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem2Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem2Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_220",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem3",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem3Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem3Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem3Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem3Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem3Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_225",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem4",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem4Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem4Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem4Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem4Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem4Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_230",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem5",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem5Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem5Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem5Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem5Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem5Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_235",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem6",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem6Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem6Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem6Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem6Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem6Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_240",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem7",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem7Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem7Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem7Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem7Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem7Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_245",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem8",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem8Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem8Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem8Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem8Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem8Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_250",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem9",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem9Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem9Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem9Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem9Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem9Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_255",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem10",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem10Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem10Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem10Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem10Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem10Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_260",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem11",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem11Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem11Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem11Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem11Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem11Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_265",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem12",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem12Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem12Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem12Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem12Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem12Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_270",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem13",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem13Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem13Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem13Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem13Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem13Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_275",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem14",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem14Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem14Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem14Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem14Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem14Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_280",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem15",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem15Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem15Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem15Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem15Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem15Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_285",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem16",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem16Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem16Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem16Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem16Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem16Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_290",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem17",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem17Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem17Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem17Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem17Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem17Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_295",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem18",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem18Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem18Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem18Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem18Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem18Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_300",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem19",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem19Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem19Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem19Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem19Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem19Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_305",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem20",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem20Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem20Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem20Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem20Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem20Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_310",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem21",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem21Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem21Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem21Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem21Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem21Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_315",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem22",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem22Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem22Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem22Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem22Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem22Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_320",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem23",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem23Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem23Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem23Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem23Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem23Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_325",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem24",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem24Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem24Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem24Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem24Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem24Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_330",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem25",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem25Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem25Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem25Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem25Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem25Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_335",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem26",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem26Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem26Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem26Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem26Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem26Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_340",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem27",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem27Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem27Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem27Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem27Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem27Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_345",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem28",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem28Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem28Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem28Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem28Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem28Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_350",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem29",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem29Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem29Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem29Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem29Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem29Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_355",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem30",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem30Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem30Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem30Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem30Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem30Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_360",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem31",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem31Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem31Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem31Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem31Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem31Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_365",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem32",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem32Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem32Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem32Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem32Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem32Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_370",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem33",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem33Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem33Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem33Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem33Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem33Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_375",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem34",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem34Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem34Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem34Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem34Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem34Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_380",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem35",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem35Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem35Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem35Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem35Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem35Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_385",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem36",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem36Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem36Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem36Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem36Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem36Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_390",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem37",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem37Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem37Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem37Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem37Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem37Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_395",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem38",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem38Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem38Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem38Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem38Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem38Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_400",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem39",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem39Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem39Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem39Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem39Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem39Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_405",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem40",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem40Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem40Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem40Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem40Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem40Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_410",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem41",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem41Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem41Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem41Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem41Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem41Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_415",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem42",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem42Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem42Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem42Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem42Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem42Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_420",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem43",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem43Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem43Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem43Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem43Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem43Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_425",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem44",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem44Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem44Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem44Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem44Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem44Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_430",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem45",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem45Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem45Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem45Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem45Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem45Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_435",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem46",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem46Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem46Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem46Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem46Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem46Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_440",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem47",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem47Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem47Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem47Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem47Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem47Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_445",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem48",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem48Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem48Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem48Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem48Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem48Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_450",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem49",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem49Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem49Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem49Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem49Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem49Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_455",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem50",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem50Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem50Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem50Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem50Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem50Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_460",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem51",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem51Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem51Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem51Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem51Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem51Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_465",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem52",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem52Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem52Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem52Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem52Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem52Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_470",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem53",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem53Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem53Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem53Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem53Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem53Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_475",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem54",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem54Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem54Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem54Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem54Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem54Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_480",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem55",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem55Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem55Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem55Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem55Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem55Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_485",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem56",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem56Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem56Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem56Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem56Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem56Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_490",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem57",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem57Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem57Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem57Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem57Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem57Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_495",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem58",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem58Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem58Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem58Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem58Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem58Selection"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_500",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invItem59",
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invItem59Bg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invItem59Text"
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invItem59Icon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invItem59Caption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invItem59Selection"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "_$id": "region_15",
+      "_$type": "GWidget",
+      "name": "dragFeedbackArea",
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 720,
+      "mouseThrough": true,
+      "_$child": [
+        {
+          "_$id": "invstart_503",
+          "_$type": "GImage",
+          "name": "invGhost",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.5
+        },
+        {
+          "_$id": "invstart_892",
+          "_$type": "GImage",
+          "name": "invDragCell0",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_893",
+          "_$type": "GImage",
+          "name": "invDragCell1",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_894",
+          "_$type": "GImage",
+          "name": "invDragCell2",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_895",
+          "_$type": "GImage",
+          "name": "invDragCell3",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_896",
+          "_$type": "GImage",
+          "name": "invDragCell4",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_897",
+          "_$type": "GImage",
+          "name": "invDragCell5",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_898",
+          "_$type": "GImage",
+          "name": "invDragCell6",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_899",
+          "_$type": "GImage",
+          "name": "invDragCell7",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_900",
+          "_$type": "GImage",
+          "name": "invDragCell8",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_901",
+          "_$type": "GImage",
+          "name": "invDragCell9",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_902",
+          "_$type": "GImage",
+          "name": "invDragCell10",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_903",
+          "_$type": "GImage",
+          "name": "invDragCell11",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_904",
+          "_$type": "GImage",
+          "name": "invDragCell12",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_905",
+          "_$type": "GImage",
+          "name": "invDragCell13",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_906",
+          "_$type": "GImage",
+          "name": "invDragCell14",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_907",
+          "_$type": "GImage",
+          "name": "invDragCell15",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_908",
+          "_$type": "GImage",
+          "name": "invDragCell16",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_909",
+          "_$type": "GImage",
+          "name": "invDragCell17",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_910",
+          "_$type": "GImage",
+          "name": "invDragCell18",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_911",
+          "_$type": "GImage",
+          "name": "invDragCell19",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_912",
+          "_$type": "GImage",
+          "name": "invDragCell20",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_913",
+          "_$type": "GImage",
+          "name": "invDragCell21",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_914",
+          "_$type": "GImage",
+          "name": "invDragCell22",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_915",
+          "_$type": "GImage",
+          "name": "invDragCell23",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_916",
+          "_$type": "GImage",
+          "name": "invDragCell24",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_917",
+          "_$type": "GImage",
+          "name": "invDragCell25",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_918",
+          "_$type": "GImage",
+          "name": "invDragCell26",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_919",
+          "_$type": "GImage",
+          "name": "invDragCell27",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_920",
+          "_$type": "GImage",
+          "name": "invDragCell28",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_921",
+          "_$type": "GImage",
+          "name": "invDragCell29",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_922",
+          "_$type": "GImage",
+          "name": "invDragCell30",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_923",
+          "_$type": "GImage",
+          "name": "invDragCell31",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_924",
+          "_$type": "GImage",
+          "name": "invDragCell32",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_925",
+          "_$type": "GImage",
+          "name": "invDragCell33",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_926",
+          "_$type": "GImage",
+          "name": "invDragCell34",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_927",
+          "_$type": "GImage",
+          "name": "invDragCell35",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_928",
+          "_$type": "GImage",
+          "name": "invDragCell36",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_929",
+          "_$type": "GImage",
+          "name": "invDragCell37",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_930",
+          "_$type": "GImage",
+          "name": "invDragCell38",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_931",
+          "_$type": "GImage",
+          "name": "invDragCell39",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_932",
+          "_$type": "GImage",
+          "name": "invDragCell40",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_933",
+          "_$type": "GImage",
+          "name": "invDragCell41",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_934",
+          "_$type": "GImage",
+          "name": "invDragCell42",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_935",
+          "_$type": "GImage",
+          "name": "invDragCell43",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_936",
+          "_$type": "GImage",
+          "name": "invDragCell44",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_937",
+          "_$type": "GImage",
+          "name": "invDragCell45",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_938",
+          "_$type": "GImage",
+          "name": "invDragCell46",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_939",
+          "_$type": "GImage",
+          "name": "invDragCell47",
+          "x": 0,
+          "y": 0,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/quality-1.png",
+          "autoSize": false,
+          "mouseEnabled": false,
+          "visible": false,
+          "alpha": 0.65
+        },
+        {
+          "_$id": "invstart_944",
+          "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+          "name": "invHeld",
+          "mouseEnabled": false,
+          "mouseThrough": true,
+          "alpha": 0.95,
+          "_$child": [
+            {
+              "_$override": "item_background",
+              "name": "invHeldBg"
+            },
+            {
+              "_$override": "item_text",
+              "name": "invHeldText",
+              "x": 0,
+              "width": 54
+            },
+            {
+              "_$override": "item_icon",
+              "name": "invHeldIcon"
+            },
+            {
+              "_$override": "item_caption",
+              "name": "invHeldCaption"
+            },
+            {
+              "_$override": "item_selection",
+              "name": "invHeldSelection"
+            }
+          ]
+        }
+      ],
+      "mouseEnabled": false
+    }
+  ],
+  "_$ver": 1
+}

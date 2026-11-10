@@ -9,6 +9,7 @@ const ide = process.env.LAYA_IDE_RESOURCES || [
 if (!ide) throw new Error("LayaAirIDE resources not found. Set LAYA_IDE_RESOURCES.");
 const esbuild = require(path.join(ide, "node_modules/esbuild"));
 const port = Number(process.env.PORT || 18094);
+const { createPrefabResolver } = require("./ui-prefab.cjs");
 const html = `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 <title>末法寻仙 · 战斗</title><style>html,body{margin:0;width:100%;height:100%;background:#111613;overflow:hidden;font-family:Arial,"Microsoft YaHei",sans-serif}</style>
@@ -23,6 +24,12 @@ http.createServer(async (req, res) => {
             res.setHeader("Content-Type", "text/html; charset=utf-8");
             res.setHeader("Cache-Control", "no-store");
             res.end(html);
+            return;
+        }
+        if (url === "/ui-prefab-uuids.json") {
+            res.setHeader("Content-Type", "application/json");
+            res.setHeader("Cache-Control", "no-store");
+            res.end(JSON.stringify(Object.fromEntries(createPrefabResolver().uuids)));
             return;
         }
         if (url === "/preview.js") {

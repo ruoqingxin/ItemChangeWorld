@@ -2,6 +2,8 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const root = path.resolve(__dirname, "..");
+const { createPrefabResolver } = require("./ui-prefab.cjs");
+const prefabs = createPrefabResolver();
 const files = [
     ["skillBattle/SkillBattleStartView", 4, "inventoryRoot"],
     ["skillBattle/SkillBattleInventoryView", 4, "inventoryRoot"],
@@ -16,7 +18,7 @@ const files = [
     ["skillBattle/SkillBattleTrialResultView", 4, "trialResultArea"],
 ];
 for (const [file, type, content] of files) {
-    const prefab = JSON.parse(fs.readFileSync(path.join(root, "assets/ui/prefab/module", file + ".lh"), "utf8"));
+    const prefab = prefabs.expand("ui/prefab/module/" + file + ".lh");
     const nodes = new Map(), ids = new Set(), references = [], positions = new Map();
     function walk(node, parent, px = 0, py = 0) {
         assert.ok(!ids.has(node._$id), `${file}: duplicate ID ${node._$id}`);
@@ -115,4 +117,47 @@ for(const role of ["Start","Inventory","Build","Battle","Settlement"]) {
 const mapSource=fs.readFileSync(path.join(root,"src/script/module/expedition/view/SkillBattleMapView.ts"),"utf8");
 assert.match(mapSource,/SkillBattleUISession\.createPanel\(/);
 assert.doesNotMatch(mapSource,/getExpedition\(/);
-console.log(`Skill battle UI: ${files.length} independent 1280x720 pages/popups; adapters, regions, grids, bindings and assets verified.`);
+const shared = [
+    "inventory/InventoryPanel", "inventory/InventoryCarry", "inventory/InventoryBag",
+    "inventory/InventorySource", "inventory/InventoryItem", "dialog/PagedReportPanel", "choice/ChoiceSlots",
+];
+for (const name of shared) {
+    const data = prefabs.read(`ui/prefab/common/${name}.lh`);
+    assert.equal(data._$type, "GWidget", name);
+    assert.ok(!data._$comp?.some(c => c.scriptPath?.endsWith("/ElementMapper.ts")),
+        `${name}: fragments inherit the owning page's adapter and mapper, not a second page lifecycle`);
+    assert.ok(!data._$child.some(c => c.name === "adapter"), `${name}: no nested fullscreen adapter`);
+}
+const references = data => {
+    const result = [];
+    function visit(node) {
+        if (node._$prefab) result.push(prefabs.prefabPath(node._$prefab));
+        (node._$child || []).forEach(visit);
+    }
+    visit(data);
+    return result;
+};
+for (const name of ["Start", "Inventory", "Settlement"]) {
+    const file = `ui/prefab/module/skillBattle/SkillBattle${name}View.lh`;
+    assert.ok(references(prefabs.read(file)).includes("ui/prefab/common/inventory/InventoryPanel.lh"),
+        `${name}: use a native shared storage prefab, not an inline copy`);
+    const mapper = prefabs.read(file)._$comp.find(c => c.scriptPath?.endsWith("/ElementMapper.ts"));
+    assert.ok(mapper.elements.some(e => Array.isArray(e._$ref) && e._$ref.length >= 4),
+        `${name}: native references must cross storage, region and item scopes`);
+}
+const panelRefs = references(prefabs.read("ui/prefab/common/inventory/InventoryPanel.lh"));
+for (const name of ["InventoryCarry", "InventoryBag", "InventorySource"])
+    assert.ok(panelRefs.includes(`ui/prefab/common/inventory/${name}.lh`), `Shared storage composes ${name}`);
+const itemRefs = [
+    ...panelRefs, ...references(prefabs.read("ui/prefab/common/inventory/InventorySource.lh")),
+].filter(file => file === "ui/prefab/common/inventory/InventoryItem.lh");
+assert.equal(itemRefs.length, 117, "One item prefab supplies 60 carried items, 56 source items and the drag ghost");
+for (const [names, common] of [
+    [["Report", "BuildInfo"], "dialog/PagedReportPanel"],
+    [["Build", "Trial"], "choice/ChoiceSlots"],
+]) {
+    for (const name of names)
+        assert.ok(references(prefabs.read(`ui/prefab/module/skillBattle/SkillBattle${name}View.lh`))
+            .includes(`ui/prefab/common/${common}.lh`), `${name}: shared ${common}`);
+}
+console.log(`Skill battle UI: ${files.length} independent 1280x720 pages/popups; ${shared.length} native common prefabs, scoped bindings, regions, grids and assets verified.`);

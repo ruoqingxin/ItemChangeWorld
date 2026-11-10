@@ -1,0 +1,671 @@
+{
+  "_$id": "region_5",
+  "_$type": "GWidget",
+  "name": "carryArea",
+  "x": 0,
+  "y": 0,
+  "width": 294,
+  "height": 524,
+  "mouseThrough": true,
+  "_$child": [
+    {
+      "_$id": "invstart_2",
+      "_$type": "GImage",
+      "name": "invLeftPanel",
+      "x": 0,
+      "y": 0,
+      "width": 294,
+      "height": 524,
+      "src": "ui/texture/inventory/warehouse-body.png",
+      "autoSize": false,
+      "mouseEnabled": false
+    },
+    {
+      "_$id": "region_2",
+      "_$type": "GWidget",
+      "name": "equipmentArea",
+      "x": 18,
+      "y": 16,
+      "width": 272,
+      "height": 260,
+      "mouseThrough": true,
+      "_$child": [
+        {
+          "_$id": "invstart_8",
+          "_$type": "GTextField",
+          "name": "invEquipTitle",
+          "x": 0,
+          "y": 0,
+          "width": 272,
+          "height": 28,
+          "text": "装备",
+          "fontSize": 18,
+          "color": "#ecefe7",
+          "mouseEnabled": false,
+          "overflow": "shrink"
+        },
+        {
+          "_$id": "invstart_17",
+          "_$type": "GTextField",
+          "name": "invWeaponName",
+          "x": 0,
+          "y": 208,
+          "width": 132,
+          "height": 52,
+          "text": "未装备武器",
+          "fontSize": 17,
+          "color": "#ecefe7",
+          "mouseEnabled": false,
+          "overflow": "shrink"
+        },
+        {
+          "_$id": "invstart_18",
+          "_$type": "GTextField",
+          "name": "invContainerName",
+          "x": 150,
+          "y": 154,
+          "width": 120,
+          "height": 96,
+          "text": "未装备纳虚器",
+          "fontSize": 17,
+          "color": "#ecefe7",
+          "mouseEnabled": false,
+          "overflow": "shrink"
+        },
+        {
+          "_$id": "invstart_20",
+          "_$type": "GImage",
+          "name": "invEquipCell_weapon_0",
+          "x": 0,
+          "y": 36,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/cell.png",
+          "autoSize": false,
+          "mouseEnabled": false
+        },
+        {
+          "_$id": "invstart_21",
+          "_$type": "GImage",
+          "name": "invEquipCell_weapon_1",
+          "x": 56,
+          "y": 36,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/cell.png",
+          "autoSize": false,
+          "mouseEnabled": false
+        },
+        {
+          "_$id": "invstart_22",
+          "_$type": "GImage",
+          "name": "invEquipCell_weapon_2",
+          "x": 0,
+          "y": 92,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/cell.png",
+          "autoSize": false,
+          "mouseEnabled": false
+        },
+        {
+          "_$id": "invstart_23",
+          "_$type": "GImage",
+          "name": "invEquipCell_weapon_3",
+          "x": 56,
+          "y": 92,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/cell.png",
+          "autoSize": false,
+          "mouseEnabled": false
+        },
+        {
+          "_$id": "invstart_24",
+          "_$type": "GImage",
+          "name": "invEquipCell_weapon_4",
+          "x": 0,
+          "y": 148,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/cell.png",
+          "autoSize": false,
+          "mouseEnabled": false
+        },
+        {
+          "_$id": "invstart_25",
+          "_$type": "GImage",
+          "name": "invEquipCell_weapon_5",
+          "x": 56,
+          "y": 148,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/cell.png",
+          "autoSize": false,
+          "mouseEnabled": false
+        },
+        {
+          "_$id": "invstart_28",
+          "_$type": "GWidget",
+          "name": "invWeapon",
+          "x": 0,
+          "y": 36,
+          "width": 110,
+          "height": 166,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_26",
+              "_$type": "GImage",
+              "name": "invWeaponBg",
+              "x": 0,
+              "y": 0,
+              "width": 110,
+              "height": 166,
+              "src": "ui/atlas/module/inventory/item-frame.png",
+              "autoSize": false,
+              "mouseEnabled": false,
+              "visible": false
+            },
+            {
+              "_$id": "invstart_27",
+              "_$type": "GTextField",
+              "name": "invWeaponText",
+              "x": 8,
+              "y": 4,
+              "width": 94,
+              "height": 158,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "visible": false,
+              "overflow": "shrink"
+            },
+            {
+              "_$id": "invstart_29",
+              "_$type": "GImage",
+              "name": "invWeaponIcon",
+              "x": 6,
+              "y": 6,
+              "width": 98,
+              "height": 154,
+              "src": "ui/atlas/module/inventory/gold-sword.png",
+              "autoSize": false,
+              "mouseEnabled": false,
+              "visible": false
+            },
+            {
+              "_$id": "invstart_28_selection",
+              "_$type": "GWidget",
+              "name": "invWeaponSelection",
+              "x": 0,
+              "y": 0,
+              "width": 110,
+              "height": 166,
+              "visible": false,
+              "mouseEnabled": false
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_30",
+          "_$type": "GImage",
+          "name": "invEquipCell_container_0",
+          "x": 150,
+          "y": 36,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/cell.png",
+          "autoSize": false,
+          "mouseEnabled": false
+        },
+        {
+          "_$id": "invstart_31",
+          "_$type": "GImage",
+          "name": "invEquipCell_container_1",
+          "x": 206,
+          "y": 36,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/cell.png",
+          "autoSize": false,
+          "mouseEnabled": false
+        },
+        {
+          "_$id": "invstart_32",
+          "_$type": "GImage",
+          "name": "invEquipCell_container_2",
+          "x": 150,
+          "y": 92,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/cell.png",
+          "autoSize": false,
+          "mouseEnabled": false
+        },
+        {
+          "_$id": "invstart_33",
+          "_$type": "GImage",
+          "name": "invEquipCell_container_3",
+          "x": 206,
+          "y": 92,
+          "width": 54,
+          "height": 54,
+          "src": "ui/atlas/module/inventory/cell.png",
+          "autoSize": false,
+          "mouseEnabled": false
+        },
+        {
+          "_$id": "invstart_36",
+          "_$type": "GWidget",
+          "name": "invContainer",
+          "x": 150,
+          "y": 36,
+          "width": 110,
+          "height": 110,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_34",
+              "_$type": "GImage",
+              "name": "invContainerBg",
+              "x": 0,
+              "y": 0,
+              "width": 110,
+              "height": 110,
+              "src": "ui/atlas/module/inventory/item-frame.png",
+              "autoSize": false,
+              "mouseEnabled": false,
+              "visible": false
+            },
+            {
+              "_$id": "invstart_35",
+              "_$type": "GTextField",
+              "name": "invContainerText",
+              "x": 8,
+              "y": 4,
+              "width": 94,
+              "height": 102,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "visible": false,
+              "overflow": "shrink"
+            },
+            {
+              "_$id": "invstart_37",
+              "_$type": "GImage",
+              "name": "invContainerIcon",
+              "x": 6,
+              "y": 6,
+              "width": 98,
+              "height": 98,
+              "src": "ui/atlas/module/inventory/gold-sword.png",
+              "autoSize": false,
+              "mouseEnabled": false,
+              "visible": false
+            },
+            {
+              "_$id": "invstart_36_selection",
+              "_$type": "GWidget",
+              "name": "invContainerSelection",
+              "x": 0,
+              "y": 0,
+              "width": 110,
+              "height": 110,
+              "visible": false,
+              "mouseEnabled": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "_$id": "region_3",
+      "_$type": "GWidget",
+      "name": "battleItemsArea",
+      "x": 10,
+      "y": 278,
+      "width": 280,
+      "height": 100,
+      "mouseThrough": true,
+      "_$child": [
+        {
+          "_$id": "invstart_9",
+          "_$type": "GTextField",
+          "name": "invBattleTitle",
+          "x": 8,
+          "y": 0,
+          "width": 272,
+          "height": 28,
+          "text": "斗法匣 · 5 格",
+          "fontSize": 18,
+          "color": "#ecefe7",
+          "mouseEnabled": false,
+          "overflow": "shrink"
+        },
+        {
+          "_$id": "invstart_40",
+          "_$type": "GWidget",
+          "name": "invCell_battle_0",
+          "x": 0,
+          "y": 36,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_38",
+              "_$type": "GImage",
+              "name": "invCell_battle_0Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_39",
+              "_$type": "GTextField",
+              "name": "invCell_battle_0Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_43",
+          "_$type": "GWidget",
+          "name": "invCell_battle_1",
+          "x": 56,
+          "y": 36,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_41",
+              "_$type": "GImage",
+              "name": "invCell_battle_1Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_42",
+              "_$type": "GTextField",
+              "name": "invCell_battle_1Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_46",
+          "_$type": "GWidget",
+          "name": "invCell_battle_2",
+          "x": 112,
+          "y": 36,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_44",
+              "_$type": "GImage",
+              "name": "invCell_battle_2Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_45",
+              "_$type": "GTextField",
+              "name": "invCell_battle_2Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_49",
+          "_$type": "GWidget",
+          "name": "invCell_battle_3",
+          "x": 168,
+          "y": 36,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_47",
+              "_$type": "GImage",
+              "name": "invCell_battle_3Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_48",
+              "_$type": "GTextField",
+              "name": "invCell_battle_3Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_52",
+          "_$type": "GWidget",
+          "name": "invCell_battle_4",
+          "x": 224,
+          "y": 36,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_50",
+              "_$type": "GImage",
+              "name": "invCell_battle_4Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_51",
+              "_$type": "GTextField",
+              "name": "invCell_battle_4Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "_$id": "region_4",
+      "_$type": "GWidget",
+      "name": "safeItemsArea",
+      "x": 18,
+      "y": 382,
+      "width": 272,
+      "height": 122,
+      "mouseThrough": true,
+      "_$child": [
+        {
+          "_$id": "invstart_10",
+          "_$type": "GTextField",
+          "name": "invSafeTitle",
+          "x": 0,
+          "y": 0,
+          "width": 272,
+          "height": 28,
+          "text": "归真匣 · 2 格",
+          "fontSize": 18,
+          "color": "#ecefe7",
+          "mouseEnabled": false,
+          "overflow": "shrink"
+        },
+        {
+          "_$id": "invstart_11",
+          "_$type": "GTextField",
+          "name": "invProtection",
+          "x": 124,
+          "y": 32,
+          "width": 148,
+          "height": 88,
+          "text": "归真匣保护非装备。\n其余携带物失败损失。",
+          "fontSize": 16,
+          "color": "#ecefe7",
+          "mouseEnabled": false,
+          "overflow": "shrink"
+        },
+        {
+          "_$id": "invstart_55",
+          "_$type": "GWidget",
+          "name": "invCell_safe_0",
+          "x": 0,
+          "y": 36,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_53",
+              "_$type": "GImage",
+              "name": "invCell_safe_0Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_54",
+              "_$type": "GTextField",
+              "name": "invCell_safe_0Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_58",
+          "_$type": "GWidget",
+          "name": "invCell_safe_1",
+          "x": 56,
+          "y": 36,
+          "width": 54,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "invstart_56",
+              "_$type": "GImage",
+              "name": "invCell_safe_1Bg",
+              "x": 0,
+              "y": 0,
+              "width": 54,
+              "height": 54,
+              "src": "ui/atlas/module/inventory/cell.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "invstart_57",
+              "_$type": "GTextField",
+              "name": "invCell_safe_1Text",
+              "x": 8,
+              "y": 4,
+              "width": 38,
+              "height": 46,
+              "text": "",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "mouseEnabled": false,
+              "overflow": "shrink"
+            }
+          ]
+        },
+        {
+          "_$id": "invstart_945",
+          "_$type": "GImage",
+          "name": "invLock",
+          "x": 234,
+          "y": 0,
+          "width": 28,
+          "height": 28,
+          "src": "ui/atlas/module/inventory/lock.png",
+          "autoSize": false,
+          "mouseEnabled": false
+        }
+      ]
+    }
+  ],
+  "_$ver": 1
+}
