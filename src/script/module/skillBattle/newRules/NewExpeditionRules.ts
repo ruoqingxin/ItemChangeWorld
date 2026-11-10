@@ -137,9 +137,22 @@ export class NewExpeditionRules {
         s.map.visible = [...visible].filter(v => s.map.present.includes(v)).sort((a,b) => a-b);
     }
     static reachable(c: ExpeditionConfig, s: ExpeditionState): Set<number> {
-        return ExpeditionMapUtils.reachableGraph(s.node,s.map.edges,
-            id => s.revealed.includes(id) && (!this.node(c,id).enemy || s.map.cleared.includes(id)),
-            id => s.map.visible.includes(id));
+        return new Set(this.travelPaths(c,s).keys());
+    }
+    static travelPaths(c: ExpeditionConfig, s: ExpeditionState): Map<number,number[]> {
+        const paths=new Map([[s.node,[s.node]]]),queue=[s.node];
+        const passable=(id:number)=>s.revealed.includes(id)&&(!this.node(c,id).enemy||s.map.cleared.includes(id));
+        for(const current of queue) {
+            if(current!==s.node&&!passable(current))continue;
+            for(const [a,b]of s.map.edges) {
+                const next=a===current?b:b===current?a:null;
+                if(next===null||paths.has(next)||!s.map.visible.includes(next))continue;
+                // An unengaged enemy permits retreat, never passage to its unexplored far side.
+                if(current===s.node&&!passable(current)&&!passable(next))continue;
+                paths.set(next,[...paths.get(current)!,next]);queue.push(next);
+            }
+        }
+        return paths;
     }
     static recovery(c: ExpeditionConfig, s: ExpeditionState): { hp: number; mp: number } {
         const p = c.build.setup.player, ratio = c.rules.recoveryPercent / 100;
@@ -204,9 +217,14 @@ export class NewExpeditionRules {
                 if (!s.revealed.includes(s.node)) s.revealed.push(s.node);
                 this.revealMap(c,s,s.node);
                 const n = this.node(c,s.node);
-                if (n.enemy && !s.map.cleared.includes(n.id))
-                    s.flow = Build.apply(c.build,p,s.flow!,{ type: "battle" },at,Inventory.carry(c,s),`battle:${n.key}`).state;
-                else if (n.kind === "search" && !this.source(s)) this.makeSource(c,s,seed);
+                if (n.kind === "search" && !this.source(s)) this.makeSource(c,s,seed);
+                break;
+            }
+            case "fight": {
+                ready();
+                const n=this.node(c,s.node);
+                if(!n.enemy||s.map.cleared.includes(n.id))throw new Error("此处没有待战敌人");
+                s.flow=Build.apply(c.build,p,s.flow!,{type:"battle"},at,Inventory.carry(c,s),`battle:${n.key}`).state;
                 break;
             }
             case "borrow": case "insight":

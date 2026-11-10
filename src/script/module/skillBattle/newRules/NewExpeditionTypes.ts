@@ -25,8 +25,8 @@ export interface ExpeditionState extends InventoryState {
 }
 export type ExpeditionCommand = InventoryCommand |
     { type: "travel"; node: number } | { type: "borrow" | "insight" | "recover" } |
-    { type: "search"; deltaMs: number } | { type: "warnings" | "openSource" };
+    { type: "search"; deltaMs: number } | { type: "warnings" | "openSource" | "fight" };
 export interface ExpeditionSave {
-    version: 2; runId: string; createdAt: number; seed: number; config: ExpeditionConfig; profile: NewBuildProfile;
+    version: 3; runId: string; createdAt: number; seed: number; config: ExpeditionConfig; profile: NewBuildProfile;
     commands: Array<{ at: number; command: ExpeditionCommand }>; state: ExpeditionState;
 }

@@ -3,7 +3,7 @@ const fs=require("node:fs/promises"),path=require("node:path");
 const url=process.env.SKILL_BATTLE_URL||"http://127.0.0.1:18124",out=path.resolve(__dirname,"../bin/stage4-browser");
 const state=p=>p.evaluate(()=>window.__skillBattlePreview.trial.inventory);
 async function ready(p){await p.waitForFunction(()=>window.__skillBattlePreview?.panel?.opened);}
-async function click(p,key) {
+async function click(p,key,settle=true) {
     const pt=await p.evaluate(key=>{
         const b=window.__skillBattlePreview.panel.buttons[key];
         if(!b?.visible||!b.mouseEnabled)throw Error(`Unavailable ${key}`);
@@ -12,6 +12,7 @@ async function click(p,key) {
     },key);
     if(p.touchMode)await p.touchscreen.tap(pt.x,pt.y);else await p.mouse.click(pt.x,pt.y);
     await p.waitForTimeout(100);
+    if(settle)await p.waitForFunction(()=>!window.__skillBattlePreview.panel.movement);
 }
 async function screenshot(p,name){
     const image=await p.screenshot({path:path.join(out,`${name}.png`)});
@@ -55,7 +56,9 @@ async function openMap(p){
     else if(!await p.evaluate(()=>window.__skillBattlePreview.panel.expeditionNodes?.expeditionRoot?.visible))await click(p,"invToggle");
 }
 async function visit(p,id) {
-    await click(p,`expNode${id}`);await click(p,"expUse");
+    await click(p,`expNode${id}`);
+    if(await p.evaluate(()=>{const n=window.__skillBattlePreview.panel.buttons.expUse;return n.visible&&n.mouseEnabled;}))
+        await click(p,"expUse");
 }
 async function pan(p,from,to) {
     const points=await p.evaluate(({from,to})=>{
@@ -118,12 +121,26 @@ async function drag(p,fromKey,toKey) {
             const blocked=await p.evaluate(()=>window.__skillBattlePreview.panel.buttons.expNode4.mouseEnabled);
             assert.equal(blocked,false);
             assert.equal(await p.evaluate(()=>!!window.__skillBattlePreview.panel.buttons.expNext),false);
-            const beforeEnemy=(await state(p)).node;
-            await click(p,"expNode2");
-            assert.equal((await state(p)).node,beforeEnemy,"Selecting an enemy does not move or start combat");
+            const beforeEnemy=await state(p);
+            await click(p,"expNode2",false);
+            assert.equal((await state(p)).node,2,"Node click commits arrival, independently of combat");
             assert.equal((await state(p)).flow.phase,"ready");
+            assert.equal((await state(p)).hp,beforeEnemy.hp);
+            assert.deepEqual((await state(p)).items,beforeEnemy.items);
+            assert.equal(await p.evaluate(()=>!!window.__skillBattlePreview.panel.movement),true);
+            assert.equal(await p.evaluate(()=>window.__skillBattlePreview.panel.buttons.expUse.visible),false);
+            const duringMove=await state(p);
+            await p.evaluate(()=>window.__skillBattlePreview.panel.command("expUse"));
+            assert.deepEqual(await state(p),duringMove,"An action during movement cannot start combat");
+            await screenshot(p,`${name}-moving`);
+            await p.waitForFunction(()=>!window.__skillBattlePreview.panel.movement);
             assert.equal(await p.evaluate(()=>window.__skillBattlePreview.panel.expeditionNodes.expContextBackground.visible),true);
             await screenshot(p,`${name}-enemy-action`);
+            await p.reload();await ready(p);
+            assert.equal((await state(p)).node,2,"Reload restores arrival without starting combat");
+            assert.equal((await state(p)).flow.phase,"ready");
+            await click(p,"expNode1");assert.equal((await state(p)).node,1,"An unengaged enemy permits retreat");
+            await click(p,"expNode2");assert.equal((await state(p)).flow.phase,"ready");
             await click(p,"expUse");await p.waitForFunction(()=>window.__skillBattlePreview.panel.screen==="battle");
             assert.equal(await p.evaluate(()=>window.__skillBattlePreview.panel.buttons.loot.visible),false);
             await screenshot(p,`${name}-battle`);
@@ -228,16 +245,28 @@ async function drag(p,fromKey,toKey) {
                 const usedBeforeReturn=(await state(p)).map.used;
                 await pan(p,[300,130],[1100,130]);
                 await visit(p,1);
-                await click(p,"expNode4");
-                assert.equal(await p.evaluate(()=>window.__skillBattlePreview.panel.buttons.expUse.getChildAt(1).text),"前往");
-                await click(p,"expUse");
+                const cameraBefore=await p.evaluate(()=>window.__skillBattlePreview.panel.scroller.scrollingPosX);
+                await click(p,"expNode4",false);
+                const cameraDuring=await p.evaluate(()=>{
+                    const {panel}=window.__skillBattlePreview;
+                    return{x:panel.scroller.scrollingPosX,target:panel.movement?.cameraTo,
+                        markerX:panel.expeditionNodes.expPlayer.x};
+                });
+                assert.ok(cameraDuring.x>cameraBefore&&cameraDuring.x<cameraDuring.target,"Camera follows continuously, not an instant jump");
+                await screenshot(p,"desktop-camera-follow");
+                await p.waitForFunction(()=>!window.__skillBattlePreview.panel.movement);
+                const cameraAfter=await p.evaluate(()=>window.__skillBattlePreview.panel.scroller.scrollingPosX);
+                assert.ok(Math.abs(cameraAfter-cameraDuring.target)<1);
+                assert.equal(await p.evaluate(()=>window.__skillBattlePreview.panel.buttons.expUse.getChildAt(1).text),"已使用");
+                assert.equal(await p.evaluate(()=>window.__skillBattlePreview.panel.buttons.expUse.mouseEnabled),false);
                 assert.equal((await state(p)).node,4,"Used reward node remains a travel destination");
                 assert.deepEqual((await state(p)).map.used,usedBeforeReturn);
                 assert.equal((await state(p)).flow.pending,null,"Revisiting does not grant another reward");
-                const beforeSource=(await state(p)).node;
-                await click(p,"expNode17");assert.equal((await state(p)).node,beforeSource);
+                await click(p,"expNode17");assert.equal((await state(p)).node,17);
                 assert.equal(await p.evaluate(()=>window.__skillBattlePreview.panel.nodes.inventoryRoot.visible),false);
+                assert.equal(await p.evaluate(()=>window.__skillBattlePreview.trial.searching),false);
                 await screenshot(p,"desktop-resource-action");
+                const sourceCamera=await p.evaluate(()=>window.__skillBattlePreview.panel.scroller.scrollingPosX);
                 await click(p,"expUse");
                 assert.equal(await p.evaluate(()=>window.__skillBattlePreview.trial.searching),true);
                 await p.waitForFunction(()=>window.__skillBattlePreview.trial.inventory.map.sources.find(b=>b.node===17).revealed>=1);
@@ -253,7 +282,10 @@ async function drag(p,fromKey,toKey) {
                     return `invItem${panel.gridItems.findIndex(i=>i.templateId===1&&i.location.space==="bag")}`;
                 });
                 await click(p,nextKey);await click(p,"invUse");await click(p,"invConfirm");
-                await click(p,"invToggle");await visit(p,5);
+                await click(p,"invToggle");
+                assert.ok(Math.abs(await p.evaluate(()=>window.__skillBattlePreview.panel.scroller.scrollingPosX)-sourceCamera)<1,
+                    "Inventory return retains the manually framed map");
+                await visit(p,5);
                 await win(p,false);assert.equal((await state(p)).flow.pending.kind,"passive");
                 await screenshot(p,"desktop-mandatory-passive");
                 assert.equal(await p.evaluate(()=>window.__skillBattlePreview.panel.nodes.inventoryRoot.visible),false);
@@ -314,9 +346,13 @@ async function drag(p,fromKey,toKey) {
                 });
                 assert.deepEqual(crossedCaptions,[],"Map connections do not cross node captions");
                 await screenshot(p,"desktop-expanded-map-fixture");
-                await click(p,"expNode28");
+                await p.evaluate(()=>{
+                    const {panel,trial}=window.__skillBattlePreview;
+                    trial.save.state.node=28;trial.save.state.revealed.push(28);
+                    panel.selectedNode=28;panel.centerMap=true;panel.refresh();
+                });
                 assert.equal(await p.evaluate(()=>window.__skillBattlePreview.panel.buttons.expUse.getChildAt(1).text),"休息");
-                assert.equal((await state(p)).node,recoveryParent,"Recovery selection does not apply recovery or travel");
+                assert.equal((await state(p)).map.used.includes(28),false,"Arrival does not consume recovery");
                 await screenshot(p,"desktop-recovery-action-fixture");
                 await p.evaluate(()=>{
                     const {panel,trial}=window.__skillBattlePreview;

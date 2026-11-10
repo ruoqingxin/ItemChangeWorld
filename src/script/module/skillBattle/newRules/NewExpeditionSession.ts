@@ -61,7 +61,7 @@ export class NewExpeditionSession {
         if (this.currentConfig && !Inventory.same(config,this.currentConfig)) throw new Error("配置不匹配");
         const createdAt = this.clock(), runId = `expedition_${createdAt}_${seed}`, c = config as ExpeditionConfig;
         const state = Rules.start(c,profile,seed,runId);
-        this.persist({version:2,runId,createdAt,seed,config:Core.clone(c),profile:Core.clone(profile),commands:[],state});
+        this.persist({version:3,runId,createdAt,seed,config:Core.clone(c),profile:Core.clone(profile),commands:[],state});
         this.pauseSearch(false); this.manager.reset();
     }
     previewMove(command: InventoryCommand, token = this.token) {
@@ -78,7 +78,7 @@ export class NewExpeditionSession {
         return this.commit({type:"build",command},token);
     }
     mapCommand(command: ExpeditionCommand, token = this.token) {
-        if (["travel","extract","abandon"].includes(command.type)) {
+        if (["travel","fight","extract","abandon"].includes(command.type)) {
             this.checkToken(token); this.pauseSearch(); token = this.token;
         }
         return this.commit(command,token);
@@ -195,7 +195,7 @@ export class NewExpeditionSession {
         } finally { this.writing = false; }
     }
     static validate(save: ExpeditionSave): void {
-        if (!save || save.version !== 2 || !Number.isSafeInteger(save.createdAt) || save.createdAt < 0 ||
+        if (!save || save.version !== 3 || !Number.isSafeInteger(save.createdAt) || save.createdAt < 0 ||
             save.runId !== `expedition_${save.createdAt}_${save.seed}` || !Array.isArray(save.commands) || save.commands.length > 8192)
             throw new Error("地图档版本或标识无效");
         let state = Rules.start(save.config,save.profile,save.seed,save.runId), last = save.createdAt;

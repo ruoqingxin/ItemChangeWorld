@@ -40,6 +40,7 @@ for (const view of ["SkillBattleStartView","SkillBattleSettlementView"]) {
         n._$child[1].x=0;n._$child[1].y=72;n._$child[1].width=116;n._$child[1].height=36;
         content._$child.push(n);
     }
+    content._$child.push(node("expPlayer","GWidget",0,0,84,84,{mouseEnabled:false}));
     children.push(node("expContextBackground","GImage",1000,192,248,246,{
         src:"ui/texture/inventory/tooltip.png",autoSize:false,mouseEnabled:false}));
     children.push(text("expContextTitle",1012,210,224,88,22),button("expUse",1020,354,208,54));

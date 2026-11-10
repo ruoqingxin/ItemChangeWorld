@@ -7,6 +7,8 @@ import { NewExpeditionRules as Rules } from "../newRules/NewExpeditionRules";
 import { NewExpeditionSession } from "../newRules/NewExpeditionSession";
 import { NewInventoryPanel } from "./NewInventoryPanel";
 
+type MapPoint = { x: number; y: number };
+
 export class NewExpeditionPanel extends NewInventoryPanel {
     private mapOpen = true;
     private selectedNode: number | null = null;
@@ -16,6 +18,10 @@ export class NewExpeditionPanel extends NewInventoryPanel {
     private abandonConfirm = false;
     private extractConfirm = false;
     private renderedRevision = -1;
+    private pendingPath: number[] | null = null;
+    private mapRoutes = new Map<string,MapPoint[]>();
+    private movement: { points: MapPoint[]; lengths: number[]; total: number; startedAt: number;
+        duration: number; cameraFrom: number; cameraTo: number } | null = null;
     constructor(view: UIBaseView, readonly expedition: NewExpeditionSession,
         navigate: (s: "start"|"battle"|"settlement") => void, screen: "start"|"battle"|"settlement") {
         super(view,expedition,s => navigate(s==="settlement" && expedition.inventory?.phase==="active" ? "start" : s),screen);
@@ -51,6 +57,8 @@ export class NewExpeditionPanel extends NewInventoryPanel {
     openEncounter(): void { super.openEncounter(); Laya.timer.loop(50,this,this.searchTick); }
     suspend(): void {
         this.run(() => this.expedition.pauseSearch(),false);
+        if(this.movement)this.scroller.posX=this.movement.cameraTo;
+        this.movement=null;this.pendingPath=null;
         super.suspend();
     }
     private searchTick(): void {
@@ -94,6 +102,7 @@ export class NewExpeditionPanel extends NewInventoryPanel {
         });
     }
     protected command(key: string): void {
+        if(this.movement && /^(?:exp(?:Node|Use|Storage|Build)|invToggle|invPrimary)/.test(key))return;
         if (this.held && /^expLootPage/.test(key)) return;
         if (/^inv(?:List\d+|Item\d+|Use|Drop|Extract|Abandon)$/.test(key))
             this.run(() => this.expedition.pauseSearch(),false);
@@ -129,18 +138,16 @@ export class NewExpeditionPanel extends NewInventoryPanel {
                     return;
                 }
                 if (key==="expUse") {
-                    const c=this.expedition.archive!.config, id=this.selectedNode??s.node,n=Rules.node(c,id);
+                    const c=this.expedition.archive!.config, id=s.node,n=Rules.node(c,id);
                     if (this.abandonConfirm || this.extractConfirm) {
                         if (this.extractConfirm) {
                             this.expedition.mapCommand({type:"extract"}); this.navigate("settlement");
                         }
                         this.abandonConfirm=false; this.extractConfirm=false; return;
                     }
-                    if(id!==s.node) {
-                        this.expedition.mapCommand({type:"travel",node:id});
-                        this.centerMap=true;this.inventoryPage=0;
+                    if(n.enemy&&!s.map.cleared.includes(id)) {
+                        this.expedition.mapCommand({type:"fight"});this.navigate("battle");return;
                     }
-                    if(this.expedition.flow?.phase==="battle") { this.navigate("battle");return; }
                     if(s.map.used.includes(id))return;
                     if (n.kind==="extract") { this.extractConfirm=true; return; }
                     if (n.kind==="borrow" || n.kind==="insight") {
@@ -154,8 +161,11 @@ export class NewExpeditionPanel extends NewInventoryPanel {
                     if (this.scroller.isDragged) return;
                     this.abandonConfirm=false; this.extractConfirm=false;
                     const id=+target[1];
-                    if(!Rules.reachable(this.expedition.archive!.config,s).has(id))return;
+                    const path=Rules.travelPaths(this.expedition.archive!.config,s).get(id);
+                    if(!path)return;
+                    if(id!==s.node)this.expedition.mapCommand({type:"travel",node:id});
                     this.selectedNode=id;
+                    this.pendingPath=path;this.centerMap=false;this.inventoryPage=0;
                 }
             }); return;
         }
@@ -276,7 +286,7 @@ export class NewExpeditionPanel extends NewInventoryPanel {
         const weapon=s.items.find(i=>i.location.space==="weapon");
         this.text("expResources",`生命 ${Core.format(s.hp)} / ${Core.format(c.build.setup.player.maxHp)}    灵力 ${Core.format(s.mp)} / ${Core.format(c.build.setup.player.maxMp)}    耐久 ${weapon?.durability ?? "无武器"}    已胜 ${s.map.cleared.length} 场`,
             32,64,1216,38,20,"#c7d9d5");
-        const reach=Rules.reachable(c,s),points=new Map<number,{x:number;y:number}>();
+        const reach=Rules.reachable(c,s),points=new Map<number,MapPoint>();
         this.expeditionNodes.expViewport.visible=true;
         this.expeditionNodes.expMapContent.visible=true;
         for(const id of s.map.visible) {
@@ -302,18 +312,27 @@ export class NewExpeditionPanel extends NewInventoryPanel {
                 ({borrow:"borrow",insight:"enlightenment",extract:"exit",recovery:"recovery",start:"back",transit:"back"})[n.kind]}.png`;
             image.visible=true;
             b.graphics.clear();
-            if(id===s.node) b.graphics.drawCircle(58,34,39,null,"#ffd879",2);
-            else if(id===this.selectedNode)b.graphics.drawCircle(58,34,39,null,"#c9ded4",2);
         }
         const viewport=this.expeditionNodes.expViewport as Laya.GPanel;
         const width=Math.max(viewport.width,...[...points.values()].map(p=>p.x+80));
         this.expeditionNodes.expMapContent.size(width,414);
         viewport.layout.refresh(true);
         if(this.centerMap) {
-            this.scroller.posX=Math.max(0,points.get(s.node)!.x-viewport.width/2);
+            this.scroller.posX=Math.max(0,points.get(s.node)!.x-viewport.width*0.42);
             this.centerMap=false;
         }
         this.renderMapConnections(points,s.map.edges);
+        const marker=this.expeditionNodes.expPlayer,p=points.get(s.node)!;
+        marker.visible=true;marker.graphics.clear();
+        marker.graphics.drawCircle(42,42,39,null,"#ffd879",3);
+        if(this.pendingPath) {
+            const path=this.pendingPath;this.pendingPath=null;
+            this.beginMovement(path,points);
+        }
+        if(this.movement)this.positionMovement(performance.now());
+        else marker.pos(p.x-42,p.y-42);
+        this.scroller.touchEffect=this.movement?Laya.ScrollTouchEffect.Off:Laya.ScrollTouchEffect.On;
+        this.scroller.mouseWheelDisabled=!!this.movement;
         const recovered=Rules.recovery(c,s);
         this.text("expStatus",this.extractConfirm?"确认撤离：携带物带回，地面物品损失。":
             this.abandonConfirm?"确认放弃：仅保留归真匣，装备及其他携带物损失。":`${current.key} · ${current.name}${
@@ -323,30 +342,73 @@ export class NewExpeditionPanel extends NewInventoryPanel {
             32,592,1216,34,18,"#efa797");
         this.button("expStorage","行囊 / 搜索",130,640,180,48);
         this.button("expBuild","构筑",332,640,180,48);
-        if(this.selectedNode!==null || this.extractConfirm || this.abandonConfirm) {
-            const n=Rules.node(c,this.selectedNode??s.node),used=s.map.used.includes(n.id);
+        if(!this.movement && (this.selectedNode!==null || s.node!==1 || this.extractConfirm || this.abandonConfirm)) {
+            const n=current,used=s.map.used.includes(n.id);
             const source=s.map.sources.find(box=>box.node===n.id);
             const enemy=n.enemy&&!s.map.cleared.includes(n.id);
             const action=this.extractConfirm?"确认撤离":this.abandonConfirm?"取消放弃":
-                used?n.id===s.node?"已使用":"前往":enemy?"开战":
+                used?"已使用":enemy?"开战":
                 source||n.kind==="search"?"搜索":n.kind==="extract"?"安全撤离":n.kind==="recovery"?"休息":
-                n.kind==="borrow"?"借法":n.kind==="insight"?"悟道":n.id===s.node?"已在此处":"前往";
+                n.kind==="borrow"?"借法":n.kind==="insight"?"悟道":"已在此处";
             const title=enemy?({normal:"普通敌人",elite:"精英敌人",boss:"首领"})[n.kind]:
                 source&&n.enemy?"战后掉落":n.kind==="recovery"?"恢复点":n.kind==="extract"?"撤离点":n.name;
             this.expeditionNodes.expContextBackground.visible=true;
             this.text("expContextTitle",title,1012,210,224,88,22,"#e3c98c");
             this.labels.expContextTitle.align="center";this.labels.expContextTitle.valign="middle";
             this.button("expUse",action,1020,354,208,54,this.abandonConfirm||this.extractConfirm||
-                reach.has(n.id)&&(used?n.id!==s.node:
+                reach.has(n.id)&&!used&&(
                     (n.kind!=="recovery"||!!recovered.hp||!!recovered.mp)&&
-                    (n.id!==s.node||!!source||!["start","transit"].includes(n.kind))));
+                    (!!source||!["start","transit"].includes(n.kind))));
             this.buttons.expUse.getChildAt(0).visible=false;
             this.buttons.expUse.graphics.clear();
             this.buttons.expUse.graphics.drawRoundRect(0,0,208,54,6,6,6,6,"#66532e","#c7b279",2);
         }
         this.button("expAbandon",this.extractConfirm?"取消撤离":this.abandonConfirm?"确认放弃":"放弃本局",1000,640,148,48);
     }
-    private renderMapConnections(points: Map<number,{x:number;y:number}>, edges: number[][]): void {
+    private beginMovement(path: number[], points: Map<number,MapPoint>): void {
+        const route: MapPoint[]=[points.get(path[0])!];
+        for(let i=1;i<path.length;i++) {
+            const edge=this.mapRoutes.get(`${path[i-1]}:${path[i]}`);
+            route.push(...(edge||[points.get(path[i-1])!,points.get(path[i])!]).slice(1));
+        }
+        const lengths=route.map((p,i)=>i?Math.hypot(p.x-route[i-1].x,p.y-route[i-1].y):0);
+        const total=lengths.reduce((sum,n)=>sum+n,0),last=route[route.length-1];
+        const cameraFrom=this.scroller.scrollingPosX;
+        const cameraTo=Math.max(0,Math.min(this.scroller.contentWidth-this.scroller.viewWidth,
+            last.x-this.scroller.viewWidth*0.42));
+        if(total<1&&Math.abs(cameraTo-cameraFrom)<1)return;
+        this.scroller.cancelDragging();
+        this.movement={points:route,lengths,total,startedAt:performance.now(),
+            duration:Math.min(1000,Math.max(360,total/1.4)),cameraFrom,cameraTo};
+        Laya.timer.frameLoop(1,this,this.movementTick);
+    }
+    private positionMovement(now: number): boolean {
+        const m=this.movement!;
+        const t=Math.min(1,Math.max(0,(now-m.startedAt)/m.duration)),ease=t*t*(3-2*t);
+        let distance=m.total*ease,p=m.points[0];
+        for(let i=1;i<m.points.length;i++) {
+            const length=m.lengths[i];
+            if(distance<=length&&length>0) {
+                const from=m.points[i-1],to=m.points[i],ratio=distance/length;
+                p={x:from.x+(to.x-from.x)*ratio,y:from.y+(to.y-from.y)*ratio};break;
+            }
+            distance-=length;p=m.points[i];
+        }
+        this.expeditionNodes.expPlayer.pos(p.x-42,p.y-42);
+        this.scroller.posX=m.cameraFrom+(m.cameraTo-m.cameraFrom)*ease;
+        return t===1;
+    }
+    private movementTick(): void {
+        if(!this.movement)return;
+        if(!this.mapOpen||!this.expeditionNodes.expeditionRoot.visible||this.expedition.inventory?.phase!=="active") {
+            this.movement=null;Laya.timer.clear(this,this.movementTick);return;
+        }
+        if(this.positionMovement(performance.now())) {
+            this.movement=null;Laya.timer.clear(this,this.movementTick);this.refresh();
+        }
+    }
+    private renderMapConnections(points: Map<number,MapPoint>, edges: number[][]): void {
+        this.mapRoutes.clear();
         const lines=this.expeditionNodes.expLines;lines.visible=true;lines.graphics.clear();
         const obstacles=[...points.values()],bounds=new Map<{x:number;y:number},number[][]>();
         for(const [id,p]of points) {
@@ -397,6 +459,9 @@ export class NewExpeditionPanel extends NewInventoryPanel {
                     if(length<shortest){shortest=length;route=path;}
                 }
             }
+            const path=[p,...(route||[]),q];
+            this.mapRoutes.set(`${a}:${b}`,path);
+            this.mapRoutes.set(`${b}:${a}`,[...path].reverse());
             if(route)for(let i=1;i<route.length;i++)
                 lines.graphics.drawLine(route[i-1].x,route[i-1].y,route[i].x,route[i].y,"#70878a",3);
         }

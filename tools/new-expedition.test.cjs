@@ -37,7 +37,10 @@ function choose(f){while(f.s.flow.pending){const flow=f.s.flow,p=flow.pending;
         ...(p.kind==="active"&&flow.build.actives.length===3?{replaceId:flow.build.actives[0].skillId}:{})});}}
 function act(f,action={type:"basic"}){const p=f.s.preview(action);assert.ok(p.ok,p.reason);const r=f.s.confirm(action,p.preview.token);assert.ok(r.ok,r.reason);}
 function travel(f,node){f.s.mapCommand({type:"travel",node});}
-function win(f) {while(f.s.flow.phase==="battle"){
+function win(f) {
+    const node=R.node(f.c,f.s.inventory.node);
+    if(node.enemy&&!f.s.inventory.map.cleared.includes(node.id))f.s.mapCommand({type:"fight"});
+    while(f.s.flow.phase==="battle"){
     const s=f.s.state;
     if(s.player.hp<=2500&&!s.potionUsed) {
         const hp=s.pouch.find(v=>v&&v.itemId===1);if(hp)act(f,{type:"potion",itemUid:hp.itemUid});
@@ -89,8 +92,56 @@ test("initial five main nodes and first branch only; blocked visible node cannot
     unchanged(f,()=>travel(f,4),/不可达/);unchanged(f,()=>f.s.inventoryCommand({type:"extract"}),/撤离点/);
     unchanged(f,()=>f.s.inventoryCommand({type:"visit",node:3}),/停用/);
     unchanged(f,()=>f.s.dispatch({type:"meditate"}),/节点/);
-    travel(f,2);assert.equal(f.s.flow.phase,"battle");
+    travel(f,2);assert.equal(f.s.flow.phase,"ready");
+    f.s.mapCommand({type:"fight"});assert.equal(f.s.flow.phase,"battle");
     unchanged(f,()=>travel(f,1),/战斗/);
+});
+test("arrival and combat are independent; unengaged enemy allows retreat but never passage",()=>{
+    const f=fixture();enter(f);const before=f.s.inventory;
+    unchanged(f,()=>f.s.mapCommand({type:"fight"}),/待战/);
+    travel(f,2);
+    assert.equal(f.s.inventory.node,2);assert.equal(f.s.flow.phase,"ready");
+    assert.equal(f.s.inventory.map.sources.length,0);assert.equal(f.s.inventory.hp,before.hp);
+    assert.deepEqual(f.s.inventory.items,before.items);
+    assert.deepEqual([...R.reachable(cfg,f.s.inventory)].sort(),[1,2]);
+    unchanged(f,()=>travel(f,3),/不可达/);
+    assert.deepEqual(R.travelPaths(cfg,f.s.inventory).get(1),[2,1]);
+    const loaded=f.restore();assert.equal(loaded.error,"");assert.equal(loaded.inventory.node,2);
+    assert.equal(loaded.flow.phase,"ready");
+    travel(f,1);travel(f,2);f.s.mapCommand({type:"fight"});
+    assert.equal(f.s.flow.phase,"battle");
+    unchanged(f,()=>f.s.mapCommand({type:"fight"}),/战斗/);
+    unchanged(f,()=>travel(f,1),/战斗/);
+});
+test("arriving at a reward or source never automatically claims or searches it",()=>{
+    const f=fixture();enter(f);travel(f,2);win(f);travel(f,3);win(f);
+    const rewards=f.s.flow.sources;
+    travel(f,4);assert.equal(f.s.flow.pending,null);assert.deepEqual(f.s.flow.sources,rewards);
+    assert.equal(f.s.inventory.map.used.includes(4),false);
+    travel(f,17);
+    assert.equal(R.source(f.s.inventory).opened,false);assert.equal(f.s.searching,false);
+    assert.equal(R.source(f.s.inventory).revealed,0);
+    const entries=R.source(f.s.inventory).entries;
+    travel(f,4);f.s.mapCommand({type:"borrow"});choose(f);
+    travel(f,17);assert.deepEqual(R.source(f.s.inventory).entries,entries);
+    assert.equal(f.s.searching,false);
+    for(const path of R.travelPaths(cfg,f.s.inventory).values()) {
+        assert.equal(path[0],17);
+        for(let i=1;i<path.length;i++)assert.ok(f.s.inventory.map.edges.some(e=>e.includes(path[i-1])&&e.includes(path[i])));
+    }
+    assert.deepEqual(f.restore().inventory,f.s.inventory);
+});
+test("explicit fight retains write failure, concurrent revision and deadline guarantees",()=>{
+    const f=fixture();enter(f);travel(f,2);const other=f.restore(),old=f.s.token;
+    f.setFail(true);unchanged(f,()=>f.s.mapCommand({type:"fight"}),/disk/);
+    f.setFail(false);f.s.mapCommand({type:"fight"});
+    unchanged(f,()=>other.mapCommand({type:"fight"}),/其他页面/);
+    unchanged(f,()=>f.s.mapCommand({type:"fight"},old),/过期/);
+    const deadline=fixture();enter(deadline);travel(deadline,2);
+    deadline.setNow(deadline.s.inventory.deadlineAt);
+    assert.throws(()=>deadline.s.mapCommand({type:"fight"}),/截止|结算/);
+    assert.equal(deadline.s.inventory.result,"timeout");
+    assert.equal(deadline.s.inventory.map.cleared.length,0);
 });
 test("victory atomically creates one hidden box, persists daoyun and actual durability",()=>{
     const f=fixture();enter(f);travel(f,2);win(f);
@@ -126,8 +177,10 @@ test("first source opening starts search once; reopening and reload retain pause
     assert.deepEqual(loaded.inventory,f.s.inventory);
     travel(f,1);travel(f,2);f.s.openSource();assert.equal(f.s.searching,false);
     f.s.startSearch();assert.equal(f.s.searching,true);assert.equal(R.source(f.s.inventory).progressMs,375);
-    const old=JSON.parse(f.data.get(S.key));old.version=1;
-    assert.throws(()=>S.validate(old),/版本/);
+    for(const version of [1,2]) {
+        const old=JSON.parse(f.data.get(S.key));old.version=version;
+        assert.throws(()=>S.validate(old),/版本/);
+    }
 });
 test("six qualities require increasing 1-6 second searches and reveal each exact instance only at completion",()=>{
     const f=fixture();enter(f);travel(f,2);win(f);
@@ -221,7 +274,7 @@ test("two-battle early extraction has no eight-battle minimum and settles once",
 test("full-map transaction fixture gives three unique borrows, one insight, fifteen unique boxes and no auto-extract",()=>{
     const c=structuredClone(cfg);c.build.setup.player.maxHp=1000000;
     const f=fixture(c);enter(f);
-    const move=node=>{travel(f,node);if(f.s.flow.phase==="battle")win(f);};
+    const move=node=>{travel(f,node);if(R.node(c,node).enemy&&!f.s.inventory.map.cleared.includes(node))win(f);};
     for(let node=2;node<=16;node++) {
         move(node);
         if([4,9,14].includes(node)){f.s.mapCommand({type:"borrow"});choose(f);}
@@ -246,7 +299,7 @@ test("write failure, replay tamper and competing windows preserve authoritative 
     travel(f,2);unchanged(f,()=>loaded.mapCommand({type:"travel",node:2}),/其他页面/);
     unchanged(f,()=>f.s.dispatch({type:"upgrade",skillId:1},token),/过期/);
     const bad=structuredClone(f.s.archive);bad.state.map.cleared.push(2);
-    assert.throws(()=>S.validate(bad),/重放/);f.setFail(true);
+    assert.throws(()=>S.validate(bad),/重放/);f.s.mapCommand({type:"fight"});f.setFail(true);
     unchanged(f,()=>act(f),/disk|提交/);
     assert.equal(f.data.get("other-app"),"keep");
 });
@@ -260,7 +313,7 @@ test("warning catch-up emits tightest threshold, survives reload and exact cutof
     assert.deepEqual(f.restore().inventory,f.s.inventory);
 });
 test("deadline crossed during final write does not publish move or victory",()=>{
-    const f=fixture();enter(f);travel(f,2);
+    const f=fixture();enter(f);travel(f,2);f.s.mapCommand({type:"fight"});
     f.setNow(1200999);f.s.expire();
     let now=1200999,trigger=false;
     const storage={...f.storage,getItem:k=>{const text=f.storage.getItem(k);if(trigger)now=1201000;return text;}};
