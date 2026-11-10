@@ -9,7 +9,9 @@ import { NewInventoryPanel } from "./NewInventoryPanel";
 
 export class NewExpeditionPanel extends NewInventoryPanel {
     private mapOpen = true;
-    private mapPage = 0;
+    private selectedNode: number | null = null;
+    private centerMap = true;
+    private scroller: Laya.Scroller;
     private expeditionNodes: { [key: string]: Laya.GWidget } = {};
     private abandonConfirm = false;
     private extractConfirm = false;
@@ -17,24 +19,31 @@ export class NewExpeditionPanel extends NewInventoryPanel {
     constructor(view: UIBaseView, readonly expedition: NewExpeditionSession,
         navigate: (s: "start"|"battle"|"settlement") => void, screen: "start"|"battle"|"settlement") {
         super(view,expedition,s => navigate(s==="settlement" && expedition.inventory?.phase==="active" ? "start" : s),screen);
-        const saved=expedition.archive;
-        if (saved?.state.phase==="active") {
-            const node=Rules.node(saved.config,saved.state.node);
-            const parent=node.id>27?saved.state.map.edges.find(e=>e.includes(node.id)):null;
-            const x=parent?Rules.node(saved.config,parent.find(id=>id!==node.id)!).x:node.x;
-            this.mapPage=Math.min(12,Math.floor(x/3)*3);
-        }
         const root = view.getElement<Laya.GWidget>("expeditionRoot",false);
         if (!root) return;
         this.expeditionNodes.expeditionRoot = root;
-        for (let i=0;i<root.numChildren;i++) {
-            const n=root.getChildAt(i) as Laya.GWidget;
+        const bind=(n:Laya.GWidget) => {
             this.expeditionNodes[n.name]=n;
-            if (n instanceof Laya.GTextField) this.labels[n.name]=n;
-            else if (n.numChildren) {
+            if (n instanceof Laya.GTextField) { this.labels[n.name]=n;return; }
+            else if (/^exp(?:Node\d+|Storage|Build|Use|Abandon)$/.test(n.name)) {
                 this.buttons[n.name]=n;
                 n.on(Laya.Event.CLICK,this,() => this.command(n.name));
+                return;
             }
+            for(let i=0;i<n.numChildren;i++) bind(n.getChildAt(i) as Laya.GWidget);
+        };
+        for (let i=0;i<root.numChildren;i++) bind(root.getChildAt(i) as Laya.GWidget);
+        const viewport=this.expeditionNodes.expViewport as Laya.GPanel;
+        this.scroller=new Laya.Scroller();
+        this.scroller.direction=Laya.ScrollDirection.Horizontal;
+        this.scroller.barDisplay=Laya.ScrollBarDisplay.Hidden;
+        this.scroller.touchEffect=Laya.ScrollTouchEffect.On;
+        this.scroller.bouncebackEffect=Laya.ScrollBounceBackEffect.Off;
+        viewport.scroller=this.scroller;
+        for(let i=1;i<=7;i++) {
+            const n=this.nodes[`expLootPage${i}`];
+            this.buttons[n.name]=n;
+            n.on(Laya.Event.CLICK,this,()=>this.command(n.name));
         }
     }
     openHubScreen(): void { super.openHubScreen(); Laya.timer.loop(50,this,this.searchTick); }
@@ -75,7 +84,8 @@ export class NewExpeditionPanel extends NewInventoryPanel {
                 const c=NewExpeditionConfigUtils.read(ConfigUtil.Tables), seed=new Uint32Array(1);
                 crypto.getRandomValues(seed);
                 this.expedition.prepare(c,NewBuildConfigUtils.profile(c.build),seed[0]||1);
-                this.inventoryMode="storage"; this.mapOpen=false; this.mapPage=0;
+                this.inventoryMode="storage"; this.mapOpen=false; this.centerMap=true;this.inventoryPage=0;
+                this.selectedNode=null;
                 if (this.screen==="settlement") this.navigate("start");
             } else if (s.phase==="preparation") {
                 this.expedition.inventoryCommand({type:"enter"}); this.inventoryMode="build"; this.mapOpen=false;
@@ -84,6 +94,7 @@ export class NewExpeditionPanel extends NewInventoryPanel {
         });
     }
     protected command(key: string): void {
+        if (this.held && /^expLootPage/.test(key)) return;
         if (/^inv(?:List\d+|Item\d+|Use|Drop|Extract|Abandon)$/.test(key))
             this.run(() => this.expedition.pauseSearch(),false);
         if (this.screen==="battle" && ["loot","hub","extract","continue"].includes(key)) return;
@@ -104,10 +115,11 @@ export class NewExpeditionPanel extends NewInventoryPanel {
             this.run(() => {
                 const s=this.expedition.inventory;
                 if (!s) return;
-                if (key==="expPrev" || key==="expNext") {
-                    this.mapPage=Math.max(0,Math.min(12,this.mapPage+(key==="expPrev"?-3:3))); return;
+                const page=/^expLootPage([1-7])$/.exec(key);
+                if (page) {
+                    this.expedition.pauseSearch();this.inventoryPage=+page[1]-1;return;
                 }
-                if (key==="expStorage") { this.mapOpen=false; this.inventoryMode="storage"; return; }
+                if (key==="expStorage") { this.openGround(); return; }
                 if (key==="expBuild") { this.mapOpen=false; this.inventoryMode="build"; return; }
                 if (key==="expAbandon") {
                     if (this.extractConfirm) { this.extractConfirm=false;return; }
@@ -117,29 +129,41 @@ export class NewExpeditionPanel extends NewInventoryPanel {
                     return;
                 }
                 if (key==="expUse") {
-                    const c=this.expedition.archive!.config, n=Rules.node(c,s.node);
+                    const c=this.expedition.archive!.config, id=this.selectedNode??s.node,n=Rules.node(c,id);
                     if (this.abandonConfirm || this.extractConfirm) {
                         if (this.extractConfirm) {
                             this.expedition.mapCommand({type:"extract"}); this.navigate("settlement");
                         }
                         this.abandonConfirm=false; this.extractConfirm=false; return;
                     }
+                    if(id!==s.node) {
+                        this.expedition.mapCommand({type:"travel",node:id});
+                        this.centerMap=true;this.inventoryPage=0;
+                    }
+                    if(this.expedition.flow?.phase==="battle") { this.navigate("battle");return; }
+                    if(s.map.used.includes(id))return;
                     if (n.kind==="extract") { this.extractConfirm=true; return; }
                     if (n.kind==="borrow" || n.kind==="insight") {
                         this.expedition.mapCommand({type:n.kind}); this.mapOpen=false; this.inventoryMode="build";
                     } else if (n.kind==="recovery") this.expedition.mapCommand({type:"recover"});
-                    else { this.mapOpen=false; this.inventoryMode="storage"; }
+                    else if(Rules.source(this.expedition.inventory!))this.openGround(true);
                     return;
                 }
                 const target=/^expNode(\d+)$/.exec(key);
                 if (target) {
+                    if (this.scroller.isDragged) return;
                     this.abandonConfirm=false; this.extractConfirm=false;
-                    this.expedition.mapCommand({type:"travel",node:+target[1]});
-                    if (this.expedition.flow?.phase==="battle") this.navigate("battle");
+                    const id=+target[1];
+                    if(!Rules.reachable(this.expedition.archive!.config,s).has(id))return;
+                    this.selectedNode=id;
                 }
             }); return;
         }
         super.command(key);
+    }
+    private openGround(search=false): void {
+        if(search)this.expedition.openSource();
+        this.mapOpen=false;this.inventoryMode="storage";
     }
     protected beginDrag(key: string, point: Laya.Point): boolean {
         try { this.expedition.pauseSearch(); }
@@ -152,6 +176,7 @@ export class NewExpeditionPanel extends NewInventoryPanel {
             this.renderMap(); return;
         }
         if (s?.flow?.pending) this.inventoryMode="build";
+        if (s?.phase==="active") this.filter="all";
         super.renderStart();
         if (s?.phase==="active" && this.labels.resultTitle?.text==="剑土双道试炼")
             this.labels.resultTitle.text="秘境构筑";
@@ -165,16 +190,28 @@ export class NewExpeditionPanel extends NewInventoryPanel {
                 this.button("invToggle","地图",630,16,128,46);
                 const c=this.expedition.archive!.config,n=Rules.node(c,s.node),box=Rules.source(s);
                 this.label("invSourceTitle",n.name+(box && box.revealed<box.entries.length ?
-                    ` · 未知物 ${box.progressMs/c.rules.searchMs*100}%` : " · 地面"),20,"#e3c98c");
+                    ` · 搜索 ${Math.floor(box.progressMs/Rules.searchDuration(c,s)*100)}%` : " · 地面"),20,"#e3c98c");
                 this.nodes.invReveal.visible=false;
                 if (box && box.revealed<box.entries.length)
-                    this.control("invReveal",this.expedition.searching ? "暂停搜索" : "搜索",!s.flow?.pending);
-                if (box && box.revealed<box.entries.length) {
-                    this.nodes.expUnknown.visible=true;
+                    this.control("invReveal",this.expedition.searching ? "暂停搜索" : box.opened ? "继续搜索" : "搜索",!s.flow?.pending&&!this.held);
+                if (box && box.revealed<box.entries.length && this.inventoryPage===0) {
+                    const items=Object.entries(this.buttons).filter(([key,n])=>/^invList\d+$/.test(key)&&n.visible).map(([,n])=>n);
+                    const cell=Array.from({length:56},(_,i)=>this.nodes[`invSourceCell${i}`]).find(cell=>
+                        items.every(n=>cell.x>=n.x+n.width||cell.x+cell.width<=n.x||cell.y>=n.y+n.height||cell.y+cell.height<=n.y));
+                    if(cell) {
+                        this.nodes.expUnknown.visible=true;
+                        this.nodes.expUnknown.pos(cell.x+(cell.width-28)/2,cell.y+(cell.height-28)/2);
+                        this.nodes.expSearchSpinner.pos(cell.x+(cell.width-44)/2,cell.y+(cell.height-44)/2);
+                    }
                     this.nodes.invSourceTitle.width=380;
                     this.renderSearchSpinner();
                 }
                 this.nodes.invExtract.visible=n.kind==="extract" && !s.flow?.pending;
+                for(const key of ["invAll","invMedicine","invMaterials","invEquipment","invPrev","invNext","invPage"])
+                    this.nodes[key].visible=false;
+                this.nodes.invReveal.pos(804,112);this.nodes.invReveal.size(180,30);
+                for(let i=1;i<=7;i++) this.button(`expLootPage${i}`,String(i),
+                    800+(i-1)*64,550,58,38,!this.held,this.inventoryPage===i-1);
             }
         } else if (s?.phase==="active" && !s.flow?.pending) {
             this.buttons.actions.visible=false;
@@ -193,6 +230,9 @@ export class NewExpeditionPanel extends NewInventoryPanel {
             this.label("invTitle","末法寻仙 · 本局结算",26,"#e3c98c");
             this.label("invClock","本局结束",22);
         }
+    }
+    protected sourcePageCount(count: number): number {
+        return this.expedition.inventory?.phase==="active" ? Math.max(7,count) : count;
     }
     protected renderBattle(): void {
         super.renderBattle();
@@ -219,11 +259,12 @@ export class NewExpeditionPanel extends NewInventoryPanel {
         spinner.visible=!!this.nodes.inventoryRoot?.visible && !!this.nodes.expUnknown?.visible && this.expedition.searching;
         spinner.graphics.clear();
         if (!spinner.visible) return;
-        const phase=Math.floor(performance.now()/100)%8;
-        for(let i=0;i<8;i++) {
-            const angle=i*Math.PI/4;
-            spinner.graphics.drawCircle(22+19*Math.cos(angle),22+19*Math.sin(angle),2,
-                i===phase?"#e3c98c":"#6e8180");
+        const phase=Math.floor(performance.now()/60)%24;
+        for(let i=0;i<24;i++) {
+            const angle=i*Math.PI/12,next=(i+0.8)*Math.PI/12,tail=(i-phase+24)%24;
+            const color=tail<5?"#e8eee9":tail<11?"#a6b8b0":"#53655d";
+            spinner.graphics.drawLine(22+18*Math.cos(angle),22+18*Math.sin(angle),
+                22+18*Math.cos(next),22+18*Math.sin(next),color,2);
         }
     }
     private renderMap(): void {
@@ -236,37 +277,43 @@ export class NewExpeditionPanel extends NewInventoryPanel {
         this.text("expResources",`生命 ${Core.format(s.hp)} / ${Core.format(c.build.setup.player.maxHp)}    灵力 ${Core.format(s.mp)} / ${Core.format(c.build.setup.player.maxMp)}    耐久 ${weapon?.durability ?? "无武器"}    已胜 ${s.map.cleared.length} 场`,
             32,64,1216,38,20,"#c7d9d5");
         const reach=Rules.reachable(c,s),points=new Map<number,{x:number;y:number}>();
+        this.expeditionNodes.expViewport.visible=true;
+        this.expeditionNodes.expMapContent.visible=true;
         for(const id of s.map.visible) {
             const n=Rules.node(c,id),edge=id>27?s.map.edges.find(e=>e.includes(id)):null;
             const parent=edge?Rules.node(c,edge[0]===id?edge[1]:edge[0]):null;
-            const x=parent?.x??n.x,y=id>=30?-1.6:id>=28?-0.8:n.y;
-            if(x<this.mapPage || x>this.mapPage+4) continue;
-            const px=100+(x-this.mapPage)*260,py=280+y*104;
+            const x=id===28 ? parent!.x+(parent!.id===7?0.9:-0.5) :
+                id===29 ? parent!.x-0.5 : parent?.x??n.x;
+            const y=id>=30 ? id===30?-1.1:1.1 : id>=28?-1.1:n.y;
+            const px=80+x*242,py=190+y*112;
             points.set(id,{x:px,y:py});
             const key=`expNode${id}`,kind=({normal:"普通",elite:"精英",boss:"首领",search:n.pool.startsWith("supply")?"补给":"搜索",
                 borrow:"借法",insight:"悟道",extract:"撤离",recovery:"恢复",start:"入境处",transit:"岔口"})[n.kind];
-            this.button(key,`${n.key}\n${kind}${s.map.cleared.includes(id)?"·胜":s.map.used.includes(id)?"·尽":""}`,
-                px-63,py-33,126,66,reach.has(id)&&id!==s.node,id===s.node);
+            this.button(key,`${kind}${s.map.cleared.includes(id)?"·胜":s.map.used.includes(id)?"·尽":""}`,
+                px-58,py-34,116,108,reach.has(id),id===s.node||id===this.selectedNode);
             const b=this.buttons[key],l=b.getChildAt(1) as Laya.GTextField;
             // Image-backed mapped node controls have their caption after the skin.
-            (b.getChildAt(0) as Laya.GImage).visible=true;
-            l.text=`${n.key}\n${kind}${s.map.cleared.includes(id)?"·胜":s.map.used.includes(id)?"·尽":""}`;
-            l.pos(44,3);l.size(78,60);l.fontSize=16;l.textIns.color=id===s.node?"#ffd879":"#e8edf0";
+            (b.getChildAt(0) as Laya.GImage).visible=false;
+            l.text=`${kind}${s.map.cleared.includes(id)?"·胜":s.map.used.includes(id)?"·尽":""}`;
+            l.pos(0,72);l.size(116,32);l.fontSize=17;l.textIns.color=id===s.node?"#ffd879":"#e8edf0";
             const image=b.getChildAt(2) as Laya.GImage;
             const art=({normal:"battle",elite:"elite",boss:"boss",search:"search"})[n.kind];
             image.src=`ui/atlas/module/expedition/${art?`${art}_${s.map.cleared.includes(id)?"inactive":"active"}`:
                 ({borrow:"borrow",insight:"enlightenment",extract:"exit",recovery:"recovery",start:"back",transit:"back"})[n.kind]}.png`;
             image.visible=true;
-            b.graphics.clear();b.graphics.drawRoundRect(0,0,126,66,6,6,6,6,null,id===s.node?"#ffd879":"#65777a",id===s.node?2:1);
+            b.graphics.clear();
+            if(id===s.node) b.graphics.drawCircle(58,34,39,null,"#ffd879",2);
+            else if(id===this.selectedNode)b.graphics.drawCircle(58,34,39,null,"#c9ded4",2);
         }
-        const lines=this.expeditionNodes.expLines;lines.visible=true;lines.graphics.clear();
-        for(const [a,b]of s.map.edges) {
-            const p=points.get(a),q=points.get(b);
-            if(p&&q) {
-                const dx=q.x-p.x,dy=q.y-p.y,cut=Math.min(dx?68/Math.abs(dx):1,dy?38/Math.abs(dy):1,0.45);
-                lines.graphics.drawLine(p.x+dx*cut,p.y+dy*cut,q.x-dx*cut,q.y-dy*cut,"#70878a",3);
-            }
+        const viewport=this.expeditionNodes.expViewport as Laya.GPanel;
+        const width=Math.max(viewport.width,...[...points.values()].map(p=>p.x+80));
+        this.expeditionNodes.expMapContent.size(width,414);
+        viewport.layout.refresh(true);
+        if(this.centerMap) {
+            this.scroller.posX=Math.max(0,points.get(s.node)!.x-viewport.width/2);
+            this.centerMap=false;
         }
+        this.renderMapConnections(points,s.map.edges);
         const recovered=Rules.recovery(c,s);
         this.text("expStatus",this.extractConfirm?"确认撤离：携带物带回，地面物品损失。":
             this.abandonConfirm?"确认放弃：仅保留归真匣，装备及其他携带物损失。":`${current.key} · ${current.name}${
@@ -274,15 +321,84 @@ export class NewExpeditionPanel extends NewInventoryPanel {
             180,548,920,42,20,"#d4dfda");
         this.text("expNotice",this.notice || (s.map.warning===300000?"剩余时间不足五分钟":s.map.warning===600000?"剩余时间不足十分钟":""),
             32,592,1216,34,18,"#efa797");
-        this.button("expPrev","<",32,640,70,48,this.mapPage>0);
-        this.button("expNext",">",1178,640,70,48,this.mapPage<12);
         this.button("expStorage","行囊 / 搜索",130,640,180,48);
         this.button("expBuild","构筑",332,640,180,48);
-        const used=s.map.used.includes(s.node), action=this.extractConfirm?"确认撤离":this.abandonConfirm?"取消放弃":
-            current.kind==="extract"?"撤离":current.kind==="recovery"?"恢复":current.kind==="borrow"?"借法":
-            current.kind==="insight"?"悟道":"查看地面";
-        this.button("expUse",action,534,640,250,48,this.abandonConfirm||this.extractConfirm||
-            !used && (current.kind!=="recovery"||!!recovered.hp||!!recovered.mp));
+        if(this.selectedNode!==null || this.extractConfirm || this.abandonConfirm) {
+            const n=Rules.node(c,this.selectedNode??s.node),used=s.map.used.includes(n.id);
+            const source=s.map.sources.find(box=>box.node===n.id);
+            const enemy=n.enemy&&!s.map.cleared.includes(n.id);
+            const action=this.extractConfirm?"确认撤离":this.abandonConfirm?"取消放弃":
+                used?n.id===s.node?"已使用":"前往":enemy?"开战":
+                source||n.kind==="search"?"搜索":n.kind==="extract"?"安全撤离":n.kind==="recovery"?"休息":
+                n.kind==="borrow"?"借法":n.kind==="insight"?"悟道":n.id===s.node?"已在此处":"前往";
+            const title=enemy?({normal:"普通敌人",elite:"精英敌人",boss:"首领"})[n.kind]:
+                source&&n.enemy?"战后掉落":n.kind==="recovery"?"恢复点":n.kind==="extract"?"撤离点":n.name;
+            this.expeditionNodes.expContextBackground.visible=true;
+            this.text("expContextTitle",title,1012,210,224,88,22,"#e3c98c");
+            this.labels.expContextTitle.align="center";this.labels.expContextTitle.valign="middle";
+            this.button("expUse",action,1020,354,208,54,this.abandonConfirm||this.extractConfirm||
+                reach.has(n.id)&&(used?n.id!==s.node:
+                    (n.kind!=="recovery"||!!recovered.hp||!!recovered.mp)&&
+                    (n.id!==s.node||!!source||!["start","transit"].includes(n.kind))));
+            this.buttons.expUse.getChildAt(0).visible=false;
+            this.buttons.expUse.graphics.clear();
+            this.buttons.expUse.graphics.drawRoundRect(0,0,208,54,6,6,6,6,"#66532e","#c7b279",2);
+        }
         this.button("expAbandon",this.extractConfirm?"取消撤离":this.abandonConfirm?"确认放弃":"放弃本局",1000,640,148,48);
+    }
+    private renderMapConnections(points: Map<number,{x:number;y:number}>, edges: number[][]): void {
+        const lines=this.expeditionNodes.expLines;lines.visible=true;lines.graphics.clear();
+        const obstacles=[...points.values()],bounds=new Map<{x:number;y:number},number[][]>();
+        for(const [id,p]of points) {
+            const caption=this.buttons[`expNode${id}`].getChildAt(1) as Laya.GTextField;
+            caption.textIns.typeset(true);
+            const half=Math.min(58,caption.textIns.textWidth/2+4);
+            bounds.set(p,[[p.x-40,p.y-40,p.x+40,p.y+40],[p.x-half,p.y+36,p.x+half,p.y+74]]);
+        }
+        const rectangles=[...bounds.values()].flat();
+        const interval=(p:{x:number;y:number},q:{x:number;y:number},box:number[])=>{
+            let low=0,high=1;
+            for(const [start,delta,min,max]of [[p.x,q.x-p.x,box[0],box[2]],[p.y,q.y-p.y,box[1],box[3]]]) {
+                if(delta===0) { if(start<=min||start>=max)return null; }
+                else {
+                    const a=(min-start)/delta,b=(max-start)/delta;
+                    low=Math.max(low,Math.min(a,b));high=Math.min(high,Math.max(a,b));
+                }
+            }
+            return low<high?[low,high]:null;
+        };
+        const blocked=(p:{x:number;y:number},q:{x:number;y:number})=>rectangles.some(box=>!!interval(p,q,box));
+        const trim=(p:{x:number;y:number},q:{x:number;y:number})=>{
+            const dx=q.x-p.x,dy=q.y-p.y;
+            const t=Math.max(...bounds.get(p)!.map(box=>interval(p,q,box)?.[1]??0))+2/Math.hypot(dx,dy);
+            return{x:p.x+dx*t,y:p.y+dy*t};
+        };
+        for(const [a,b]of edges) {
+            const p=points.get(a),q=points.get(b);
+            if(!p||!q)continue;
+            const candidate=(path:{x:number;y:number}[])=>{
+                path=path.filter((v,i)=>!i||v.x!==path[i-1].x||v.y!==path[i-1].y);
+                path=[trim(p,path[1]),...path.slice(1,-1),trim(q,path[path.length-2])];
+                return path.some((v,i)=>i&&blocked(path[i-1],v))?null:path;
+            };
+            let route=candidate([p,q]);
+            if(!route) {
+                // Try unobstructed doglegs only when a straight edge crosses a node.
+                const options:{x:number;y:number}[][]=[];
+                for(const x of new Set([p.x,q.x,(p.x+q.x)/2,...obstacles.flatMap(n=>[n.x-66,n.x+66])]))
+                    options.push([p,{x,y:p.y},{x,y:q.y},q]);
+                for(const y of new Set([p.y,q.y,(p.y+q.y)/2,...obstacles.flatMap(n=>[n.y-46,n.y+84])]))
+                    if(y>=4&&y<=410)options.push([p,{x:p.x,y},{x:q.x,y},q]);
+                let shortest=Infinity;
+                for(const option of options) {
+                    const path=candidate(option);
+                    if(!path)continue;
+                    const length=path.reduce((sum,v,i)=>sum+(i?Math.hypot(v.x-path[i-1].x,v.y-path[i-1].y):0),0);
+                    if(length<shortest){shortest=length;route=path;}
+                }
+            }
+            if(route)for(let i=1;i<route.length;i++)
+                lines.graphics.drawLine(route[i-1].x,route[i-1].y,route[i].x,route[i].y,"#70878a",3);
+        }
     }
 }

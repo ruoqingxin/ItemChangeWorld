@@ -17,7 +17,7 @@ export interface ExpeditionConfig extends InventoryConfig {
         supply: number[]; books: number[]; weaponId: number; containerId: number; hpId: number; mpId: number; repairId: number };
 }
 export interface ExpeditionSource {
-    node: number; entries: InventoryItem[]; revealed: number; progressMs: number;
+    node: number; entries: InventoryItem[]; opened: boolean; revealed: number; progressMs: number;
 }
 export interface ExpeditionState extends InventoryState {
     map: { version: string; edges: Array<[number,number]>; present: number[]; visible: number[];
@@ -25,8 +25,8 @@ export interface ExpeditionState extends InventoryState {
 }
 export type ExpeditionCommand = InventoryCommand |
     { type: "travel"; node: number } | { type: "borrow" | "insight" | "recover" } |
-    { type: "search"; deltaMs: number } | { type: "warnings" };
+    { type: "search"; deltaMs: number } | { type: "warnings" | "openSource" };
 export interface ExpeditionSave {
-    version: 1; runId: string; createdAt: number; seed: number; config: ExpeditionConfig; profile: NewBuildProfile;
+    version: 2; runId: string; createdAt: number; seed: number; config: ExpeditionConfig; profile: NewBuildProfile;
     commands: Array<{ at: number; command: ExpeditionCommand }>; state: ExpeditionState;
 }

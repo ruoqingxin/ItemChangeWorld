@@ -8,9 +8,8 @@ for (const view of ["SkillBattleStartView","SkillBattleSettlementView"]) {
     const collect = n => { ids.add(n._$id); (n._$child || []).forEach(collect); };
     prefab._$child.filter(n => n.name === "expeditionRoot").forEach(collect);
     const inventory=prefab._$child.find(n=>n.name==="inventoryRoot");
-    const searchNodes=new Set(["expUnknown","expSearchSpinner"]);
-    inventory._$child.filter(n=>searchNodes.has(n.name)).forEach(collect);
-    inventory._$child=inventory._$child.filter(n=>!searchNodes.has(n.name));
+    inventory._$child.filter(n=>n._$id?.startsWith("exp_")).forEach(collect);
+    inventory._$child=inventory._$child.filter(n=>!n._$id?.startsWith("exp_"));
     prefab._$child = prefab._$child.filter(n => n.name !== "expeditionRoot");
     mapper.elements = mapper.elements.filter(e => !ids.has(e._$ref));
     let count = 0;
@@ -26,22 +25,31 @@ for (const view of ["SkillBattleStartView","SkillBattleSettlementView"]) {
     ]});
     const panel = node("expeditionRoot","GWidget",0,0,1280,720,{visible:false,mouseThrough:true,_$child:[]});
     const children = panel._$child;
-    children.push(node("expLines","GWidget",0,0,1280,720,{mouseEnabled:false}));
     children.push(text("expTitle",32,14,620,42,26),text("expClock",1080,16,168,40,22));
     children.push(text("expResources",32,64,1216,38),text("expStatus",180,548,920,42));
     children.push(text("expNotice",32,592,1216,34,18));
+    const viewport=node("expViewport","GPanel",32,112,936,414,{clipping:true,mouseEnabled:true,_$child:[]});
+    const content=node("expMapContent","GWidget",0,0,936,414,{mouseThrough:true,_$child:[]});
+    viewport._$child.push(content);children.push(viewport);
+    content._$child.push(node("expLines","GWidget",0,0,936,414,{mouseEnabled:false}));
     for (let i=1;i<=32;i++) {
-        const n=button(`expNode${i}`,0,0,126,66);
-        n._$child.push(node(`expNode${i}Icon`,"GImage",5,11,36,36,{autoSize:false,mouseEnabled:false}));
-        n._$child[1].x=44; n._$child[1].width=78;
-        children.push(n);
+        const n=button(`expNode${i}`,0,0,116,108);
+        n._$child[0].visible=false;
+        n._$child.push(node(`expNode${i}Icon`,"GImage",24,0,68,68,{
+            src:"ui/atlas/module/expedition/battle_active.png",autoSize:false,mouseEnabled:false}));
+        n._$child[1].x=0;n._$child[1].y=72;n._$child[1].width=116;n._$child[1].height=36;
+        content._$child.push(n);
     }
-    for(const [name,x,w] of [["expPrev",32,70],["expNext",1178,70],["expStorage",130,180],
-        ["expBuild",332,180],["expUse",534,250],["expAbandon",1000,248]]) children.push(button(name,x,640,w,48));
+    children.push(node("expContextBackground","GImage",1000,192,248,246,{
+        src:"ui/texture/inventory/tooltip.png",autoSize:false,mouseEnabled:false}));
+    children.push(text("expContextTitle",1012,210,224,88,22),button("expUse",1020,354,208,54));
+    for(const [name,x,w] of [["expStorage",130,180],
+        ["expBuild",332,180],["expAbandon",1000,248]]) children.push(button(name,x,640,w,48));
     inventory._$child.push(
-        node("expUnknown","GImage",1194,86,32,32,{visible:false,autoSize:false,mouseEnabled:false,
-            color:"#080b0c",src:"ui/atlas/module/expedition/search_active.png"}),
-        node("expSearchSpinner","GWidget",1188,80,44,44,{visible:false,mouseEnabled:false}));
+        node("expUnknown","GImage",0,0,28,28,{visible:false,autoSize:false,mouseEnabled:false,
+            color:"#202923",src:"ui/atlas/module/expedition/search_active.png"}),
+        node("expSearchSpinner","GWidget",0,0,44,44,{visible:false,mouseEnabled:false}));
+    for(let i=1;i<=7;i++) inventory._$child.push(button(`expLootPage${i}`,800+(i-1)*64,550,58,38));
     prefab._$child.push(panel);
     fs.writeFileSync(file,JSON.stringify(prefab,null,2)+"\n");
 }

@@ -40,13 +40,13 @@ export class NewInventoryPanel extends NewBuildPanel {
     private draft: InventoryCommand | null = null;
     private draftToken: NewBuildToken | null = null;
     private draftError = "";
-    private inventoryPage = 0;
-    private filter = "all";
+    protected inventoryPage = 0;
+    protected filter = "all";
     protected nodes: { [key: string]: Laya.GWidget } = {};
     private visibleItems: InventoryItem[] = [];
     private gridItems: InventoryItem[] = [];
     private dragController: NewInventoryDragController;
-    private held: HeldInventoryItem | null = null;
+    protected held: HeldInventoryItem | null = null;
     constructor(view: UIBaseView, readonly inventorySession: NewInventoryPanelSession,
         navigate: (screen: "start" | "battle" | "settlement") => void, screen: "start" | "battle" | "settlement") {
         super(view,inventorySession,navigate,screen);
@@ -424,8 +424,8 @@ export class NewInventoryPanel extends NewBuildPanel {
         });
         const sourcePages = state.phase !== "active" && (state.phase !== "ended" || this.filter === "all") ?
             this.packWarehouse(list,save.config,state) : this.packSource(list,save.config);
-        const pages = sourcePages.length; this.inventoryPage = Math.min(this.inventoryPage,pages - 1);
-        const sourcePage = sourcePages[this.inventoryPage];
+        const pages = this.sourcePageCount(sourcePages.length); this.inventoryPage = Math.min(this.inventoryPage,pages - 1);
+        const sourcePage = sourcePages[this.inventoryPage] || [];
         this.visibleItems = sourcePage.map(p => p.item);
         for (let i = 0; i < 56; i++) this.nodes[`invSourceCell${i}`].visible = true;
         sourcePage.forEach(({item,x,y,rotated},i) => {
@@ -474,6 +474,7 @@ export class NewInventoryPanel extends NewBuildPanel {
         }
         if (this.held) this.renderHeld();
     }
+    protected sourcePageCount(count: number): number { return count; }
     private packWarehouse(items: InventoryItem[], config: InventoryConfig, state: InventoryState) {
         const slots = Rules.warehousePlacements(config,state), byUid = new Map(items.map(i => [i.uid,i]));
         const pages: Array<Array<{ item: InventoryItem; x: number; y: number; rotated: boolean }>> =

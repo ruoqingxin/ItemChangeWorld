@@ -46,13 +46,27 @@ function win(f) {while(f.s.flow.phase==="battle"){
 }choose(f);}
 function unchanged(f,fn,re){const text=f.data.get(S.key),state=f.s.archive;assert.throws(fn,re);assert.equal(f.data.get(S.key),text);assert.deepEqual(f.s.archive,state);}
 test("43 generated tables, 32 node catalogue, 27 fixed nodes, 15 source-keyed encounters",()=>{
-    assert.equal(Object.keys(blocks).length,43);assert.equal(cfg.nodes.length,32);assert.equal(cfg.edges.length,30);
+    assert.equal(Object.keys(blocks).length,43);assert.equal(cfg.nodes.length,32);assert.equal(cfg.edges.length,37);
     assert.equal(cfg.build.encounters.length,15);assert.equal(cfg.build.encounters.filter(e=>e.daoyun===10).length,11);
     assert.equal(cfg.build.encounters.filter(e=>e.daoyun===20).length,3);
     assert.deepEqual(cfg.build.encounters.find(e=>e.id==="battle:H14").enemy.intents.map(i=>[i.damage,i.block,i.charging]),
         [[0,1800,false],[1000,0,false],[2600,0,true],[1200,0,false]]);
     assert.equal(cfg.build.encounters.reduce((a,e)=>a+e.daoyun,0),200);
     assert.equal(cfg.build.encounters.filter(e=>/^battle:H/.test(e.id)&&e.id!=="battle:H14").reduce((a,e)=>a+e.daoyun,0),100);
+});
+test("seven added branch links widen choices without bypassing any main enemy gate",()=>{
+    for(const [a,b]of [[6,19],[18,20],[19,21],[9,23],[22,24],[12,26],[25,27]])
+        assert.ok(cfg.edges.some(e=>e.includes(a)&&e.includes(b)));
+    for(const enemy of cfg.nodes.filter(n=>n.mainOrder>=0&&n.enemy)){
+        const seen=new Set([1]),queue=[1];
+        for(const at of queue)for(const [a,b]of cfg.edges){
+            const next=a===at?b:b===at?a:null;
+            if(next!==null&&next!==enemy.id&&!seen.has(next)){seen.add(next);queue.push(next);}
+        }
+        assert.equal(seen.has(enemy.id+1),false,`${enemy.key} remains a gate`);
+    }
+    const degree=id=>cfg.edges.filter(e=>e.includes(id)).length;
+    assert.ok([6,18,19,20,21,9,22,23,24,12,25,26,27].every(id=>degree(id)>=3));
 });
 test("source export preserves original 34 table blocks; both package/schema copies match",()=>{
     const before=unpack(require("node:child_process").execFileSync("git",
@@ -86,7 +100,7 @@ test("victory atomically creates one hidden box, persists daoyun and actual dura
     assert.deepEqual(f.restore().inventory,s);assert.equal(f.restore().searching,false);
     travel(f,1);travel(f,2);assert.equal(f.s.map?.sources,undefined);assert.equal(f.s.inventory.map.sources.length,1);
 });
-test("1000ms per item, 250ms checkpoints, pause/reload requires explicit resume",()=>{
+test("normal-quality 1000ms, 250ms checkpoints, pause/reload requires explicit resume",()=>{
     const f=fixture();enter(f);travel(f,2);win(f);f.s.startSearch();
     f.setMono(249);assert.equal(f.s.advanceSearch(),false);
     f.setMono(250);assert.equal(f.s.advanceSearch(),true);assert.equal(R.source(f.s.inventory).progressMs,250);
@@ -99,6 +113,52 @@ test("1000ms per item, 250ms checkpoints, pause/reload requires explicit resume"
     const item=f.s.inventory.items.find(i=>i.location.space==="ground"),t=I.template(cfg,item);
     if(t.width===1&&t.height===1) f.s.inventoryCommand({type:"move",move:{uid:item.uid,from:item.location,to:{space:"bag",x:1,y:0,rotated:false}}});
     assert.deepEqual(f.restore().inventory,f.s.inventory);
+});
+test("first source opening starts search once; reopening and reload retain paused progress",()=>{
+    const f=fixture();enter(f);travel(f,2);win(f);
+    assert.equal(R.source(f.s.inventory).opened,false);
+    f.s.openSource();assert.equal(f.s.searching,true);assert.equal(R.source(f.s.inventory).opened,true);
+    const firstRevision=f.s.token.revision;
+    f.s.openSource();assert.equal(f.s.token.revision,firstRevision);
+    f.setMono(375);f.s.pauseSearch();assert.equal(R.source(f.s.inventory).progressMs,375);
+    f.s.openSource();assert.equal(f.s.searching,false);assert.equal(R.source(f.s.inventory).progressMs,375);
+    const loaded=f.restore();loaded.openSource();assert.equal(loaded.searching,false);
+    assert.deepEqual(loaded.inventory,f.s.inventory);
+    travel(f,1);travel(f,2);f.s.openSource();assert.equal(f.s.searching,false);
+    f.s.startSearch();assert.equal(f.s.searching,true);assert.equal(R.source(f.s.inventory).progressMs,375);
+    const old=JSON.parse(f.data.get(S.key));old.version=1;
+    assert.throws(()=>S.validate(old),/版本/);
+});
+test("six qualities require increasing 1-6 second searches and reveal each exact instance only at completion",()=>{
+    const f=fixture();enter(f);travel(f,2);win(f);
+    for(let quality=1;quality<=6;quality++){
+        let s=f.s.inventory,box=R.source(s);
+        const t=cfg.templates.find(t=>t.quality===quality);
+        assert.ok(t,`Quality ${quality} exists`);
+        const item={...box.entries[0],uid:`quality-${quality}`,templateId:t.id,durability:null};
+        box.entries=[item];box.opened=true;box.revealed=0;box.progressMs=0;
+        assert.equal(R.searchDuration(cfg,s),1000*quality);
+        let remaining=1000*quality-1;
+        while(remaining>0){
+            const deltaMs=Math.min(250,remaining);s=R.apply(cfg,profile,s,{type:"search",deltaMs},1100,1).state;
+            remaining-=deltaMs;
+        }
+        assert.equal(R.source(s).revealed,0);assert.equal(s.items.some(i=>i.uid===item.uid),false);
+        s=R.apply(cfg,profile,s,{type:"search",deltaMs:1},1101,1).state;
+        assert.equal(R.source(s).revealed,1);assert.equal(R.source(s).progressMs,0);
+        assert.deepEqual(s.items.find(i=>i.uid===item.uid),item);
+        assert.throws(()=>R.apply(cfg,profile,s,{type:"search",deltaMs:1},1102,1),/进度/);
+    }
+});
+test("opening failure, stale tokens, hidden items and deadline retain authoritative source state",()=>{
+    const f=fixture();enter(f);travel(f,2);win(f);
+    const hidden=R.source(f.s.inventory).entries[0];
+    unchanged(f,()=>f.s.inventoryCommand({type:"move",move:{uid:hidden.uid,from:hidden.location,to:{space:"bag",x:1,y:0,rotated:false}}}),/不存在/);
+    f.setFail(true);unchanged(f,()=>f.s.openSource(),/disk/);assert.equal(f.s.searching,false);
+    f.setFail(false);const stale=f.s.token;f.s.openSource();
+    unchanged(f,()=>f.s.mapCommand({type:"search",deltaMs:250},stale),/过期/);
+    f.setNow(f.s.inventory.deadlineAt);assert.throws(()=>f.s.openSource(),/不能打开/);
+    assert.equal(f.s.inventory.result,"timeout");
 });
 test("hidden/pause/sleep never search offline; failed write publishes no reveal",()=>{
     const f=fixture();enter(f);travel(f,2);win(f);f.s.startSearch();f.setMono(8000);

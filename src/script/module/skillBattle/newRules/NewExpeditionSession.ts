@@ -61,7 +61,7 @@ export class NewExpeditionSession {
         if (this.currentConfig && !Inventory.same(config,this.currentConfig)) throw new Error("配置不匹配");
         const createdAt = this.clock(), runId = `expedition_${createdAt}_${seed}`, c = config as ExpeditionConfig;
         const state = Rules.start(c,profile,seed,runId);
-        this.persist({version:1,runId,createdAt,seed,config:Core.clone(c),profile:Core.clone(profile),commands:[],state});
+        this.persist({version:2,runId,createdAt,seed,config:Core.clone(c),profile:Core.clone(profile),commands:[],state});
         this.pauseSearch(false); this.manager.reset();
     }
     previewMove(command: InventoryCommand, token = this.token) {
@@ -83,6 +83,14 @@ export class NewExpeditionSession {
         }
         return this.commit(command,token);
     }
+    openSource(): void {
+        this.readable(); this.expire();
+        const s=this.save;
+        if(!s || s.state.phase!=="active" || s.state.flow?.phase!=="ready" || s.state.flow.pending)
+            throw new Error("当前不能打开来源");
+        const box=Rules.source(s.state);
+        if(box && !box.opened)this.startSearch();
+    }
     startSearch(): void {
         this.readable(); this.expire();
         const s = this.save;
@@ -90,6 +98,8 @@ export class NewExpeditionSession {
             throw new Error("当前不能搜索");
         const box = Rules.source(s.state);
         if (!box || box.revealed === box.entries.length) throw new Error("此处已搜索完毕");
+        if (!box.opened)this.commit({type:"openSource"},this.token);
+        if (this.searching)return;
         this.searchAt = this.monotonic(); this.searchNode = s.state.node;
     }
     advanceSearch(foreground = true): boolean {
@@ -185,7 +195,7 @@ export class NewExpeditionSession {
         } finally { this.writing = false; }
     }
     static validate(save: ExpeditionSave): void {
-        if (!save || save.version !== 1 || !Number.isSafeInteger(save.createdAt) || save.createdAt < 0 ||
+        if (!save || save.version !== 2 || !Number.isSafeInteger(save.createdAt) || save.createdAt < 0 ||
             save.runId !== `expedition_${save.createdAt}_${save.seed}` || !Array.isArray(save.commands) || save.commands.length > 8192)
             throw new Error("地图档版本或标识无效");
         let state = Rules.start(save.config,save.profile,save.seed,save.runId), last = save.createdAt;

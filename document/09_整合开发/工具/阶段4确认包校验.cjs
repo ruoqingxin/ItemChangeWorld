@@ -76,6 +76,10 @@ for (const row of branches) {
     for (let i = 1; i < route.length; i++) edge(route[i - 1], route[i]);
 }
 check(branchMembers.size === extra.length, "Unconnected extra node");
+const crossLinks=table(["补充连接","from","to"]);
+for(const row of crossLinks) edge(row.from,row.to);
+check(crossLinks.length===7,"Seven additional branch links");
+check([...graph.values()].reduce((n,neighbors)=>n+neighbors.size,0)/2===37,"37 fixed edges");
 const count = (rows, kind) => rows.filter(row => row["类型"] === kind).length;
 check(count(main, "normal") === 6 && count(main, "elite") === 2 && count(main, "boss") === 1,
     "Main encounter count");

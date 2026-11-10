@@ -39,7 +39,7 @@ export class NewExpeditionRules {
     static validateConfig(c: ExpeditionConfig, profile: NewBuildProfile): void {
         Inventory.validateConfig(c,profile);
         if (!c.mapVersion || c.nodes.length !== 32 || new Set(c.nodes.map(n => n.id)).size !== 32 ||
-            new Set(c.nodes.map(n => n.key)).size !== 32 || c.edges.length !== 30 ||
+            new Set(c.nodes.map(n => n.key)).size !== 32 || c.edges.length !== 37 ||
             c.rules.limitMs !== 1200000 || c.rules.searchMs !== 1000 || c.rules.checkpointMs !== 250)
             throw new Error("正式地图版本、节点或时限无效");
         const weights = (values: number[]) => Array.isArray(values) && values.every(v =>
@@ -147,6 +147,10 @@ export class NewExpeditionRules {
             mp: Math.min(p.maxMp-s.mp,Math.round(p.maxMp*ratio)) };
     }
     static source(s: ExpeditionState): ExpeditionSource | undefined { return s.map.sources.find(b => b.node === s.node); }
+    static searchDuration(c: ExpeditionConfig, s: ExpeditionState): number {
+        const box=this.source(s),item=box?.entries[box.revealed];
+        return item ? c.rules.searchMs*Math.max(1,Inventory.template(c,item).quality || 1) : 0;
+    }
     static makeSource(c: ExpeditionConfig, s: ExpeditionState, seed: number): void {
         if (this.source(s)) throw new Error("箱来源已生成");
         const node = this.node(c,s.node), random = new Random(seed,`loot:${node.key}`);
@@ -168,7 +172,7 @@ export class NewExpeditionRules {
             entries.push({ uid: `${s.runId}:loot:${node.key}:${i}`, templateId, durability,
                 location: { space: "ground", node: s.node } });
         }
-        s.map.sources.push({ node: s.node, entries, revealed: 0, progressMs: 0 });
+        s.map.sources.push({ node: s.node, entries, opened: false, revealed: 0, progressMs: 0 });
     }
     static apply(c: ExpeditionConfig, p: NewBuildProfile, snapshot: ExpeditionState,
         command: ExpeditionCommand, at: number, seed: number): { state: ExpeditionState; battle?: NewBattleResult } {
@@ -220,15 +224,23 @@ export class NewExpeditionRules {
                 s.hp += value.hp; s.mp += value.mp; s.map.used.push(s.node);
                 break;
             }
+            case "openSource": {
+                ready();
+                const box=this.source(s);
+                if(!box || box.opened)throw new Error("此处来源已打开或不存在");
+                box.opened=true;
+                break;
+            }
             case "search": {
                 ready();
                 const box = this.source(s);
-                if (!box || box.revealed >= box.entries.length || !Number.isInteger(command.deltaMs) ||
+                if (!box || !box.opened || box.revealed >= box.entries.length || !Number.isInteger(command.deltaMs) ||
                     command.deltaMs < 1 || command.deltaMs > c.rules.checkpointMs) throw new Error("搜索进度无效");
+                const duration=this.searchDuration(c,s);
                 box.progressMs += command.deltaMs;
-                if (box.progressMs >= c.rules.searchMs) {
+                if (box.progressMs >= duration) {
                     s.items.push(Core.clone(box.entries[box.revealed++]));
-                    box.progressMs -= c.rules.searchMs;
+                    box.progressMs -= duration;
                     if (box.revealed === box.entries.length) box.progressMs = 0;
                 }
                 break;

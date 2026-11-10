@@ -74,6 +74,7 @@
     "ui/texture/skillBattle/battle_background.png"
   ],
   "ui/prefab/module/skillBattle/SkillBattleSettlementView.lh": [
+    "ui/atlas/module/expedition/battle_active.png",
     "ui/atlas/module/expedition/search_active.png",
     "ui/atlas/module/inventory/arrow.png",
     "ui/atlas/module/inventory/blue-flask.png",
@@ -125,6 +126,7 @@
     "ui/texture/inventory/warehouse-body.png"
   ],
   "ui/prefab/module/skillBattle/SkillBattleStartView.lh": [
+    "ui/atlas/module/expedition/battle_active.png",
     "ui/atlas/module/expedition/search_active.png",
     "ui/atlas/module/inventory/arrow.png",
     "ui/atlas/module/inventory/blue-flask.png",
