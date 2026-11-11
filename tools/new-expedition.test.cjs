@@ -1,5 +1,5 @@
 const assert=require("node:assert/strict"),fs=require("node:fs"),path=require("node:path");
-const root=path.resolve(__dirname,".."),build=path.resolve(process.argv[2]||path.join(root,"bin/skill-battle-tests"));
+const root=path.resolve(__dirname,".."),build=path.resolve(process.argv.slice(2).find(a=>!a.startsWith("--"))||path.join(root,"bin/skill-battle-tests"));
 global.Laya={Resource:class{},Byte:class{constructor(b){this.bytes=Buffer.from(b);this.pos=0;}
     readUTFBytes(n){const s=this.bytes.toString("utf8",this.pos,this.pos+n);this.pos+=n;return s;}}};
 const load=p=>require(path.join(build,"script",p));
@@ -47,13 +47,14 @@ function firstBattle(f){const n=f.s.inventory.map.nodes.find(n=>n.mainOrder>=0&&
 function unchanged(f,fn,re){const text=f.data.get(S.key),before=f.s.archive;assert.throws(fn,re);assert.equal(f.data.get(S.key),text);assert.deepEqual(f.s.archive,before);}
 function sourceState(){const s=ready(),n=s.map.nodes.find(n=>n.kind==="search");s.node=n.id;s.revealed.push(n.id);R.makeSource(cfg,s,1);return s;}
 function searchAll(s){while(R.source(s).revealed<R.source(s).entries.length)s=apply(s,{type:"search",deltaMs:250});return s;}
-test("43 tables, only three changed blocks and synchronized exports",()=>{
+if(!process.argv.includes("--rules-only"))test("43 tables, only three changed blocks and synchronized exports",()=>{
     const before=unpack(require("node:child_process").execFileSync("git",["show","HEAD:assets/config/configbin.bin"],{cwd:root}));
     assert.equal(Object.keys(blocks).length,43);
     assert.deepEqual(Object.keys(blocks).filter(k=>!blocks[k].equals(before[k])).sort(),["new_expedition_rule","new_inventory_item","new_inventory_rule"]);
     for(const [a,b]of [["assets/config/configbin.bin","../config/configbin.bin"],["src/script/config/schema.ts","../config/output_client/code/schema.ts"]])
         assert.deepEqual(fs.readFileSync(path.join(root,a)),fs.readFileSync(path.join(root,b)));
 });
+else console.log("SKIP historical export-vs-HEAD check (--rules-only); no configuration exports in this change.");
 test("512 random graphs: counts, connectivity, sequential borrows, eight-fight main route and boss gate",()=>{
     const graphs=new Set(),sizes=new Set(),rec=new Set(),exits=new Set();
     for(let seed=1;seed<=512;seed++){
@@ -80,6 +81,52 @@ test("512 random graphs: counts, connectivity, sequential borrows, eight-fight m
         assert.deepEqual([nodes[0].x,boss.x,last.x],[0,26,27]);graphs.add(JSON.stringify(s.map.edges));
     }
     assert.ok(graphs.size>400);assert.ok(sizes.size>=7);assert.deepEqual([...rec].sort(),[1,2]);assert.deepEqual([...exits].sort(),[2,3]);
+});
+test("512 random graphs: real 2/3/4 routes, nested forks, early joins and single-route stretches",()=>{
+    const widths=new Set(),perLeg=[new Set(),new Set(),new Set()];
+    let nested=0,joined=0,single=0;
+    for(let seed=1;seed<=512;seed++) {
+        const s=ready(seed);
+        assert.equal(s.map.generatorVersion,2);
+        assert.deepEqual(ready(seed).map,s.map,"Same seed keeps the complete graph deterministic");
+        for(let leg=0;leg<3;leg++) {
+            const from=leg*8,to=(leg+1)*8,interior=s.map.nodes.filter(n=>n.x>from&&n.x<to);
+            const width=new Set(interior.map(n=>n.y)).size;
+            assert.ok(width>=2&&width<=4);widths.add(width);perLeg[leg].add(width);
+            const local=s.map.edges.map(e=>e.map(id=>s.map.nodes[id-1]))
+                .filter(([a,b])=>a.x>=from&&a.x<=to&&b.x>=from&&b.x<=to&&a.x!==b.x);
+            const xs=[...new Set([from,to,...interior.map(n=>n.x)])].sort((a,b)=>a-b);
+            const cuts=xs.slice(1).map((x,i)=>(x+xs[i])/2).map(x=>
+                local.filter(([a,b])=>Math.min(a.x,b.x)<x&&Math.max(a.x,b.x)>x).length);
+            assert.equal(Math.max(...cuts),width,`Real edges must expose ${width} concurrent routes, seed ${seed}/${leg}`);
+            assert.ok(cuts.every(n=>n>=1&&n<=4),"No disconnected stretch or hidden fifth route");
+            if(cuts.includes(1))single++;
+            for(const n of interior.filter(n=>n.mainOrder<0)) {
+                const neighbors=ns(s,n.id).map(id=>s.map.nodes[id-1]);
+                if(neighbors.filter(v=>v.x>n.x).length>=2)nested++;
+                if(neighbors.filter(v=>v.x<n.x).length>=2)joined++;
+            }
+        }
+    }
+    assert.deepEqual([...widths].sort(),[2,3,4]);
+    for(const widths of perLeg)assert.deepEqual([...widths].sort(),[2,3,4],"Every leg can roll all route counts");
+    assert.ok(nested>50&&joined>50&&single>50,"Nested branch, intermediate join and single-path cases are exercised");
+});
+test("new generator replay, existing v4 graph preserved and unknown generator rejected",()=>{
+    const fresh=fixture();enter(fresh);travel(fresh,2);
+    assert.equal(fresh.s.inventory.map.generatorVersion,2);
+    assert.deepEqual(fresh.restore().inventory,fresh.s.inventory);
+    const legacy=fixture(),old=legacy.s.archive;
+    old.state=R.start(old.config,old.profile,old.seed,old.runId,1);
+    legacy.data.set(S.key,JSON.stringify(old));legacy.s=legacy.restore();enter(legacy);travel(legacy,2);
+    assert.equal("generatorVersion" in legacy.s.inventory.map,false);
+    const saved=legacy.data.get(S.key);
+    assert.deepEqual(legacy.restore().inventory,legacy.s.inventory);
+    assert.equal(legacy.data.get(S.key),saved,"Opening an existing v4 save never rewrites or rerolls it");
+    const bad=fresh.s.archive;bad.state.map.generatorVersion=3;
+    assert.throws(()=>S.validate(bad),/生成版本/);
+    delete bad.state.map.generatorVersion;
+    assert.throws(()=>S.validate(bad),/重放/);
 });
 test("viewport plus two pitches per unique arrival, never revisits, exact terminal cap",()=>{
     let s=ready();assert.equal(R.browseWidth(s,1280),1280);assert.ok(R.displayNodes(s).length<s.map.nodes.length);

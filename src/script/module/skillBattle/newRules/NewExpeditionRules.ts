@@ -91,11 +91,12 @@ export class NewExpeditionRules {
                 !Number.isSafeInteger(r.weight) || r.weight <= 0)) throw new Error("掉落子项无效");
         }
     }
-    static start(c: ExpeditionConfig, p: NewBuildProfile, seed: number, runId: string): ExpeditionState {
+    static start(c: ExpeditionConfig, p: NewBuildProfile, seed: number, runId: string, generatorVersion: 1|2 = 2): ExpeditionState {
         this.validateConfig(c,p);
         const base = Inventory.start(c,p,seed,runId);
         const state: ExpeditionState = { ...base, node: 1, stamina: c.rules.staminaMax,
-            sourceLayouts: [], interactionSource: null, map: { version: c.mapVersion, nodes: [], edges: [],
+            sourceLayouts: [], interactionSource: null, map: { version: c.mapVersion,
+                ...(generatorVersion===2?{generatorVersion:2 as const}:{}), nodes: [], edges: [],
             present: [], visible: [], cleared: [], used: [], sources: [], warnings: [], warning: null } };
         let slot = 0;
         for (const item of state.items) {
@@ -130,7 +131,7 @@ export class NewExpeditionRules {
             [searches.pop()!,transit(),normals.pop()!,transit(),normals.pop()!,elites.pop()!],
             [transit(),normals.pop()!,transit(),normals.pop()!,transit(),elites.pop()!,transit()],
         ];
-        // Each leg has two real paths and one shared reward, so all three borrows can be taken.
+        // Shared rewards between legs keep all three borrows available in one run.
         const extra=[...normals,...elites,pick("insight")];
         for(let i=1,n=range(c.rules.searchMin,c.rules.searchMax);i<n;i++)extra.push(searches.pop()!);
         for(let i=0,n=range(1,2);i<n;i++)extra.push(pick("recovery"));
@@ -140,6 +141,46 @@ export class NewExpeditionRules {
         let previous=add(pick("start"),0,0,0),order=0;
         const merges:number[]=[];
         for(let leg=0;leg<3;leg++) {
+            if(s.map.generatorVersion===2) {
+                const routeCount=range(2,4);
+                const levels=routeCount===4?[-1.1,-0.3,0.5,1.3]:[-1.1,0,1.1];
+                const lanes=random.shuffle(levels.map((y,i)=>({y,phase:routeCount===4&&i%2?0.5:0})));
+                const lane=lanes[0],content=leg===0?mains[leg]:random.shuffle(mains[leg]);
+                // Stagger the four compact lanes by half a column to keep node hit areas apart.
+                const slots=(from:number,to:number,phase:number) => {
+                    const xs:number[]=[];
+                    for(let x=leg*8+phase;x<leg*8+8;x+=routeCount===4?1:0.5)
+                        if(x>from&&x<to)xs.push(x);
+                    return xs;
+                };
+                const place=(rows:ExpeditionNode[],from:number,to:number,lane:{y:number;phase:number},main=false) => {
+                    const xs=slots(from,to,lane.phase);
+                    if(xs.length<rows.length)throw new Error("随机路线节点间距不足");
+                    return rows.map((row,i)=>add(row,xs[Math.floor((i+0.5)*xs.length/rows.length)],lane.y,
+                        main?++order:-1));
+                };
+                const path=[previous,...place(content,leg*8,(leg+1)*8,lane,true)];
+                const merge=add(borrow(),(leg+1)*8,0,++order);
+                path.push(merge);for(let i=1;i<path.length;i++)link(path[i-1],path[i]);
+                const fork=path[random.below(2)],join=path[path.length-1-random.below(2)];
+                const rows:ExpeditionNode[][]=Array.from({length:routeCount-1},()=>[]);
+                branches[leg].forEach((row,i)=>rows[i%rows.length].push(row));
+                let first:number[]=[];
+                for(let i=0;i<rows.length;i++) {
+                    let from=fork,to=join;
+                    if(i>0&&random.below(2)===0) {
+                        const a=first[1],b=first[first.length-2];
+                        if(slots(s.map.nodes[a-1].x,s.map.nodes[b-1].x,lanes[i+1].phase).length>=rows[i].length) {
+                            from=a;to=b;
+                        }
+                    }
+                    const route=[from,...place(rows[i],s.map.nodes[from-1].x,s.map.nodes[to-1].x,lanes[i+1]),to];
+                    for(let j=1;j<route.length;j++)link(route[j-1],route[j]);
+                    if(!i)first=route;
+                }
+                previous=merge;merges.push(merge);continue;
+            }
+            // Existing v4 saves replay the original generator without rerolling their graph.
             const lanes=random.shuffle([-1.1,0,1.1]),main=mains[leg];
             // Permute events within a leg, without moving the first borrow before its two fights.
             const content=leg===0?main:random.shuffle(main);

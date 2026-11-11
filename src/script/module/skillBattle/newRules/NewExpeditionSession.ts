@@ -201,7 +201,10 @@ export class NewExpeditionSession {
         if (!save || save.version !== 4 || !Number.isSafeInteger(save.createdAt) || save.createdAt < 0 ||
             save.runId !== `expedition_${save.createdAt}_${save.seed}` || !Array.isArray(save.commands) || save.commands.length > 8192)
             throw new Error("地图档版本或标识无效");
-        let state = Rules.start(save.config,save.profile,save.seed,save.runId), last = save.createdAt;
+        if(save.state?.map?.generatorVersion!==undefined && save.state.map.generatorVersion!==2)
+            throw new Error("地图生成版本无效");
+        let state = Rules.start(save.config,save.profile,save.seed,save.runId,
+            save.state.map.generatorVersion===2?2:1), last = save.createdAt;
         for (const entry of save.commands) {
             if (!entry || !Number.isSafeInteger(entry.at) || entry.at < last) throw new Error("操作时间逆序");
             state = Rules.apply(save.config,save.profile,state,entry.command,entry.at,save.seed).state; last = entry.at;

@@ -178,6 +178,9 @@ async function checkLighting(p, name) {
                     return c.fromX !== outline.fromX || c.fromY !== outline.fromY ||
                         c.toX !== outline.toX || c.toY !== outline.toY;
                 })) issues.push("route contrast outline");
+                for (const [a, b] of trial.inventory.map.edges)
+                    if (!panel.mapRoutes.get(`${a}:${b}`) || panel.mapRoutes.get(`${a}:${b}`).length < 4)
+                        issues.push(["missing route", a, b]);
                 for (const data of trial.inventory.map.nodes.filter(n => n.enemy)) {
                     const n = panel.buttons[`expNode${data.id}`], x = n.x + 58, y = n.y + 52;
                     const icon = n.getChildAt(2), halfWidth = Math.max(54, icon.width/2-4);
