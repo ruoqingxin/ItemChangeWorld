@@ -344,11 +344,9 @@ export class NewExpeditionPanel extends NewInventoryPanel {
             this.presentedMapRunId=s.runId;this.selectedNode=null;this.centerMap=true;
         }
         this.expeditionNodes.expeditionRoot.visible=true;
-        for (const name of ["mapTitleFrame","mapResourceStrip","mapTopTrim","mapFooterTrim",
+        for (const name of ["mapResourceStrip","mapTopTrim","mapFooterTrim",
             "mapTimerFrame","mapIconLife","mapIconSpirit","mapIconGuard","mapIconBattle"])
             if (this.expeditionNodes[name]) this.expeditionNodes[name].visible=true;
-        this.text("expTitle","末法寻仙 · 古宗山门外围",48,16,680,36,24,"#e3c98c");
-        this.labels.expTitle.valign="middle";
         this.text("expClock",this.timeText(),1080,32,166,36,24);
         this.labels.expClock.align="center";this.labels.expClock.valign="middle";
         const weapon=s.items.find(i=>i.location.space==="weapon");
@@ -375,7 +373,7 @@ export class NewExpeditionPanel extends NewInventoryPanel {
             const y=id>=30 ? id===30?-1.1:1.1 : id>=28?-1.1:n.y;
             positions.set(id,{x:112+x*242,y:this.mapBandTop+198+y*128});
         }
-        for(const id of s.map.visible) {
+        for(const id of Rules.displayNodes(s)) {
             const n=Rules.node(c,id),{x:px,y:py}=positions.get(id)!;
             points.set(id,{x:px,y:py});
             const cleared=!!n.enemy&&s.map.cleared.includes(id),source=s.map.sources.find(box=>box.node===id);

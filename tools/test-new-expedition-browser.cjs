@@ -35,7 +35,8 @@ async function screenshot(p,name){
 async function checkMapArt(p) {
     await p.waitForFunction(()=>{
         const {panel,trial}=window.__skillBattlePreview;
-        return trial.inventory.map.visible.every(id=>panel.buttons[`expNode${id}`].getChildAt(2).texture?.width===128);
+        return trial.inventory.map.visible.every(id=>!panel.buttons[`expNode${id}`].visible||
+            panel.buttons[`expNode${id}`].getChildAt(2).texture?.width===128);
     });
     const details=await p.evaluate(()=>{
         const {panel,trial}=window.__skillBattlePreview,s=trial.inventory;
@@ -44,6 +45,7 @@ async function checkMapArt(p) {
         const issues=[],sources=[];
         for(const id of s.map.visible) {
             const node=trial.archive.config.nodes.find(n=>n.id===id),b=panel.buttons[`expNode${id}`],image=b.getChildAt(2);
+            if(!b.visible)continue;
             const expected=node.enemy&&s.map.cleared.includes(id)?"battle-loot":
                 node.kind==="search"?(node.pool.startsWith("supply")?"supply":"search"):kinds[node.kind];
             if(image.src!==`ui/image/expeditionNodes/node-${expected}.png`)issues.push([id,image.src,expected]);
@@ -53,7 +55,7 @@ async function checkMapArt(p) {
         }
         const lines=panel.expeditionNodes.expLines.graphics.cmds.filter(c=>c.cmdID===Laya.DrawLineCmd.ID);
         if(!lines.length)issues.push("missing dashed routes");
-        for(const [a,b]of s.map.edges)if(s.map.visible.includes(a)&&s.map.visible.includes(b)) {
+        for(const [a,b]of s.map.edges)if(panel.buttons[`expNode${a}`].visible&&panel.buttons[`expNode${b}`].visible) {
             const route=panel.mapRoutes.get(`${a}:${b}`)||[],visible=route.slice(1,-1);
             const length=visible.reduce((sum,v,i)=>sum+(i?Math.hypot(v.x-visible[i-1].x,v.y-visible[i-1].y):0),0);
             if(length<21)issues.push(["missing or too short visible edge",a,b]);
@@ -202,7 +204,7 @@ async function drag(p,fromKey,toKey) {
             await screenshot(p,`${name}-map`);
             console.log(name,"exits",(await state(p)).map.present.filter(n=>n>=30));
             assert.deepEqual((await state(p)).map.visible.filter(n=>n<=16),[1,2,3,4,5]);
-            const blocked=await p.evaluate(()=>window.__skillBattlePreview.panel.buttons.expNode4.mouseEnabled);
+            const blocked=await p.evaluate(()=>window.__skillBattlePreview.panel.buttons.expNode4.visible);
             assert.equal(blocked,false);
             assert.equal(await p.evaluate(()=>!!window.__skillBattlePreview.panel.buttons.expNext),false);
             const beforeEnemy=await state(p);
@@ -387,7 +389,7 @@ async function drag(p,fromKey,toKey) {
                     trial.save.state.map.visible=[...trial.save.state.map.present];
                     const edge=trial.save.state.map.edges.find(e=>e.includes(28)),parent=edge.find(id=>id!==28);
                     trial.save.state.node=parent;
-                    if(!trial.save.state.revealed.includes(parent))trial.save.state.revealed.push(parent);
+                    trial.save.state.revealed=[...trial.save.state.map.present];
                     panel.centerMap=true;panel.refresh();
                     return parent;
                 });

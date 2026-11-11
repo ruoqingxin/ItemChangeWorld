@@ -27,6 +27,10 @@ async function inspect(p, name) {
     await p.waitForTimeout(100);
     const result = await p.evaluate(() => {
         const v = window.__skillBattlePreview, g = v.view.getElement("screenBackground");
+        if (v.view.getElement("expTitle", false) || v.view.getElement("mapTitleFrame", false))
+            throw Error("Map title and title frame must be absent");
+        for (const name of ["mapResourceStrip","expResources","expSpirit","expDurability","expWins","expClock"])
+            if (!v.view.getElement(name, false)?.visible) throw Error(`Missing map status: ${name}`);
         const commands = g.graphics.cmds, fill = commands.filter(c => c.cmdID === Laya.FillTextureCmd.ID);
         const c = fill[0], start = g.localToGlobal(new Laya.Point(c.x, c.y));
         const anchor = v.panel.root.localToGlobal(new Laya.Point());
@@ -44,6 +48,7 @@ async function inspect(p, name) {
         const opacityIssues=[],colorIssues=[];
         for(const id of v.trial.inventory.map.visible) {
             const button=v.panel.buttons[`expNode${id}`],icon=button.getChildAt(2);
+            if(!button.visible)continue;
             if(button.alpha!==1||icon.alpha!==1)opacityIssues.push([id,button.alpha,icon.alpha]);
             const source=v.trial.inventory.map.sources.find(box=>box.node===id);
             const explored=!!source&&source.revealed===source.entries.length;
@@ -60,6 +65,8 @@ async function inspect(p, name) {
             expected: [phase(anchor.x - v.panel.scroller.scrollingPosX), phase(anchor.y)],
             scroll: v.panel.scroller.scrollingPosX, content: v.panel.scroller.contentWidth, view: v.panel.scroller.viewWidth,
             textIssues, opacityIssues, colorIssues, viewport:[corner.x,corner.y,viewport.width,viewport.height],
+            shown:v.trial.inventory.map.present.filter(id=>v.panel.buttons[`expNode${id}`].visible),
+            routes:[...v.panel.mapRoutes.keys()],
             cssScale: r.width / Laya.stage.width,
         };
     });
@@ -140,8 +147,8 @@ async function pan(p, reverse = false) {
             const saved = await p.evaluate(key => localStorage.getItem(key), key);
             const initial = await inspect(p, `${name}-initial`);
             assert.ok(Math.abs(initial.content-initial.view)<1,"Exactly one screen is open at the start");
-            assert.equal(await p.evaluate(() => window.__skillBattlePreview.panel.buttons.expNode4.mouseEnabled),false,
-                "Opaque future nodes remain blocked");
+            assert.deepEqual(initial.shown,[1,2],"Only the entrance and its immediate next step are displayed");
+            assert.deepEqual(initial.routes.sort(),["1:2","2:1"],"Distant connecting lines must also be hidden");
             await pan(p);
             const moved = await inspect(p, `${name}-panned`);
             if (initial.content > initial.view + 20)
@@ -149,6 +156,7 @@ async function pan(p, reverse = false) {
             else assert.ok(moved.scroll <= Math.max(0, Math.ceil(initial.content - initial.view)) + 0.01,
                 "A fitting map only permits the native fractional-viewport rounding range");
             assert.equal(moved.content, initial.content, "Ground never expands revealed map bounds");
+            assert.deepEqual(moved.shown,initial.shown,"Dragging never exposes more nodes");
             assert.equal(await p.evaluate(key => localStorage.getItem(key), key), saved, "Panning never writes a save");
             await click(p, "expStorage"); await click(p, "invToggle");
             const returned = await inspect(p, `${name}-returned`);
@@ -169,8 +177,14 @@ async function pan(p, reverse = false) {
             assert.equal(await p.evaluate(() => window.__skillBattlePreview.trial.inventory.node), 2, "Background does not intercept node input");
             assert.equal(await p.evaluate(() => window.__skillBattlePreview.trial.inventory.flow.phase), "ready", "Travel does not trigger combat");
             await inspect(p, `${name}-node-action`);
+            assert.deepEqual((await inspect(p,`${name}-arrival-frontier`)).shown,[1,2,3],
+                "Actual arrival exposes only the next connected step");
+            assert.equal(await p.evaluate(()=>window.__skillBattlePreview.panel.buttons.expNode3.mouseEnabled),false,
+                "The exposed next step stays blocked by the current enemy");
             await p.reload(); await ready(p);
-            assert.ok(Math.abs((await inspect(p,`${name}-restored-arrival`)).content-initial.content)<1,
+            const restored=await inspect(p,`${name}-restored-arrival`);
+            assert.deepEqual(restored.shown,[1,2,3],"Reload restores the same frontier without future-node flashes");
+            assert.ok(Math.abs(restored.content-initial.content)<1,
                 "Reload derives the same unlocked screens from saved arrival history");
             const beforeFixture = await p.evaluate(key => localStorage.getItem(key), key);
             await p.evaluate(() => {
@@ -180,16 +194,18 @@ async function pan(p, reverse = false) {
                 v.trial.save.state.map.used = [...new Set([...v.trial.save.state.map.used,4])];
                 v.panel.refresh();
             });
-            assert.ok(Math.abs((await inspect(p,`${name}-revealed-only-fixture`)).content-initial.content)<1,
+            const revealedOnly=await inspect(p,`${name}-revealed-only-fixture`);
+            assert.deepEqual(revealedOnly.shown,restored.shown,"Even a full candidate set cannot reveal farther steps");
+            assert.ok(Math.abs(revealedOnly.content-initial.content)<1,
                 "Revealing future nodes does not extend screen bounds");
             assert.equal(await p.evaluate(() => window.__skillBattlePreview.panel.buttons.expNode4.getChildAt(2).grayed),false,
                 "Using a borrow point does not gray it");
             const screenProgress=await p.evaluate(() => {
                 const {trial,panel}=window.__skillBattlePreview;
-                const node=trial.save.state.map.present.find(id=> {
-                    const b=panel.buttons[`expNode${id}`],x=b.x+b.width/2,w=panel.scroller.viewWidth;
-                    return x>=w/2&&x<w*1.5;
-                });
+                const node=trial.archive.config.nodes.find(n=> {
+                    const x=112+n.x*242,w=panel.scroller.viewWidth;
+                    return n.mainOrder>=0&&x>=w/2&&x<w*1.5;
+                }).id;
                 trial.save.state.revealed.push(node);
                 trial.save.state.node=node;panel.refresh();
                 const forward=panel.scroller.contentWidth;

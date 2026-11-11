@@ -41,9 +41,6 @@
           "_$ref": "map_exit_area"
         },
         {
-          "_$ref": "exp_SkillBattleStartView_2"
-        },
-        {
           "_$ref": "exp_SkillBattleStartView_3"
         },
         {
@@ -503,9 +500,6 @@
           "_$ref": "exp_SkillBattleStartView_152"
         },
         {
-          "_$ref": "mapui_mapTitleFrame"
-        },
-        {
           "_$ref": "mapui_mapResourceStrip"
         },
         {
@@ -686,21 +680,6 @@
               "mouseThrough": true,
               "_$child": [
                 {
-                  "_$id": "exp_SkillBattleStartView_2",
-                  "_$type": "GTextField",
-                  "name": "expTitle",
-                  "width": 680,
-                  "height": 36,
-                  "_mouseState": 1,
-                  "text": "末法寻仙 · 忆境",
-                  "fontSize": 24,
-                  "color": "#e8edf0",
-                  "overflow": "shrink",
-                  "x": 16,
-                  "y": 2,
-                  "valign": "middle"
-                },
-                {
                   "_$id": "map_clock_area",
                   "_$type": "GWidget",
                   "name": "mapClockArea",
@@ -771,20 +750,6 @@
                   "visible": true,
                   "zOrder": 3,
                   "valign": "middle"
-                },
-                {
-                  "_$id": "mapui_mapTitleFrame",
-                  "_$type": "GImage",
-                  "name": "mapTitleFrame",
-                  "x": 0,
-                  "y": 0,
-                  "width": 760,
-                  "height": 46,
-                  "mouseEnabled": false,
-                  "visible": true,
-                  "src": "ui/atlas/module/expedition/map-ui-title-frame.png",
-                  "autoSize": false,
-                  "zOrder": -2
                 },
                 {
                   "_$id": "mapui_mapResourceStrip",

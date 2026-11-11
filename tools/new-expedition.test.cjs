@@ -85,7 +85,7 @@ test("explicit test inventory, no permanent gifts or extra ground fixtures",()=>
     assert.equal(s.items.filter(i=>i.location.space==="safe"||i.location.space==="ground").length,0);
     assert.equal(f.data.get("other-app"),"keep");
 });
-test("initial five main nodes and first branch only; blocked visible node cannot bypass enemies",()=>{
+test("saved discovery candidates retain their format; blocked future node cannot bypass enemies",()=>{
     const f=fixture();enter(f);const s=f.s.inventory;
     assert.deepEqual(s.map.visible.filter(id=>id<=16),[1,2,3,4,5]);assert.ok(s.map.visible.includes(17));
     assert.deepEqual([...R.reachable(cfg,s)].sort((a,b)=>a-b),[1,2]);
@@ -112,6 +112,27 @@ test("arrival and combat are independent; unengaged enemy allows retreat but nev
     assert.equal(f.s.flow.phase,"battle");
     unchanged(f,()=>f.s.mapCommand({type:"fight"}),/战斗/);
     unchanged(f,()=>travel(f,1),/战斗/);
+});
+test("display opens one step from actual arrivals without leaking future nodes or changing saved discovery",()=>{
+    const f=fixture();enter(f);
+    const saved=f.data.get(S.key),before=f.s.archive;
+    assert.deepEqual(R.displayNodes(f.s.inventory),[1,2]);
+    assert.equal(f.data.get(S.key),saved);assert.deepEqual(f.s.archive,before);
+    travel(f,2);
+    assert.deepEqual(R.displayNodes(f.s.inventory),[1,2,3]);
+    assert.equal(R.reachable(cfg,f.s.inventory).has(3),false,"Visible next step does not bypass an unengaged enemy");
+    travel(f,1);
+    assert.deepEqual(R.displayNodes(f.s.inventory),[1,2,3],"Retreat retains previously exposed neighbors");
+    assert.deepEqual(R.displayNodes(f.restore().inventory),[1,2,3],"Reload derives visibility from saved arrivals");
+    travel(f,2);win(f);travel(f,3);
+    const shown=R.displayNodes(f.s.inventory);
+    assert.ok(shown.includes(4));assert.ok(shown.includes(17));
+    assert.equal(shown.includes(5),false);assert.equal(shown.includes(18),false);
+    const fixtureState=JSON.parse(JSON.stringify(f.s.inventory));
+    fixtureState.map.visible=[...fixtureState.map.present];
+    assert.deepEqual(R.displayNodes(fixtureState),shown,"Preloading a full candidate map never exposes distant nodes");
+    const next=fixture();enter(next);
+    assert.deepEqual(R.displayNodes(next.s.inventory),[1,2],"A new run resets the displayed frontier");
 });
 test("arriving at a reward or source never automatically claims or searches it",()=>{
     const f=fixture();enter(f);travel(f,2);win(f);travel(f,3);win(f);

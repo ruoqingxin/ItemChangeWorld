@@ -100,6 +100,7 @@ for (const [file, type, content] of files) {
         assert.ok(!nodes.has("inventoryRoot")&&!nodes.has("expeditionRoot"), "Build owns no storage or map subtree");
     if (file.endsWith("SkillBattleMapView")) {
         assert.ok(!nodes.has("inventoryRoot")&&!nodes.has("warehouse0"), "Map owns no other full page");
+        assert.ok(!nodes.has("expTitle")&&!nodes.has("mapTitleFrame"), "Map has no upper-left title or title frame");
         assert.equal(nodes.get("screenBackground")._$type,"GWidget","Map uses viewport-sized repeated drawing, not cover stretching");
         const ground=nodes.get("mapGroundTexture");
         assert.equal(ground.visible,false,"Texture source must not render a second image");

@@ -136,6 +136,15 @@ export class NewExpeditionRules {
         if (n.mainOrder < 0) for (const neighbor of neighbors(id)) visible.add(neighbor);
         s.map.visible = [...visible].filter(v => s.map.present.includes(v)).sort((a,b) => a-b);
     }
+    static displayNodes(s: ExpeditionState): number[] {
+        const visited=new Set(s.revealed),shown=new Set(s.revealed);
+        for(const [a,b] of s.map.edges) {
+            if(visited.has(a))shown.add(b);
+            if(visited.has(b))shown.add(a);
+        }
+        // Keep saved discovery data intact; expose only one step beyond actual arrivals.
+        return s.map.visible.filter(id=>shown.has(id));
+    }
     static reachable(c: ExpeditionConfig, s: ExpeditionState): Set<number> {
         return new Set(this.travelPaths(c,s).keys());
     }
