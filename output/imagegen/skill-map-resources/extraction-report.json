@@ -1,0 +1,234 @@
+{
+  "source": "art/reference/expedition/skill-map-resources-source.png",
+  "source_size": [
+    2896,
+    1440
+  ],
+  "source_sha256": "d57e65f660102f6e4e1b296ba3b57995c0debd55d9bc1d33fd8e78babc0c4a5a",
+  "count": 7,
+  "runtime_directory": "assets/ui/atlas/module/expedition/handpainted",
+  "bound_to_prefab": false,
+  "gameplay_changed": false,
+  "method": "Five meter textures are cropped from border-free source interiors and made opaque without RGB recoloring. Dash preserves original end caps and compresses its horizontal middle. Spinner retains original alpha, hole and gap. Transparent assets discard alpha below 8/255 and zero invisible RGB. No AI redraw.",
+  "files": [
+    {
+      "id": "C01",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-meter-track.png",
+      "native_rect": [
+        90,
+        108,
+        1500,
+        224
+      ],
+      "interior_rect": [
+        326,
+        164,
+        1024,
+        128
+      ],
+      "size": [
+        512,
+        64
+      ],
+      "sha256": "b692804e6a1859836f1fb4d9b928f33d96e81771b9854f494fe07a05469a0b93",
+      "uuid": "154a9ff0-0ef2-46a9-8785-acea9429a264",
+      "transparent_pixels": 0,
+      "partial_alpha_pixels": 0,
+      "solid_pixels": 32768,
+      "min_alpha": 255,
+      "center_alpha": 255,
+      "visible_bounds": {
+        "left": 0,
+        "top": 0,
+        "width": 512,
+        "height": 64
+      }
+    },
+    {
+      "id": "C02",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-meter-hp.png",
+      "native_rect": [
+        90,
+        352,
+        1500,
+        226
+      ],
+      "interior_rect": [
+        326,
+        408,
+        1024,
+        128
+      ],
+      "size": [
+        512,
+        64
+      ],
+      "sha256": "425a8df1adec67f8ae1fa884d4759fd3f0dfd73e0b6d335097b4f93c8ae9c59f",
+      "uuid": "bb6d38be-a3a4-439f-be46-e969d03b7a8e",
+      "transparent_pixels": 0,
+      "partial_alpha_pixels": 0,
+      "solid_pixels": 32768,
+      "min_alpha": 255,
+      "center_alpha": 255,
+      "visible_bounds": {
+        "left": 0,
+        "top": 0,
+        "width": 512,
+        "height": 64
+      }
+    },
+    {
+      "id": "C03",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-meter-mp.png",
+      "native_rect": [
+        90,
+        602,
+        1500,
+        228
+      ],
+      "interior_rect": [
+        326,
+        656,
+        1024,
+        128
+      ],
+      "size": [
+        512,
+        64
+      ],
+      "sha256": "a9ba8d3160e9723a90de4a4708f7a283ca2d7a31f3d71150f8ddbd71f0fc8cb3",
+      "uuid": "2b0cb7a4-4306-456d-8108-ec1f456d1fbe",
+      "transparent_pixels": 0,
+      "partial_alpha_pixels": 0,
+      "solid_pixels": 32768,
+      "min_alpha": 255,
+      "center_alpha": 255,
+      "visible_bounds": {
+        "left": 0,
+        "top": 0,
+        "width": 512,
+        "height": 64
+      }
+    },
+    {
+      "id": "C04",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-meter-stamina.png",
+      "native_rect": [
+        90,
+        854,
+        1500,
+        224
+      ],
+      "interior_rect": [
+        326,
+        908,
+        1024,
+        128
+      ],
+      "size": [
+        512,
+        64
+      ],
+      "sha256": "a6cd19ee6e2b936357be0d16f33a27efc163c4cdecee5e8c04670c9550a31ada",
+      "uuid": "774ca4b8-026f-4722-8718-e73dff1f38eb",
+      "transparent_pixels": 0,
+      "partial_alpha_pixels": 0,
+      "solid_pixels": 32768,
+      "min_alpha": 255,
+      "center_alpha": 255,
+      "visible_bounds": {
+        "left": 0,
+        "top": 0,
+        "width": 512,
+        "height": 64
+      }
+    },
+    {
+      "id": "C05",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-meter-weight.png",
+      "native_rect": [
+        90,
+        1113,
+        1500,
+        229
+      ],
+      "interior_rect": [
+        326,
+        1168,
+        1024,
+        128
+      ],
+      "size": [
+        512,
+        64
+      ],
+      "sha256": "76e40b6181b5ef6f57e5ebe6526fd808ca78b6de48a55adfc78130d21153f3d8",
+      "uuid": "a07b4011-c450-4c6f-930e-3103ba010b4c",
+      "transparent_pixels": 0,
+      "partial_alpha_pixels": 0,
+      "solid_pixels": 32768,
+      "min_alpha": 255,
+      "center_alpha": 255,
+      "visible_bounds": {
+        "left": 0,
+        "top": 0,
+        "width": 512,
+        "height": 64
+      }
+    },
+    {
+      "id": "D01",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-route-dash.png",
+      "native_rect": [
+        1696,
+        288,
+        1120,
+        144
+      ],
+      "size": [
+        64,
+        32
+      ],
+      "sha256": "7295d76c7e4c9a5d085a529e37f68db970116d19e49374d6683c2e3875847837",
+      "uuid": "7416ea93-34dc-469c-811b-ac53f11db542",
+      "transparent_pixels": 1116,
+      "partial_alpha_pixels": 141,
+      "solid_pixels": 791,
+      "min_alpha": 0,
+      "center_alpha": 251,
+      "visible_bounds": {
+        "left": 12,
+        "top": 5,
+        "width": 40,
+        "height": 23
+      }
+    },
+    {
+      "id": "E01",
+      "file": "assets/ui/atlas/module/expedition/handpainted/inventory-search-spinner.png",
+      "native_rect": [
+        1960,
+        592,
+        768,
+        768
+      ],
+      "size": [
+        128,
+        128
+      ],
+      "sha256": "79e4e7e98add0aabe12e747c8a881b13751098faeeb293f1ae0f1b649d82890d",
+      "uuid": "fcc82064-5fc1-4a10-837e-b03ee3b07003",
+      "transparent_pixels": 11634,
+      "partial_alpha_pixels": 756,
+      "solid_pixels": 3994,
+      "min_alpha": 0,
+      "center_alpha": 0,
+      "visible_bounds": {
+        "left": 3,
+        "top": 3,
+        "width": 122,
+        "height": 121
+      }
+    }
+  ]
+}
