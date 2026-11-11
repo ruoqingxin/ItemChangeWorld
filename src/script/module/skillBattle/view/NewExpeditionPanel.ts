@@ -344,11 +344,24 @@ export class NewExpeditionPanel extends NewInventoryPanel {
             this.presentedMapRunId=s.runId;this.selectedNode=null;this.centerMap=true;
         }
         this.expeditionNodes.expeditionRoot.visible=true;
-        this.text("expTitle","末法寻仙 · 古宗山门外围",32,14,620,42,26,"#e3c98c");
-        this.text("expClock",this.timeText(),1080,16,168,40,22);
+        for (const name of ["mapTitleFrame","mapResourceStrip","mapTopTrim","mapFooterTrim",
+            "mapTimerFrame","mapIconLife","mapIconSpirit","mapIconGuard","mapIconBattle"])
+            if (this.expeditionNodes[name]) this.expeditionNodes[name].visible=true;
+        this.text("expTitle","末法寻仙 · 古宗山门外围",48,16,680,36,24,"#e3c98c");
+        this.labels.expTitle.valign="middle";
+        this.text("expClock",this.timeText(),1080,32,166,36,24);
+        this.labels.expClock.align="center";this.labels.expClock.valign="middle";
         const weapon=s.items.find(i=>i.location.space==="weapon");
-        this.text("expResources",`生命 ${Core.format(s.hp)} / ${Core.format(c.build.setup.player.maxHp)}    灵力 ${Core.format(s.mp)} / ${Core.format(c.build.setup.player.maxMp)}    耐久 ${weapon?.durability ?? "无武器"}    已胜 ${s.map.cleared.length} 场`,
-            32,64,1216,38,20,"#c7d9d5");
+        this.text("expResources",`生命 ${Core.format(s.hp)} / ${Core.format(c.build.setup.player.maxHp)}`,
+            80,64,138,28,16,"#dbe6e2");
+        this.text("expSpirit",`灵力 ${Core.format(s.mp)} / ${Core.format(c.build.setup.player.maxMp)}`,
+            268,64,142,28,16,"#dbe6e2");
+        this.text("expDurability",`耐久 ${weapon?.durability ?? "无武器"}`,
+            456,64,138,28,16,"#dbe6e2");
+        this.text("expWins",`已胜 ${s.map.cleared.length} 场`,
+            644,64,138,28,16,"#dbe6e2");
+        for (const name of ["expResources","expSpirit","expDurability","expWins"])
+            this.labels[name].valign="middle";
         const reach=Rules.reachable(c,s),points=new Map<number,MapPoint>();
         const viewport=this.expeditionNodes.expViewport as Laya.GPanel;
         this.expeditionNodes.expViewport.visible=true;
@@ -402,7 +415,14 @@ export class NewExpeditionPanel extends NewInventoryPanel {
         this.renderMapConnections(points,s.map.edges);
         const marker=this.expeditionNodes.expPlayer,p=points.get(s.node)!;
         marker.visible=true;marker.graphics.clear();
-        marker.graphics.drawCircle(MARKER_HALF,MARKER_HALF,54,null,"#ffd879",2);
+        const markerRing=marker.getChildByName("expPlayerRing") as Laya.GImage;
+        if (markerRing) {
+            markerRing.visible=true;
+            markerRing.pos(0,0);
+            markerRing.size(116,116);
+        } else {
+            marker.graphics.drawCircle(MARKER_HALF,MARKER_HALF,54,null,"#ffd879",2);
+        }
         if(this.pendingPath) {
             const path=this.pendingPath;this.pendingPath=null;
             this.beginMovement(path,points);
@@ -417,8 +437,8 @@ export class NewExpeditionPanel extends NewInventoryPanel {
             180,548,920,42,20,"#d4dfda");
         this.text("expNotice",this.notice || (s.map.warning===300000?"剩余时间不足五分钟":s.map.warning===600000?"剩余时间不足十分钟":""),
             32,592,1216,34,18,"#efa797");
-        this.button("expStorage","行囊",130,640,180,48);
-        this.button("expBuild","构筑",332,640,180,48);
+        this.button("expStorage","行囊",32,628,162,60);
+        this.button("expBuild","构筑",210,628,162,60);
         if(!this.movement && (this.selectedNode!==null || s.node!==1)) {
             const n=current,used=s.map.used.includes(n.id);
             const source=s.map.sources.find(box=>box.node===n.id);
@@ -428,20 +448,24 @@ export class NewExpeditionPanel extends NewInventoryPanel {
                 n.kind==="borrow"?"借法":n.kind==="insight"?"悟道":"已在此处";
             const title=enemy?({normal:"普通敌人",elite:"精英敌人",boss:"首领"})[n.kind]:
                 source&&n.enemy?"战后掉落":n.kind==="recovery"?"恢复点":n.kind==="extract"?"撤离点":n.name;
-            this.expeditionNodes.expContextBackground.visible=true;
+            const context=this.expeditionNodes.expContextBackground;
+            context.visible=true;
+            context.graphics.clear();
+            context.graphics.drawRoundRect(0,0,context.width,context.height,8,8,8,8,
+                "rgba(17,24,22,1)","#9a7d52",2);
+            context.graphics.drawLine(18,118,230,118,"#6f6049",1);
             const contextIcon=this.expeditionNodes.expContextIcon as Laya.GImage;
             contextIcon.src=(this.buttons[`expNode${n.id}`].getChildAt(2) as Laya.GImage).src;
             contextIcon.visible=true;
             this.text("expContextTitle",title,1012,316,224,56,22,"#e3c98c");
             this.labels.expContextTitle.align="center";this.labels.expContextTitle.valign="middle";
-            this.button("expUse",action,1020,394,208,54,reach.has(n.id)&&!used&&(
+            this.button("expUse",action,1020,390,208,76,reach.has(n.id)&&!used&&(
                     (n.kind!=="recovery"||!!recovered.hp||!!recovered.mp)&&
                     (!!source||!["start","transit"].includes(n.kind))));
-            this.buttons.expUse.getChildAt(0).visible=false;
+            this.buttons.expUse.getChildAt(0).visible=true;
             this.buttons.expUse.graphics.clear();
-            this.buttons.expUse.graphics.drawRoundRect(0,0,208,54,6,6,6,6,"#66532e","#c7b279",2);
         }
-        this.button("expAbandon","放弃本局",1000,640,148,48);
+        this.button("expAbandon","放弃本局",1076,628,172,60);
     }
     private beginMovement(path: number[], points: Map<number,MapPoint>): void {
         const route: MapPoint[]=[points.get(path[0])!];

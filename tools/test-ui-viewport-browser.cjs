@@ -105,9 +105,9 @@ async function inspect(p, name, popup = false) {
         assert.deepEqual(r.expViewport, [0, 0, w, h]);
         assert.deepEqual(r.nodeActionArea, [w-280, 192 + dy, w-32, 474 + dy]);
         assert.deepEqual(r.mapActionsArea, [32, h-172, w-32, h-32]);
-        assert.deepEqual(r.expClock, [w-200, 16, w-32, 56]);
-        assert.deepEqual(r.expAbandon, [w-280, h-80, w-132, h-32]);
-        if (layout.actionVisible) assert.deepEqual(r.expUse, [w-260, 394 + dy, w-52, 448 + dy],
+        assert.deepEqual(r.expClock, [w-200, 32, w-34, 68]);
+        assert.deepEqual(r.expAbandon, [w-204, h-92, w-32, h-32]);
+        if (layout.actionVisible) assert.deepEqual(r.expUse, [w-260, 390 + dy, w-52, 466 + dy],
             "The rendered node action follows its native right/middle region");
         if (layout.shadeBands.length) assert.deepEqual(layout.shadeBands, [[0, 0, w, 108], [0, h-178, w, 178]],
             "Map shading follows the actual header/footer rather than fixed design coordinates");

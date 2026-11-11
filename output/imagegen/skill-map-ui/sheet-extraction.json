@@ -1,0 +1,133 @@
+{
+  "source": "art/reference/expedition/skill-battle-map-ui-sheet.png",
+  "source_sha256": "06b16cb0ab72fd4f56f35b29573354f617deea7ffcf5e890874164bd7b3b33ae",
+  "source_size": [
+    1920,
+    1072
+  ],
+  "checkerboard_removed": true,
+  "removable_palette": [
+    [
+      235,
+      235,
+      235
+    ],
+    [
+      194,
+      191,
+      186
+    ]
+  ],
+  "method": "Color-distance matte removal with border-connected flood fill, enclosed-hole cleanup and one-pixel edge unmatting.",
+  "map_routes_and_nodes": "Not extracted; route drawing, map nodes and labels remain data-driven UI.",
+  "assets": [
+    {
+      "file": "assets/ui/atlas/module/expedition/map-resource-strip.png",
+      "size": [
+        1124,
+        64
+      ],
+      "sha256": "5204f1656b6947852488f8f6eebb883d0535a10a9499bcee193e0a24dc12c8fb",
+      "transparent_pixels": 10780
+    },
+    {
+      "file": "assets/ui/atlas/module/expedition/map-footer-strip.png",
+      "size": [
+        1920,
+        68
+      ],
+      "sha256": "61ac8fb6673249cbde3ce68abe7a34efcedb4f5b77a61bedf5915ded1fa712c7",
+      "transparent_pixels": 14356
+    },
+    {
+      "file": "assets/ui/atlas/module/expedition/map-bottom-trim.png",
+      "size": [
+        1920,
+        76
+      ],
+      "sha256": "238bd34c62ed3eb5d072247085cfa0da96be94f407aa74c461425fcc52d9604e",
+      "transparent_pixels": 32640
+    },
+    {
+      "file": "assets/ui/atlas/module/expedition/map-timer-frame.png",
+      "size": [
+        206,
+        100
+      ],
+      "sha256": "2076713832f2c736337c453e8ac173dda7aef1093cb0f3c004a5c6bb01e93b41",
+      "transparent_pixels": 5178
+    },
+    {
+      "file": "assets/ui/atlas/module/expedition/map-current-ring.png",
+      "size": [
+        216,
+        216
+      ],
+      "sha256": "8f754ed93370675c473421e826ed54304cc05d65c0811229f8ec30c5d39c5350",
+      "transparent_pixels": 35548
+    },
+    {
+      "file": "assets/ui/atlas/module/expedition/map-button.png",
+      "size": [
+        236,
+        108
+      ],
+      "sha256": "1f3021c9ab524f31560d1ff836320c081f9dd29e6c4e5aed2ebbceab77bc7cb1",
+      "transparent_pixels": 5292
+    },
+    {
+      "file": "assets/ui/atlas/module/expedition/map-button-alt.png",
+      "size": [
+        238,
+        108
+      ],
+      "sha256": "e45e9427f6492a2917f47b3bf515b087d7461924c1ab4e5c5dead2dba97df871",
+      "transparent_pixels": 5580
+    },
+    {
+      "file": "assets/ui/atlas/module/expedition/map-button-danger.png",
+      "size": [
+        276,
+        108
+      ],
+      "sha256": "a67ced4652a55dd9121ad1c4444e7bdc4582f8e3b174003fa530e2773db04664",
+      "transparent_pixels": 7373
+    },
+    {
+      "file": "assets/ui/atlas/module/expedition/map-icon-life.png",
+      "size": [
+        78,
+        84
+      ],
+      "sha256": "2b54b0c12b6bdb30df9d41df9582c130a5e813ccfc81ddcbdd01e9b4caa1b27b",
+      "transparent_pixels": 4589
+    },
+    {
+      "file": "assets/ui/atlas/module/expedition/map-icon-spirit.png",
+      "size": [
+        86,
+        88
+      ],
+      "sha256": "6cb949b7e5619b51525563ea5e5d3ec915416cf81e1741bf25b98a9357dbba50",
+      "transparent_pixels": 5933
+    },
+    {
+      "file": "assets/ui/atlas/module/expedition/map-icon-guard.png",
+      "size": [
+        84,
+        92
+      ],
+      "sha256": "2060d3ca564b6aaf2a03616d3b7f3a57162b8b798a9d8338a2f4b90009794fd7",
+      "transparent_pixels": 5552
+    },
+    {
+      "file": "assets/ui/atlas/module/expedition/map-icon-battle.png",
+      "size": [
+        88,
+        94
+      ],
+      "sha256": "4c2030a030603ba41dfce456a39fc2e2eb0aa6f42cf95fc90fe124ca70334baa",
+      "transparent_pixels": 6625
+    }
+  ]
+}

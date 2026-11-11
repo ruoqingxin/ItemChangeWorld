@@ -1,0 +1,164 @@
+{
+  "source": "Downloads/segment_bundle_1188a1dd-1c32-4f8a-9860-1a583e8ada98",
+  "source_sheet_sha256": "d0c5bddcda3bbad094a86f1c040c194410bef6a1f4a22f28dca8cabaa32160fa",
+  "reference": "art/reference/expedition/skill-map-ui-segment-source.png",
+  "icon_canvas": "64x64 transparent, aspect-preserving, 5px inset",
+  "current_marker_canvas": "160x160 transparent, aspect-preserving, 4px inset; rendered at 116x116",
+  "map_nodes_and_ground": "Unchanged",
+  "assets": [
+    {
+      "source": "segment_001.png",
+      "original": "art/reference/expedition/skill-map-ui-segments/map-ui-title-frame.png",
+      "size": [
+        1945,
+        121
+      ],
+      "file": "assets/ui/atlas/module/expedition/map-ui-title-frame.png",
+      "output_size": [
+        1945,
+        121
+      ],
+      "sha256": "79d60ab28b8a77069ba84277e251643313b94ef37af1ef1b2ea57e1eb28bdba2"
+    },
+    {
+      "source": "segment_002.png",
+      "original": "art/reference/expedition/skill-map-ui-segments/map-ui-footer-trim.png",
+      "size": [
+        1947,
+        107
+      ],
+      "file": "assets/ui/atlas/module/expedition/map-ui-footer-trim.png",
+      "output_size": [
+        1947,
+        107
+      ],
+      "sha256": "48b17bc40c94069d68d53306af22843dd4df8a7ca94ebc35cf2936e9cafd72b6"
+    },
+    {
+      "source": "segment_003.png",
+      "original": "art/reference/expedition/skill-map-ui-segments/map-ui-header-trim.png",
+      "size": [
+        1947,
+        105
+      ],
+      "file": "assets/ui/atlas/module/expedition/map-ui-header-trim.png",
+      "output_size": [
+        1947,
+        105
+      ],
+      "sha256": "589cf62a0efccd8f473582c93761b50360fc506f7d5a9c478204ccddb5a2ce96"
+    },
+    {
+      "source": "segment_004.png",
+      "original": "art/reference/expedition/skill-map-ui-segments/map-ui-current-ring.png",
+      "size": [
+        432,
+        431
+      ],
+      "file": "assets/ui/atlas/module/expedition/map-ui-current-ring.png",
+      "output_size": [
+        160,
+        160
+      ],
+      "sha256": "4484274362fcd1bdc8e41bcf8da3b8c3c53b29513bd577955bfcf861b0d36e0f"
+    },
+    {
+      "source": "segment_005.png",
+      "original": "art/reference/expedition/skill-map-ui-segments/map-ui-resource-strip.png",
+      "size": [
+        1697,
+        103
+      ],
+      "file": "assets/ui/atlas/module/expedition/map-ui-resource-strip.png",
+      "output_size": [
+        1697,
+        103
+      ],
+      "sha256": "0941fe07b06b986315624343d294eae6090c4d1599c717f0b0b10077caabae57"
+    },
+    {
+      "source": "segment_006.png",
+      "original": "art/reference/expedition/skill-map-ui-segments/map-ui-button.png",
+      "size": [
+        519,
+        191
+      ],
+      "file": "assets/ui/atlas/module/expedition/map-ui-button.png",
+      "output_size": [
+        519,
+        191
+      ],
+      "sha256": "8ae9595c200acc56e239c290750b95755a4ef0ea24ea0ed9f195e5dec2fde204"
+    },
+    {
+      "source": "segment_007.png",
+      "original": "art/reference/expedition/skill-map-ui-segments/map-ui-button-danger.png",
+      "size": [
+        512,
+        191
+      ],
+      "file": "assets/ui/atlas/module/expedition/map-ui-button-danger.png",
+      "output_size": [
+        512,
+        191
+      ],
+      "sha256": "e0bafd9ea4ad1b2a872e5ed74aedfbddd397530fbf8a1d4f74b68ae761b96cab"
+    },
+    {
+      "source": "segment_008.png",
+      "original": "art/reference/expedition/skill-map-ui-segments/map-ui-icon-battle.png",
+      "size": [
+        145,
+        145
+      ],
+      "file": "assets/ui/atlas/module/expedition/map-ui-icon-battle.png",
+      "output_size": [
+        64,
+        64
+      ],
+      "sha256": "15c3749a5edf1c0d5f547f03fa3c378235b9fa79e08f1e023240c4bc6f9cfaf5"
+    },
+    {
+      "source": "segment_009.png",
+      "original": "art/reference/expedition/skill-map-ui-segments/map-ui-icon-spirit.png",
+      "size": [
+        123,
+        158
+      ],
+      "file": "assets/ui/atlas/module/expedition/map-ui-icon-spirit.png",
+      "output_size": [
+        64,
+        64
+      ],
+      "sha256": "22939e1febd2a41d1157211908f3f2c60fb6cadde0b5a00c1196ddbb5f933213"
+    },
+    {
+      "source": "segment_010.png",
+      "original": "art/reference/expedition/skill-map-ui-segments/map-ui-icon-guard.png",
+      "size": [
+        121,
+        138
+      ],
+      "file": "assets/ui/atlas/module/expedition/map-ui-icon-guard.png",
+      "output_size": [
+        64,
+        64
+      ],
+      "sha256": "2cea09279f5550bc6d171299033dae25b72bfdfe53d847bcb1a5a22d2c429715"
+    },
+    {
+      "source": "segment_011.png",
+      "original": "art/reference/expedition/skill-map-ui-segments/map-ui-icon-life.png",
+      "size": [
+        129,
+        115
+      ],
+      "file": "assets/ui/atlas/module/expedition/map-ui-icon-life.png",
+      "output_size": [
+        64,
+        64
+      ],
+      "sha256": "f92a9448d121890a350d8f8a414c5727b21c7fee9a1fd5a69ca6098b24c7225c"
+    }
+  ]
+}

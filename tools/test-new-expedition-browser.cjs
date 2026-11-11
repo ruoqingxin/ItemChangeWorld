@@ -239,7 +239,8 @@ async function drag(p,fromKey,toKey) {
                 const {panel}=window.__skillBattlePreview;
                 return{x:panel.scroller.posX,width:panel.scroller.contentWidth,view:panel.scroller.viewWidth};
             });
-            assert.ok(scroll.x<1,"The initial fixed screen cannot be dragged into locked screens");
+            assert.ok(scroll.x<=Math.max(0,Math.ceil(scroll.width-scroll.view))+.01,
+                "The initial fixed screen cannot be dragged into locked screens beyond native fractional-viewport rounding");
             assert.ok(Math.abs(scroll.width-scroll.view)<1,"The first screen stays fixed until actual progress");
             assert.deepEqual((await state(p)).map,beforePan.map,"Panning reveals no nodes or rewards");
             await screenshot(p,`${name}-map-scrolled`);
