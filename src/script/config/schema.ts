@@ -2392,6 +2392,18 @@ export class Inew_expedition_ruleConfig {
         this.hp_id = _buf_.ReadInt()
         this.mp_id = _buf_.ReadInt()
         this.repair_id = _buf_.ReadInt()
+        this.stamina_max = _buf_.ReadInt()
+        this.move_cost = _buf_.ReadInt()
+        this.normal_cost = _buf_.ReadInt()
+        this.elite_cost = _buf_.ReadInt()
+        this.boss_cost = _buf_.ReadInt()
+        this.search_cost = _buf_.ReadInt()
+        this.move_hp_percent = _buf_.ReadInt()
+        this.search_hp_percent = _buf_.ReadInt()
+        this.transit_min = _buf_.ReadInt()
+        this.transit_max = _buf_.ReadInt()
+        this.search_min = _buf_.ReadInt()
+        this.search_max = _buf_.ReadInt()
     }
 
     /**
@@ -2462,9 +2474,69 @@ export class Inew_expedition_ruleConfig {
      * 夹具修补
      */
     readonly repair_id: number
+    /**
+     * 体力上限
+     */
+    readonly stamina_max: number
+    /**
+     * 移动体力
+     */
+    readonly move_cost: number
+    /**
+     * 普通开战体力
+     */
+    readonly normal_cost: number
+    /**
+     * 精英开战体力
+     */
+    readonly elite_cost: number
+    /**
+     * 首领开战体力
+     */
+    readonly boss_cost: number
+    /**
+     * 首次来源搜索体力
+     */
+    readonly search_cost: number
+    /**
+     * 移动不足扣最大生命百分比
+     */
+    readonly move_hp_percent: number
+    /**
+     * 搜索不足扣最大生命百分比
+     */
+    readonly search_hp_percent: number
+    /**
+     * 中转点下限
+     */
+    readonly transit_min: number
+    /**
+     * 中转点上限
+     */
+    readonly transit_max: number
+    /**
+     * 独立搜索下限
+     */
+    readonly search_min: number
+    /**
+     * 独立搜索上限
+     */
+    readonly search_max: number
 
 /*
     resolve(tables:Tables) {
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -2593,6 +2665,9 @@ export class Inew_inventory_itemConfig {
         this.bag_height = _buf_.ReadInt()
         this.icon = _buf_.ReadString()
         this.quality = _buf_.ReadInt()
+        this.weight = _buf_.ReadInt()
+        this.weight_limit = _buf_.ReadInt()
+        this.stamina_restore = _buf_.ReadInt()
     }
 
     /**
@@ -2651,9 +2726,24 @@ export class Inew_inventory_itemConfig {
      * 品质
      */
     readonly quality: EQuality
+    /**
+     * 本体重量
+     */
+    readonly weight: number
+    /**
+     * 装备背包承重
+     */
+    readonly weight_limit: number
+    /**
+     * 战外体力恢复
+     */
+    readonly stamina_restore: number
 
 /*
     resolve(tables:Tables) {
+        
+        
+        
         
         
         
@@ -2685,6 +2775,8 @@ export class Inew_inventory_ruleConfig {
         this.safe_width = _buf_.ReadInt()
         this.safe_height = _buf_.ReadInt()
         this.repair = _buf_.ReadInt()
+        this.base_weight = _buf_.ReadInt()
+        this.source_pages = _buf_.ReadInt()
     }
 
     /**
@@ -2711,9 +2803,19 @@ export class Inew_inventory_ruleConfig {
      * 修补耐久
      */
     readonly repair: number
+    /**
+     * 角色基础承重
+     */
+    readonly base_weight: number
+    /**
+     * 局内交互来源页数
+     */
+    readonly source_pages: number
 
 /*
     resolve(tables:Tables) {
+        
+        
         
         
         

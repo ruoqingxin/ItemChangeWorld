@@ -25,8 +25,11 @@ export class NewExpeditionConfigUtils {
                             damage: i.damage*100, block: i.block*100, charging: i.charging === 1,
                         })) } };
         });
-        const config: ExpeditionConfig = { ...base, groundNodeLimit: 32,
+        const inventoryRule = tables.new_inventory_rule.get(1);
+        const config: ExpeditionConfig = { ...base, groundNodeLimit: 44,
+            weight: { base: inventoryRule.base_weight, sourcePages: inventoryRule.source_pages }, staminaMax: r.stamina_max,
             fixtures: [[r.weapon_id,1,60],[r.container_id,1,0],[r.hp_id,2,0],[r.mp_id,2,0],[r.repair_id,1,0]]
+                .concat(base.templates.filter(t=>t.kind==="stamina").map(t=>[t.id,1,0]))
                 .map(([templateId,count,durability],i) => ({ id:i+1,templateId,count,durability,node:0 })),
             mapVersion: r.map_version, nodes,
             edges: tables.new_expedition_edge.getDataList().map(e => [e.from_node,e.to_node]),
@@ -41,7 +44,10 @@ export class NewExpeditionConfigUtils {
             })),
             rules: { limitMs:r.limit_ms,searchMs:r.search_ms,checkpointMs:r.checkpoint_ms,recoveryPercent:r.recovery_percent,
                 supply:[r.supply_hp,r.supply_mp,r.supply_repair],books:[r.book_sword,r.book_earth,r.book_common],
-                weaponId:r.weapon_id,containerId:r.container_id,hpId:r.hp_id,mpId:r.mp_id,repairId:r.repair_id },
+                weaponId:r.weapon_id,containerId:r.container_id,hpId:r.hp_id,mpId:r.mp_id,repairId:r.repair_id,
+                staminaMax:r.stamina_max,moveCost:r.move_cost,normalCost:r.normal_cost,eliteCost:r.elite_cost,
+                bossCost:r.boss_cost,searchCost:r.search_cost,moveHpPercent:r.move_hp_percent,searchHpPercent:r.search_hp_percent,
+                transitMin:r.transit_min,transitMax:r.transit_max,searchMin:r.search_min,searchMax:r.search_max },
         };
         NewExpeditionRules.validateConfig(config,NewBuildConfigUtils.profile(config.build));
         return config;

@@ -21,7 +21,7 @@ async function click(p, name, settle = true) {
     if (settle) { await p.waitForTimeout(120); await ready(p); }
 }
 
-async function move(p, target, expectedShown) {
+async function move(p, target) {
     await p.evaluate(() => {
         const panel = window.__skillBattlePreview.panel;
         const sources = [], frames = [], skins = ["expStorage", "expBuild"].map(key => panel.buttons[key].getChildAt(0));
@@ -66,7 +66,8 @@ async function move(p, target, expectedShown) {
         const { panel, trial } = window.__skillBattlePreview;
         return { ...window.__movementCheck, node: trial.inventory.node,
             shown: trial.inventory.map.present.filter(id => panel.buttons[`expNode${id}`].visible),
-            actionVisible: panel.buttons.expUse.visible };
+            actionVisible: panel.buttons.expUse.visible,
+            expectedShown: trial.inventory.map.nodes.filter(n=>112+n.x*242-58<panel.scroller.contentWidth).map(n=>n.id) };
     });
     assert.ok(result.frames.some(f => f.moving), "Sample the animation, not just its settled state");
     assert.ok(result.frames.some(f => !f.moving), "Also sample the arrival refresh");
@@ -82,7 +83,7 @@ async function move(p, target, expectedShown) {
         if (frame.moving) assert.equal(frame.actionVisible, false, "Node actions remain hidden until arrival");
     }
     assert.equal(result.node, target);
-    assert.deepEqual(result.shown, expectedShown, "Every generated node remains displayed while moving and retreating");
+    assert.deepEqual(result.shown, result.expectedShown, "Only the progressively opened width is displayed");
     assert.equal(result.actionVisible, true, "Node actions return on arrival");
 }
 
@@ -102,8 +103,7 @@ async function move(p, target, expectedShown) {
                 await click(p, "warehouse0"); await click(p, "newRun");
             }
             await p.waitForFunction(() => window.__skillBattlePreview.panel.pageRole === "map");
-            const present=await p.evaluate(()=>[...window.__skillBattlePreview.trial.inventory.map.present]);
-            for (const target of [2, 1, 2, 1]) await move(p, target, present);
+            for (const target of [2, 1, 2, 1]) await move(p, target);
             await p.evaluate(() => {
                 const { panel, trial } = window.__skillBattlePreview;
                 trial.save.state.map.used.push(trial.inventory.node);
@@ -114,7 +114,7 @@ async function move(p, target, expectedShown) {
             });
             assert.deepEqual(errors, []);
             await context.close();
-            console.log(`PASS map movement UI ${name}: stable skins frame-by-frame, input locks and full-map display preserved`);
+            console.log(`PASS map movement UI ${name}: stable skins, input locks and progressive width`);
         }
     } finally { await browser.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });

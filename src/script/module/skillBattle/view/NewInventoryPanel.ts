@@ -199,7 +199,8 @@ export class NewInventoryPanel extends NewBuildPanel {
             const i = Rules.item(state,this.uid); this.stage({ type: "use", uid: i.uid, from: i.location }); return;
         }
         if (key === "invDrop") {
-            this.target(state.phase === "preparation" ? { space: "warehouse" } : { space: "ground", node: state.node }); return;
+            this.target(state.phase === "preparation" ? { space: "warehouse" } :
+                session.archive!.config.weight ? {space:"source",node:state.node} : { space: "ground", node: state.node }); return;
         }
         if (key === "invWeapon" || key === "invContainer") {
             const space = key === "invWeapon" ? "weapon" : "container", equipped = state.items.find(i => i.location.space === space);
@@ -237,6 +238,8 @@ export class NewInventoryPanel extends NewBuildPanel {
         this.uid = item.uid;
         this.rotated = item.location.space === "warehouse" ?
             !!Rules.warehousePlacements(this.inventorySession.archive!.config,this.projection()!).find(p => p.uid === item.uid)?.rotated :
+            item.location.space === "source" ?
+            !!Rules.sourcePlacements(this.inventorySession.archive!.config,this.projection()!).find(p=>p.uid===item.uid)?.rotated :
             !!item.location.rotated;
         this.notice = "";
         this.draft = null; this.draftToken = null; this.draftError = "";
@@ -249,7 +252,7 @@ export class NewInventoryPanel extends NewBuildPanel {
         if (command.type === "extract" || command.type === "abandon") {
             const token = this.inventorySession.token;
             this.requestConfirmation(command.type === "extract" ? "确认撤离？" : "放弃本局？",
-                command.type === "extract" ? "携带物带回，地面物品损失，本局临时构筑结束。" :
+                command.type === "extract" ? "携带物带回，来源仓库内未携带物不带出，本局临时构筑结束。" :
                     "仅保留归真匣合规物品，装备及其他携带物损失。",
                 () => {
                     this.inventorySession.inventoryCommand(command,token);
@@ -382,7 +385,7 @@ export class NewInventoryPanel extends NewBuildPanel {
         this.label("invSafeTitle","归真匣 · 2 格",18,"#a5d8b9");
         this.label("invProtection","归真匣保护非装备。\n其余携带物失败损失。",16,"#bbcbd0");
         this.label("invBagTitle","纳虚器",20,"#c2dbdd");
-        this.label("invSourceTitle",actual?.phase === "active" ? `节点 ${actual.node + 1} · 地面来源` :
+        this.label("invSourceTitle",actual?.phase === "active" ? `节点 ${actual.node + 1} · 来源仓库` :
             actual?.phase === "ended" ? "结算账本" : "统一库存 · 演练物品",20,"#e3c98c");
         this.control("invPrimary",!state || state.phase === "ended" ? "建立新演练库存" :
             state.phase === "preparation" ? "入境" : state.flow?.phase === "battle" ? "返回战斗" :
@@ -411,7 +414,9 @@ export class NewInventoryPanel extends NewBuildPanel {
         for (const space of ["battle","safe","bag"] as const) {
             const { cols,rows,size,x: startX,y: startY } = this.gridGeometry(space);
             if (space === "bag") {
-                this.label("invBagTitle",`纳虚器${cols ? ` · ${cols}×${rows}` : ""}`,20);
+                const weight=Rules.weight(save.config,state);
+                this.label("invBagTitle",`纳虚器${cols ? ` · ${cols}×${rows}` : ""}${save.config.weight ?
+                    ` · ${weight.current}/${weight.limit}` : ""}`,20);
                 if (!cols) this.label("invEmptyBag","未装备纳虚器",22,"#c2cbcf");
             }
             for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
@@ -446,18 +451,21 @@ export class NewInventoryPanel extends NewBuildPanel {
                 this.qualityLoaded(ghost as Laya.GImage);
             }
         }
-        let list = state.items.filter(i => i.location.space === (state.phase === "active" ? "ground" : "warehouse") &&
+        const activeSource=!!save.config.weight && state.phase==="active";
+        let list = state.items.filter(i => i.location.space === (state.phase === "active" ? activeSource ? "source" : "ground" : "warehouse") &&
             (state.phase !== "active" || i.location.node === state.node && state.revealed.includes(state.node)));
         if (state.phase === "ended") list = state.items.filter(i => this.filter === "all" ? i.location.space === "warehouse" :
             this.filter === "medicine" ? state.returned.includes(i.uid) : this.filter === "materials" ?
                 state.lost.includes(i.uid) : state.consumed.includes(i.uid));
         else list = list.filter(i => {
             const t = Rules.template(save.config,i);
-            return this.filter === "all" || this.filter === "medicine" && ["hp","mp","repair"].includes(t.kind) ||
+            return this.filter === "all" || this.filter === "medicine" && ["hp","mp","repair","stamina"].includes(t.kind) ||
                 this.filter === "materials" && ["material","book"].includes(t.kind) ||
                 this.filter === "equipment" && ["weapon","container"].includes(t.kind);
         });
-        const sourcePages = state.phase !== "active" && (state.phase !== "ended" || this.filter === "all") ?
+        if(activeSource && state.interactionSource!==state.node)list=[];
+        const sourcePages = activeSource ? this.packActiveSource(list,save.config,state) :
+            state.phase !== "active" && (state.phase !== "ended" || this.filter === "all") ?
             this.packWarehouse(list,save.config,state) : this.packSource(list,save.config);
         const pages = this.sourcePageCount(sourcePages.length); this.inventoryPage = Math.min(this.inventoryPage,pages - 1);
         const sourcePage = sourcePages[this.inventoryPage] || [];
@@ -486,7 +494,8 @@ export class NewInventoryPanel extends NewBuildPanel {
         this.label("invPage",`${list.length} 件 · ${this.inventoryPage + 1}/${pages}`,17,"#b9c9cf");
         const selected = actual!.items.find(i => i.uid === this.uid);
         let detail = selected ? this.describeItem(selected) : `生命 ${Core.format(state.hp)} / ${Core.format(save.config.build.setup.player.maxHp)}\n灵力 ${Core.format(state.mp)} / ${Core.format(save.config.build.setup.player.maxMp)}`;
-        if (this.draft?.type === "extract") detail = "确认撤离\n仅带回当前携带物，地面物品清局。";
+        if(!selected && state.stamina!==undefined)detail+=`\n体力 ${state.stamina} / ${save.config.staminaMax}`;
+        if (this.draft?.type === "extract") detail = "确认撤离\n仅带回当前携带物，来源仓库内物品不带出。";
         else if (this.draft?.type === "abandon") detail = "确认放弃\n只保留归真匣，所有携带装备及其他内容损失。";
         if (state.phase === "ended") detail = `${{extract:"撤离成功",defeat:"战斗失败",abandon:"已主动放弃",timeout:"演练超时"}[state.result!]}\n带回 ${state.returned.length} 件 · 损失 ${state.lost.length} 件\n已消耗 ${state.consumed.length} 件${selected ? `\n${Rules.template(save.config,selected).name}` : ""}`;
         this.label("invDetail",detail,18,"#d9e1e5");
@@ -497,9 +506,10 @@ export class NewInventoryPanel extends NewBuildPanel {
         this.control("invCancel","取消",!!this.uid || !!this.draft);
         this.control("invConfirm","确认提交",!!this.draft && !this.draftError);
         this.control("invUse","使用",editable && state.phase === "active" && !!selected && !this.draft &&
-            ["hp","mp","repair"].includes(Rules.template(save.config,selected).kind));
-        this.control("invDrop",state.phase === "preparation" ? "放回仓库" : "放到地面",editable && !!selected &&
-            (state.phase === "preparation" || revealed));
+            ["hp","mp","repair","stamina"].includes(Rules.template(save.config,selected).kind) &&
+            (Rules.template(save.config,selected).kind!=="stamina" || state.stamina!<save.config.staminaMax!));
+        this.control("invDrop",state.phase === "preparation" ? "放回仓库" : activeSource ? "退回来源" : "放到地面",editable && !!selected &&
+            (state.phase === "preparation" || activeSource ? state.phase==="preparation" || state.interactionSource===state.node : revealed));
         if (state.phase === "active") {
             this.control("invAbandon","放弃",true);
             this.control("invExtract","撤离",editable && !state.flow?.pending && !this.draft);
@@ -511,6 +521,16 @@ export class NewInventoryPanel extends NewBuildPanel {
         if (this.held) this.renderHeld();
     }
     protected sourcePageCount(count: number): number { return count; }
+    private packActiveSource(items: InventoryItem[],config: InventoryConfig,state: InventoryState) {
+        const slots=Rules.sourcePlacements(config,state),byUid=new Map(items.map(i=>[i.uid,i]));
+        const pages: Array<Array<{item:InventoryItem;x:number;y:number;rotated:boolean}>>=
+            Array.from({length:config.weight!.sourcePages},()=>[]);
+        for(const slot of slots) {
+            const item=byUid.get(slot.uid);
+            if(item)pages[slot.page].push({item,x:slot.x,y:slot.y,rotated:slot.rotated});
+        }
+        return pages;
+    }
     private packWarehouse(items: InventoryItem[], config: InventoryConfig, state: InventoryState) {
         const slots = Rules.warehousePlacements(config,state), byUid = new Map(items.map(i => [i.uid,i]));
         const pages: Array<Array<{ item: InventoryItem; x: number; y: number; rotated: boolean }>> =
@@ -567,7 +587,7 @@ export class NewInventoryPanel extends NewBuildPanel {
         return true;
     }
     private gridGeometry(space: InventorySpace) {
-        if (space === "warehouse") return this.sourceGeometry();
+        if (space === "warehouse" || space === "source") return this.sourceGeometry();
         const [cols,rows] = Rules.size(this.inventorySession.archive!.config,this.projection()!,space);
         const cell = this.nodes[`invCell_${space}_0`];
         return { ...this.position(cell), size: cell.width + 2, cols, rows };
@@ -595,8 +615,9 @@ export class NewInventoryPanel extends NewBuildPanel {
         const source = this.sourceGeometry();
         if (point.x >= source.x && point.x < source.x + source.cols * source.size &&
             point.y >= source.y && point.y < source.y + source.rows * source.size) {
-            if (state.phase === "preparation")
-                return { space: "warehouse", page: this.inventoryPage,
+            if (state.phase === "preparation" || config.weight)
+                return { space: state.phase==="preparation" ? "warehouse" : "source", page: this.inventoryPage,
+                    ...(state.phase==="active"?{node:state.node}:{}),
                     x: Math.round((point.x - h.grabX * w * source.size - source.x) / source.size),
                     y: Math.round((point.y - h.grabY * height * source.size - source.y) / source.size), rotated: h.rotated };
             return { space: "ground", node: state.node };
@@ -613,6 +634,7 @@ export class NewInventoryPanel extends NewBuildPanel {
     private transferCommand(item: InventoryItem, to: InventoryDropTarget): InventoryCommand {
         const { page,x,y,rotated,space,node } = to;
         const destination: InventoryLocation = space === "warehouse" ? { space } :
+            space === "source" ? {space,node,x,y:y!+page!*Rules.WAREHOUSE_ROWS,rotated} :
             space === "ground" ? { space, node } : { space, x, y, rotated };
         const warehouse = space === "warehouse" ?
             { warehouseTo: { page: page!, x: x!, y: y!, rotated: !!rotated } } : {};
@@ -620,9 +642,10 @@ export class NewInventoryPanel extends NewBuildPanel {
             return { type: "equipWeapon", uid: null, oldTo: destination, ...warehouse };
         if (item.location.space === "container") {
             const state = this.inventorySession.inventory!;
-            const expected = state.phase === "preparation" ? "warehouse" : "ground";
-            if (space !== expected || space === "ground" && node !== state.node)
-                throw new Error("纳虚器本体只能卸回仓库或当前地面");
+            const expected = state.phase === "preparation" ? "warehouse" :
+                this.inventorySession.archive!.config.weight ? "source" : "ground";
+            if (space !== expected || ["ground","source"].includes(space) && node !== state.node)
+                throw new Error("背包本体只能卸回当前交互仓库");
             return { ...this.containerPlan(null), ...warehouse };
         }
         return { type: "move", move: { uid: item.uid, from: item.location, to: destination }, ...warehouse };
@@ -673,11 +696,11 @@ export class NewInventoryPanel extends NewBuildPanel {
     }
     private validatePlanDrop(item: InventoryItem, to: InventoryDropTarget): void {
         const state = this.projection()!, config = this.inventorySession.archive!.config, t = Rules.template(config,item);
-        if (["warehouse","ground"].includes(to.space)) {
+        if (["warehouse","ground","source"].includes(to.space)) {
             if (to.space === "warehouse" ? state.phase !== "preparation" :
                 state.phase !== "active" || to.node !== state.node || !state.revealed.includes(state.node))
                 throw new Error("不能放到该来源");
-            if (to.space === "warehouse")
+            if (to.space === "warehouse" || to.space === "source")
                 this.inventorySession.previewMove(item.location.space === "warehouse" ? this.warehouseCommand(item,to) :
                     this.transferCommand(item,to),this.held!.token);
             return;
@@ -699,7 +722,7 @@ export class NewInventoryPanel extends NewBuildPanel {
     }
     private hoverKey(h: HeldInventoryItem): string {
         const to = h.target;
-        if (!to || !["battle","safe","bag","warehouse"].includes(to.space) || to.x === undefined) return "";
+        if (!to || !["battle","safe","bag","warehouse","source"].includes(to.space) || to.x === undefined) return "";
         const g = this.gridGeometry(to.space);
         return `${to.space}:${Math.floor((h.point.x - g.x) / g.size)}:${Math.floor((h.point.y - g.y) / g.size)}`;
     }
@@ -763,7 +786,7 @@ export class NewInventoryPanel extends NewBuildPanel {
                 if (h.candidate.type === "equipContainer") {
                     const contents = h.candidate.contents, inside = contents.filter(m => m.to.space === "bag").length;
                     this.notice = `包内 ${inside} 件 · ${this.inventorySession.inventory!.phase === "preparation" ?
-                        "退回仓库" : "放到地面"} ${contents.length - inside} 件`;
+                        "退回仓库" : this.inventorySession.archive!.config.weight ? "退回交互仓库" : "放到地面"} ${contents.length - inside} 件`;
                 }
             }
         });
@@ -786,7 +809,7 @@ export class NewInventoryPanel extends NewBuildPanel {
             this.nodes[to.space === "weapon" ? "invWeapon" : "invContainer"] : null;
         const grid = equipment ? { ...this.position(equipment), size: this.nodes.invSourceCell0.width + 2,
             cols: 2, rows: to!.space === "weapon" ? 3 : 2 } :
-            to && ["battle","safe","bag","warehouse"].includes(to.space) && to.x !== undefined ? this.gridGeometry(to.space) : null;
+            to && ["battle","safe","bag","warehouse","source"].includes(to.space) && to.x !== undefined ? this.gridGeometry(to.space) : null;
         const size = grid?.size || this.nodes.invSourceCell0.width + 2;
         this.nodes[h.key].alpha = 0.16;
         this.nodes.invGhost.visible = false;
@@ -842,7 +865,7 @@ export class NewInventoryPanel extends NewBuildPanel {
     }
     private locationName(l?: InventoryLocation): string {
         return !l ? "无" : ({warehouse:"仓库",battle:"斗法匣",safe:"归真匣",bag:"纳虚器",weapon:"武器位",
-            container:"纳虚器位",ground:"当前地面",consumed:"已消耗",lost:"损失"})[l.space] +
+            container:"纳虚器位",ground:"当前地面",source:"交互仓库",consumed:"已消耗",lost:"损失"})[l.space] +
             (l.x !== undefined ? ` ${l.x + 1},${l.y! + 1}` : "");
     }
     private describeItem(item: InventoryItem): string {
@@ -850,6 +873,8 @@ export class NewInventoryPanel extends NewBuildPanel {
         const [w,h] = Rules.dimensions(t,{ ...item.location, rotated: this.rotated });
         const qualityName = ["","普通","优秀","精良","稀有","史诗","传说"][this.quality(t)];
         return `${t.name} · ${qualityName} · ${w}×${h}${this.rotated ? " · 旋转" : ""}\n${this.locationName(item.location)}${item.durability !== null ?
-            ` · 耐久 ${item.durability}` : ""}\n${t.safe ? "归真匣合规，仍需尺寸适配" : "禁止归真匣"}${t.kind === "book" ? "\n书籍本阶段仅携入带出，不学习" : ""}`;
+            ` · 耐久 ${item.durability}` : ""}${t.weight!==undefined?` · 重量 ${t.weight}`:""}\n${
+            t.kind==="container"?`背包承重 +${t.weightLimit || 0}\n`:""}${
+            t.kind==="stamina"?`战外恢复体力 ${t.staminaRestore}\n`:""}${t.safe ? "归真匣合规，仍需尺寸适配" : "禁止归真匣"}${t.kind === "book" ? "\n书籍本阶段仅携入带出，不学习" : ""}`;
     }
 }
