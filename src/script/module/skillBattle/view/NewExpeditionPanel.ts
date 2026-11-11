@@ -13,6 +13,7 @@ import type { SkillBattlePage } from "./SkillBattleUILayout";
 type MapPoint = { x: number; y: number };
 const MAP_HEIGHT = 430;
 const MARKER_HALF = 58;
+const ENEMY_ICON_SIZES = { normal: 104, elite: 144, boss: 192 };
 const FOUNDATION = "ui/atlas/common/foundation/";
 
 export class NewExpeditionPanel extends NewInventoryPanel {
@@ -451,6 +452,41 @@ export class NewExpeditionPanel extends NewInventoryPanel {
     private updateMapBackground(): void {
         if(this.opened && this.expeditionNodes.expeditionRoot.visible)this.backdrop();
     }
+    private styleNodeIcon(image: Laya.GImage,defeated: boolean,searched: boolean): void {
+        image.grayed=false;
+        image.filters=defeated&&!searched?
+            [new Laya.ColorFilter().adjustSaturation(-65).adjustBrightness(-12)]:null;
+        image.grayed=searched;image.alpha=1;image.color="#ffffff";
+    }
+    private renderPlayerMarker(): void {
+        const marker=this.expeditionNodes.expPlayer;
+        marker.visible=true;marker.mouseEnabled=false;marker.zOrder=2;
+        marker.size(116,160);marker.graphics.clear();
+        const ring=marker.getChildByName("expPlayerRing");
+        if(ring)ring.visible=false;
+        let avatar=marker.getChildByName("expPlayerAvatar") as Laya.GWidget;
+        if(!avatar) {
+            avatar=new Laya.GWidget();avatar.name="expPlayerAvatar";avatar.mouseEnabled=false;
+            avatar.pos(30,100);avatar.size(56,60);marker.addChild(avatar);
+            // Use the battle player's robe, topknot and sword silhouette at map scale.
+            const g=avatar.graphics;
+            g.save();g.translate(28,31);g.scale(0.32,0.32);
+            g.drawEllipse(0,69,50,11,"rgba(17,29,23,0.65)",null,0);
+            g.drawPoly(0,0,[-22,-34,19,-34,49,61,13,70,-43,62],"#a9dfd5","#182e27",5);
+            g.drawPoly(0,0,[-18,-27,10,-24,29,60,-10,64],"#315e57");
+            g.drawLine(-18,-22,-39,31,"#c7e8db",10);
+            g.drawLine(-10,-19,11,5,"#eef2d8",5);
+            g.drawLine(-18,12,28,12,"#dceacb",6);
+            g.drawCircle(0,-49,20,"#e9d9b7","#182e27",4);
+            g.drawPoly(0,0,[-23,-49,-17,-72,13,-74,24,-51,9,-56,-4,-43],"#20322d");
+            g.drawCircle(-2,-78,9,"#20322d");
+            g.drawLine(25,5,79,-59,"#182e27",11);
+            g.drawLine(25,5,79,-59,"#edf5e5",5);
+            g.drawLine(24,-17,44,1,"#9ecaba",7);
+            g.restore();
+        }
+        avatar.visible=true;
+    }
     private get mapBandTop(): number {
         return 112+(this.expeditionNodes.expViewport.height-720)/2;
     }
@@ -472,7 +508,7 @@ export class NewExpeditionPanel extends NewInventoryPanel {
         }
         const at=shade.globalToLocal(origin,true);
         shade.visible=true;shade.graphics.clear();
-        shade.graphics.drawRect(at.x,at.y,page.width,page.height,"rgba(12,14,14,0.36)");
+        shade.graphics.drawRect(at.x,at.y,page.width,page.height,"rgba(12,14,14,0.08)");
     }
     private renderMap(): void {
         const c=this.expedition.archive!.config,s=this.expedition.inventory!,current=Rules.node(c,s.node,s);
@@ -498,15 +534,19 @@ export class NewExpeditionPanel extends NewInventoryPanel {
             const key=`expNode${id}`;
             this.button(key,"",px-58,py-52,116,116,reach.has(id),id===s.node||id===this.selectedNode);
             const b=this.buttons[key],l=b.getChildAt(1) as Laya.GTextField;
-            (b.getChildAt(0) as Laya.GImage).visible=false;
+            const base=b.getChildAt(0) as Laya.GImage;
+            base.src="ui/image/expeditionNodes/node-base.png";
+            base.pos(6,18);base.size(104,104);base.visible=n.kind==="transit";
+            base.grayed=explored;base.alpha=1;base.color="#ffffff";
             l.visible=false;
             const image=b.getChildAt(2) as Laya.GImage;
-            const art=cleared?"battle-loot":n.kind==="search"?(n.pool.startsWith("supply")?"supply":"search"):
+            const art=n.kind==="search"?(n.pool.startsWith("supply")?"supply":"search"):
                 ({normal:"enemy-normal",elite:"enemy-elite",boss:"enemy-boss",borrow:"borrow",insight:"insight",
                     extract:"extract",recovery:"recovery",start:"start",transit:"transit"})[n.kind];
             image.src=`ui/image/expeditionNodes/node-${art}.png`;
-            image.pos(6,0);image.size(104,104);image.visible=true;
-            image.grayed=explored;image.alpha=1;image.color="#ffffff";
+            const size=ENEMY_ICON_SIZES[n.kind]||104;
+            image.pos((116-size)/2,-6-(size-104)*0.75);image.size(size,size);image.visible=n.kind!=="transit";
+            this.styleNodeIcon(image,cleared,explored);
             b.graphics.clear();
         }
         const width=Rules.browseWidth(s,viewport.width);
@@ -520,15 +560,7 @@ export class NewExpeditionPanel extends NewInventoryPanel {
         this.backdrop();
         this.renderMapConnections(points,s.map.edges);
         const marker=this.expeditionNodes.expPlayer,p=points.get(s.node)!;
-        marker.visible=true;marker.graphics.clear();
-        const markerRing=marker.getChildByName("expPlayerRing") as Laya.GImage;
-        if (markerRing) {
-            markerRing.visible=true;
-            markerRing.pos(0,0);
-            markerRing.size(116,116);
-        } else {
-            marker.graphics.drawCircle(MARKER_HALF,MARKER_HALF,54,null,"#ffd879",2);
-        }
+        this.renderPlayerMarker();
         if(this.pendingPath) {
             const path=this.pendingPath;this.pendingPath=null;
             this.beginMovement(path,points);
@@ -542,7 +574,7 @@ export class NewExpeditionPanel extends NewInventoryPanel {
             288,650,944,34,18,"#efa797");
         this.button("expStorage","行囊",24,596,112,104,!this.movement);
         this.button("expBuild","构筑",148,596,112,104,!this.movement);
-        if(!this.movement && this.selectedNode!==null) {
+        if(!this.movement && this.selectedNode!==null && current.kind!=="transit") {
             const n=current,used=s.map.used.includes(n.id);
             const source=s.map.sources.find(box=>box.node===n.id);
             const enemy=n.enemy&&!s.map.cleared.includes(n.id);
@@ -556,6 +588,8 @@ export class NewExpeditionPanel extends NewInventoryPanel {
             const contextIcon=this.expeditionNodes.expContextIcon as Laya.GImage;
             contextIcon.src=(this.buttons[`expNode${n.id}`].getChildAt(2) as Laya.GImage).src;
             contextIcon.visible=true;
+            this.styleNodeIcon(contextIcon,!!n.enemy&&s.map.cleared.includes(n.id),
+                !!source&&source.revealed===source.entries.length);
             this.text("expContextTitle",title,1012,316,224,56,24,"#e3c98c");
             this.labels.expContextTitle.align="center";this.labels.expContextTitle.valign="middle";
             this.button("expUse",action,1020,390,208,64,reach.has(n.id)&&!used&&(
@@ -610,9 +644,12 @@ export class NewExpeditionPanel extends NewInventoryPanel {
     private renderMapConnections(points: Map<number,MapPoint>, edges: number[][]): void {
         this.mapRoutes.clear();
         const lines=this.expeditionNodes.expLines;lines.visible=true;lines.graphics.clear();
-        const obstacles=[...points.values()],bounds=new Map<{x:number;y:number},number[][]>();
-        for(const p of points.values())
-            bounds.set(p,[[p.x-54,p.y-54,p.x+54,p.y+54]]);
+        const bounds=new Map<{x:number;y:number},number[][]>();
+        for(const [id,p] of points) {
+            const image=this.buttons[`expNode${id}`].getChildAt(2) as Laya.GImage;
+            const halfWidth=Math.max(54,image.width/2-4),above=Math.max(54,30-image.y);
+            bounds.set(p,[[p.x-halfWidth,p.y-above,p.x+halfWidth,p.y+54]]);
+        }
         const rectangles=[...bounds.values()].flat();
         const interval=(p:{x:number;y:number},q:{x:number;y:number},box:number[])=>{
             let low=0,high=1;
@@ -644,9 +681,9 @@ export class NewExpeditionPanel extends NewInventoryPanel {
             if(!route) {
                 // Keep a readable connection when a direct edge is obscured or too short.
                 const options:{x:number;y:number}[][]=[];
-                for(const x of new Set([p.x,q.x,(p.x+q.x)/2,...obstacles.flatMap(n=>[n.x-66,n.x+66])]))
+                for(const x of new Set([p.x,q.x,(p.x+q.x)/2,...rectangles.flatMap(box=>[box[0]-12,box[2]+12])]))
                     options.push([p,{x,y:p.y},{x,y:q.y},q]);
-                for(const y of new Set([p.y,q.y,(p.y+q.y)/2,...obstacles.flatMap(n=>[n.y-60,n.y+90])]))
+                for(const y of new Set([p.y,q.y,(p.y+q.y)/2,...rectangles.flatMap(box=>[box[1]-6,box[3]+36])]))
                     if(y>=this.mapBandTop+4&&y<=this.mapBandTop+MAP_HEIGHT-4)options.push([p,{x:p.x,y},{x:q.x,y},q]);
                 let shortest=Infinity;
                 for(const option of options) {
@@ -675,8 +712,12 @@ export class NewExpeditionPanel extends NewInventoryPanel {
                 const phase=((anchor+offset)%period+period)%period;
                 const step=Math.min(length-offset,phase<dash?dash-phase:period-phase);
                 if(step<0.0001) { offset+=0.0001;continue; }
-                if(phase<dash)graphics.drawLine(start.x+ux*offset,start.y+uy*offset,
-                    start.x+ux*(offset+step),start.y+uy*(offset+step),"#8b9b8e",3);
+                if(phase<dash) {
+                    const x=start.x+ux*offset,y=start.y+uy*offset;
+                    const endX=start.x+ux*(offset+step),endY=start.y+uy*(offset+step);
+                    graphics.drawLine(x,y,endX,endY,"rgba(24,35,28,0.72)",8);
+                    graphics.drawLine(x,y,endX,endY,"#e0e7cd",5);
+                }
                 offset+=step;
             }
         }

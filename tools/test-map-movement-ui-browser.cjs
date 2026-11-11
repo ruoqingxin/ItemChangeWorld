@@ -37,6 +37,12 @@ async function move(p, target) {
             const moving = !!panel.movement;
             frames.push({
                 moving,
+                player: (() => {
+                    const marker = panel.expeditionNodes.expPlayer, avatar = marker.getChildByName("expPlayerAvatar");
+                    return { x: marker.x, y: marker.y, visible: marker.visible && avatar?.visible,
+                        passive: !marker.mouseEnabled && !avatar?.mouseEnabled,
+                        ring: !!marker.getChildByName("expPlayerRing")?.visible };
+                })(),
                 controls: ["expStorage", "expBuild"].map(key => {
                     const n = panel.buttons[key], skin = n.getChildAt(0);
                     return { src: skin.src, visible: n.visible, enabled: n.mouseEnabled, alpha: n.alpha,
@@ -67,10 +73,16 @@ async function move(p, target) {
         return { ...window.__movementCheck, node: trial.inventory.node,
             shown: trial.inventory.map.present.filter(id => panel.buttons[`expNode${id}`].visible),
             actionVisible: panel.buttons.expUse.visible,
+            expectsAction: trial.inventory.map.nodes.find(n => n.id === trial.inventory.node).kind !== "transit",
             expectedShown: trial.inventory.map.nodes.filter(n=>112+n.x*242-58<panel.scroller.contentWidth).map(n=>n.id) };
     });
     assert.ok(result.frames.some(f => f.moving), "Sample the animation, not just its settled state");
     assert.ok(result.frames.some(f => !f.moving), "Also sample the arrival refresh");
+    assert.ok(new Set(result.frames.filter(f => f.moving).map(f => `${f.player.x},${f.player.y}`)).size > 2,
+        "Player avatar follows the movement animation");
+    for (const frame of result.frames)
+        assert.ok(frame.player.visible && frame.player.passive && !frame.player.ring,
+            "Player avatar remains visible, noninteractive and independent of the removed gold ring");
     assert.ok(result.sources.every(src => src && src.endsWith("button-normal-64x48.png")),
         `Moving must not clear or dim toolbar skins: ${JSON.stringify([...new Set(result.sources)])}`);
     for (const frame of result.frames) {
@@ -84,7 +96,7 @@ async function move(p, target) {
     }
     assert.equal(result.node, target);
     assert.deepEqual(result.shown, result.expectedShown, "Only the progressively opened width is displayed");
-    assert.equal(result.actionVisible, true, "Node actions return on arrival");
+    assert.equal(result.actionVisible, result.expectsAction, "Arrival shows actions only for nonempty nodes");
 }
 
 (async () => {

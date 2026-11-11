@@ -177,6 +177,14 @@ async function check() {
 }
 
 async function main() {
+    if (fs.existsSync(path.join(root, "output/imagegen/expedition-node-icons-v4/integration-report.json"))) {
+        if (process.argv.includes("--check")) return require("./import-expedition-node-art-v4.cjs");
+        throw new Error("Legacy artwork is superseded. Use tools/import-expedition-node-art-v4.cjs --write.");
+    }
+    if (fs.existsSync(path.join(root, "output/imagegen/expedition-node-icons-v2/integration-report.json"))) {
+        if (process.argv.includes("--check")) return require("./import-expedition-node-art-v2.cjs");
+        throw new Error("Legacy artwork is superseded. Use tools/import-expedition-node-art-v2.cjs --write.");
+    }
     if (process.argv.includes("--check")) return check();
     const original = fs.readFileSync(source), sourceHash = hash(original);
     const metadata = await sharp(original).metadata();

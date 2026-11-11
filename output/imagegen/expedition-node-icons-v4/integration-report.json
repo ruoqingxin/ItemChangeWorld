@@ -1,0 +1,193 @@
+{
+  "source_sha256": "5ca11db6f7d4d64f443930a7bf489b2493454e98b793deb9b79ab33b4114d420",
+  "size": [
+    128,
+    128
+  ],
+  "count": 19,
+  "method": "Direct copy of approved V4 true-alpha cutouts. No recropping or alpha normalization.",
+  "metadata_changed": false,
+  "config_changed": false,
+  "saves_changed": false,
+  "library_only": [
+    "herb",
+    "ore",
+    "chest-common",
+    "chest-refined",
+    "chest-treasure",
+    "cave"
+  ],
+  "files": [
+    {
+      "key": "start",
+      "file": "assets/ui/image/expeditionNodes/node-start.png",
+      "sha256": "50a1573a0c65efd095c791828327d3d0b34ed053e44eadef7ea2c8cabe1e157f",
+      "previous_sha256": "438f5c1e1aeedc11bf8637cf29bba282ffb3e9ce9858d80aa56a4042c4c93963",
+      "uuid": "b37989ba-5e8a-4998-a989-812fb939a95f",
+      "meta_sha256": "3feb95c40b62dfe21e19d81806e692ec605782235b5de2c1c149efa639982d3b",
+      "runtime_used": true
+    },
+    {
+      "key": "transit",
+      "file": "assets/ui/image/expeditionNodes/node-transit.png",
+      "sha256": "4a1a01e700b4cab81ab417d9b8b6aa98f7ec1bcdc98d5e9e0f01c26a1c1c76a1",
+      "previous_sha256": "689b42df1b43d8c0e1697f9c04f13fe05adf07cb31b13ab3150137e30ccd0f29",
+      "uuid": "b42cd6d3-5ee8-4791-8362-d07d7b26376e",
+      "meta_sha256": "904c855ac926ee9fa6661efcfb2fe667e1a1926f7bf8132d6e650c930add7110",
+      "runtime_used": true
+    },
+    {
+      "key": "enemy-normal",
+      "file": "assets/ui/image/expeditionNodes/node-enemy-normal.png",
+      "sha256": "e7a73f9ffdf31686fbd776d9fc638931f336d2a366b942b7aef139b5adfc1084",
+      "previous_sha256": "3e68763bb8677b5b01233ffc0ae6772eb4d36f7aa7826e50fdb49e6e78bee897",
+      "uuid": "7402b693-cb1f-4120-8c53-463c9f300ca9",
+      "meta_sha256": "123d1030706e4aaab1dbffdfd7eb8b79b40dbfbe6681fdfa461b6dab728f4a3e",
+      "runtime_used": true
+    },
+    {
+      "key": "enemy-elite",
+      "file": "assets/ui/image/expeditionNodes/node-enemy-elite.png",
+      "sha256": "b76a6a178bac7859bc180c65f58e028c23dd57573c7d14becaece3121ece1205",
+      "previous_sha256": "8bebb62f21506a6a54392fd712d11a71ba6cfc90e5844f8a34a0c324470ec314",
+      "uuid": "a668b1fd-0df6-42cc-827f-1107f3006755",
+      "meta_sha256": "d0161c819eb335bd87589c54e51b3c36df22737048a46a66947f58c5e19f6c05",
+      "runtime_used": true
+    },
+    {
+      "key": "enemy-boss",
+      "file": "assets/ui/image/expeditionNodes/node-enemy-boss.png",
+      "sha256": "18de43d984554a241d9e11f3cf2544feb8bc68aecc708f5ee4348b4f7b613ae7",
+      "previous_sha256": "8245c175958313d1efd0ed25cde6d40a4fc3728e641ce50a53d552b0bcf43258",
+      "uuid": "e5f65abd-a961-442e-b583-abaedb5af254",
+      "meta_sha256": "6d31ef907fea03ae39a9f96badc777e0d84a7f69792a742cf6a1c41fad26b103",
+      "runtime_used": true
+    },
+    {
+      "key": "supply",
+      "file": "assets/ui/image/expeditionNodes/node-supply.png",
+      "sha256": "27a8f002af06d93f55a1a333d9f4bf08992562f4b7500e4340049f5c921f9bb8",
+      "previous_sha256": "e88a79601cc46fe490bad9dc44bad66685436e564bbbc3d21b04c77fa9e0d49d",
+      "uuid": "7cccf010-a497-48c8-8db2-53d5378ba6a2",
+      "meta_sha256": "b98b6c1749a0ff214b63dfa75d9b75333854c54c884be76af7cc0504a5e56e66",
+      "runtime_used": true
+    },
+    {
+      "key": "search",
+      "file": "assets/ui/image/expeditionNodes/node-search.png",
+      "sha256": "7646c7048b7230828872adb74c813c6c54c9b41ff1c6970599fe2be8dc9724cf",
+      "previous_sha256": "7f65a2a3cb0ff7597de5a5c9a5d6b39d68a9b5d4fbe4995a60c737ed6f950859",
+      "uuid": "b37b6dc9-3980-4e31-9459-8e43718b81c4",
+      "meta_sha256": "aa344c3697d97b9fb054187397dc4f9fc04c6393a72e2a8a693d776eda4393fd",
+      "runtime_used": true
+    },
+    {
+      "key": "borrow",
+      "file": "assets/ui/image/expeditionNodes/node-borrow.png",
+      "sha256": "119aa4e9dd8d07c00e3e0f5664d41936a192645cfb439a679a59716434fddf2c",
+      "previous_sha256": "f47bb245618fcc4ab9a9b30789e05f6c88d60ba69b6aa96a2998137fc3ea0040",
+      "uuid": "a6c56939-a81b-4d7a-845b-6d5d356b0ac7",
+      "meta_sha256": "f77e5cb267765ff479a95b0451f2b44524a07d5a5e4df073c52d9b700700b541",
+      "runtime_used": true
+    },
+    {
+      "key": "insight",
+      "file": "assets/ui/image/expeditionNodes/node-insight.png",
+      "sha256": "935119f449ad6c5d1ca5a4558d450a8a3587c2defed8ecc0912be71989e7d051",
+      "previous_sha256": "6c1f2a00f8c3cf70a056f0bcf28b79421f9eaf27785220415652f45eca1d1981",
+      "uuid": "29367c60-5ee1-4987-a4a9-49c59bfa0f88",
+      "meta_sha256": "d7814e47803c5e72c80b641e5499cfb323dd04e44e80dc91738c62161265b160",
+      "runtime_used": true
+    },
+    {
+      "key": "recovery",
+      "file": "assets/ui/image/expeditionNodes/node-recovery.png",
+      "sha256": "8a877f42bd396bccfb396fc79479d1cfc6a639321b15b0080cb0574aca8f5d65",
+      "previous_sha256": "c55c2546b70edf30f2ed705245d7b2d1cc012989ac75e83fbc3c4756dce5c6e6",
+      "uuid": "c4e31583-a80a-4098-9f6f-117079279304",
+      "meta_sha256": "d48eb7175bdfb0c71c3204760484e24850235ca5e57495b8d39fbebcebf2fb27",
+      "runtime_used": true
+    },
+    {
+      "key": "extract",
+      "file": "assets/ui/image/expeditionNodes/node-extract.png",
+      "sha256": "e88169d2dcc15978d4ad8d43b75bff2b58040fcb463642332002bea9a37505a0",
+      "previous_sha256": "134d771af75a68268477b50b0f9d15a58b41076ec237f6cbab7a8b53ed746f42",
+      "uuid": "5a2c2bb6-54d5-4099-93da-bd2af385b624",
+      "meta_sha256": "d3fab0e8d7cb1dd5cb872f4f3ca040ec9c932605f5487d4ae910ddf29db08b73",
+      "runtime_used": true
+    },
+    {
+      "key": "battle-loot",
+      "file": "assets/ui/image/expeditionNodes/node-battle-loot.png",
+      "sha256": "930392b888c07dbc741a6d1fb84d5ffecdd563f7af1016984aaceba2fba89ff2",
+      "previous_sha256": "efdde13122fd5e6bb4e165390396ce5d0dcfab5ed42215f3a0b904b5731cd242",
+      "uuid": "0fb59beb-596d-4961-a517-83bcb55b8cf3",
+      "meta_sha256": "ce2c1cf7c89cd535c2fabfb29966ef07571b9d1609ae21a392c10504704ccb1b",
+      "runtime_used": true
+    },
+    {
+      "key": "herb",
+      "file": "assets/ui/image/expeditionNodes/node-herb.png",
+      "sha256": "7de2e604603a71895ffa738088cce14b6bef4ecb6c905be15e1bcc7945c3c5e8",
+      "previous_sha256": "62c7e8112834347361a16eaaf4ec6a81958e0ebef90bc51ae285c5bd6d52aead",
+      "uuid": "ea2aa39a-9abb-4d57-85ff-c41ab6f3869e",
+      "meta_sha256": "d8160e80904a088a381c6309361c638de47089146f9e674ffe59b8340ca7a7e7",
+      "runtime_used": false
+    },
+    {
+      "key": "ore",
+      "file": "assets/ui/image/expeditionNodes/node-ore.png",
+      "sha256": "f11907d0bf6c27723f0118d5dbfca32085e1857ba03b7342f4faa4c937a2a609",
+      "previous_sha256": "2a5f48155d09d3b8552dff359ce6cb735a3fd2f041c80ef888ac5952fa47e9a8",
+      "uuid": "93f380fc-cfad-4897-a405-8a5d532200d9",
+      "meta_sha256": "1717547300fbe092202ab50737b14028399dea2c3a528d8a950d41126c96cb7c",
+      "runtime_used": false
+    },
+    {
+      "key": "chest-common",
+      "file": "assets/ui/image/expeditionNodes/node-chest-common.png",
+      "sha256": "9c9235cb726debfd8f10ef327940892b785450fdcd036fdab25adda9341d92fa",
+      "previous_sha256": "bb0c20eb0bae211729c01c43d5f2a0a85a4d74c073ba95c669a9feee4670a7b1",
+      "uuid": "bd34ca6d-063b-428a-97cf-712ebcdc85d4",
+      "meta_sha256": "843890e0647b312ef29e6c6848c6d91f39708ae882d2192ed4c816afa237ebb3",
+      "runtime_used": false
+    },
+    {
+      "key": "chest-refined",
+      "file": "assets/ui/image/expeditionNodes/node-chest-refined.png",
+      "sha256": "cd262615d74f0ee7238eda3760b915f36aa33d89cda6bbe582dd146dfb16808c",
+      "previous_sha256": "9e6c0f4f035e180590c251462138d2f842bcb07e0fbbc28c9d3d5a0dc80c4670",
+      "uuid": "1b8a3924-98a3-49eb-a933-2d6b167b658b",
+      "meta_sha256": "5663ffb8645cfa845ca98303dfeba82cadba3cd78172e2d7712bc06cd54da14e",
+      "runtime_used": false
+    },
+    {
+      "key": "chest-treasure",
+      "file": "assets/ui/image/expeditionNodes/node-chest-treasure.png",
+      "sha256": "2726910a1ca9af11d8ba3136aa6cb054f39f59675b078809032ea5b63bfee7e4",
+      "previous_sha256": "09ea4e4a8d093126dd62a36ee30ae3829bbc45b341c3c186d6bd5bb4ee49ca0c",
+      "uuid": "d75c3543-b724-4246-af66-14fd13851970",
+      "meta_sha256": "95f832970b421312ff47a8c46174e2b07d484e6bc228465e083c8605b79d5745",
+      "runtime_used": false
+    },
+    {
+      "key": "cave",
+      "file": "assets/ui/image/expeditionNodes/node-cave.png",
+      "sha256": "e98c91f18b408ff9475dd9c07f8cba421cfb7669f3105979d6db7a56dd7570de",
+      "previous_sha256": "d0e4e616e5a515da305e8cc2a367bd07fde98f3e979e91c25603a4ec7b10b424",
+      "uuid": "3531a009-0a3d-4a00-bf1d-7d2e7a8014c0",
+      "meta_sha256": "db253f9cf707da8e7fa3b1c2952c696e7cdc601eea83d7e042f03e17668afbb8",
+      "runtime_used": false
+    },
+    {
+      "key": "base",
+      "file": "assets/ui/image/expeditionNodes/node-base.png",
+      "sha256": "18c3330ef2eeafa3b7482249a5da5cb7bf114d38436a3b6d3a138c15b6b40e26",
+      "previous_sha256": "d8c29578a3d36214afd84164cc4dacd593793d7025d5d6e788b1f92c514583fb",
+      "uuid": "b9c7b3c0-d155-4445-98ab-980d0d0610b1",
+      "meta_sha256": "fd5dc16fb0df46a9417aafee1fa251dcd7119be273f4e675dba297334639e029",
+      "runtime_used": true
+    }
+  ]
+}

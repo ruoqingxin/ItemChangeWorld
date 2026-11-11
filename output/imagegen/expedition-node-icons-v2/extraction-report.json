@@ -1,0 +1,496 @@
+{
+  "source": "E:\\CjnxSQpp.png",
+  "source_sha256": "3eb045516d15cf76f10bb1382af48638c1b26686184d645c4435eec4eefe8c7f",
+  "source_size": [
+    1920,
+    1072
+  ],
+  "source_has_alpha": false,
+  "method": "Local checker-model subtraction, outline-filled masks, edge unmixing and light mattes; no generation API.",
+  "shared_canvas_scale": 1.2,
+  "shared_baseline512": 440,
+  "note": "512 is an export canvas, not additional generated source detail. Existing game assets are unchanged.",
+  "alpha_recovery": "Approximate: source is flattened RGB. Painted light directions are retained with reconstructed opacity and checker smoothing, not lossless alpha recovery.",
+  "background_fit": {
+    "neutral_background_pixels": 1189084,
+    "median_error": 0.7642673949110019,
+    "p95_error": 2.944659594390205
+  },
+  "files": [
+    {
+      "key": "start",
+      "name": "入境处",
+      "file": "node-start.png",
+      "source_crop": [
+        185,
+        30,
+        455,
+        295
+      ],
+      "source_subject_bounds": [
+        28,
+        18,
+        240,
+        255
+      ],
+      "alpha_bounds512": [
+        125,
+        161,
+        383,
+        446
+      ],
+      "transparent_pixels512": 204286,
+      "partial_pixels512": 23396
+    },
+    {
+      "key": "transit",
+      "name": "空节点",
+      "file": "node-transit.png",
+      "source_crop": [
+        495,
+        90,
+        805,
+        255
+      ],
+      "source_subject_bounds": [
+        20,
+        26,
+        291,
+        148
+      ],
+      "alpha_bounds512": [
+        91,
+        290,
+        422,
+        442
+      ],
+      "transparent_pixels512": 232447,
+      "partial_pixels512": 3010
+    },
+    {
+      "key": "enemy-normal",
+      "name": "普通敌人",
+      "file": "node-enemy-normal.png",
+      "source_crop": [
+        880,
+        35,
+        1060,
+        295
+      ],
+      "source_subject_bounds": [
+        22,
+        19,
+        146,
+        244
+      ],
+      "alpha_bounds512": [
+        172,
+        166,
+        326,
+        440
+      ],
+      "transparent_pixels512": 230709,
+      "partial_pixels512": 3012
+    },
+    {
+      "key": "enemy-elite",
+      "name": "精英敌人",
+      "file": "node-enemy-elite.png",
+      "source_crop": [
+        1155,
+        30,
+        1445,
+        305
+      ],
+      "source_subject_bounds": [
+        22,
+        20,
+        267,
+        262
+      ],
+      "alpha_bounds512": [
+        112,
+        151,
+        411,
+        447
+      ],
+      "transparent_pixels512": 218158,
+      "partial_pixels512": 4912
+    },
+    {
+      "key": "enemy-boss",
+      "name": "首领",
+      "file": "node-enemy-boss.png",
+      "source_crop": [
+        1445,
+        25,
+        1830,
+        305
+      ],
+      "source_subject_bounds": [
+        17,
+        18,
+        362,
+        264
+      ],
+      "alpha_bounds512": [
+        47,
+        143,
+        465,
+        444
+      ],
+      "transparent_pixels512": 213108,
+      "partial_pixels512": 5929
+    },
+    {
+      "key": "supply",
+      "name": "补给处",
+      "file": "node-supply.png",
+      "source_crop": [
+        205,
+        315,
+        435,
+        550
+      ],
+      "source_subject_bounds": [
+        15,
+        17,
+        208,
+        214
+      ],
+      "alpha_bounds512": [
+        133,
+        196,
+        370,
+        438
+      ],
+      "transparent_pixels512": 224812,
+      "partial_pixels512": 3596
+    },
+    {
+      "key": "search",
+      "name": "搜索点",
+      "file": "node-search.png",
+      "source_crop": [
+        510,
+        330,
+        805,
+        560
+      ],
+      "source_subject_bounds": [
+        19,
+        15,
+        265,
+        198
+      ],
+      "alpha_bounds512": [
+        103,
+        197,
+        401,
+        422
+      ],
+      "transparent_pixels512": 221274,
+      "partial_pixels512": 3529
+    },
+    {
+      "key": "borrow",
+      "name": "借法台",
+      "file": "node-borrow.png",
+      "source_crop": [
+        850,
+        305,
+        1100,
+        570
+      ],
+      "source_subject_bounds": [
+        22,
+        20,
+        215,
+        241
+      ],
+      "alpha_bounds512": [
+        130,
+        169,
+        367,
+        440
+      ],
+      "transparent_pixels512": 224656,
+      "partial_pixels512": 12614
+    },
+    {
+      "key": "insight",
+      "name": "悟道处",
+      "file": "node-insight.png",
+      "source_crop": [
+        1180,
+        295,
+        1420,
+        565
+      ],
+      "source_subject_bounds": [
+        4,
+        3,
+        233,
+        266
+      ],
+      "alpha_bounds512": [
+        122,
+        139,
+        398,
+        456
+      ],
+      "transparent_pixels512": 183014,
+      "partial_pixels512": 42685
+    },
+    {
+      "key": "recovery",
+      "name": "恢复点",
+      "file": "node-recovery.png",
+      "source_crop": [
+        1490,
+        335,
+        1765,
+        550
+      ],
+      "source_subject_bounds": [
+        32,
+        24,
+        248,
+        195
+      ],
+      "alpha_bounds512": [
+        118,
+        227,
+        381,
+        438
+      ],
+      "transparent_pixels512": 228846,
+      "partial_pixels512": 3142
+    },
+    {
+      "key": "extract",
+      "name": "撤离点",
+      "file": "node-extract.png",
+      "source_crop": [
+        160,
+        560,
+        465,
+        805
+      ],
+      "source_subject_bounds": [
+        21,
+        14,
+        301,
+        227
+      ],
+      "alpha_bounds512": [
+        89,
+        184,
+        426,
+        441
+      ],
+      "transparent_pixels512": 188654,
+      "partial_pixels512": 34576
+    },
+    {
+      "key": "battle-loot",
+      "name": "战后遗藏",
+      "file": "node-battle-loot.png",
+      "source_crop": [
+        520,
+        590,
+        810,
+        795
+      ],
+      "source_subject_bounds": [
+        28,
+        21,
+        257,
+        184
+      ],
+      "alpha_bounds512": [
+        126,
+        240,
+        405,
+        442
+      ],
+      "transparent_pixels512": 224305,
+      "partial_pixels512": 3583
+    },
+    {
+      "key": "herb",
+      "name": "药品采集处",
+      "file": "node-herb.png",
+      "source_crop": [
+        850,
+        560,
+        1105,
+        810
+      ],
+      "source_subject_bounds": [
+        9,
+        16,
+        233,
+        234
+      ],
+      "alpha_bounds512": [
+        114,
+        172,
+        388,
+        440
+      ],
+      "transparent_pixels512": 222705,
+      "partial_pixels512": 5556
+    },
+    {
+      "key": "ore",
+      "name": "矿石采集处",
+      "file": "node-ore.png",
+      "source_crop": [
+        1170,
+        575,
+        1420,
+        810
+      ],
+      "source_subject_bounds": [
+        33,
+        19,
+        224,
+        207
+      ],
+      "alpha_bounds512": [
+        143,
+        194,
+        378,
+        425
+      ],
+      "transparent_pixels512": 222601,
+      "partial_pixels512": 3688
+    },
+    {
+      "key": "chest-common",
+      "name": "普通宝箱",
+      "file": "node-chest-common.png",
+      "source_crop": [
+        1490,
+        575,
+        1765,
+        810
+      ],
+      "source_subject_bounds": [
+        22,
+        25,
+        241,
+        216
+      ],
+      "alpha_bounds512": [
+        106,
+        201,
+        374,
+        436
+      ],
+      "transparent_pixels512": 215418,
+      "partial_pixels512": 3275
+    },
+    {
+      "key": "chest-refined",
+      "name": "精制宝箱",
+      "file": "node-chest-refined.png",
+      "source_crop": [
+        200,
+        810,
+        465,
+        1055
+      ],
+      "source_subject_bounds": [
+        17,
+        26,
+        238,
+        231
+      ],
+      "alpha_bounds512": [
+        118,
+        192,
+        388,
+        443
+      ],
+      "transparent_pixels512": 212878,
+      "partial_pixels512": 3581
+    },
+    {
+      "key": "chest-treasure",
+      "name": "珍藏宝箱",
+      "file": "node-chest-treasure.png",
+      "source_crop": [
+        510,
+        815,
+        810,
+        1055
+      ],
+      "source_subject_bounds": [
+        32,
+        28,
+        263,
+        214
+      ],
+      "alpha_bounds512": [
+        112,
+        201,
+        394,
+        428
+      ],
+      "transparent_pixels512": 217928,
+      "partial_pixels512": 3373
+    },
+    {
+      "key": "cave",
+      "name": "洞府",
+      "file": "node-cave.png",
+      "source_crop": [
+        845,
+        800,
+        1120,
+        1055
+      ],
+      "source_subject_bounds": [
+        10,
+        16,
+        256,
+        241
+      ],
+      "alpha_bounds512": [
+        99,
+        170,
+        397,
+        444
+      ],
+      "transparent_pixels512": 206597,
+      "partial_pixels512": 3882
+    },
+    {
+      "key": "base",
+      "name": "通用底座",
+      "file": "node-base.png",
+      "source_crop": [
+        1150,
+        820,
+        1435,
+        1045
+      ],
+      "source_subject_bounds": [
+        25,
+        32,
+        277,
+        202
+      ],
+      "alpha_bounds512": [
+        109,
+        234,
+        417,
+        443
+      ],
+      "transparent_pixels512": 211630,
+      "partial_pixels512": 3289
+    }
+  ]
+}

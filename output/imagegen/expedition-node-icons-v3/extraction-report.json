@@ -1,0 +1,653 @@
+{
+  "source": "E:\\P3GyfXig.png",
+  "source_sha256": "3d4c6734d9221fc90282c8907f5e98530979b29a209f5e52c58230bd4da09f6e",
+  "source_size": [
+    1920,
+    1072
+  ],
+  "source_mode": "RGB",
+  "source_has_alpha": false,
+  "method": "Local checker estimation, opaque material masks and reconstructed atmosphere; no generation API.",
+  "limitations": "Flattened RGB source: reconstructed smoke/glow alpha is approximate, not a lossless recovery.",
+  "export_size": [
+    128,
+    128
+  ],
+  "count": 19,
+  "runtime_replaced": false,
+  "sizing": "Subject-based fitting with 1-3px outer effect guard; common icons target 114px solid long axis.",
+  "background_fit": {
+    "neutral_background_pixels": 891268,
+    "median_error": 0.7647114515980178,
+    "p95_error": 2.6032311494162204
+  },
+  "files": [
+    {
+      "body_bounds_source": [
+        48,
+        30,
+        258,
+        258
+      ],
+      "effect_bounds_source": [
+        1,
+        6,
+        309,
+        287
+      ],
+      "body_long_axis128": 93.27,
+      "scale": 0.4090909090909091,
+      "alpha_bounds128": [
+        1,
+        6,
+        127,
+        121
+      ],
+      "partial_pixels": 6133,
+      "key": "start",
+      "name": "入境处",
+      "file": "node-start.png",
+      "source_crop": [
+        165,
+        22,
+        475,
+        310
+      ],
+      "sha256": "21979adc5a4d475c11fcd9979ffee4796d2af0a52f58f63c3da8bf01d8ee0ba0"
+    },
+    {
+      "body_bounds_source": [
+        24,
+        36,
+        296,
+        158
+      ],
+      "effect_bounds_source": [
+        1,
+        1,
+        324,
+        192
+      ],
+      "body_long_axis128": 106.11,
+      "scale": 0.39009287925696595,
+      "alpha_bounds128": [
+        1,
+        26,
+        127,
+        101
+      ],
+      "partial_pixels": 3808,
+      "key": "transit",
+      "name": "空节点图案",
+      "file": "node-transit.png",
+      "source_crop": [
+        490,
+        80,
+        815,
+        273
+      ],
+      "sha256": "2e737b17bf2f458b3200da4fcd3bac63496a07d581ae277f8fe595f0b349d045"
+    },
+    {
+      "body_bounds_source": [
+        64,
+        50,
+        231,
+        258
+      ],
+      "effect_bounds_source": [
+        1,
+        12,
+        294,
+        289
+      ],
+      "body_long_axis128": 89.04,
+      "scale": 0.4280701754385965,
+      "alpha_bounds128": [
+        1,
+        4,
+        126,
+        123
+      ],
+      "partial_pixels": 5164,
+      "key": "enemy-normal",
+      "name": "普通敌人",
+      "file": "node-enemy-normal.png",
+      "source_crop": [
+        825,
+        15,
+        1120,
+        305
+      ],
+      "sha256": "fe5e455af6dc2490d8567fadcc3ea49f95561b15d59b5c82f483bf854689f975"
+    },
+    {
+      "body_bounds_source": [
+        34,
+        35,
+        274,
+        273
+      ],
+      "effect_bounds_source": [
+        1,
+        8,
+        309,
+        294
+      ],
+      "body_long_axis128": 96.32,
+      "scale": 0.40131578947368424,
+      "alpha_bounds128": [
+        2,
+        6,
+        126,
+        121
+      ],
+      "partial_pixels": 6328,
+      "key": "enemy-elite",
+      "name": "精英敌人",
+      "file": "node-enemy-elite.png",
+      "source_crop": [
+        1145,
+        15,
+        1455,
+        310
+      ],
+      "sha256": "16dc4921d7b977d6d96414883dcefc787796d676a2eb96f45cdad02a6a4781ec"
+    },
+    {
+      "body_bounds_source": [
+        24,
+        35,
+        365,
+        280
+      ],
+      "effect_bounds_source": [
+        1,
+        1,
+        404,
+        294
+      ],
+      "body_long_axis128": 106.62,
+      "scale": 0.31265508684863524,
+      "alpha_bounds128": [
+        1,
+        18,
+        127,
+        110
+      ],
+      "partial_pixels": 4628,
+      "key": "enemy-boss",
+      "name": "首领",
+      "file": "node-enemy-boss.png",
+      "source_crop": [
+        1440,
+        12,
+        1845,
+        310
+      ],
+      "sha256": "4166a8d08e80fca571eea70b66a01560dc34f9e55d98bb14ce35908984528771"
+    },
+    {
+      "body_bounds_source": [
+        37,
+        23,
+        234,
+        219
+      ],
+      "effect_bounds_source": [
+        1,
+        1,
+        274,
+        239
+      ],
+      "body_long_axis128": 89.68,
+      "scale": 0.4552238805970149,
+      "alpha_bounds128": [
+        2,
+        10,
+        126,
+        118
+      ],
+      "partial_pixels": 3919,
+      "key": "supply",
+      "name": "补给处",
+      "file": "node-supply.png",
+      "source_crop": [
+        180,
+        310,
+        455,
+        550
+      ],
+      "sha256": "ee4922342b4f96aa28075eaeb318461d32749db890b1e784ee365b51495d9916"
+    },
+    {
+      "body_bounds_source": [
+        30,
+        28,
+        273,
+        211
+      ],
+      "effect_bounds_source": [
+        1,
+        12,
+        309,
+        235
+      ],
+      "body_long_axis128": 96.88,
+      "scale": 0.39869281045751637,
+      "alpha_bounds128": [
+        2,
+        19,
+        125,
+        107
+      ],
+      "partial_pixels": 3166,
+      "key": "search",
+      "name": "搜索点",
+      "file": "node-search.png",
+      "source_crop": [
+        500,
+        317,
+        810,
+        553
+      ],
+      "sha256": "fc079242a687c30127e25c52eebcd915998c8fed72adb84529cf99c88b652c0c"
+    },
+    {
+      "body_bounds_source": [
+        32,
+        20,
+        225,
+        240
+      ],
+      "effect_bounds_source": [
+        1,
+        1,
+        264,
+        252
+      ],
+      "body_long_axis128": 105.25,
+      "scale": 0.47843137254901963,
+      "alpha_bounds128": [
+        1,
+        4,
+        127,
+        124
+      ],
+      "partial_pixels": 5247,
+      "key": "borrow",
+      "name": "借法台",
+      "file": "node-borrow.png",
+      "source_crop": [
+        840,
+        305,
+        1105,
+        558
+      ],
+      "sha256": "547b5430aabb10310600c11134f36df306dd1cb891e7f5357c370104b77eef9a"
+    },
+    {
+      "body_bounds_source": [
+        42,
+        23,
+        207,
+        257
+      ],
+      "effect_bounds_source": [
+        1,
+        1,
+        264,
+        277
+      ],
+      "body_long_axis128": 104.96,
+      "scale": 0.4485294117647059,
+      "alpha_bounds128": [
+        5,
+        2,
+        123,
+        126
+      ],
+      "partial_pixels": 8983,
+      "key": "insight",
+      "name": "悟道处",
+      "file": "node-insight.png",
+      "source_crop": [
+        1170,
+        290,
+        1435,
+        568
+      ],
+      "sha256": "118d7d90c59da1892e9636ebf5b8184a962522b27b8520f618cf459243e8c360"
+    },
+    {
+      "body_bounds_source": [
+        42,
+        35,
+        256,
+        205
+      ],
+      "effect_bounds_source": [
+        1,
+        1,
+        294,
+        228
+      ],
+      "body_long_axis128": 90.34,
+      "scale": 0.42214532871972316,
+      "alpha_bounds128": [
+        2,
+        16,
+        126,
+        112
+      ],
+      "partial_pixels": 5360,
+      "key": "recovery",
+      "name": "恢复点",
+      "file": "node-recovery.png",
+      "source_crop": [
+        1480,
+        325,
+        1775,
+        554
+      ],
+      "sha256": "4bc17a6aa9faf463974c6e90d338b486aeba69903414ac17b58ca1f69bbc530a"
+    },
+    {
+      "body_bounds_source": [
+        51,
+        31,
+        280,
+        233
+      ],
+      "effect_bounds_source": [
+        1,
+        1,
+        328,
+        258
+      ],
+      "body_long_axis128": 87.03,
+      "scale": 0.38006230529595014,
+      "alpha_bounds128": [
+        2,
+        15,
+        126,
+        113
+      ],
+      "partial_pixels": 7420,
+      "key": "extract",
+      "name": "撤离点",
+      "file": "node-extract.png",
+      "source_crop": [
+        155,
+        551,
+        484,
+        810
+      ],
+      "sha256": "291a1e7aec365ce64c5f56586b28c515e1db95a8f232b3a5f0bc5162cab85cdf"
+    },
+    {
+      "body_bounds_source": [
+        34,
+        23,
+        269,
+        186
+      ],
+      "effect_bounds_source": [
+        1,
+        10,
+        295,
+        212
+      ],
+      "body_long_axis128": 100.24,
+      "scale": 0.42657342657342656,
+      "alpha_bounds128": [
+        1,
+        21,
+        126,
+        107
+      ],
+      "partial_pixels": 2337,
+      "key": "battle-loot",
+      "name": "战后遗藏",
+      "file": "node-battle-loot.png",
+      "source_crop": [
+        515,
+        588,
+        811,
+        801
+      ],
+      "sha256": "12c128db8a8a48ad96d8ff19788042eec3f3103602222291829f8261f36d38d6"
+    },
+    {
+      "body_bounds_source": [
+        20,
+        11,
+        244,
+        229
+      ],
+      "effect_bounds_source": [
+        1,
+        1,
+        270,
+        242
+      ],
+      "body_long_axis128": 103.52,
+      "scale": 0.4621212121212121,
+      "alpha_bounds128": [
+        2,
+        8,
+        126,
+        119
+      ],
+      "partial_pixels": 5609,
+      "key": "herb",
+      "name": "药品采集处",
+      "file": "node-herb.png",
+      "source_crop": [
+        839,
+        565,
+        1110,
+        808
+      ],
+      "sha256": "84a836f15ef4561b414dd60893750e8f9e855c447a558e2c9cb680dc368758cd"
+    },
+    {
+      "body_bounds_source": [
+        35,
+        27,
+        226,
+        215
+      ],
+      "effect_bounds_source": [
+        1,
+        1,
+        263,
+        235
+      ],
+      "body_long_axis128": 91.02,
+      "scale": 0.4765625,
+      "alpha_bounds128": [
+        1,
+        8,
+        126,
+        120
+      ],
+      "partial_pixels": 7142,
+      "key": "ore",
+      "name": "矿石采集处",
+      "file": "node-ore.png",
+      "source_crop": [
+        1168,
+        567,
+        1432,
+        803
+      ],
+      "sha256": "52296b5fb1486960e9c685ff670668d6221050a670fa0c04a266a148242a6908"
+    },
+    {
+      "body_bounds_source": [
+        26,
+        17,
+        245,
+        207
+      ],
+      "effect_bounds_source": [
+        1,
+        9,
+        280,
+        223
+      ],
+      "body_long_axis128": 96.8,
+      "scale": 0.4420289855072464,
+      "alpha_bounds128": [
+        2,
+        16,
+        125,
+        111
+      ],
+      "partial_pixels": 3170,
+      "key": "chest-common",
+      "name": "普通宝箱",
+      "file": "node-chest-common.png",
+      "source_crop": [
+        1486,
+        583,
+        1767,
+        807
+      ],
+      "sha256": "6c936b143d742271db7d3b5b3b596fb089671caf8bdae28e8542fd30eb8c431c"
+    },
+    {
+      "body_bounds_source": [
+        34,
+        29,
+        255,
+        233
+      ],
+      "effect_bounds_source": [
+        1,
+        1,
+        294,
+        251
+      ],
+      "body_long_axis128": 94.27,
+      "scale": 0.42657342657342656,
+      "alpha_bounds128": [
+        1,
+        10,
+        126,
+        117
+      ],
+      "partial_pixels": 5199,
+      "key": "chest-refined",
+      "name": "精制宝箱",
+      "file": "node-chest-refined.png",
+      "source_crop": [
+        183,
+        807,
+        478,
+        1059
+      ],
+      "sha256": "ff5a8a46a1e5029ad93cb35f6b04db89e7b1622eb887c70845112357a175decd"
+    },
+    {
+      "body_bounds_source": [
+        30,
+        30,
+        261,
+        216
+      ],
+      "effect_bounds_source": [
+        1,
+        1,
+        293,
+        242
+      ],
+      "body_long_axis128": 98.54,
+      "scale": 0.42657342657342656,
+      "alpha_bounds128": [
+        1,
+        12,
+        126,
+        115
+      ],
+      "partial_pixels": 5017,
+      "key": "chest-treasure",
+      "name": "珍藏宝箱",
+      "file": "node-chest-treasure.png",
+      "source_crop": [
+        512,
+        813,
+        806,
+        1056
+      ],
+      "sha256": "12ff6412695b5908d27ab1cf637effb1661c668a7688b566773a2fadc1551c34"
+    },
+    {
+      "body_bounds_source": [
+        19,
+        12,
+        258,
+        236
+      ],
+      "effect_bounds_source": [
+        1,
+        1,
+        273,
+        253
+      ],
+      "body_long_axis128": 110.71,
+      "scale": 0.4632352941176471,
+      "alpha_bounds128": [
+        1,
+        5,
+        127,
+        122
+      ],
+      "partial_pixels": 2755,
+      "key": "cave",
+      "name": "洞府",
+      "file": "node-cave.png",
+      "source_crop": [
+        846,
+        805,
+        1123,
+        1059
+      ],
+      "sha256": "beab905aec20ba49594b64f1b701fd2a723deff4f2eeed8c41667c5fa1ec2005"
+    },
+    {
+      "body_bounds_source": [
+        34,
+        42,
+        285,
+        212
+      ],
+      "effect_bounds_source": [
+        1,
+        1,
+        317,
+        242
+      ],
+      "body_long_axis128": 98.78,
+      "scale": 0.3935483870967742,
+      "alpha_bounds128": [
+        2,
+        16,
+        126,
+        111
+      ],
+      "partial_pixels": 4054,
+      "key": "base",
+      "name": "通用底座",
+      "file": "node-base.png",
+      "source_crop": [
+        1142,
+        810,
+        1460,
+        1053
+      ],
+      "sha256": "d1dfab850597504f16be6737c9c1a1a9cb112db864f6259ea95d162c5d4b8eb3"
+    }
+  ]
+}

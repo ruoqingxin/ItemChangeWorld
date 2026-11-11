@@ -1,0 +1,441 @@
+{
+  "source_sha256": "3eb045516d15cf76f10bb1382af48638c1b26686184d645c4435eec4eefe8c7f",
+  "size": [
+    128,
+    128
+  ],
+  "existing_icons_replaced": 12,
+  "new_assets": 7,
+  "sizing": "Crop native alpha bounds, fit 116px long axis, center on 128px canvas with 6px minimum padding. Enemy family retains a common scale anchored to the boss's 116px width.",
+  "map_rendering": "Separate shared base below center sprite; existing marker and hit areas retained.",
+  "config_changed": false,
+  "saves_changed": false,
+  "library_only": [
+    "herb",
+    "ore",
+    "chest-common",
+    "chest-refined",
+    "chest-treasure",
+    "cave"
+  ],
+  "files": [
+    {
+      "key": "start",
+      "file": "assets/ui/image/expeditionNodes/node-start.png",
+      "uuid": "b37989ba-5e8a-4998-a989-812fb939a95f",
+      "previous_uuid": "b37989ba-5e8a-4998-a989-812fb939a95f",
+      "sha256": "438f5c1e1aeedc11bf8637cf29bba282ffb3e9ce9858d80aa56a4042c4c93963",
+      "runtime_used": true,
+      "source_sha256": "d024fc74c78017d953f56a5d76105ac1af2cd4f73545dac2e4b5c4cca553d5b5",
+      "source_crop": {
+        "left": 16,
+        "top": 16,
+        "width": 212,
+        "height": 237
+      },
+      "target_long_axis": 116,
+      "alpha_bounds": {
+        "left": 12,
+        "top": 6,
+        "width": 104,
+        "height": 116
+      }
+    },
+    {
+      "key": "transit",
+      "file": "assets/ui/image/expeditionNodes/node-transit.png",
+      "uuid": "b42cd6d3-5ee8-4791-8362-d07d7b26376e",
+      "previous_uuid": "b42cd6d3-5ee8-4791-8362-d07d7b26376e",
+      "sha256": "689b42df1b43d8c0e1697f9c04f13fe05adf07cb31b13ab3150137e30ccd0f29",
+      "runtime_used": true,
+      "source_sha256": "37fea82c7290c9469203640a111c2ee606d91132e3155be43d8c770e1f5b4ad9",
+      "source_crop": {
+        "left": 16,
+        "top": 16,
+        "width": 271,
+        "height": 122
+      },
+      "target_long_axis": 116,
+      "alpha_bounds": {
+        "left": 6,
+        "top": 38,
+        "width": 116,
+        "height": 52
+      }
+    },
+    {
+      "key": "enemy-normal",
+      "file": "assets/ui/image/expeditionNodes/node-enemy-normal.png",
+      "uuid": "7402b693-cb1f-4120-8c53-463c9f300ca9",
+      "previous_uuid": "7402b693-cb1f-4120-8c53-463c9f300ca9",
+      "sha256": "3e68763bb8677b5b01233ffc0ae6772eb4d36f7aa7826e50fdb49e6e78bee897",
+      "runtime_used": true,
+      "source_sha256": "f68ea77a566b3bfb54017720ccdfbff026063eda8cbbcc7d31b9cafe9e0ef643",
+      "source_crop": {
+        "left": 16,
+        "top": 16,
+        "width": 124,
+        "height": 225
+      },
+      "target_long_axis": 76,
+      "alpha_bounds": {
+        "left": 43,
+        "top": 26,
+        "width": 42,
+        "height": 76
+      }
+    },
+    {
+      "key": "enemy-elite",
+      "file": "assets/ui/image/expeditionNodes/node-enemy-elite.png",
+      "uuid": "a668b1fd-0df6-42cc-827f-1107f3006755",
+      "previous_uuid": "a668b1fd-0df6-42cc-827f-1107f3006755",
+      "sha256": "8bebb62f21506a6a54392fd712d11a71ba6cfc90e5844f8a34a0c324470ec314",
+      "runtime_used": true,
+      "source_sha256": "eed256245e83c0478d7a51a387af14920f10221c1e342b1e2eb90c39243560c4",
+      "source_crop": {
+        "left": 16,
+        "top": 16,
+        "width": 245,
+        "height": 242
+      },
+      "target_long_axis": 82,
+      "alpha_bounds": {
+        "left": 23,
+        "top": 23,
+        "width": 82,
+        "height": 81
+      }
+    },
+    {
+      "key": "enemy-boss",
+      "file": "assets/ui/image/expeditionNodes/node-enemy-boss.png",
+      "uuid": "e5f65abd-a961-442e-b583-abaedb5af254",
+      "previous_uuid": "e5f65abd-a961-442e-b583-abaedb5af254",
+      "sha256": "8245c175958313d1efd0ed25cde6d40a4fc3728e641ce50a53d552b0bcf43258",
+      "runtime_used": true,
+      "source_sha256": "8bb295d666d0ffe92b5a0504ed7ccd0fe5316d77449f24dd36bc4ccec852c788",
+      "source_crop": {
+        "left": 16,
+        "top": 16,
+        "width": 345,
+        "height": 246
+      },
+      "target_long_axis": 116,
+      "alpha_bounds": {
+        "left": 6,
+        "top": 22,
+        "width": 116,
+        "height": 83
+      }
+    },
+    {
+      "key": "supply",
+      "file": "assets/ui/image/expeditionNodes/node-supply.png",
+      "uuid": "7cccf010-a497-48c8-8db2-53d5378ba6a2",
+      "previous_uuid": "7cccf010-a497-48c8-8db2-53d5378ba6a2",
+      "sha256": "e88a79601cc46fe490bad9dc44bad66685436e564bbbc3d21b04c77fa9e0d49d",
+      "runtime_used": true,
+      "source_sha256": "19652186d043ac112d67ced487022f94017b1ab35c3af61cdb3edcedd912fef1",
+      "source_crop": {
+        "left": 16,
+        "top": 16,
+        "width": 193,
+        "height": 197
+      },
+      "target_long_axis": 116,
+      "alpha_bounds": {
+        "left": 7,
+        "top": 6,
+        "width": 114,
+        "height": 116
+      }
+    },
+    {
+      "key": "search",
+      "file": "assets/ui/image/expeditionNodes/node-search.png",
+      "uuid": "b37b6dc9-3980-4e31-9459-8e43718b81c4",
+      "previous_uuid": "b37b6dc9-3980-4e31-9459-8e43718b81c4",
+      "sha256": "7f65a2a3cb0ff7597de5a5c9a5d6b39d68a9b5d4fbe4995a60c737ed6f950859",
+      "runtime_used": true,
+      "source_sha256": "28221e7da4beb53d6e6669f6701d151a086dfb9bfc760b9abd4894445b28f9cb",
+      "source_crop": {
+        "left": 16,
+        "top": 16,
+        "width": 246,
+        "height": 183
+      },
+      "target_long_axis": 116,
+      "alpha_bounds": {
+        "left": 6,
+        "top": 21,
+        "width": 116,
+        "height": 86
+      }
+    },
+    {
+      "key": "borrow",
+      "file": "assets/ui/image/expeditionNodes/node-borrow.png",
+      "uuid": "a6c56939-a81b-4d7a-845b-6d5d356b0ac7",
+      "previous_uuid": "a6c56939-a81b-4d7a-845b-6d5d356b0ac7",
+      "sha256": "f47bb245618fcc4ab9a9b30789e05f6c88d60ba69b6aa96a2998137fc3ea0040",
+      "runtime_used": true,
+      "source_sha256": "5b0eae6cb90fa069cf3a2f5a20e291f43bf1fd301a2ca47b85855c5f3cc207cd",
+      "source_crop": {
+        "left": 16,
+        "top": 16,
+        "width": 193,
+        "height": 221
+      },
+      "target_long_axis": 116,
+      "alpha_bounds": {
+        "left": 13,
+        "top": 6,
+        "width": 101,
+        "height": 116
+      }
+    },
+    {
+      "key": "insight",
+      "file": "assets/ui/image/expeditionNodes/node-insight.png",
+      "uuid": "29367c60-5ee1-4987-a4a9-49c59bfa0f88",
+      "previous_uuid": "29367c60-5ee1-4987-a4a9-49c59bfa0f88",
+      "sha256": "6c1f2a00f8c3cf70a056f0bcf28b79421f9eaf27785220415652f45eca1d1981",
+      "runtime_used": true,
+      "source_sha256": "edd4862ce9b2068dddfa1dbf39dcc5948dea481eab228949d49e48657c21fd6e",
+      "source_crop": {
+        "left": 16,
+        "top": 16,
+        "width": 229,
+        "height": 263
+      },
+      "target_long_axis": 116,
+      "alpha_bounds": {
+        "left": 13,
+        "top": 6,
+        "width": 101,
+        "height": 116
+      }
+    },
+    {
+      "key": "recovery",
+      "file": "assets/ui/image/expeditionNodes/node-recovery.png",
+      "uuid": "c4e31583-a80a-4098-9f6f-117079279304",
+      "previous_uuid": "c4e31583-a80a-4098-9f6f-117079279304",
+      "sha256": "c55c2546b70edf30f2ed705245d7b2d1cc012989ac75e83fbc3c4756dce5c6e6",
+      "runtime_used": true,
+      "source_sha256": "62bcd6f6b8cf806eb74893fa7e762e4557f1796b27eebe4082bab0bac4f3486d",
+      "source_crop": {
+        "left": 16,
+        "top": 16,
+        "width": 216,
+        "height": 171
+      },
+      "target_long_axis": 116,
+      "alpha_bounds": {
+        "left": 6,
+        "top": 18,
+        "width": 116,
+        "height": 92
+      }
+    },
+    {
+      "key": "extract",
+      "file": "assets/ui/image/expeditionNodes/node-extract.png",
+      "uuid": "5a2c2bb6-54d5-4099-93da-bd2af385b624",
+      "previous_uuid": "5a2c2bb6-54d5-4099-93da-bd2af385b624",
+      "sha256": "134d771af75a68268477b50b0f9d15a58b41076ec237f6cbab7a8b53ed746f42",
+      "runtime_used": true,
+      "source_sha256": "6cb5316b4fdf984bbef17a8955319d9b35364f7867fc40d0a131e8fa3dbcdad8",
+      "source_crop": {
+        "left": 16,
+        "top": 16,
+        "width": 280,
+        "height": 213
+      },
+      "target_long_axis": 116,
+      "alpha_bounds": {
+        "left": 6,
+        "top": 20,
+        "width": 116,
+        "height": 87
+      }
+    },
+    {
+      "key": "battle-loot",
+      "file": "assets/ui/image/expeditionNodes/node-battle-loot.png",
+      "uuid": "0fb59beb-596d-4961-a517-83bcb55b8cf3",
+      "previous_uuid": "0fb59beb-596d-4961-a517-83bcb55b8cf3",
+      "sha256": "efdde13122fd5e6bb4e165390396ce5d0dcfab5ed42215f3a0b904b5731cd242",
+      "runtime_used": true,
+      "source_sha256": "ee5c34c42e6d9253c071673f8b08ca41bd69ae6867ebd385253a967a7b65e4e8",
+      "source_crop": {
+        "left": 16,
+        "top": 16,
+        "width": 229,
+        "height": 163
+      },
+      "target_long_axis": 116,
+      "alpha_bounds": {
+        "left": 6,
+        "top": 22,
+        "width": 116,
+        "height": 83
+      }
+    },
+    {
+      "key": "herb",
+      "file": "assets/ui/image/expeditionNodes/node-herb.png",
+      "uuid": "ea2aa39a-9abb-4d57-85ff-c41ab6f3869e",
+      "previous_uuid": null,
+      "sha256": "62c7e8112834347361a16eaaf4ec6a81958e0ebef90bc51ae285c5bd6d52aead",
+      "runtime_used": false,
+      "source_sha256": "7e62d051836b0c1a0e0becc9a0575f9e92279b7241b2d2cffba63dfd0e7ff4ae",
+      "source_crop": {
+        "left": 16,
+        "top": 16,
+        "width": 224,
+        "height": 218
+      },
+      "target_long_axis": 116,
+      "alpha_bounds": {
+        "left": 6,
+        "top": 7,
+        "width": 116,
+        "height": 113
+      }
+    },
+    {
+      "key": "ore",
+      "file": "assets/ui/image/expeditionNodes/node-ore.png",
+      "uuid": "93f380fc-cfad-4897-a405-8a5d532200d9",
+      "previous_uuid": null,
+      "sha256": "2a5f48155d09d3b8552dff359ce6cb735a3fd2f041c80ef888ac5952fa47e9a8",
+      "runtime_used": false,
+      "source_sha256": "0112d29a265aac7065d6f5288b4de339712795da576d5dc4cf1a09fb97aa368f",
+      "source_crop": {
+        "left": 16,
+        "top": 16,
+        "width": 191,
+        "height": 188
+      },
+      "target_long_axis": 116,
+      "alpha_bounds": {
+        "left": 6,
+        "top": 7,
+        "width": 116,
+        "height": 114
+      }
+    },
+    {
+      "key": "chest-common",
+      "file": "assets/ui/image/expeditionNodes/node-chest-common.png",
+      "uuid": "bd34ca6d-063b-428a-97cf-712ebcdc85d4",
+      "previous_uuid": null,
+      "sha256": "bb0c20eb0bae211729c01c43d5f2a0a85a4d74c073ba95c669a9feee4670a7b1",
+      "runtime_used": false,
+      "source_sha256": "e19a6282bad39d1ee524f190c0395dd987a6063bf4c66983d815efdb936a80e4",
+      "source_crop": {
+        "left": 16,
+        "top": 16,
+        "width": 219,
+        "height": 191
+      },
+      "target_long_axis": 116,
+      "alpha_bounds": {
+        "left": 6,
+        "top": 13,
+        "width": 116,
+        "height": 101
+      }
+    },
+    {
+      "key": "chest-refined",
+      "file": "assets/ui/image/expeditionNodes/node-chest-refined.png",
+      "uuid": "1b8a3924-98a3-49eb-a933-2d6b167b658b",
+      "previous_uuid": null,
+      "sha256": "9e6c0f4f035e180590c251462138d2f842bcb07e0fbbc28c9d3d5a0dc80c4670",
+      "runtime_used": false,
+      "source_sha256": "5414578b4a0f63acf0deebe950ba3cf28b29155cb8913bf9ab543e40c43c2d41",
+      "source_crop": {
+        "left": 16,
+        "top": 16,
+        "width": 221,
+        "height": 205
+      },
+      "target_long_axis": 116,
+      "alpha_bounds": {
+        "left": 6,
+        "top": 10,
+        "width": 116,
+        "height": 108
+      }
+    },
+    {
+      "key": "chest-treasure",
+      "file": "assets/ui/image/expeditionNodes/node-chest-treasure.png",
+      "uuid": "d75c3543-b724-4246-af66-14fd13851970",
+      "previous_uuid": null,
+      "sha256": "09ea4e4a8d093126dd62a36ee30ae3829bbc45b341c3c186d6bd5bb4ee49ca0c",
+      "runtime_used": false,
+      "source_sha256": "6f5f2aa5c7e3f35e0029cae08fc6f7795338159d7238b816d88879933e605f5e",
+      "source_crop": {
+        "left": 16,
+        "top": 16,
+        "width": 231,
+        "height": 186
+      },
+      "target_long_axis": 116,
+      "alpha_bounds": {
+        "left": 6,
+        "top": 17,
+        "width": 116,
+        "height": 93
+      }
+    },
+    {
+      "key": "cave",
+      "file": "assets/ui/image/expeditionNodes/node-cave.png",
+      "uuid": "3531a009-0a3d-4a00-bf1d-7d2e7a8014c0",
+      "previous_uuid": null,
+      "sha256": "d0e4e616e5a515da305e8cc2a367bd07fde98f3e979e91c25603a4ec7b10b424",
+      "runtime_used": false,
+      "source_sha256": "e49ec10c4cca3f7e0c20b6db9b4f09c233c9d75cda8ad30d98d9e6a1a09f7f72",
+      "source_crop": {
+        "left": 16,
+        "top": 16,
+        "width": 246,
+        "height": 225
+      },
+      "target_long_axis": 116,
+      "alpha_bounds": {
+        "left": 6,
+        "top": 11,
+        "width": 116,
+        "height": 106
+      }
+    },
+    {
+      "key": "base",
+      "file": "assets/ui/image/expeditionNodes/node-base.png",
+      "uuid": "b9c7b3c0-d155-4445-98ab-980d0d0610b1",
+      "previous_uuid": null,
+      "sha256": "d8c29578a3d36214afd84164cc4dacd593793d7025d5d6e788b1f92c514583fb",
+      "runtime_used": true,
+      "source_sha256": "a8cc187e3cf20e0307d94698548a947c9e4dc808947bccc7c26ea2583eee9edc",
+      "source_crop": {
+        "left": 16,
+        "top": 16,
+        "width": 252,
+        "height": 170
+      },
+      "target_long_axis": 116,
+      "alpha_bounds": {
+        "left": 6,
+        "top": 25,
+        "width": 116,
+        "height": 78
+      }
+    }
+  ]
+}
