@@ -117,8 +117,56 @@ for (const [file, type, content] of files) {
         assert.deepEqual(nodes.get("nodeActionArea").relations[0].data, [9, 0, 13, 0]);
         assert.deepEqual(nodes.get("mapActionsArea").relations[0].data, [1, 0, 16, 0]);
         assert.ok(nodes.get("nodeActionArea")._$child.some(n=>n.name==="expUse"));
+        for (const name of ["expResources","expSpirit","expDurability","expWins","expStatus",
+            "mapResourceStrip","mapTopTrim","mapFooterTrim"])
+            assert.ok(!nodes.has(name),`Map no longer contains obsolete HUD ${name}`);
+        assert.equal(nodes.get("mapClockArea").x,8,"Independent timer is inset on the left");
+        assert.deepEqual([nodes.get("mapHeaderArea").x,nodes.get("mapHeaderArea").y],[8,0],
+            "Unified top backing attaches to the top edge");
+        assert.deepEqual(nodes.get("mapHeaderPanel").relations[0].data,[1,0],
+            "Unified backing follows the header width");
+        assert.deepEqual(nodes.get("mapKillsFrame").relations[0].data,[1,0],
+            "Kill slot background grows with its region");
+        assert.ok(nodes.get("mapKillsArea").width>=500,"Kill strip reserves room for additional categories");
+        assert.deepEqual(nodes.get("mapKillsArea").relations[0].data,[1,0],"Kill strip grows with viewport width");
+        assert.ok(!nodes.get("mapExitArea").relations,"Exit must not stay anchored to the right");
+        assert.equal(nodes.get("expAbandonText").text,"退出");
+        for(const name of ["expStorage","expBuild"]) {
+            const button=nodes.get(name);
+            assert.deepEqual([button.width,button.height],[112,104],"Readable, equally-sized map tools");
+            assert.deepEqual([button._$child[2].width,button._$child[2].height],[46,46],"Prominent action icons");
+            assert.equal(button._$child[1].fontSize,22);
+        }
+        assert.deepEqual([nodes.get("expAbandon").width,nodes.get("expAbandon").height],[120,64],
+            "Exit stays left with a readable horizontal icon and label");
+        assert.equal(nodes.get("expUseText").fontSize,24,"Primary node action is visibly stronger than secondary text");
+        assert.ok(nodes.has("mapClockGlyph"),"Timer has an independent clock glyph");
+        for(const name of ["expPlayerName","expHpValue","expMpValue","expStamina","expWeight"])
+            assert.ok(nodes.has(name),`Map HUD binding ${name}`);
+        for(const [key,title] of [["Stamina","体力"],["Weight","负重"]]) {
+            assert.equal(nodes.get(`exp${key}`).text,"-- / --","No fabricated resource values");
+            assert.equal(nodes.get(`exp${key}Label`).text,title,"Separate resource label");
+            const slot=nodes.get(`map${key}Slot`),track=nodes.get(`map${key}Track`),fill=nodes.get(`map${key}Fill`);
+            assert.equal(slot.height,28,"Visible progress-bar structure inside the top slot");
+            assert.deepEqual([fill.width,fill.height],[track.width,track.height]);
+            assert.equal(fill.visible,false,"Unconnected resource must not imply a percentage");
+            assert.deepEqual([nodes.get(`exp${key}`).x,nodes.get(`exp${key}`).width],[slot.x,slot.width],
+                "Current/max value is centered over the progress track");
+        }
+        for(const name of ["mapHeaderPanel","mapTimerFrame","mapKillsFrame","mapStaminaFrame","mapWeightFrame",
+            "mapPlayerPanel","mapAvatarFrame","mapHpSlot","mapMpSlot","mapStaminaSlot","mapWeightSlot","expContextBackground",
+            "expUseSkin","expAbandonSkin","expStorageSkin","expBuildSkin"]) {
+            const n=nodes.get(name);
+            assert.equal(n._$type,"GImage",`${name}: actual imported UI image`);
+            assert.ok(n.src.startsWith("ui/atlas/common/foundation/"),`${name}: reusable common artwork`);
+            const meta=JSON.parse(fs.readFileSync(path.join(root,"assets",n.src+".meta"),"utf8"));
+            assert.equal(meta.importer.textureType,2);assert.equal(meta.importer.sRGB,true);
+            assert.equal(meta.importer.premultiplyAlpha,true);
+            if(name!=="mapAvatarFrame")assert.equal(meta.importer.sizeGrid.length,5,"Real nine-slice import");
+        }
         for(let i=1;i<=32;i++) {
             const icon=nodes.get(`expNode${i}Icon`); assert.deepEqual([icon.width,icon.height],[104,104]);
+            assert.equal(nodes.get(`expNode${i}`)._$child[1].visible,false,"Node captions stay hidden in the prefab too");
         }
     }
     if (type !== 4) assert.deepEqual(nodes.get(content).relations[0].data, [6, 0, 13, 0],

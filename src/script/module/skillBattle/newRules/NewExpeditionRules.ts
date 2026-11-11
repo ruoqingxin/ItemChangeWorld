@@ -137,13 +137,8 @@ export class NewExpeditionRules {
         s.map.visible = [...visible].filter(v => s.map.present.includes(v)).sort((a,b) => a-b);
     }
     static displayNodes(s: ExpeditionState): number[] {
-        const visited=new Set(s.revealed),shown=new Set(s.revealed);
-        for(const [a,b] of s.map.edges) {
-            if(visited.has(a))shown.add(b);
-            if(visited.has(b))shown.add(a);
-        }
-        // Keep saved discovery data intact; expose only one step beyond actual arrivals.
-        return s.map.visible.filter(id=>shown.has(id));
+        // Full-map presentation does not change saved discovery or travel permissions.
+        return [...s.map.present];
     }
     static reachable(c: ExpeditionConfig, s: ExpeditionState): Set<number> {
         return new Set(this.travelPaths(c,s).keys());

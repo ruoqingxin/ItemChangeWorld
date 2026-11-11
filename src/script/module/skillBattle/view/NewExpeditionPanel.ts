@@ -12,6 +12,7 @@ import type { SkillBattlePage } from "./SkillBattleUILayout";
 type MapPoint = { x: number; y: number };
 const MAP_HEIGHT = 430;
 const MARKER_HALF = 58;
+const FOUNDATION = "ui/atlas/common/foundation/";
 
 export class NewExpeditionPanel extends NewInventoryPanel {
     private mapOpen = true;
@@ -45,8 +46,20 @@ export class NewExpeditionPanel extends NewInventoryPanel {
             else if (/^exp(?:Node\d+|Storage|Build|Use|Abandon)$/.test(n.name)) {
                 this.buttons[n.name]=n;
                 n.on(Laya.Event.CLICK,this,() => this.command(n.name));
+                if (!/^expNode/.test(n.name)) {
+                    this.prepareFoundationImage(n.getChildAt(0) as Laya.GImage);
+                    this.styleMapControl(n);
+                    n.on(Laya.Event.MOUSE_OVER,this,()=>this.mapButtonState(n,"hover"));
+                    n.on(Laya.Event.MOUSE_DOWN,this,()=>this.mapButtonState(n,"pressed"));
+                    n.on(Laya.Event.MOUSE_UP,this,()=>this.mapButtonState(n,
+                        !Laya.Browser.onMobile && n.mouseX>=0 && n.mouseX<n.width &&
+                        n.mouseY>=0 && n.mouseY<n.height ? "hover" : "normal"));
+                    n.on(Laya.Event.MOUSE_OUT,this,()=>this.mapButtonState(n,"normal"));
+                }
                 return false;
             }
+            if (n instanceof Laya.GImage && n.src?.startsWith(FOUNDATION))
+                this.prepareFoundationImage(n);
         });
         const viewport=this.expeditionNodes.expViewport as Laya.GPanel;
         this.scroller=new Laya.Scroller();
@@ -282,11 +295,113 @@ export class NewExpeditionPanel extends NewInventoryPanel {
         const mapNode=/^expNode\d+$/.test(key);
         n.visible=true;
         if (mapNode) n.pos(x,y); else placeInDesign(n,this.root,x,y);
-        n.size(w,h);n.mouseEnabled=enabled;n.alpha=mapNode||enabled||selected?1:0.55;
+        n.size(w,h);n.mouseEnabled=enabled;n.alpha=this.pageRole==="map"||enabled||selected?1:0.55;
         const skin=n.getChildAt(0) as Laya.GImage;skin.size(w,h);
         label.text=value;label.pos(4,2);label.size(w-8,h-4);label.fontSize=18;
         label.color=selected?"#ffd879":"#e8edf0";label.textIns.color=label.color;
         label.align="center";label.valign="middle";label.textIns.wordWrap=true;
+        if (this.pageRole==="map" && !mapNode) {
+            this.mapButtonState(n,"normal");
+            label.bold=true;label.color="#fbf7e9";label.textIns.color=label.color;
+            if (key==="expUse") label.fontSize=24;
+            else {
+                const exit=key==="expAbandon";
+                label.pos(exit?48:6,exit?0:68);label.size(exit?66:w-12,exit?h:30);
+                label.fontSize=exit?20:22;
+                n.getChildAt(2).visible=true;
+            }
+        }
+    }
+    private styleMapControl(button: Laya.GWidget): void {
+        const skin=button.getChildAt(0) as Laya.GImage;
+        const [red,green,blue,offsetR,offsetG,offsetB]=button.name==="expBuild"?
+            [1,0.95,0.8,23,14,0]:button.name==="expAbandon"?
+            [1,0.75,0.75,25,-4,3]:[0.8,0.9,1,-14,10,22];
+        skin.filters=[new Laya.ColorFilter([
+            red,0,0,0,offsetR,0,green,0,0,offsetG,0,0,blue,0,offsetB,0,0,0,1,0,
+        ])];
+        if(button.numChildren>2) {
+            const icon=button.getChildAt(2) as Laya.GImage;
+            icon.filters=[new Laya.ColorFilter([
+                0,0,0,0,247,0,0,0,0,241,0,0,0,0,220,0,0,0,1,0,
+            ])];
+        }
+    }
+    private prepareFoundationImage(image: Laya.GImage): void {
+        image.on(Laya.Event.LOADED,this,this.foundationLoaded,[image]);
+        this.foundationLoaded(image);
+    }
+    private foundationLoaded(image: Laya.GImage): void {
+        const inset=image.src.includes("panel-64")?16:image.src.includes("slot-32")?6:
+            image.src.includes("button-")?10:0;
+        const texture=image.texture,grid=[inset,inset,inset,inset,0];
+        if (!inset || !texture || texture._sizeGrid?.join(",")===grid.join(",") &&
+            image.graphics.cmds.some(cmd=>cmd.cmdID===Laya.Draw9GridTextureCmd.ID)) return;
+        // Direct PNG previews bypass the IDE importer; retain real nine-slice drawing there too.
+        texture._sizeGrid=grid;
+        const src=image.src;
+        image.texture=texture;image.src=src;
+    }
+    private mapButtonState(button: Laya.GWidget,state: "normal"|"hover"|"pressed"): void {
+        const image=button.getChildAt(0) as Laya.GImage;
+        // A brief movement lock blocks input without flashing the persistent toolbar disabled.
+        const movementLock=!!this.movement && (button.name==="expStorage" || button.name==="expBuild");
+        const disabled=!button.mouseEnabled&&!movementLock;
+        if (!button.mouseEnabled) state="normal";
+        const src=FOUNDATION+`button-${disabled?"disabled":state}-64x48.png`;
+        if (image.src!==src) image.src=src;
+        this.foundationLoaded(image);
+        const border=disabled?"#707975":state==="hover"?"#efe2bb":
+            state==="pressed"?"#c4cbb4":"#b7ac8c";
+        button.graphics.clear();
+        button.graphics.drawRoundRect(0,4,button.width,button.height,4,4,4,4,"rgba(8,12,11,0.7)");
+        button.graphics.drawRoundRect(-1,-1,button.width+2,button.height+2,5,5,5,5,null,border,1);
+    }
+    private mapLabel(key: string,value: string): void {
+        const label=this.labels[key];label.visible=true;label.text=value;
+    }
+    private renderMapHud(): void {
+        const c=this.expedition.archive!.config,s=this.expedition.inventory!;
+        for (const name of ["mapHeaderPanel","mapTimerFrame","mapClockGlyph","mapKillsFrame","mapStaminaFrame","mapWeightFrame",
+            "mapPlayerPanel","mapAvatarFrame","mapAvatarPlaceholder","mapHpSlot","mapHpFill","mapMpSlot","mapMpFill"])
+            this.expeditionNodes[name].visible=true;
+        this.mapLabel("expClock",this.timeText());
+        const clock=this.expeditionNodes.mapClockGlyph;
+        clock.graphics.clear();
+        clock.graphics.drawCircle(12,12,10,null,"#d6ddd3",1.5);
+        clock.graphics.drawLine(12,5,12,12,"#d6ddd3",1.5);
+        clock.graphics.drawLine(12,12,17,15,"#d6ddd3",1.5);
+        for (const [key,title,color] of [["Stamina","体力","#414b36"],["Weight","负重","#3d4948"]]) {
+            this.mapLabel(`exp${key}Label`,title);
+            this.mapLabel(`exp${key}`,"-- / --");
+            this.expeditionNodes[`map${key}Slot`].visible=true;
+            const track=this.expeditionNodes[`map${key}Track`],fill=this.expeditionNodes[`map${key}Fill`];
+            track.visible=true;track.graphics.clear();
+            track.graphics.drawRect(0,0,track.width,track.height,color);
+            // The systems have no live values yet; retain an empty meter rather than a fictional percentage.
+            fill.visible=false;fill.graphics.clear();
+        }
+        this.mapLabel("expPlayerName","散修");
+        for (const [i,kind] of ["normal","elite","boss"].entries()) {
+            this.expeditionNodes[`mapKillIcon${i}`].visible=true;
+            this.mapLabel(`expKillCount${i}`,String(s.map.cleared.filter(id=>Rules.node(c,id).kind===kind).length));
+        }
+        for (const [key,value,max,color] of [
+            ["Hp",s.hp,c.build.setup.player.maxHp,"#769769"],
+            ["Mp",s.mp,c.build.setup.player.maxMp,"#4e899e"],
+        ] as const) {
+            const fill=this.expeditionNodes[`map${key}Fill`];
+            fill.graphics.clear();
+            const ratio=max>0?Math.min(1,Math.max(0,value/max)):0;
+            if (ratio>0) fill.graphics.drawRect(0,0,fill.width*ratio,fill.height,color);
+            this.mapLabel(`exp${key}Value`,`${Core.format(value)} / ${Core.format(max)}`);
+        }
+        const avatar=this.expeditionNodes.mapAvatarPlaceholder;
+        avatar.graphics.clear();
+        avatar.graphics.drawCircle(32,25,7,null,"#b9beb4",1.5);
+        avatar.graphics.drawLine(22,46,24,37,"#b9beb4",1.5);
+        avatar.graphics.drawLine(24,37,40,37,"#b9beb4",1.5);
+        avatar.graphics.drawLine(40,37,42,46,"#b9beb4",1.5);
     }
     private renderSearchSpinner(): void {
         const spinner=this.nodes.expSearchSpinner;
@@ -326,40 +441,15 @@ export class NewExpeditionPanel extends NewInventoryPanel {
         }
         const at=shade.globalToLocal(origin,true);
         shade.visible=true;shade.graphics.clear();
-        shade.graphics.drawRect(at.x,at.y,page.width,page.height,"rgba(12,20,16,0.28)");
-        const regions=this.expeditionNodes.expeditionRoot;
-        const headerArea=regions.getChildByName("mapHeaderArea") as Laya.GWidget;
-        const footerArea=regions.getChildByName("mapActionsArea") as Laya.GWidget;
-        const headerEnd=page.globalToLocal(headerArea.localToGlobal(new Laya.Point(0,headerArea.height)));
-        const footerStart=page.globalToLocal(footerArea.localToGlobal(new Laya.Point()));
-        const header=Math.max(0,Math.min(page.height,headerEnd.y+6));
-        const footer=Math.max(0,Math.min(page.height,footerStart.y-6));
-        shade.graphics.drawRect(at.x,at.y,page.width,header,"rgba(12,20,16,0.55)");
-        shade.graphics.drawRect(at.x,at.y+footer,page.width,page.height-footer,"rgba(12,20,16,0.55)");
+        shade.graphics.drawRect(at.x,at.y,page.width,page.height,"rgba(12,14,14,0.36)");
     }
     private renderMap(): void {
-        this.backdrop();
         const c=this.expedition.archive!.config,s=this.expedition.inventory!,current=Rules.node(c,s.node);
         if(this.presentedMapRunId!==s.runId) {
             this.presentedMapRunId=s.runId;this.selectedNode=null;this.centerMap=true;
         }
         this.expeditionNodes.expeditionRoot.visible=true;
-        for (const name of ["mapResourceStrip","mapTopTrim","mapFooterTrim",
-            "mapTimerFrame","mapIconLife","mapIconSpirit","mapIconGuard","mapIconBattle"])
-            if (this.expeditionNodes[name]) this.expeditionNodes[name].visible=true;
-        this.text("expClock",this.timeText(),1080,32,166,36,24);
-        this.labels.expClock.align="center";this.labels.expClock.valign="middle";
-        const weapon=s.items.find(i=>i.location.space==="weapon");
-        this.text("expResources",`生命 ${Core.format(s.hp)} / ${Core.format(c.build.setup.player.maxHp)}`,
-            80,64,138,28,16,"#dbe6e2");
-        this.text("expSpirit",`灵力 ${Core.format(s.mp)} / ${Core.format(c.build.setup.player.maxMp)}`,
-            268,64,142,28,16,"#dbe6e2");
-        this.text("expDurability",`耐久 ${weapon?.durability ?? "无武器"}`,
-            456,64,138,28,16,"#dbe6e2");
-        this.text("expWins",`已胜 ${s.map.cleared.length} 场`,
-            644,64,138,28,16,"#dbe6e2");
-        for (const name of ["expResources","expSpirit","expDurability","expWins"])
-            this.labels[name].valign="middle";
+        this.renderMapHud();
         const reach=Rules.reachable(c,s),points=new Map<number,MapPoint>();
         const viewport=this.expeditionNodes.expViewport as Laya.GPanel;
         this.expeditionNodes.expViewport.visible=true;
@@ -378,18 +468,11 @@ export class NewExpeditionPanel extends NewInventoryPanel {
             points.set(id,{x:px,y:py});
             const cleared=!!n.enemy&&s.map.cleared.includes(id),source=s.map.sources.find(box=>box.node===id);
             const explored=!!source&&source.revealed===source.entries.length;
-            const depleted=s.map.used.includes(id)||explored&&
-                !s.items.some(item=>item.location.space==="ground"&&item.location.node===id);
-            const key=`expNode${id}`,kind=cleared?"遗藏":({normal:"普通",elite:"精英",boss:"首领",search:n.pool.startsWith("supply")?"补给":"搜索",
-                borrow:"借法",insight:"悟道",extract:"撤离",recovery:"恢复",start:"入境处",transit:"岔口"})[n.kind];
-            const caption=`${kind}${depleted?source?"·空":"·尽":""}`;
-            this.button(key,caption,px-58,py-52,116,132,reach.has(id),id===s.node||id===this.selectedNode);
+            const key=`expNode${id}`;
+            this.button(key,"",px-58,py-52,116,116,reach.has(id),id===s.node||id===this.selectedNode);
             const b=this.buttons[key],l=b.getChildAt(1) as Laya.GTextField;
-            // Image-backed mapped node controls have their caption after the skin.
             (b.getChildAt(0) as Laya.GImage).visible=false;
-            l.text=caption;
-            l.pos(0,104);l.size(116,28);l.fontSize=17;
-            l.textIns.color=id===s.node?"#ffd879":explored?"#9ca9a0":"#e8edf0";
+            l.visible=false;
             const image=b.getChildAt(2) as Laya.GImage;
             const art=cleared?"battle-loot":n.kind==="search"?(n.pool.startsWith("supply")?"supply":"search"):
                 ({normal:"enemy-normal",elite:"enemy-elite",boss:"enemy-boss",borrow:"borrow",insight:"insight",
@@ -399,17 +482,17 @@ export class NewExpeditionPanel extends NewInventoryPanel {
             image.grayed=explored;image.alpha=1;image.color="#ffffff";
             b.graphics.clear();
         }
-        // Actual arrival history opens whole screens; revealing or dragging never extends them.
-        const furthest=Math.max(...s.revealed.map(id=>positions.get(id)?.x??0));
-        const screens=Math.max(1,Math.floor(furthest/viewport.width+0.5)+1);
+        // Let the player inspect every generated node without unlocking travel.
         const totalScreens=Math.ceil(Math.max(...[...positions.values()].map(p=>p.x+80))/viewport.width);
-        const width=Math.min(screens,totalScreens)*viewport.width;
+        const width=totalScreens*viewport.width;
         this.expeditionNodes.expMapContent.size(width,viewport.height);
         viewport.layout.refresh(true);
         if(this.centerMap) {
             this.scroller.posX=Math.max(0,points.get(s.node)!.x-viewport.width*0.42);
             this.centerMap=false;
         }
+        // Native layout can clamp scroll position without emitting a Scroll event.
+        this.backdrop();
         this.renderMapConnections(points,s.map.edges);
         const marker=this.expeditionNodes.expPlayer,p=points.get(s.node)!;
         marker.visible=true;marker.graphics.clear();
@@ -430,13 +513,10 @@ export class NewExpeditionPanel extends NewInventoryPanel {
         this.scroller.touchEffect=this.movement?Laya.ScrollTouchEffect.Off:Laya.ScrollTouchEffect.On;
         this.scroller.mouseWheelDisabled=!!this.movement;
         const recovered=Rules.recovery(c,s);
-        this.text("expStatus",`${current.name}${
-                current.kind==="recovery"?` · 可恢复生命 ${Core.format(recovered.hp)} / 灵力 ${Core.format(recovered.mp)}`:""}`,
-            180,548,920,42,20,"#d4dfda");
         this.text("expNotice",this.notice || (s.map.warning===300000?"剩余时间不足五分钟":s.map.warning===600000?"剩余时间不足十分钟":""),
-            32,592,1216,34,18,"#efa797");
-        this.button("expStorage","行囊",32,628,162,60);
-        this.button("expBuild","构筑",210,628,162,60);
+            288,650,944,34,18,"#efa797");
+        this.button("expStorage","行囊",24,596,112,104,!this.movement);
+        this.button("expBuild","构筑",148,596,112,104,!this.movement);
         if(!this.movement && (this.selectedNode!==null || s.node!==1)) {
             const n=current,used=s.map.used.includes(n.id);
             const source=s.map.sources.find(box=>box.node===n.id);
@@ -448,22 +528,17 @@ export class NewExpeditionPanel extends NewInventoryPanel {
                 source&&n.enemy?"战后掉落":n.kind==="recovery"?"恢复点":n.kind==="extract"?"撤离点":n.name;
             const context=this.expeditionNodes.expContextBackground;
             context.visible=true;
-            context.graphics.clear();
-            context.graphics.drawRoundRect(0,0,context.width,context.height,8,8,8,8,
-                "rgba(17,24,22,1)","#9a7d52",2);
-            context.graphics.drawLine(18,118,230,118,"#6f6049",1);
             const contextIcon=this.expeditionNodes.expContextIcon as Laya.GImage;
             contextIcon.src=(this.buttons[`expNode${n.id}`].getChildAt(2) as Laya.GImage).src;
             contextIcon.visible=true;
-            this.text("expContextTitle",title,1012,316,224,56,22,"#e3c98c");
+            this.text("expContextTitle",title,1012,316,224,56,24,"#e3c98c");
             this.labels.expContextTitle.align="center";this.labels.expContextTitle.valign="middle";
-            this.button("expUse",action,1020,390,208,76,reach.has(n.id)&&!used&&(
+            this.button("expUse",action,1020,390,208,64,reach.has(n.id)&&!used&&(
                     (n.kind!=="recovery"||!!recovered.hp||!!recovered.mp)&&
                     (!!source||!["start","transit"].includes(n.kind))));
             this.buttons.expUse.getChildAt(0).visible=true;
-            this.buttons.expUse.graphics.clear();
         }
-        this.button("expAbandon","放弃本局",1076,628,172,60);
+        this.button("expAbandon","退出",24,518,120,64);
     }
     private beginMovement(path: number[], points: Map<number,MapPoint>): void {
         const route: MapPoint[]=[points.get(path[0])!];
@@ -511,12 +586,8 @@ export class NewExpeditionPanel extends NewInventoryPanel {
         this.mapRoutes.clear();
         const lines=this.expeditionNodes.expLines;lines.visible=true;lines.graphics.clear();
         const obstacles=[...points.values()],bounds=new Map<{x:number;y:number},number[][]>();
-        for(const [id,p]of points) {
-            const caption=this.buttons[`expNode${id}`].getChildAt(1) as Laya.GTextField;
-            caption.textIns.typeset(true);
-            const half=Math.min(58,caption.textIns.textWidth/2+4);
-            bounds.set(p,[[p.x-54,p.y-54,p.x+54,p.y+54],[p.x-half,p.y+50,p.x+half,p.y+84]]);
-        }
+        for(const p of points.values())
+            bounds.set(p,[[p.x-54,p.y-54,p.x+54,p.y+54]]);
         const rectangles=[...bounds.values()].flat();
         const interval=(p:{x:number;y:number},q:{x:number;y:number},box:number[])=>{
             let low=0,high=1;
