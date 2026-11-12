@@ -1,14 +1,14 @@
 const assert=require("node:assert/strict"),fs=require("node:fs"),path=require("node:path");
-const root=path.resolve(__dirname,".."),build=path.resolve(process.argv.slice(2).find(a=>!a.startsWith("--"))||path.join(root,"bin/skill-battle-tests"));
+const root=path.resolve(__dirname,".."),build=path.resolve(process.argv.slice(2).find(a=>!a.startsWith("--"))||path.join(root,"bin/gameplay-tests"));
 global.Laya={Resource:class{},Byte:class{constructor(b){this.bytes=Buffer.from(b);this.pos=0;}
     readUTFBytes(n){const s=this.bytes.toString("utf8",this.pos,this.pos+n);this.pos+=n;return s;}}};
 const load=p=>require(path.join(build,"script",p));
 const ByteBuf=load("config/bright/serialization/ByteBuf.js").default,{Tables}=load("config/schema.js");
-const {NewExpeditionConfigUtils:Config}=load("module/skillBattle/newRules/NewExpeditionConfigUtils.js");
-const {NewExpeditionRules:R}=load("module/skillBattle/newRules/NewExpeditionRules.js");
-const {NewExpeditionSession:S}=load("module/skillBattle/newRules/NewExpeditionSession.js");
-const {NewBuildConfigUtils:B}=load("module/skillBattle/newRules/NewBuildConfigUtils.js");
-const {NewInventoryRules:I}=load("module/skillBattle/newRules/NewInventoryRules.js");
+const {ExpeditionRunConfigUtils:Config}=load("module/expedition/utils/ExpeditionRunConfigUtils.js");
+const {ExpeditionRules:R}=load("module/expedition/utils/ExpeditionRules.js");
+const {ExpeditionRunManager:S}=load("module/expedition/manager/ExpeditionRunManager.js");
+const {BuildConfigUtils:B}=load("module/build/utils/BuildConfigUtils.js");
+const {InventoryRules:I}=load("module/inventory/utils/InventoryRules.js");
 const {SkillBattleManager:M}=load("module/skillBattle/manager/SkillBattleManager.js");
 function unpack(b){if(!Buffer.isBuffer(b))b=fs.readFileSync(b);let at=4;const out={};
     for(let i=0;i<b.readInt32LE(0);i++){const len=b.readInt32LE(at);at+=4;const key=b.toString("utf8",at,at+len);at+=len;

@@ -67,10 +67,38 @@ async function checkLighting(p, name) {
     };
     const oldLight = await mean(before, area), newLight = await mean(after, area);
     assert.ok(newLight > oldLight * 1.25, `Map floor is visibly brighter: ${oldLight.toFixed(1)} -> ${newLight.toFixed(1)}`);
-    const header = { left: 0, top: 0, width, height: Math.floor(height * 0.09) };
-    assert.ok(await mean(after, header) < newLight * 0.8,
-        "Header surfaces retain their dark text contrast");
-    console.log(`PASS lighting ${name}: ground luminance ${oldLight.toFixed(1)} -> ${newLight.toFixed(1)}, header contrast retained.`);
+    const clock = await p.evaluate(() => {
+        const label = window.__skillBattlePreview.panel.labels.expClock;
+        const a = label.localToGlobal(new Laya.Point(0, 0));
+        const b = label.localToGlobal(new Laya.Point(label.width, label.height));
+        const canvas = document.querySelector("canvas").getBoundingClientRect();
+        label.visible = false;
+        return {
+            left: Math.ceil(canvas.left + a.x * canvas.width / Laya.stage.width),
+            top: Math.ceil(canvas.top + a.y * canvas.height / Laya.stage.height),
+            width: Math.floor((b.x - a.x) * canvas.width / Laya.stage.width),
+            height: Math.floor((b.y - a.y) * canvas.height / Laya.stage.height),
+            color: label.color,
+        };
+    });
+    let background;
+    try {
+        await p.waitForTimeout(70);
+        background = await sharp(await p.screenshot()).extract({
+            left: clock.left, top: clock.top, width: clock.width, height: clock.height,
+        }).stats();
+    } finally {
+        await p.evaluate(() => { window.__skillBattlePreview.panel.labels.expClock.visible = true; });
+    }
+    const luminance = rgb => rgb.map(value => {
+        const c = value / 255;
+        return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+    }).reduce((sum, value, i) => sum + value * [0.2126, 0.7152, 0.0722][i], 0);
+    const ink = luminance(clock.color.match(/[0-9a-f]{2}/gi).map(value => parseInt(value, 16)));
+    const surface = luminance(background.channels.slice(0, 3).map(channel => channel.mean));
+    const contrast = (Math.max(ink, surface) + 0.05) / (Math.min(ink, surface) + 0.05);
+    assert.ok(contrast >= 4.5, `Header text contrast is readable: ${contrast.toFixed(2)}:1`);
+    console.log(`PASS lighting ${name}: ground luminance ${oldLight.toFixed(1)} -> ${newLight.toFixed(1)}, header text contrast ${contrast.toFixed(2)}:1.`);
 }
 
 (async () => {
@@ -132,7 +160,7 @@ async function checkLighting(p, name) {
             await p.evaluate(() => {
                 const { panel, trial } = window.__skillBattlePreview;
                 window.__artOriginalRevealed = [...trial.inventory.revealed];
-                trial.save.state.revealed = [...trial.inventory.map.present];
+                trial.data.save.state.revealed = [...trial.inventory.map.present];
                 panel.refresh();
             });
             await p.waitForFunction(() => {
@@ -162,25 +190,29 @@ async function checkLighting(p, name) {
                 const marker = panel.expeditionNodes.expPlayer;
                 const ring = marker.getChildByName("expPlayerRing");
                 const avatar = marker.getChildByName("expPlayerAvatar");
-                if (!marker.visible || marker.mouseEnabled || marker.zOrder < 1 || ring?.visible ||
+                if (!marker.visible || marker.mouseEnabled || marker.zOrder < 1 || !ring?.visible ||
+                    ring.width!==76 || ring.height!==18 ||
                     !avatar?.visible || avatar.mouseEnabled ||
-                    !avatar.graphics.cmds.some(c => c.cmdID === Laya.DrawPolyCmd.ID)) issues.push("player avatar");
+                    !avatar.texture || !avatar.src.endsWith("/map-player-traveler.png")) issues.push("player avatar");
                 const current = trial.inventory.map.nodes.find(n => n.id === trial.inventory.node);
+                const currentButton = panel.buttons[`expNode${current.id}`];
                 if (marker.x+58 !== 112+current.x*242 ||
-                    marker.y+58 !== panel.mapBandTop+198+current.y*128) issues.push("player location");
-                const lines = panel.expeditionNodes.expLines.graphics.cmds.filter(c => c.cmdID === Laya.DrawLineCmd.ID);
+                    marker.y+58 !== currentButton.y+52) issues.push("player location");
+                const strokes = panel.expeditionNodes.expLines.graphics.cmds.filter(c => c.cmdID === Laya.DrawTextureCmd.ID);
+                const lines = strokes.map(c => ({ fromX:c.matrix.tx,fromY:c.matrix.ty,
+                    toX:c.matrix.tx+c.matrix.a*c.width/1.6,toY:c.matrix.ty+c.matrix.b*c.width/1.6 }));
                 if (!lines.length || lines.some(c => Math.hypot(c.toX - c.fromX, c.toY - c.fromY) > 12.01))
                     issues.push("dashed lines");
-                if (lines.length % 2 || lines.some((c, i) => {
-                    if (c.lineWidth !== (i % 2 ? 5 : 8)) return true;
-                    if (!(i % 2)) return false;
-                    const outline = lines[i-1];
-                    return c.fromX !== outline.fromX || c.fromY !== outline.fromY ||
-                        c.toX !== outline.toX || c.toY !== outline.toY;
-                })) issues.push("route contrast outline");
-                for (const [a, b] of trial.inventory.map.edges)
-                    if (!panel.mapRoutes.get(`${a}:${b}`) || panel.mapRoutes.get(`${a}:${b}`).length < 4)
+                if (strokes.some(c => c.texture !== panel.expeditionNodes.mapRouteTexture.texture || ![6,8].includes(c.height)))
+                    issues.push("handpainted route texture");
+                for (const [a, b] of trial.inventory.map.edges) {
+                    const route = panel.mapRoutes.get(`${a}:${b}`);
+                    const start = panel.buttons[`expNode${a}`], end = panel.buttons[`expNode${b}`];
+                    if (!route || route.length !== 2 ||
+                        route[0].x !== start.x+58 || route[0].y !== start.y+52 ||
+                        route[1].x !== end.x+58 || route[1].y !== end.y+52)
                         issues.push(["missing route", a, b]);
+                }
                 for (const data of trial.inventory.map.nodes.filter(n => n.enemy)) {
                     const n = panel.buttons[`expNode${data.id}`], x = n.x + 58, y = n.y + 52;
                     const icon = n.getChildAt(2), halfWidth = Math.max(54, icon.width/2-4);
@@ -211,8 +243,8 @@ async function checkLighting(p, name) {
                 window.__artFixture = { enemies: trial.inventory.map.nodes.filter(n => n.enemy),
                     cleared: [...trial.inventory.map.cleared], sources: [...trial.inventory.map.sources] };
                 for (const enemy of window.__artFixture.enemies) {
-                    trial.save.state.map.cleared.push(enemy.id);
-                    trial.save.state.map.sources.push({ node: enemy.id, entries: [{}], revealed: 0 });
+                    trial.data.save.state.map.cleared.push(enemy.id);
+                    trial.data.save.state.map.sources.push({ node: enemy.id, entries: [{}], revealed: 0 });
                 }
                 panel.refresh();
             });
@@ -236,7 +268,7 @@ async function checkLighting(p, name) {
             await shot(p, `${name}-defeated-enemies`);
             await p.evaluate(() => {
                 const { panel, trial } = window.__skillBattlePreview;
-                for (const box of trial.save.state.map.sources) box.entries = [];
+                for (const box of trial.data.save.state.map.sources) box.entries = [];
                 panel.refresh();
             });
             assert.equal(await p.evaluate(() => {
@@ -251,8 +283,8 @@ async function checkLighting(p, name) {
             await shot(p, `${name}-searched-enemies`);
             await p.evaluate(() => {
                 const { panel, trial } = window.__skillBattlePreview, original = window.__artFixture;
-                trial.save.state.map.cleared = original.cleared;
-                trial.save.state.map.sources = original.sources;
+                trial.data.save.state.map.cleared = original.cleared;
+                trial.data.save.state.map.sources = original.sources;
                 delete window.__artFixture;
                 panel.selectedNode = null;
                 panel.refresh();
@@ -272,14 +304,14 @@ async function checkLighting(p, name) {
             }), true, "A normal refresh restores undefeated enemies without stale gray filters");
             await p.evaluate(() => {
                 const { panel, trial } = window.__skillBattlePreview;
-                trial.save.state.revealed = window.__artOriginalRevealed;
+                trial.data.save.state.revealed = window.__artOriginalRevealed;
                 delete window.__artOriginalRevealed;
                 panel.refresh();
             });
             assert.deepEqual(errors, []);
             assert.deepEqual(missing, []);
             await context.close();
-            console.log(`PASS node art ${name}: ${layout.total} nodes, 104/144/192 enemy tiers, bases only on empty nodes, player avatar/no ring, original defeated icons, search actions and route clearance.`);
+            console.log(`PASS node art ${name}: ${layout.total} nodes, 104/144/192 enemy tiers, bases only on empty nodes, player avatar/foot locator, original defeated icons, search actions and route clearance.`);
         }
     } finally { await browser.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });

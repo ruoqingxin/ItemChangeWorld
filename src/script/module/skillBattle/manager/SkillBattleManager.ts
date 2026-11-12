@@ -9,9 +9,9 @@ import type {
 } from "../types/SkillBattleTypes";
 import { SkillBattleDebugUtils } from "../utils/SkillBattleDebugUtils";
 import { SkillBattleFormulaUtils } from "../utils/SkillBattleFormulaUtils";
-import { NewBattleCore } from "../newRules/NewBattleCore";
+import { BattleRules } from "../utils/BattleRules";
 import type { NewBattleAction, NewBattleCarry, NewBattleResult, NewBattleSetup,
-    NewBattleState, NewBattleToken } from "../newRules/NewBattleTypes";
+    NewBattleState, NewBattleToken } from "../types/BattleTypes";
 
 export class SkillBattleManager {
     private static _ins: SkillBattleManager;
@@ -30,46 +30,46 @@ export class SkillBattleManager {
     private newCommitting = false;
 
     get newState(): NewBattleState | null {
-        return this._data.newState ? NewBattleCore.clone(this._data.newState) : null;
+        return this._data.newState ? BattleRules.clone(this._data.newState) : null;
     }
 
     get newSetup(): NewBattleSetup | null {
-        return this._data.newSetup ? NewBattleCore.clone(this._data.newSetup) : null;
+        return this._data.newSetup ? BattleRules.clone(this._data.newSetup) : null;
     }
 
     startNewRules(setup: NewBattleSetup, battleId: string, carry?: NewBattleCarry): NewBattleState {
-        const state = NewBattleCore.start(setup, battleId, carry);
+        const state = BattleRules.start(setup, battleId, carry);
         this.restoreNewRules(setup, state);
         return this.newState!;
     }
 
     restoreNewRules(setup: NewBattleSetup, state: NewBattleState): void {
-        NewBattleCore.validateSetup(setup);
-        NewBattleCore.validateState(setup, state);
-        this._data.newSetup = NewBattleCore.clone(setup);
-        this._data.newState = NewBattleCore.clone(state);
+        BattleRules.validateSetup(setup);
+        BattleRules.validateState(setup, state);
+        this._data.newSetup = BattleRules.clone(setup);
+        this._data.newState = BattleRules.clone(state);
     }
 
     previewNewAction(action: NewBattleAction): NewBattleResult {
         if (!this._data.newSetup || !this._data.newState) throw new Error("请先开始剑道试炼");
-        return NewBattleCore.resolve(this._data.newSetup, this._data.newState, action);
+        return BattleRules.resolve(this._data.newSetup, this._data.newState, action);
     }
 
     confirmNewAction(action: NewBattleAction, token: NewBattleToken): NewBattleResult {
         if (!this._data.newSetup || !this._data.newState) throw new Error("请先开始剑道试炼");
         const current = this._data.newState;
         const reject = (reason: string): NewBattleResult =>
-            ({ ok: false, reason, state: NewBattleCore.clone(current), events: [], preview: null });
+            ({ ok: false, reason, state: BattleRules.clone(current), events: [], preview: null });
         if (this.newCommitting) return reject("行动正在提交");
         if (!token || token.battleId !== current.battleId || token.revision !== current.revision)
             return reject("预览已过期，请重新选择");
-        const ownedAction = NewBattleCore.clone(action);
-        const result = NewBattleCore.resolve(this._data.newSetup, current, ownedAction);
+        const ownedAction = BattleRules.clone(action);
+        const result = BattleRules.resolve(this._data.newSetup, current, ownedAction);
         if (result.ok === false) return result;
         this.newCommitting = true;
         try {
-            this.beforeNewCommit?.(NewBattleCore.clone(result.state), ownedAction);
-            this._data.newState = NewBattleCore.clone(result.state);
+            this.beforeNewCommit?.(BattleRules.clone(result.state), ownedAction);
+            this._data.newState = BattleRules.clone(result.state);
             return result;
         } catch (error) {
             return reject(`行动未提交：${(error as Error).message}`);

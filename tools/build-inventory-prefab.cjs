@@ -168,9 +168,9 @@ for(const view of ["SkillBattleStartView","SkillBattleSettlementView"]){
     write(file,prefab);
 }
 // Laya requires script metadata for new modules.
-for(const directory of ["newRules","view"]){
-    const dir=path.join(root,"src/script/module/skillBattle",directory);
-    for(const name of fs.readdirSync(dir).filter(n=>n.startsWith("NewInventory")&&n.endsWith(".ts"))){
+for(const directory of ["data","manager","utils","types","view","ctrl"]){
+    const dir=path.join(root,"src/script/module/inventory",directory);
+    for(const name of fs.readdirSync(dir).filter(n=>n.endsWith(".ts"))){
         if(!fs.existsSync(path.join(dir,name+".meta")))write(path.join(dir,name+".meta"),{uuid:crypto.randomUUID()});
     }
 }

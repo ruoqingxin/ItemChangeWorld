@@ -452,6 +452,9 @@
           "_$ref": "exp_SkillBattleStartView_141"
         },
         {
+          "_$ref": "map_layout_context_status"
+        },
+        {
           "_$ref": "exp_SkillBattleStartView_144"
         },
         {
@@ -621,6 +624,18 @@
         },
         {
           "_$ref": "map_foundation_mapClockGlyph"
+        },
+        {
+          "_$ref": "map_art_mapHpTrack"
+        },
+        {
+          "_$ref": "map_art_mapMpTrack"
+        },
+        {
+          "_$ref": "map_art_expPlayerAvatar"
+        },
+        {
+          "_$ref": "map_art_mapRouteTexture"
         }
       ],
       "prefabs": null,
@@ -784,7 +799,7 @@
                       "_$type": "GWidget",
                       "name": "expPlayer",
                       "width": 116,
-                      "height": 116,
+                      "height": 160,
                       "_mouseState": 1,
                       "_$child": [
                         {
@@ -796,6 +811,18 @@
                           "_mouseState": 1,
                           "src": "ui/atlas/module/expedition/map-ui-current-ring.png",
                           "autoSize": false
+                        },
+                        {
+                          "_$id": "map_art_expPlayerAvatar",
+                          "_$type": "GImage",
+                          "name": "expPlayerAvatar",
+                          "x": 30,
+                          "y": 90,
+                          "width": 56,
+                          "height": 70,
+                          "mouseEnabled": false,
+                          "autoSize": false,
+                          "src": "ui/atlas/module/expedition/handpainted/map-player-traveler.png"
                         }
                       ]
                     },
@@ -2307,7 +2334,7 @@
                   "height": 282,
                   "_mouseState": 1,
                   "mouseThrough": true,
-                  "src": "ui/atlas/common/foundation/panel-64.png",
+                  "src": "ui/atlas/module/expedition/handpainted/map-panel.png",
                   "autoSize": false
                 },
                 {
@@ -2337,6 +2364,22 @@
                   "overflow": "shrink"
                 },
                 {
+                  "_$id": "map_layout_context_status",
+                  "_$type": "GTextField",
+                  "name": "expContextStatus",
+                  "x": 16,
+                  "y": 172,
+                  "width": 216,
+                  "height": 24,
+                  "mouseEnabled": false,
+                  "text": "",
+                  "fontSize": 18,
+                  "color": "#c4ccc4",
+                  "align": "center",
+                  "valign": "middle",
+                  "overflow": "shrink"
+                },
+                {
                   "_$id": "exp_SkillBattleStartView_144",
                   "_$type": "GWidget",
                   "name": "expUse",
@@ -2353,7 +2396,7 @@
                       "width": 208,
                       "height": 64,
                       "_mouseState": 1,
-                      "src": "ui/atlas/common/foundation/button-normal-64x48.png",
+                      "src": "ui/atlas/module/expedition/handpainted/map-button-normal.png",
                       "autoSize": false
                     },
                     {
@@ -2418,7 +2461,7 @@
                       ]
                     }
                   ],
-                  "src": "ui/atlas/common/foundation/panel-64.png",
+                  "src": "ui/atlas/module/expedition/handpainted/map-panel.png",
                   "autoSize": false
                 },
                 {
@@ -2438,7 +2481,7 @@
                       "width": 136,
                       "height": 56,
                       "_mouseState": 1,
-                      "src": "ui/atlas/common/foundation/slot-32.png",
+                      "src": "ui/atlas/module/expedition/handpainted/map-slot.png",
                       "autoSize": false
                     },
                     {
@@ -2458,13 +2501,15 @@
                     },
                     {
                       "_$id": "map_foundation_mapClockGlyph",
-                      "_$type": "GWidget",
+                      "_$type": "GImage",
                       "name": "mapClockGlyph",
                       "x": 10,
                       "y": 16,
                       "width": 24,
                       "height": 24,
-                      "_mouseState": 1
+                      "_mouseState": 1,
+                      "autoSize": false,
+                      "src": "ui/atlas/module/expedition/handpainted/map-icon-clock.png"
                     }
                   ]
                 },
@@ -2510,7 +2555,7 @@
                           ]
                         }
                       ],
-                      "src": "ui/atlas/common/foundation/slot-32.png",
+                      "src": "ui/atlas/module/expedition/handpainted/map-slot.png",
                       "autoSize": false
                     },
                     {
@@ -2626,7 +2671,7 @@
                       "width": 268,
                       "height": 56,
                       "_mouseState": 1,
-                      "src": "ui/atlas/common/foundation/slot-32.png",
+                      "src": "ui/atlas/module/expedition/handpainted/map-slot.png",
                       "autoSize": false
                     },
                     {
@@ -2653,29 +2698,33 @@
                       "width": 192,
                       "height": 28,
                       "_mouseState": 1,
-                      "src": "ui/atlas/common/foundation/slot-32.png",
+                      "src": "ui/atlas/module/expedition/handpainted/map-slot.png",
                       "autoSize": false
                     },
                     {
                       "_$id": "map_foundation_mapStaminaTrack",
-                      "_$type": "GWidget",
+                      "_$type": "GImage",
                       "name": "mapStaminaTrack",
                       "x": 67,
                       "y": 17,
                       "width": 186,
                       "height": 22,
-                      "_mouseState": 1
+                      "_mouseState": 1,
+                      "autoSize": false,
+                      "src": "ui/atlas/module/expedition/handpainted/map-meter-track.png"
                     },
                     {
                       "_$id": "map_foundation_mapStaminaFill",
-                      "_$type": "GWidget",
+                      "_$type": "GImage",
                       "name": "mapStaminaFill",
                       "x": 67,
                       "y": 17,
                       "width": 186,
                       "height": 22,
                       "visible": false,
-                      "_mouseState": 1
+                      "_mouseState": 1,
+                      "autoSize": false,
+                      "src": "ui/atlas/module/expedition/handpainted/map-meter-stamina.png"
                     },
                     {
                       "_$id": "map_foundation_expStamina",
@@ -2725,7 +2774,7 @@
                       "width": 248,
                       "height": 56,
                       "_mouseState": 1,
-                      "src": "ui/atlas/common/foundation/slot-32.png",
+                      "src": "ui/atlas/module/expedition/handpainted/map-slot.png",
                       "autoSize": false
                     },
                     {
@@ -2752,29 +2801,33 @@
                       "width": 172,
                       "height": 28,
                       "_mouseState": 1,
-                      "src": "ui/atlas/common/foundation/slot-32.png",
+                      "src": "ui/atlas/module/expedition/handpainted/map-slot.png",
                       "autoSize": false
                     },
                     {
                       "_$id": "map_foundation_mapWeightTrack",
-                      "_$type": "GWidget",
+                      "_$type": "GImage",
                       "name": "mapWeightTrack",
                       "x": 67,
                       "y": 17,
                       "width": 166,
                       "height": 22,
-                      "_mouseState": 1
+                      "_mouseState": 1,
+                      "autoSize": false,
+                      "src": "ui/atlas/module/expedition/handpainted/map-meter-track.png"
                     },
                     {
                       "_$id": "map_foundation_mapWeightFill",
-                      "_$type": "GWidget",
+                      "_$type": "GImage",
                       "name": "mapWeightFill",
                       "x": 67,
                       "y": 17,
                       "width": 166,
                       "height": 22,
                       "visible": false,
-                      "_mouseState": 1
+                      "_mouseState": 1,
+                      "autoSize": false,
+                      "src": "ui/atlas/module/expedition/handpainted/map-meter-weight.png"
                     },
                     {
                       "_$id": "map_foundation_expWeight",
@@ -2802,7 +2855,7 @@
                   "height": 48,
                   "visible": false,
                   "_mouseState": 1,
-                  "src": "ui/atlas/common/foundation/button-hover-64x48.png",
+                  "src": "ui/atlas/module/expedition/handpainted/map-button-hover.png",
                   "autoSize": false
                 },
                 {
@@ -2813,7 +2866,7 @@
                   "height": 48,
                   "visible": false,
                   "_mouseState": 1,
-                  "src": "ui/atlas/common/foundation/button-pressed-64x48.png",
+                  "src": "ui/atlas/module/expedition/handpainted/map-button-pressed.png",
                   "autoSize": false
                 },
                 {
@@ -2824,7 +2877,7 @@
                   "height": 48,
                   "visible": false,
                   "_mouseState": 1,
-                  "src": "ui/atlas/common/foundation/button-disabled-64x48.png",
+                  "src": "ui/atlas/module/expedition/handpainted/map-button-disabled.png",
                   "autoSize": false
                 }
               ]
@@ -2883,7 +2936,7 @@
                       "width": 112,
                       "height": 104,
                       "_mouseState": 1,
-                      "src": "ui/atlas/common/foundation/button-normal-64x48.png",
+                      "src": "ui/atlas/module/expedition/handpainted/map-button-normal.png",
                       "autoSize": false
                     },
                     {
@@ -2912,7 +2965,7 @@
                       "width": 46,
                       "height": 46,
                       "_mouseState": 1,
-                      "src": "ui/atlas/common/actions/icon_loot.png",
+                      "src": "ui/atlas/module/expedition/handpainted/map-icon-inventory.png",
                       "autoSize": false
                     }
                   ]
@@ -2934,7 +2987,7 @@
                       "width": 112,
                       "height": 104,
                       "_mouseState": 1,
-                      "src": "ui/atlas/common/foundation/button-normal-64x48.png",
+                      "src": "ui/atlas/module/expedition/handpainted/map-button-normal.png",
                       "autoSize": false
                     },
                     {
@@ -2963,7 +3016,7 @@
                       "width": 46,
                       "height": 46,
                       "_mouseState": 1,
-                      "src": "ui/atlas/common/actions/icon_actions.png",
+                      "src": "ui/atlas/module/expedition/handpainted/map-icon-build.png",
                       "autoSize": false
                     }
                   ]
@@ -2972,40 +3025,40 @@
                   "_$id": "map_exit_area",
                   "_$type": "GWidget",
                   "name": "mapExitArea",
-                  "width": 120,
-                  "height": 64,
+                  "width": 168,
+                  "height": 52,
                   "mouseThrough": true,
                   "_$child": [
                     {
                       "_$id": "exp_SkillBattleStartView_153",
                       "_$type": "GWidget",
                       "name": "expAbandon",
-                      "width": 120,
-                      "height": 64,
+                      "width": 168,
+                      "height": 52,
                       "_mouseState": 2,
                       "_$child": [
                         {
                           "_$id": "exp_SkillBattleStartView_151",
                           "_$type": "GImage",
                           "name": "expAbandonSkin",
-                          "width": 120,
-                          "height": 64,
+                          "width": 168,
+                          "height": 52,
                           "_mouseState": 1,
-                          "src": "ui/atlas/common/foundation/button-normal-64x48.png",
+                          "src": "ui/atlas/module/expedition/handpainted/map-button-normal.png",
                           "autoSize": false
                         },
                         {
                           "_$id": "exp_SkillBattleStartView_152",
                           "_$type": "GTextField",
                           "name": "expAbandonText",
-                          "x": 48,
-                          "width": 66,
-                          "height": 64,
+                          "x": 40,
+                          "width": 120,
+                          "height": 52,
                           "_mouseState": 1,
-                          "text": "退出",
+                          "text": "放弃本局",
                           "fontSize": 20,
-                          "color": "#fbf7e9",
-                          "bold": true,
+                          "color": "#d8c7ba",
+                          "bold": false,
                           "align": "center",
                           "valign": "middle",
                           "overflow": "shrink"
@@ -3014,12 +3067,12 @@
                           "_$id": "map_foundation_expAbandonActionIcon",
                           "_$type": "GImage",
                           "name": "expAbandonActionIcon",
-                          "x": 13,
-                          "y": 17,
-                          "width": 30,
-                          "height": 30,
+                          "x": 12,
+                          "y": 14,
+                          "width": 24,
+                          "height": 24,
                           "_mouseState": 1,
-                          "src": "ui/atlas/common/actions/icon_return.png",
+                          "src": "ui/atlas/module/expedition/handpainted/map-icon-exit.png",
                           "autoSize": false
                         }
                       ]
@@ -3046,7 +3099,7 @@
                   "width": 300,
                   "height": 104,
                   "_mouseState": 1,
-                  "src": "ui/atlas/common/foundation/panel-64.png",
+                  "src": "ui/atlas/module/expedition/handpainted/map-panel.png",
                   "autoSize": false
                 },
                 {
@@ -3058,18 +3111,21 @@
                   "width": 64,
                   "height": 64,
                   "_mouseState": 1,
-                  "src": "ui/atlas/common/foundation/avatar-frame-80.png",
-                  "autoSize": false
+                  "src": "ui/atlas/module/expedition/handpainted/map-avatar-frame.png",
+                  "autoSize": false,
+                  "zOrder": 1
                 },
                 {
                   "_$id": "map_foundation_mapAvatarPlaceholder",
-                  "_$type": "GWidget",
+                  "_$type": "GImage",
                   "name": "mapAvatarPlaceholder",
-                  "x": 10,
-                  "y": 20,
-                  "width": 64,
-                  "height": 64,
-                  "_mouseState": 1
+                  "x": 16,
+                  "y": 26,
+                  "width": 52,
+                  "height": 52,
+                  "_mouseState": 1,
+                  "autoSize": false,
+                  "src": "ui/atlas/module/expedition/handpainted/map-player-portrait.png"
                 },
                 {
                   "_$id": "map_foundation_expPlayerName",
@@ -3096,18 +3152,32 @@
                   "width": 204,
                   "height": 22,
                   "_mouseState": 1,
-                  "src": "ui/atlas/common/foundation/slot-32.png",
+                  "src": "ui/atlas/module/expedition/handpainted/map-slot.png",
                   "autoSize": false
                 },
                 {
+                  "_$id": "map_art_mapHpTrack",
+                  "_$type": "GImage",
+                  "name": "mapHpTrack",
+                  "x": 87,
+                  "y": 43,
+                  "width": 198,
+                  "height": 16,
+                  "mouseEnabled": false,
+                  "autoSize": false,
+                  "src": "ui/atlas/module/expedition/handpainted/map-meter-track.png"
+                },
+                {
                   "_$id": "map_foundation_mapHpFill",
-                  "_$type": "GWidget",
+                  "_$type": "GImage",
                   "name": "mapHpFill",
                   "x": 87,
                   "y": 43,
                   "width": 198,
                   "height": 16,
-                  "_mouseState": 1
+                  "_mouseState": 1,
+                  "autoSize": false,
+                  "src": "ui/atlas/module/expedition/handpainted/map-meter-hp.png"
                 },
                 {
                   "_$id": "map_foundation_expHpValue",
@@ -3134,18 +3204,32 @@
                   "width": 204,
                   "height": 22,
                   "_mouseState": 1,
-                  "src": "ui/atlas/common/foundation/slot-32.png",
+                  "src": "ui/atlas/module/expedition/handpainted/map-slot.png",
                   "autoSize": false
                 },
                 {
+                  "_$id": "map_art_mapMpTrack",
+                  "_$type": "GImage",
+                  "name": "mapMpTrack",
+                  "x": 87,
+                  "y": 75,
+                  "width": 198,
+                  "height": 16,
+                  "mouseEnabled": false,
+                  "autoSize": false,
+                  "src": "ui/atlas/module/expedition/handpainted/map-meter-track.png"
+                },
+                {
                   "_$id": "map_foundation_mapMpFill",
-                  "_$type": "GWidget",
+                  "_$type": "GImage",
                   "name": "mapMpFill",
                   "x": 87,
                   "y": 75,
                   "width": 198,
                   "height": 16,
-                  "_mouseState": 1
+                  "_mouseState": 1,
+                  "autoSize": false,
+                  "src": "ui/atlas/module/expedition/handpainted/map-meter-mp.png"
                 },
                 {
                   "_$id": "map_foundation_expMpValue",
@@ -3164,6 +3248,19 @@
                   "overflow": "shrink"
                 }
               ]
+            },
+            {
+              "_$id": "map_art_mapRouteTexture",
+              "_$type": "GImage",
+              "name": "mapRouteTexture",
+              "x": 0,
+              "y": 0,
+              "width": 64,
+              "height": 32,
+              "mouseEnabled": false,
+              "autoSize": false,
+              "src": "ui/atlas/module/expedition/handpainted/map-route-dash.png",
+              "visible": false
             }
           ]
         }

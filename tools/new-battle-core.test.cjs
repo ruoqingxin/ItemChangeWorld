@@ -7,9 +7,9 @@ global.Laya = { Resource: class {}, Byte: class {
     readUTFBytes(n) { const s = this.bytes.toString("utf8", this.pos, this.pos + n); this.pos += n; return s; }
 } };
 const load = file => require(path.join(build, `script/${file}.js`));
-const { NewBattleCore: Core } = load("module/skillBattle/newRules/NewBattleCore");
-const { NewBattleConfigUtils: Config } = load("module/skillBattle/newRules/NewBattleConfigUtils");
-const { NewBattleSession: Session } = load("module/skillBattle/newRules/NewBattleSession");
+const { BattleRules: Core } = load("module/skillBattle/utils/BattleRules");
+const { BattleConfigUtils: Config } = load("module/skillBattle/utils/BattleConfigUtils");
+const { BattleTrialManager: Session } = load("module/skillBattle/manager/BattleTrialManager");
 const { SkillBattleManager: Manager } = load("module/skillBattle/manager/SkillBattleManager");
 const { Tables } = load("config/schema");
 const ByteBuf = load("config/bright/serialization/ByteBuf").default;

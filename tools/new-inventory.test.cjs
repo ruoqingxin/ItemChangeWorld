@@ -1,7 +1,7 @@
 const assert=require("node:assert/strict");
 const fs=require("node:fs");
 const path=require("node:path");
-const root=path.resolve(__dirname,".."),build=path.resolve(process.argv[2]||path.join(root,"bin/skill-battle-tests"));
+const root=path.resolve(__dirname,".."),build=path.resolve(process.argv[2]||path.join(root,"bin/gameplay-tests"));
 global.Laya={Resource:class{},Byte:class{
     constructor(buffer){this.bytes=Buffer.from(buffer);this.pos=0;}
     readUTFBytes(n){const s=this.bytes.toString("utf8",this.pos,this.pos+n);this.pos+=n;return s;}
@@ -9,10 +9,10 @@ global.Laya={Resource:class{},Byte:class{
 const load=p=>require(path.join(build,"script",p));
 const ByteBuf=load("config/bright/serialization/ByteBuf.js").default;
 const {Tables}=load("config/schema.js");
-const {NewInventoryConfigUtils:Config}=load("module/skillBattle/newRules/NewInventoryConfigUtils.js");
-const {NewInventoryRules:R}=load("module/skillBattle/newRules/NewInventoryRules.js");
-const {NewInventorySession:Session}=load("module/skillBattle/newRules/NewInventorySession.js");
-const {NewBuildConfigUtils:B}=load("module/skillBattle/newRules/NewBuildConfigUtils.js");
+const {InventoryConfigUtils:Config}=load("module/inventory/utils/InventoryConfigUtils.js");
+const {InventoryRules:R}=load("module/inventory/utils/InventoryRules.js");
+const {InventoryManager:Session}=load("module/inventory/manager/InventoryManager.js");
+const {BuildConfigUtils:B}=load("module/build/utils/BuildConfigUtils.js");
 const {SkillBattleManager:Manager}=load("module/skillBattle/manager/SkillBattleManager.js");
 const bytes=fs.readFileSync(path.join(root,"assets/config/configbin.bin"));
 let offset=4;const blocks={};

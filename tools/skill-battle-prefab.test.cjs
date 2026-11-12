@@ -34,7 +34,8 @@ for (const [file, type, content] of files) {
                 assert.ok(x <= 0 && x + node.width >= parent.width && y === 0 && node.height === parent.height,
                     `${file}: extended background must cover the authored page`);
             } else {
-                assert.ok(x >= 0 && y >= 0 && x + node.width <= parent.width && y + node.height <= parent.height,
+                const left=x-(node.anchorX||0)*node.width, top=y-(node.anchorY||0)*node.height;
+                assert.ok(left >= 0 && top >= 0 && left + node.width <= parent.width && top + node.height <= parent.height,
                     `${file}: ${node.name} exceeds ${parent.name}`);
             }
         }
@@ -111,7 +112,9 @@ for (const [file, type, content] of files) {
         assert.deepEqual(meta.importer,{textureType:2,sRGB:true,premultiplyAlpha:true});
         assert.equal(nodes.get("expViewport").width,1280);
         assert.equal(nodes.get("expViewport").height,720);
-        assert.equal(nodes.get("mapHeaderArea").zOrder,1,"Header stays above the full-screen map");
+        const regions=nodes.get("expeditionRoot")._$child;
+        assert.ok(regions.indexOf(nodes.get("mapHeaderArea"))>regions.indexOf(nodes.get("expViewport")),
+            "Header stays above the full-screen map in authored draw order");
         assert.deepEqual(nodes.get("expeditionRoot").relations[0].data, [1, 0, 2, 0]);
         assert.deepEqual(nodes.get("expViewport").relations[0].data, [1, 0, 2, 0]);
         assert.deepEqual(nodes.get("nodeActionArea").relations[0].data, [9, 0, 13, 0]);
@@ -121,7 +124,7 @@ for (const [file, type, content] of files) {
             "mapResourceStrip","mapTopTrim","mapFooterTrim"])
             assert.ok(!nodes.has(name),`Map no longer contains obsolete HUD ${name}`);
         assert.equal(nodes.get("mapClockArea").x,8,"Independent timer is inset on the left");
-        assert.deepEqual([nodes.get("mapHeaderArea").x,nodes.get("mapHeaderArea").y],[8,0],
+        assert.deepEqual([nodes.get("mapHeaderArea").x||0,nodes.get("mapHeaderArea").y||0],[0,0],
             "Unified top backing attaches to the top edge");
         assert.deepEqual(nodes.get("mapHeaderPanel").relations[0].data,[1,0],
             "Unified backing follows the header width");
@@ -130,14 +133,14 @@ for (const [file, type, content] of files) {
         assert.ok(nodes.get("mapKillsArea").width>=500,"Kill strip reserves room for additional categories");
         assert.deepEqual(nodes.get("mapKillsArea").relations[0].data,[1,0],"Kill strip grows with viewport width");
         assert.ok(!nodes.get("mapExitArea").relations,"Exit must not stay anchored to the right");
-        assert.equal(nodes.get("expAbandonText").text,"退出");
+        assert.equal(nodes.get("expAbandonText").text,"放弃本局");
         for(const name of ["expStorage","expBuild"]) {
             const button=nodes.get(name);
             assert.deepEqual([button.width,button.height],[112,104],"Readable, equally-sized map tools");
             assert.deepEqual([button._$child[2].width,button._$child[2].height],[46,46],"Prominent action icons");
             assert.equal(button._$child[1].fontSize,22);
         }
-        assert.deepEqual([nodes.get("expAbandon").width,nodes.get("expAbandon").height],[120,64],
+        assert.deepEqual([nodes.get("expAbandon").width,nodes.get("expAbandon").height],[168,52],
             "Exit stays left with a readable horizontal icon and label");
         assert.equal(nodes.get("expUseText").fontSize,24,"Primary node action is visibly stronger than secondary text");
         assert.ok(nodes.has("mapClockGlyph"),"Timer has an independent clock glyph");
@@ -158,11 +161,17 @@ for (const [file, type, content] of files) {
             "expUseSkin","expAbandonSkin","expStorageSkin","expBuildSkin"]) {
             const n=nodes.get(name);
             assert.equal(n._$type,"GImage",`${name}: actual imported UI image`);
-            assert.ok(n.src.startsWith("ui/atlas/common/foundation/"),`${name}: reusable common artwork`);
+            assert.ok(n.src.startsWith("ui/atlas/module/expedition/handpainted/"),`${name}: supplied map artwork`);
             const meta=JSON.parse(fs.readFileSync(path.join(root,"assets",n.src+".meta"),"utf8"));
             assert.equal(meta.importer.textureType,2);assert.equal(meta.importer.sRGB,true);
             assert.equal(meta.importer.premultiplyAlpha,true);
             if(name!=="mapAvatarFrame")assert.equal(meta.importer.sizeGrid.length,5,"Real nine-slice import");
+        }
+        for(const name of ["mapClockGlyph","mapAvatarPlaceholder","mapHpTrack","mapHpFill","mapMpTrack","mapMpFill",
+            "mapStaminaTrack","mapStaminaFill","mapWeightTrack","mapWeightFill","expPlayerAvatar","mapRouteTexture"]) {
+            const n=nodes.get(name);
+            assert.equal(n._$type,"GImage",`${name}: no code-drawn artwork`);
+            assert.ok(n.src.startsWith("ui/atlas/module/expedition/handpainted/"));
         }
         for(let i=1;i<=32;i++) {
             const icon=nodes.get(`expNode${i}Icon`); assert.deepEqual([icon.width,icon.height],[104,104]);
@@ -188,13 +197,14 @@ for(const name of ["start","transit","enemy-normal","enemy-elite","enemy-boss","
     const meta=JSON.parse(fs.readFileSync(path.join(root,`assets/ui/image/expeditionNodes/node-${name}.png.meta`),"utf8"));
     assert.equal(meta.importer.textureType,2);assert.equal(meta.importer.sRGB,true);assert.equal(meta.importer.premultiplyAlpha,true);
 }
-for(const role of ["Start","Inventory","Build","Battle","Settlement"]) {
-    const source=fs.readFileSync(path.join(root,`src/script/module/skillBattle/view/SkillBattle${role}View.ts`),"utf8");
-    assert.match(source,/SkillBattleUISession\.createPanel\(/);
+for(const [role,module] of [["Start","gameplay"],["Inventory","inventory"],["Build","build"],
+    ["Battle","skillBattle"],["Settlement","gameplay"]]) {
+    const source=fs.readFileSync(path.join(root,`src/script/module/${module}/view/SkillBattle${role}View.ts`),"utf8");
+    assert.match(source,/GameplayPanelFactory\.createPanel\(/);
     assert.doesNotMatch(source,/getExpedition\(/,"Formal pages must not instantiate the legacy save");
 }
 const mapSource=fs.readFileSync(path.join(root,"src/script/module/expedition/view/SkillBattleMapView.ts"),"utf8");
-assert.match(mapSource,/SkillBattleUISession\.createPanel\(/);
+assert.match(mapSource,/GameplayPanelFactory\.createPanel\(/);
 assert.doesNotMatch(mapSource,/getExpedition\(/);
 const shared = [
     "inventory/InventoryPanel", "inventory/InventoryCarry", "inventory/InventoryBag",

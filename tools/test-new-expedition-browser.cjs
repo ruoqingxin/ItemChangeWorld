@@ -185,7 +185,7 @@ async function mapCheck(p){
         // Layout-only fixture opens every generated node, then restores the exact saved run before any command.
         const original=await state(p);
         await p.evaluate(()=>{const {trial,panel}=window.__skillBattlePreview;
-            window.__layoutOriginal=trial.archive;trial.save.state.revealed=[...trial.inventory.map.present];
+            window.__layoutOriginal=trial.archive;trial.data.save.state.revealed=[...trial.inventory.map.present];
             panel.refresh();panel.scroller.posX=panel.scroller.contentWidth-panel.scroller.viewWidth;});
         await mapCheck(p);await p.waitForTimeout(200);
         const finalFrame=await p.evaluate(()=>{
@@ -197,7 +197,7 @@ async function mapCheck(p){
         assert.ok(finalFrame.dynamic);assert.ok(finalFrame.right<=finalFrame.stage+1);
         await shot(p,`${name}-last-node-layout`);
         await p.evaluate(()=>{const {trial,panel}=window.__skillBattlePreview;
-            trial.save=window.__layoutOriginal;delete window.__layoutOriginal;panel.centerMap=true;panel.refresh();});
+            trial.data.save=window.__layoutOriginal;delete window.__layoutOriginal;panel.centerMap=true;panel.refresh();});
         assert.deepEqual(await state(p),original);
         await click(p,"expAbandon");await click(p,"dialogCancel");assert.equal((await state(p)).phase,"active");
         await click(p,"expAbandon");await click(p,"dialogConfirm");assert.equal((await state(p)).result,"abandon");

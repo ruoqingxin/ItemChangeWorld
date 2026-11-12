@@ -1,7 +1,7 @@
 import { ConfigLoader, ConfigUtil } from "../src/script/config/ConfigUtil";
 import { UIManager } from "../src/script/games/ui/UIManager";
-import { SkillBattleUISession } from "../src/script/module/skillBattle/view/SkillBattleUISession";
-import { closeSkillBattleScreens, currentSkillBattleView, openSkillBattleScreen } from "../src/script/module/skillBattle/view/SkillBattleUINavigation";
+import { GameplayManager } from "../src/script/module/gameplay/manager/GameplayManager";
+import { closeSkillBattleScreens, currentSkillBattleView, openSkillBattleScreen } from "../src/script/module/gameplay/utils/GameplayNavigation";
 import { SkillBattleManager } from "../src/script/module/skillBattle/manager/SkillBattleManager";
 
 async function main(): Promise<void> {
@@ -27,10 +27,10 @@ async function main(): Promise<void> {
     // Use the same UIManager/GRoot path as the actual game. The preview must
     // not place a second hand-built panel directly on the stage.
     UIManager.ins().init();
-    SkillBattleUISession.previewSingleTrial = new URLSearchParams(window.location.search).get("stage") === "1";
-    SkillBattleUISession.previewBuildTrial = new URLSearchParams(window.location.search).get("stage") === "2";
-    SkillBattleUISession.previewInventoryTrial = new URLSearchParams(window.location.search).get("stage") === "3";
-    const trial = SkillBattleUISession.getActive();
+    GameplayManager.previewSingleTrial = new URLSearchParams(window.location.search).get("stage") === "1";
+    GameplayManager.previewBuildTrial = new URLSearchParams(window.location.search).get("stage") === "2";
+    GameplayManager.previewInventoryTrial = new URLSearchParams(window.location.search).get("stage") === "3";
+    const trial = GameplayManager.getActive();
     openSkillBattleScreen(trial.screen);
     const initialView = currentSkillBattleView;
     const preview = {

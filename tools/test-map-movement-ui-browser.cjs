@@ -41,7 +41,10 @@ async function move(p, target) {
                     const marker = panel.expeditionNodes.expPlayer, avatar = marker.getChildByName("expPlayerAvatar");
                     return { x: marker.x, y: marker.y, visible: marker.visible && avatar?.visible,
                         passive: !marker.mouseEnabled && !avatar?.mouseEnabled,
-                        ring: !!marker.getChildByName("expPlayerRing")?.visible };
+                        locator: (() => {
+                            const ring=marker.getChildByName("expPlayerRing");
+                            return ring?.visible&&ring.width===76&&ring.height===18;
+                        })() };
                 })(),
                 controls: ["expStorage", "expBuild"].map(key => {
                     const n = panel.buttons[key], skin = n.getChildAt(0);
@@ -50,6 +53,9 @@ async function move(p, target) {
                         nineSlice: skin.graphics.cmds.some(c => c.cmdID === Laya.Draw9GridTextureCmd.ID) };
                 }),
                 actionVisible: panel.buttons.expUse.visible,
+                notice: panel.labels.expNotice.text,
+                reachVisible: Object.values(panel.buttons).some(n =>
+                    n.visible && n.getChildByName("expReachHint")?.visible),
             });
             if (performance.now() - started < 1400) requestAnimationFrame(sample);
             else {
@@ -81,18 +87,22 @@ async function move(p, target) {
     assert.ok(new Set(result.frames.filter(f => f.moving).map(f => `${f.player.x},${f.player.y}`)).size > 2,
         "Player avatar follows the movement animation");
     for (const frame of result.frames)
-        assert.ok(frame.player.visible && frame.player.passive && !frame.player.ring,
-            "Player avatar remains visible, noninteractive and independent of the removed gold ring");
-    assert.ok(result.sources.every(src => src && src.endsWith("button-normal-64x48.png")),
+        assert.ok(frame.player.visible && frame.player.passive && frame.player.locator,
+            "Player avatar and its small ground locator remain visible and noninteractive");
+    assert.ok(result.sources.every(src => src && src.endsWith("/map-button-normal.png")),
         `Moving must not clear or dim toolbar skins: ${JSON.stringify([...new Set(result.sources)])}`);
     for (const frame of result.frames) {
         for (const control of frame.controls) {
             assert.ok(control.visible && control.texture && control.nineSlice && control.alpha === 1,
                 "Toolbar stays visible, opaque and textured on every sampled frame");
-            assert.ok(control.src.endsWith("button-normal-64x48.png"), "Toolbar appearance remains steady while moving");
+            assert.ok(control.src.endsWith("/map-button-normal.png"), "Toolbar appearance remains steady while moving");
             assert.equal(control.enabled, !frame.moving, "Temporary input lock remains intact");
         }
-        if (frame.moving) assert.equal(frame.actionVisible, false, "Node actions remain hidden until arrival");
+        if (frame.moving) {
+            assert.equal(frame.actionVisible, false, "Node actions remain hidden until arrival");
+            assert.equal(frame.reachVisible, false, "Reachable destinations are not advertised during movement");
+            assert.equal(frame.notice, "移动中", "Movement has a transient status in the existing notice area");
+        }
     }
     assert.equal(result.node, target);
     assert.deepEqual(result.shown, result.expectedShown, "Only the progressively opened width is displayed");
@@ -118,10 +128,10 @@ async function move(p, target) {
             for (const target of [2, 1, 2, 1]) await move(p, target);
             await p.evaluate(() => {
                 const { panel, trial } = window.__skillBattlePreview;
-                trial.save.state.map.used.push(trial.inventory.node);
+                trial.data.save.state.map.used.push(trial.inventory.node);
                 panel.refresh();
                 const n = panel.buttons.expUse;
-                if (n.mouseEnabled || !n.getChildAt(0).src.endsWith("button-disabled-64x48.png"))
+                if (n.mouseEnabled || !n.getChildAt(0).src.endsWith("/map-button-disabled.png"))
                     throw Error("Persistently unavailable actions must still look disabled");
             });
             assert.deepEqual(errors, []);

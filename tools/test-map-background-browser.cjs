@@ -167,9 +167,9 @@ async function checkHud(p, name) {
     const saved=await p.evaluate(key=>localStorage.getItem(key),key);
     await p.evaluate(() => {
         const {trial,panel}=window.__skillBattlePreview;
-        const original=JSON.parse(JSON.stringify(trial.save.state));
+        const original=JSON.parse(JSON.stringify(trial.data.save.state));
         try {
-            const state=trial.save.state,setup=trial.archive.config.build.setup.player;
+            const state=trial.data.save.state,setup=trial.archive.config.build.setup.player;
             state.hp=Math.floor(setup.maxHp/2);state.mp=Math.floor(setup.maxMp/4);
             state.map.cleared=trial.archive.config.nodes.filter(n=>["normal","elite","boss"].includes(n.kind))
                 .map(n=>n.id);
@@ -187,7 +187,7 @@ async function checkHud(p, name) {
                 !panel.buttons.expUse.getChildAt(0).src.endsWith("button-disabled-64x48.png"))
                 throw Error("Unavailable node action must use the disabled state");
         } finally {
-            trial.save.state=original;panel.refresh();
+            trial.data.save.state=original;panel.refresh();
         }
     });
     if(!p.touchMode) {
@@ -285,9 +285,9 @@ async function checkHud(p, name) {
             const beforeFixture = await p.evaluate(key => localStorage.getItem(key), key);
             await p.evaluate(() => {
                 const v = window.__skillBattlePreview;
-                window.__groundStateRestore = JSON.parse(JSON.stringify(v.trial.save.state));
-                v.trial.save.state.map.visible = [...v.trial.save.state.map.present];
-                v.trial.save.state.map.used = [...new Set([...v.trial.save.state.map.used,4])];
+                window.__groundStateRestore = JSON.parse(JSON.stringify(v.trial.data.save.state));
+                v.trial.data.save.state.map.visible = [...v.trial.data.save.state.map.present];
+                v.trial.data.save.state.map.used = [...new Set([...v.trial.data.save.state.map.used,4])];
                 v.panel.refresh();
             });
             const revealedOnly=await inspect(p,`${name}-revealed-only-fixture`);
@@ -302,28 +302,28 @@ async function checkHud(p, name) {
                     const x=112+n.x*242,w=panel.scroller.viewWidth;
                     return n.mainOrder>=0&&x>=w/2&&x<w*1.5;
                 }).id;
-                trial.save.state.revealed.push(node);
-                trial.save.state.node=node;panel.refresh();
+                trial.data.save.state.revealed.push(node);
+                trial.data.save.state.node=node;panel.refresh();
                 const forward=panel.scroller.contentWidth;
-                trial.save.state.node=1;panel.refresh();
+                trial.data.save.state.node=1;panel.refresh();
                 return{forward,back:panel.scroller.contentWidth,view:panel.scroller.viewWidth};
             });
             assert.ok(Math.abs(screenProgress.forward-initial.content)<1,"Arrival does not change full-map browsing bounds");
             assert.equal(screenProgress.back,screenProgress.forward,"Retreat retains full-map browsing bounds");
             await p.evaluate(() => {
                 const {trial,panel}=window.__skillBattlePreview;
-                trial.save.state.revealed=[...trial.save.state.map.present];
-                trial.save.state.node=2;
-                trial.save.state.map.sources.push({node:17,entries:[{}],revealed:0,opened:true,progressMs:0});
+                trial.data.save.state.revealed=[...trial.data.save.state.map.present];
+                trial.data.save.state.node=2;
+                trial.data.save.state.map.sources.push({node:17,entries:[{}],revealed:0,opened:true,progressMs:0});
                 panel.refresh();
             });
             await inspect(p,`${name}-unfinished-search-fixture`);
             await p.evaluate(() => {
                 const {trial,panel}=window.__skillBattlePreview;
-                trial.save.state.map.sources.find(box=>box.node===17).revealed=1;
-                const ground=JSON.parse(JSON.stringify(trial.save.state.items[0]));
+                trial.data.save.state.map.sources.find(box=>box.node===17).revealed=1;
+                const ground=JSON.parse(JSON.stringify(trial.data.save.state.items[0]));
                 ground.uid="visual-ground-fixture";ground.location={space:"ground",node:17};
-                trial.save.state.items.push(ground);panel.refresh();
+                trial.data.save.state.items.push(ground);panel.refresh();
             });
             assert.equal(await p.evaluate(() => window.__skillBattlePreview.panel.buttons.expNode17.getChildAt(2).grayed),true,
                 "Completed search grays the source even while revealed loot remains");
@@ -333,7 +333,7 @@ async function checkHud(p, name) {
             assert.equal(await p.evaluate(key => localStorage.getItem(key), key), beforeFixture, "Visual fixture/pan does not save");
             await p.evaluate(() => {
                 const v = window.__skillBattlePreview;
-                v.trial.save.state = window.__groundStateRestore;
+                v.trial.data.save.state = window.__groundStateRestore;
                 delete window.__groundStateRestore;
                 v.panel.refresh();
             });

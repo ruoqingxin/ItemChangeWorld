@@ -12,8 +12,8 @@ const current=fs.readFileSync(path.join(root,"assets/config/configbin.bin")),blo
 if(process.argv.includes("--inspect")) {
     global.Laya={Resource:class{},Byte:class{constructor(b){this.b=Buffer.from(b);this.pos=0;}
         readUTFBytes(n){const s=this.b.toString("utf8",this.pos,this.pos+n);this.pos+=n;return s;}}};
-    const {Tables}=require("../bin/skill-battle-tests/script/config/schema.js");
-    const ByteBuf=require("../bin/skill-battle-tests/script/config/bright/serialization/ByteBuf.js").default;
+    const {Tables}=require("../bin/gameplay-tests/script/config/schema.js");
+    const ByteBuf=require("../bin/gameplay-tests/script/config/bright/serialization/ByteBuf.js").default;
     for(const [cwd,file]of[[root,"assets/config/configbin.bin"],[config,"configbin.bin"]]){
         const before=unpack(cp.execFileSync("git",["show",`HEAD:${file}`],{cwd,encoding:null}));
         const t=new Tables(name=>new ByteBuf(new Uint8Array(before.get(name)||blocks.get(name))));

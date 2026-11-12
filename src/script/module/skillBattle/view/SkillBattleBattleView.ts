@@ -1,17 +1,17 @@
+import { GameplayPanelFactory } from "../../gameplay/utils/GameplayPanelFactory";
 import { UIBaseView } from "../../../games/ui/UIBaseView";
 import { UILayer } from "../../../games/ui/UILayer";
-import { NewBattlePanel } from "./NewBattlePanel";
-import { SkillBattleUISession } from "./SkillBattleUISession";
-import { openSkillBattleScreen } from "./SkillBattleUINavigation";
+import { BattlePanel } from "./BattlePanel";
+import { openSkillBattleScreen } from "../../gameplay/utils/GameplayNavigation";
 
 /** Battle-only UI entry. Start and settlement are separate UIBaseViews. */
 export class SkillBattleBattleView extends UIBaseView {
     get layer(): UILayer { return UILayer.Second; }
     get path(): string { return "ui/prefab/module/skillBattle/SkillBattleBattleView.lh"; }
-    protected panel: NewBattlePanel;
+    protected panel: BattlePanel;
 
     protected onConstruct(): void {
-        this.panel = SkillBattleUISession.createPanel(this, "battle", screen => openSkillBattleScreen(screen));
+        this.panel = GameplayPanelFactory.createPanel(this, "battle", screen => openSkillBattleScreen(screen));
         this.view.on(Laya.Event.RESIZE, this, this.resize);
     }
 

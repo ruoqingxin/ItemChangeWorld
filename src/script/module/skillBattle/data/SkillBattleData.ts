@@ -1,5 +1,5 @@
 import type { ISkillBattleSetup, ISkillBattleState } from "../types/SkillBattleTypes";
-import type { NewBattleSetup, NewBattleState } from "../newRules/NewBattleTypes";
+import type { NewBattleSetup, NewBattleState } from "../types/BattleTypes";
 
 export class SkillBattleData {
     setup: ISkillBattleSetup | null = null;

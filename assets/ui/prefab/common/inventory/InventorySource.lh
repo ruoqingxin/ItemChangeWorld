@@ -2453,7 +2453,23 @@
           "width": 44,
           "height": 44,
           "visible": false,
-          "mouseEnabled": false
+          "mouseEnabled": false,
+          "_$child": [
+            {
+              "_$id": "map_art_expSearchSpinnerArt",
+              "_$type": "GImage",
+              "name": "expSearchSpinnerArt",
+              "x": 22,
+              "y": 22,
+              "width": 44,
+              "height": 44,
+              "mouseEnabled": false,
+              "autoSize": false,
+              "src": "ui/atlas/module/expedition/handpainted/inventory-search-spinner.png",
+              "anchorX": 0.5,
+              "anchorY": 0.5
+            }
+          ]
         }
       ]
     },

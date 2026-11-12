@@ -115,7 +115,7 @@ function load() {
         constructor(buffer) { this.bytes = Buffer.from(buffer); this.pos = 0; }
         readUTFBytes(length) { const text = this.bytes.toString("utf8", this.pos, this.pos + length); this.pos += length; return text; }
     } };
-    const build = path.resolve(__dirname, "../bin/skill-battle-tests/script");
+    const build = path.resolve(__dirname, "../bin/gameplay-tests/script");
     const get = file => require(path.join(build, file));
     const { Tables } = get("config/schema.js");
     const ByteBuf = get("config/bright/serialization/ByteBuf.js").default;
