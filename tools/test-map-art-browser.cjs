@@ -6,6 +6,12 @@ const assert = require("node:assert/strict");
 const url = process.env.SKILL_BATTLE_URL || "http://127.0.0.1:18138";
 const out = path.resolve(__dirname, "../tmp/map-art");
 const key = "nowchange.stage4-expedition.v1";
+const prefab=JSON.parse(require("node:fs").readFileSync(path.resolve(__dirname,
+    "../assets/ui/prefab/module/expedition/SkillBattleMapView.lh"),"utf8"));
+const authored=new Map();
+const visit=n=>{authored.set(n.name,n);(n._$child||[]).forEach(visit);};
+visit(prefab);
+const authoredContext=authored.get("nodeActionArea");
 const ready = p => p.waitForFunction(() => window.__skillBattlePreview?.panel?.opened &&
     window.__skillBattlePreview.view.isOpened);
 async function point(p, name) {
@@ -34,7 +40,7 @@ async function inspect(p, name) {
                 (!node.visible || !!node.getChildAt(0).texture);
         });
     });
-    const state = await p.evaluate(() => {
+    const state = await p.evaluate(authoredContext => {
         const {panel,view,trial} = window.__skillBattlePreview, issues = [];
         const art = "ui/atlas/module/expedition/handpainted/";
         for (const name of ["mapHeaderPanel","mapPlayerPanel",
@@ -66,6 +72,10 @@ async function inspect(p, name) {
                 fill.src!==art+`map-bar-${key.toLowerCase()}.png`||
                 ![frame,track,fill].every(n=>n.graphics.cmds.some(c=>c.cmdID===Laya.Draw9GridTextureCmd.ID)))
                 issues.push([key,"capsule artwork"]);
+            const inset=4;
+            if(![track,fill].every(n=>n.x===frame.x+inset&&n.y===frame.y+inset&&
+                n.width===frame.width-inset*2&&n.height===frame.height-inset*2))
+                issues.push([key,"silver rim clearance"]);
             const label=panel.labels[key==="Hp"||key==="Mp"?`exp${key}Value`:`exp${key}`];
             if(label.x!==frame.x||label.y!==frame.y||label.width!==frame.width||label.height!==frame.height||
                 label.align!=="center"||label.valign!=="middle"||label.wordWrap)
@@ -148,8 +158,11 @@ async function inspect(p, name) {
         if(commands.some(c=>c.alpha!==(c.height===7?0.94:0.68)))issues.push("restrained route opacity");
         if(panel.buttons.expUse.visible) {
             const area=view.getElement("nodeActionArea"),background=panel.expeditionNodes.expContextBackground;
-            if(area.width>288||area.height>252||background.width!==area.width||background.height!==area.height)
-                issues.push("compact node actions");
+            if(area.width!==authoredContext.width||area.height!==authoredContext.height||
+                area.x!==authoredContext.x+panel.root.width-authoredContext.prefabWidth||
+                area.y!==authoredContext.y+(panel.root.height-authoredContext.prefabHeight)/2||
+                background.width!==area.width||background.height!==area.height)
+                issues.push("prefab-authored node actions");
             if(!panel.labels.expContextStatus.visible)issues.push("node status");
         }
         const scan = n => {
@@ -165,7 +178,7 @@ async function inspect(p, name) {
         return {issues, dashes:commands.length,
             expected:trial.inventory.map.nodes.filter(n=>112+n.x*242-58<panel.scroller.contentWidth).length,
             shown:trial.inventory.map.present.filter(id=>panel.buttons[`expNode${id}`].visible).length};
-    });
+    }, {...authoredContext,prefabWidth:prefab.width,prefabHeight:prefab.height});
     assert.deepEqual(state.issues, [], name);
     assert.equal(state.shown,state.expected,"Skinning retains the existing browsing bounds");
     const image = await p.screenshot({path:path.join(out,`${name}.png`)});
@@ -278,20 +291,19 @@ async function inspect(p, name) {
             const contextIssues=await p.evaluate(()=> {
                 const {panel,trial}=window.__skillBattlePreview,s=trial.data.save.state;
                 const original={node:s.node,revealed:s.revealed,selected:panel.selectedNode,
-                    scroll:panel.scroller.posX,center:panel.centerMap};
+                    scroll:panel.scroller.posX,center:panel.centerMap,
+                    contextX:panel.mapAreas.nodeActionArea.x,contextY:panel.mapAreas.nodeActionArea.y};
                 const issues=[],rightmost=Math.max(...s.map.nodes.map(n=>n.x));
                 try {
                     s.revealed=[...s.map.present];
                     for(const n of s.map.nodes.filter(n=>n.x>=rightmost-2&&n.kind!=="transit")) {
                         s.node=n.id;panel.selectedNode=n.id;panel.centerMap=true;panel.refresh();
-                        const area=panel.mapAreas.nodeActionArea,p=panel.mapPositions(s).get(n.id);
-                        const x=p.x-panel.scroller.scrollingPosX;
+                        const area=panel.mapAreas.nodeActionArea;
                         if(!panel.buttons.expUse.visible||area.x<0||area.y<96||
                             area.x+area.width>panel.root.width||area.y+area.height>panel.root.height)
                             issues.push([n.id,"action bounds"]);
-                        if(Math.min(area.x+area.width,x+64)>Math.max(area.x,x-64)&&
-                            Math.min(area.y+area.height,p.y+104)>Math.max(area.y,p.y-100))
-                            issues.push([n.id,"current node covered"]);
+                        if(area.x!==original.contextX||area.y!==original.contextY)
+                            issues.push([n.id,"authored panel position overwritten"]);
                     }
                 } finally {
                     s.node=original.node;s.revealed=original.revealed;panel.selectedNode=original.selected;
@@ -299,7 +311,7 @@ async function inspect(p, name) {
                 }
                 return issues;
             });
-            assert.deepEqual(contextIssues,[],"End-of-map actions stay onscreen and avoid the current node");
+            assert.deepEqual(contextIssues,[],"Node actions keep the prefab position across all node selections");
             assert.equal(await p.evaluate(key=>localStorage.getItem(key),key),arrivalSaved,
                 "Action placement fixtures never save");
             await p.evaluate(()=> {
@@ -309,6 +321,50 @@ async function inspect(p, name) {
                     throw Error("Disabled actions use supplied disabled artwork");
                 panel.refresh();
             });
+            const editedLayout=await p.evaluate(key=>{
+                const {panel}=window.__skillBattlePreview;
+                const saved=localStorage.getItem(key);
+                panel.mapAreas.mapHeaderArea.y+=3;
+                panel.mapAreas.mapPlayerArea.x+=7;
+                panel.mapAreas.mapActionsArea.x+=5;
+                panel.mapAreas.nodeActionArea.x-=17;
+                panel.mapAreas.nodeActionArea.y+=13;
+                panel.buttons.expBuild.x+=9;
+                panel.labels.expPlayerName.x+=6;
+                panel.labels.expHpValue.fontSize+=1;
+                const names=["mapHeaderArea","mapPlayerArea","mapActionsArea","nodeActionArea",
+                    "mapHpSlot","mapHpTrack","mapHpFill","mapMpSlot","mapHpIcon","mapAvatarFrame",
+                    "expPlayerName","expHpValue","expStorage","expBuild","expUse","expAbandon"];
+                const snapshot=()=>names.map(name=>{
+                    const n=panel.expeditionNodes[name]||panel.mapAreas[name];
+                    return [name,n.x,n.y,n.width,n.height,n.fontSize];
+                });
+                const before=snapshot();
+                panel.refresh();panel.refresh();
+                return {before,after:snapshot(),unchanged:localStorage.getItem(key)===saved,
+                    rim:panel.expeditionNodes.mapHpTrack.x-panel.expeditionNodes.mapHpSlot.x,
+                    text:panel.labels.expHpValue.x-panel.expeditionNodes.mapHpSlot.x};
+            },key);
+            assert.deepEqual(editedLayout.after,editedLayout.before,"Refreshing preserves edited prefab positions, sizes and fonts");
+            assert.equal(editedLayout.rim,4,"Native relations carry the track when the slot moves");
+            assert.equal(editedLayout.text,0,"Native relations carry the centered value when the slot moves");
+            assert.ok(editedLayout.unchanged,"Editing presentation never writes a save");
+            const noticeLayout=await p.evaluate(async()=>{
+                const {panel}=window.__skillBattlePreview;
+                panel.notice="当前操作无法完成，请检查携带空间后重试。".repeat(2);
+                panel.refresh();
+                await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+                const label=panel.labels.expNotice,skin=panel.expeditionNodes.mapNoticeSkin;
+                return {width:label.width,height:label.height,x:label.x,y:label.y,
+                    bounds:[panel.mapAreas.mapActionsArea.width,panel.mapAreas.mapActionsArea.height],
+                    backing:[skin.x,skin.y,skin.width,skin.height],
+                    text:[label.x,label.y,label.width,label.height],visible:skin.visible};
+            });
+            assert.ok(noticeLayout.visible&&noticeLayout.width<=640&&noticeLayout.x>=0&&noticeLayout.y>=0&&
+                noticeLayout.x+noticeLayout.width<=noticeLayout.bounds[0]&&
+                noticeLayout.y+noticeLayout.height<=noticeLayout.bounds[1],
+                `Native long notices remain inside the action area: ${JSON.stringify(noticeLayout)}`);
+            assert.deepEqual(noticeLayout.backing,noticeLayout.text,"Notice backing follows native text auto-sizing");
             assert.deepEqual(errors,[]);assert.deepEqual(failed,[]);
             await context.close();
             console.log(`PASS map artwork ${name}: imported/nine-sliced skins, uncluttered text, real button states, cropped meters, travel and rotating search artwork.`);

@@ -1,0 +1,47 @@
+{
+  "source": "source.png",
+  "sha256": "a1f6a16ca3675f65754f3f8d758fe72ce9ab1fbadc2cfe53af1eef25f0da1dd8",
+  "cuts": {
+    "frame": {
+      "left": 62,
+      "top": 94,
+      "width": 1925,
+      "height": 262
+    },
+    "stamina": {
+      "left": 182,
+      "top": 510,
+      "width": 1683,
+      "height": 213
+    },
+    "mp": {
+      "left": 182,
+      "top": 829,
+      "width": 1683,
+      "height": 209
+    },
+    "hp": {
+      "left": 182,
+      "top": 1147,
+      "width": 1683,
+      "height": 213
+    },
+    "weight": {
+      "left": 182,
+      "top": 1469,
+      "width": 1683,
+      "height": 215
+    }
+  },
+  "output": {
+    "width": 128,
+    "frameHeight": 24,
+    "fillHeight": 20
+  },
+  "mapping": {
+    "stamina": "lime",
+    "mp": "blue",
+    "hp": "green",
+    "weight": "cyan"
+  }
+}

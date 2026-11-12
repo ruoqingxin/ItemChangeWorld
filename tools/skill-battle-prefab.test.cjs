@@ -123,22 +123,28 @@ for (const [file, type, content] of files) {
         for (const name of ["expResources","expSpirit","expDurability","expWins","expStatus",
             "mapResourceStrip","mapTopTrim","mapFooterTrim"])
             assert.ok(!nodes.has(name),`Map no longer contains obsolete HUD ${name}`);
-        assert.equal(nodes.get("mapClockArea").x,8,"Independent timer is inset on the left");
-        assert.deepEqual([nodes.get("mapHeaderArea").x||0,nodes.get("mapHeaderArea").y||0],[0,0],
-            "Unified top backing attaches to the top edge");
-        assert.deepEqual(nodes.get("mapHeaderPanel").relations[0].data,[1,0],
-            "Unified backing follows the header width");
-        assert.deepEqual(nodes.get("mapKillsFrame").relations[0].data,[1,0],
+        assert.equal(nodes.get("mapClockArea").x,16,"Independent timer is inset on the left");
+        assert.deepEqual([nodes.get("mapHeaderArea").x,nodes.get("mapHeaderArea").y],[8,8],
+            "Authored header keeps the approved margins");
+        assert.deepEqual(nodes.get("mapHeaderPanel").relations[0].data,[1,0,2,0],
+            "Unified backing follows the header size");
+        assert.deepEqual(nodes.get("mapKillsFrame").relations[0].data,[1,0,2,0],
             "Kill slot background grows with its region");
-        assert.ok(nodes.get("mapKillsArea").width>=500,"Kill strip reserves room for additional categories");
-        assert.deepEqual(nodes.get("mapKillsArea").relations[0].data,[1,0],"Kill strip grows with viewport width");
+        assert.equal(nodes.get("mapKillsArea").width,336,"Kill categories have authored, predictable spacing");
+        assert.deepEqual(nodes.get("mapKillsArea").relations[0],{
+            _$type:"Relation",target:{_$ref:nodes.get("mapClockArea")._$id},data:[5,0],
+        },"Kill strip follows the timer rather than stretching its category spacing");
+        assert.deepEqual(nodes.get("expeditionRoot").controllers.mapLayout.pages,["desktop","compact"]);
+        assert.deepEqual(nodes.get("mapPlayerArea").relations[0].data,[12,0],
+            "Player HUD follows the bottom of the header");
         assert.ok(!nodes.get("mapExitArea").relations,"Exit must not stay anchored to the right");
         assert.equal(nodes.get("expAbandonText").text,"放弃本局");
         for(const name of ["expStorage","expBuild"]) {
             const button=nodes.get(name);
-            assert.deepEqual([button.width,button.height],[112,104],"Readable, equally-sized map tools");
-            assert.deepEqual([button._$child[2].width,button._$child[2].height],[46,46],"Prominent action icons");
-            assert.equal(button._$child[1].fontSize,22);
+            assert.deepEqual([button.width,button.height],[108,100],"Readable, equally-sized map tools");
+            assert.deepEqual([button._$child[2].width,button._$child[2].height],[44,44],"Prominent action icons");
+            assert.equal(button._$child[1].fontSize,21);
+            assert.deepEqual(button._$child[0].relations[0].data,[1,0,2,0],"Button skin follows its owner");
         }
         assert.deepEqual([nodes.get("expAbandon").width,nodes.get("expAbandon").height],[168,52],
             "Exit stays left with a readable horizontal icon and label");
@@ -146,6 +152,24 @@ for (const [file, type, content] of files) {
         assert.ok(nodes.has("mapClockGlyph"),"Timer has an independent clock glyph");
         for(const name of ["expPlayerName","expHpValue","expMpValue","expStamina","expWeight"])
             assert.ok(nodes.has(name),`Map HUD binding ${name}`);
+        for(const key of ["Hp","Mp","Stamina","Weight"]) {
+            const slot=nodes.get(`map${key}Slot`);
+            for(const suffix of ["Track","Fill"]) {
+                const n=nodes.get(`map${key}${suffix}`);
+                assert.deepEqual(n.relations,[{_$type:"Relation",target:{_$ref:slot._$id},data:[3,0,10,0,1,0,2,0]}]);
+                assert.deepEqual([n.x-slot.x,n.y-slot.y,slot.width-n.width,slot.height-n.height],[4,4,8,8],
+                    "Progress artwork follows the authored slot with constant rim clearance");
+            }
+            const label=nodes.get(key==="Hp"||key==="Mp"?`exp${key}Value`:`exp${key}`);
+            assert.deepEqual(label.relations[0].data,[3,0,10,0,1,0,2,0]);
+            assert.equal(label.wordWrap,false);
+            assert.ok(label.gears.some(g=>g.propPath==="textIns.y"),"Optical centering is authored in the prefab");
+        }
+        const controllerSource=fs.readFileSync(path.join(root,"src/script/module/expedition/view/ExpeditionPanel.ts"),"utf8");
+        assert.doesNotMatch(controllerSource,/layoutMap(?:Hud|Controls|Context)/,
+            "Static map UI must not be repositioned by the panel");
+        assert.doesNotMatch(controllerSource,/this\.(?:button|text)\("exp(?:Storage|Build|Abandon|Use|ContextTitle|Notice)"/,
+            "Data refresh does not pass hardcoded coordinates to fixed controls");
         for(const [key,title] of [["Stamina","体力"],["Weight","负重"]]) {
             assert.equal(nodes.get(`exp${key}`).text,"-- / --","No fabricated resource values");
             assert.equal(nodes.get(`exp${key}Label`).text,title,"Separate resource label");
