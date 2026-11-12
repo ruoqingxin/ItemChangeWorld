@@ -1,0 +1,37 @@
+{
+  "method": "Minimum-error overlap seams with 16px feather; no AI generation or mirroring.",
+  "source": "C:\\Users\\Administrator\\Downloads\\279a4582-868f-4696-b0b2-2d8035176aae.png",
+  "source_sha256": "323bfbc2cb1e0548846cc808f641d00cb9eeb96c6a8d03eaefab559eb08cf28a",
+  "source_size": [
+    2048,
+    2048
+  ],
+  "output_size": [
+    1792,
+    1792
+  ],
+  "overlap": 256,
+  "feather": 8,
+  "source_metrics": {
+    "left_right_mean_difference": 5.955078125,
+    "top_bottom_mean_difference": 8.175618171691895,
+    "interior_horizontal_median": 2.8107097148895264,
+    "interior_vertical_median": 2.6009113788604736
+  },
+  "output_metrics": {
+    "left_right_mean_difference": 3.353794574737549,
+    "top_bottom_mean_difference": 2.3206844329833984,
+    "interior_horizontal_median": 2.795200824737549,
+    "interior_vertical_median": 2.600818395614624
+  },
+  "unmodified_core_fraction": 0.7346938775510204,
+  "validation": "Both wrap edges within 1.5x normal interior variation; central pixels unchanged.",
+  "horizontal_cut_range": [
+    56,
+    239
+  ],
+  "vertical_cut_range": [
+    16,
+    239
+  ]
+}

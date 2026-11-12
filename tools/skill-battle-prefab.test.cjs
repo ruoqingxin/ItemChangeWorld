@@ -105,9 +105,9 @@ for (const [file, type, content] of files) {
         assert.equal(nodes.get("screenBackground")._$type,"GWidget","Map uses viewport-sized repeated drawing, not cover stretching");
         const ground=nodes.get("mapGroundTexture");
         assert.equal(ground.visible,false,"Texture source must not render a second image");
-        assert.equal(ground.src,"ui/texture/expedition/ancient-sect-ground.png");
+        assert.equal(ground.src,"ui/texture/expedition/ancient-sect-ground-final.png");
         const image=fs.readFileSync(path.join(root,"assets",ground.src));
-        assert.deepEqual([image.readUInt32BE(16),image.readUInt32BE(20)],[768,768],"Keep approved texture at native resolution");
+        assert.deepEqual([image.readUInt32BE(16),image.readUInt32BE(20)],[1376,768],"Final ground retains its full aspect ratio");
         const meta=JSON.parse(fs.readFileSync(path.join(root,"assets",ground.src+".meta"),"utf8"));
         assert.deepEqual(meta.importer,{textureType:2,sRGB:true,premultiplyAlpha:true});
         assert.equal(nodes.get("expViewport").width,1280);

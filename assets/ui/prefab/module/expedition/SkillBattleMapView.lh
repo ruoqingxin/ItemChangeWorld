@@ -636,6 +636,24 @@
         },
         {
           "_$ref": "map_art_mapRouteTexture"
+        },
+        {
+          "_$ref": "map_bundle_mapHpIcon"
+        },
+        {
+          "_$ref": "map_bundle_mapMpIcon"
+        },
+        {
+          "_$ref": "map_bundle_mapToolbarStatehover"
+        },
+        {
+          "_$ref": "map_bundle_mapToolbarStatepressed"
+        },
+        {
+          "_$ref": "map_bundle_mapToolbarStatedisabled"
+        },
+        {
+          "_$ref": "map_polish_notice"
         }
       ],
       "prefabs": null,
@@ -674,7 +692,7 @@
           "height": 1,
           "visible": false,
           "_mouseState": 1,
-          "src": "ui/texture/expedition/ancient-sect-ground.png",
+          "src": "ui/texture/expedition/ancient-sect-ground-final.png",
           "autoSize": false
         }
       ]
@@ -2463,7 +2481,7 @@
                       ]
                     }
                   ],
-                  "src": "ui/atlas/module/expedition/handpainted/map-panel.png",
+                  "src": "ui/atlas/module/expedition/handpainted/map-header-panel.png",
                   "autoSize": false
                 },
                 {
@@ -2700,7 +2718,7 @@
                       "width": 192,
                       "height": 28,
                       "_mouseState": 1,
-                      "src": "ui/atlas/module/expedition/handpainted/map-slot.png",
+                      "src": "ui/atlas/module/expedition/handpainted/map-bar-frame.png",
                       "autoSize": false
                     },
                     {
@@ -2713,7 +2731,7 @@
                       "height": 22,
                       "_mouseState": 1,
                       "autoSize": false,
-                      "src": "ui/atlas/module/expedition/handpainted/map-meter-track.png"
+                      "src": "ui/atlas/module/expedition/handpainted/map-bar-track.png"
                     },
                     {
                       "_$id": "map_foundation_mapStaminaFill",
@@ -2726,7 +2744,7 @@
                       "visible": false,
                       "_mouseState": 1,
                       "autoSize": false,
-                      "src": "ui/atlas/module/expedition/handpainted/map-meter-stamina.png"
+                      "src": "ui/atlas/module/expedition/handpainted/map-bar-stamina.png"
                     },
                     {
                       "_$id": "map_foundation_expStamina",
@@ -2803,7 +2821,7 @@
                       "width": 172,
                       "height": 28,
                       "_mouseState": 1,
-                      "src": "ui/atlas/module/expedition/handpainted/map-slot.png",
+                      "src": "ui/atlas/module/expedition/handpainted/map-bar-frame.png",
                       "autoSize": false
                     },
                     {
@@ -2816,7 +2834,7 @@
                       "height": 22,
                       "_mouseState": 1,
                       "autoSize": false,
-                      "src": "ui/atlas/module/expedition/handpainted/map-meter-track.png"
+                      "src": "ui/atlas/module/expedition/handpainted/map-bar-track.png"
                     },
                     {
                       "_$id": "map_foundation_mapWeightFill",
@@ -2829,7 +2847,7 @@
                       "visible": false,
                       "_mouseState": 1,
                       "autoSize": false,
-                      "src": "ui/atlas/module/expedition/handpainted/map-meter-weight.png"
+                      "src": "ui/atlas/module/expedition/handpainted/map-bar-weight.png"
                     },
                     {
                       "_$id": "map_foundation_expWeight",
@@ -2881,6 +2899,39 @@
                   "_mouseState": 1,
                   "src": "ui/atlas/module/expedition/handpainted/map-button-disabled.png",
                   "autoSize": false
+                },
+                {
+                  "_$id": "map_bundle_mapToolbarStatehover",
+                  "_$type": "GImage",
+                  "name": "mapToolbarStatehover",
+                  "width": 64,
+                  "height": 64,
+                  "mouseEnabled": false,
+                  "autoSize": false,
+                  "visible": false,
+                  "src": "ui/atlas/module/expedition/handpainted/map-toolbar-hover.png"
+                },
+                {
+                  "_$id": "map_bundle_mapToolbarStatepressed",
+                  "_$type": "GImage",
+                  "name": "mapToolbarStatepressed",
+                  "width": 64,
+                  "height": 64,
+                  "mouseEnabled": false,
+                  "autoSize": false,
+                  "visible": false,
+                  "src": "ui/atlas/module/expedition/handpainted/map-toolbar-pressed.png"
+                },
+                {
+                  "_$id": "map_bundle_mapToolbarStatedisabled",
+                  "_$type": "GImage",
+                  "name": "mapToolbarStatedisabled",
+                  "width": 64,
+                  "height": 64,
+                  "mouseEnabled": false,
+                  "autoSize": false,
+                  "visible": false,
+                  "src": "ui/atlas/module/expedition/handpainted/map-toolbar-disabled.png"
                 }
               ]
             },
@@ -2908,6 +2959,17 @@
                 }
               ],
               "_$child": [
+                {
+                  "_$id": "map_polish_notice",
+                  "_$type": "GImage",
+                  "name": "mapNoticeSkin",
+                  "width": 160,
+                  "height": 40,
+                  "mouseEnabled": false,
+                  "visible": false,
+                  "autoSize": false,
+                  "src": "ui/atlas/module/expedition/handpainted/map-bar-track.png"
+                },
                 {
                   "_$id": "exp_SkillBattleStartView_6",
                   "_$type": "GTextField",
@@ -2938,7 +3000,7 @@
                       "width": 112,
                       "height": 104,
                       "_mouseState": 1,
-                      "src": "ui/atlas/module/expedition/handpainted/map-button-normal.png",
+                      "src": "ui/atlas/module/expedition/handpainted/map-toolbar-normal.png",
                       "autoSize": false
                     },
                     {
@@ -2989,7 +3051,7 @@
                       "width": 112,
                       "height": 104,
                       "_mouseState": 1,
-                      "src": "ui/atlas/module/expedition/handpainted/map-button-normal.png",
+                      "src": "ui/atlas/module/expedition/handpainted/map-toolbar-normal.png",
                       "autoSize": false
                     },
                     {
@@ -3101,7 +3163,7 @@
                   "width": 300,
                   "height": 104,
                   "_mouseState": 1,
-                  "src": "ui/atlas/module/expedition/handpainted/map-panel.png",
+                  "src": "ui/atlas/module/expedition/handpainted/map-player-panel.png",
                   "autoSize": false
                 },
                 {
@@ -3154,7 +3216,7 @@
                   "width": 204,
                   "height": 22,
                   "_mouseState": 1,
-                  "src": "ui/atlas/module/expedition/handpainted/map-slot.png",
+                  "src": "ui/atlas/module/expedition/handpainted/map-bar-frame.png",
                   "autoSize": false
                 },
                 {
@@ -3167,7 +3229,7 @@
                   "height": 16,
                   "mouseEnabled": false,
                   "autoSize": false,
-                  "src": "ui/atlas/module/expedition/handpainted/map-meter-track.png"
+                  "src": "ui/atlas/module/expedition/handpainted/map-bar-track.png"
                 },
                 {
                   "_$id": "map_foundation_mapHpFill",
@@ -3179,7 +3241,7 @@
                   "height": 16,
                   "_mouseState": 1,
                   "autoSize": false,
-                  "src": "ui/atlas/module/expedition/handpainted/map-meter-hp.png"
+                  "src": "ui/atlas/module/expedition/handpainted/map-bar-hp.png"
                 },
                 {
                   "_$id": "map_foundation_expHpValue",
@@ -3206,7 +3268,7 @@
                   "width": 204,
                   "height": 22,
                   "_mouseState": 1,
-                  "src": "ui/atlas/module/expedition/handpainted/map-slot.png",
+                  "src": "ui/atlas/module/expedition/handpainted/map-bar-frame.png",
                   "autoSize": false
                 },
                 {
@@ -3219,7 +3281,7 @@
                   "height": 16,
                   "mouseEnabled": false,
                   "autoSize": false,
-                  "src": "ui/atlas/module/expedition/handpainted/map-meter-track.png"
+                  "src": "ui/atlas/module/expedition/handpainted/map-bar-track.png"
                 },
                 {
                   "_$id": "map_foundation_mapMpFill",
@@ -3231,7 +3293,7 @@
                   "height": 16,
                   "_mouseState": 1,
                   "autoSize": false,
-                  "src": "ui/atlas/module/expedition/handpainted/map-meter-mp.png"
+                  "src": "ui/atlas/module/expedition/handpainted/map-bar-mp.png"
                 },
                 {
                   "_$id": "map_foundation_expMpValue",
@@ -3248,6 +3310,30 @@
                   "align": "center",
                   "valign": "middle",
                   "overflow": "shrink"
+                },
+                {
+                  "_$id": "map_bundle_mapHpIcon",
+                  "_$type": "GImage",
+                  "name": "mapHpIcon",
+                  "x": 88,
+                  "y": 42,
+                  "width": 22,
+                  "height": 22,
+                  "mouseEnabled": false,
+                  "autoSize": false,
+                  "src": "ui/atlas/module/expedition/handpainted/map-icon-hp.png"
+                },
+                {
+                  "_$id": "map_bundle_mapMpIcon",
+                  "_$type": "GImage",
+                  "name": "mapMpIcon",
+                  "x": 88,
+                  "y": 78,
+                  "width": 22,
+                  "height": 22,
+                  "mouseEnabled": false,
+                  "autoSize": false,
+                  "src": "ui/atlas/module/expedition/handpainted/map-icon-mp.png"
                 }
               ]
             },

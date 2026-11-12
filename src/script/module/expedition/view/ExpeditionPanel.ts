@@ -15,7 +15,7 @@ type MapPoint = { x: number; y: number };
 const MARKER_HALF = 58;
 const TRANSIT_PLAYER_LIFT = 64;
 const REACH_HINT_ALPHA = 0.96;
-const TRANSIT_STONE_COLOR = "#d8ddd5";
+const TRANSIT_STONE_COLOR = "#ffffff";
 const ENEMY_ICON_SIZES = { normal: 104, elite: 144, boss: 192 };
 // Visible foot rows in the 128px source canvases, excluding transparent padding.
 const NODE_ART_FEET: { [art: string]: number } = {
@@ -56,7 +56,9 @@ export class ExpeditionPanel extends InventoryPanel {
             this.mapAreas[name]=view.getElement<Laya.GWidget>(name);
         visitRegion(view,root,n => {
             this.expeditionNodes[n.name]=n;
-            if (n instanceof Laya.GTextField) { this.labels[n.name]=n;return false; }
+            if (n instanceof Laya.GTextField) {
+                n.font="Microsoft YaHei";this.labels[n.name]=n;return false;
+            }
             else if (/^exp(?:Node\d+|Storage|Build|Use|Abandon)$/.test(n.name)) {
                 this.buttons[n.name]=n;
                 n.on(Laya.Event.CLICK,this,() => this.command(n.name));
@@ -84,9 +86,7 @@ export class ExpeditionPanel extends InventoryPanel {
         viewport.on(Laya.UIEvent.Scroll,this,this.updateMapBackground);
         this.elements.mapGroundTexture.on(Laya.Event.LOADED,this,this.updateMapBackground);
         this.expeditionNodes.mapRouteTexture.on(Laya.Event.LOADED,this,this.mapArtLoaded);
-        this.elements.screenBackground.filters=[new Laya.ColorFilter([
-            0.62,0,0,0,45,0,0.62,0,0,46,0,0,0.62,0,43,0,0,0,1,0,
-        ])];
+        this.elements.screenBackground.filters=null;
         const content=this.expeditionNodes.expMapContent;
         for(let id=33;id<=44;id++) {
             const node=new Laya.GWidget();node.name=`expNode${id}`;node.mouseEnabled=true;
@@ -374,14 +374,15 @@ export class ExpeditionPanel extends InventoryPanel {
         label.color=selected?"#ffd879":"#e8edf0";label.textIns.color=label.color;
         label.align="center";label.valign="middle";label.textIns.wordWrap=true;
         if (this.pageRole==="map" && !mapNode) {
+            label.font="Microsoft YaHei";
             this.mapButtonState(n,"normal");
-            label.bold=true;label.color="#fbf7e9";label.textIns.color=label.color;
+            label.bold=false;label.color="#f1eee0";label.textIns.color=label.color;
             if (key==="expUse") label.fontSize=this.compactMap?30:24;
             else {
                 const exit=key==="expAbandon";
-                label.pos(exit?40:6,exit?0:this.compactMap?70:62);
-                label.size(exit?w-48:w-12,exit?h:this.compactMap?34:30);
-                label.fontSize=exit?(this.compactMap?26:20):this.compactMap?28:22;
+                label.pos(exit?40:8,exit?0:this.compactMap?72:60);
+                label.size(exit?w-48:w-16,exit?h:this.compactMap?40:30);
+                label.fontSize=exit?(this.compactMap?26:18):this.compactMap?28:21;
                 if(exit) {label.bold=false;label.color="#d8c7ba";label.textIns.color=label.color;}
                 n.getChildAt(2).visible=true;
             }
@@ -391,73 +392,95 @@ export class ExpeditionPanel extends InventoryPanel {
         return Math.min(Laya.Browser.clientWidth,Laya.Browser.clientHeight)<540;
     }
     private layoutMapHud(): void {
-        const compact=this.compactMap,width=this.root.width,height=compact?96:80;
+        const compact=this.compactMap,width=this.root.width-16,height=compact?80:64;
         const fit=(name:string,x:number,y:number,w:number,h:number,font?:number) => {
-            const n=this.expeditionNodes[name]||this.mapAreas[name];n.pos(x,y);n.size(w,h);
+            const n=this.expeditionNodes[name]||this.mapAreas[name];n.size(w,h);n.pos(x,y);
             if(font)(n as Laya.GTextField).fontSize=font;
         };
-        fit("mapHeaderArea",0,0,width,height);fit("mapHeaderPanel",0,0,width,height);
-        const clockWidth=compact?176:156;
-        fit("mapClockArea",16,12,clockWidth,height-24);
-        fit("mapClockGlyph",8,(height-24-28)/2,28,28);
-        fit("expClock",44,0,clockWidth-48,height-24,compact?32:28);
-        const group=compact?148:116;
-        fit("mapKillsArea",clockWidth+28,12,group*3,height-24);
+        fit("mapHeaderArea",8,8,width,height);fit("mapHeaderPanel",0,0,width,height);
+        const innerHeight=height-16,clockWidth=compact?168:148;
+        fit("mapClockArea",16,8,clockWidth,innerHeight);
+        const clockIcon=compact?30:26;
+        fit("mapClockGlyph",4,(innerHeight-clockIcon)/2,clockIcon,clockIcon);
+        fit("expClock",42,0,clockWidth-48,innerHeight,compact?32:28);
+        this.labels.expClock.bold=true;
+        const group=compact?140:112;
+        fit("mapKillsArea",clockWidth+36,8,group*3,innerHeight);
         for(let i=0;i<3;i++) {
-            const icon=compact?40:36;
-            fit(`mapKillIcon${i}`,i*group,(height-24-icon)/2,icon,icon);
-            fit(`expKillCount${i}`,i*group+icon+4,0,group-icon-8,height-24,compact?26:21);
+            const icon=compact?38:32;
+            fit(`mapKillIcon${i}`,i*group,(innerHeight-icon)/2,icon,icon);
+            fit(`expKillCount${i}`,i*group+icon+4,0,group-icon-8,innerHeight,compact?26:19);
+            this.labels[`expKillCount${i}`].color="#d4dacf";
         }
-        const staminaWidth=compact?280:268,weightWidth=compact?240:232;
+        const staminaWidth=compact?288:264,weightWidth=compact?248:232;
         for(const [key,groupWidth,x] of [
             ["Stamina",staminaWidth,width-16-weightWidth-16-staminaWidth],
             ["Weight",weightWidth,width-16-weightWidth],
         ] as const) {
-            const labelWidth=compact?60:52,barHeight=compact?34:28,barX=labelWidth+12;
-            const barWidth=groupWidth-barX-8,barY=(height-24-barHeight)/2;
-            fit(`map${key}Area`,x,12,groupWidth,height-24);
-            fit(`exp${key}Label`,0,0,labelWidth,height-24,compact?26:20);
+            const labelWidth=compact?60:48,barHeight=compact?34:28,barX=labelWidth+12;
+            const barWidth=groupWidth-barX-8,barY=(innerHeight-barHeight)/2;
+            fit(`map${key}Area`,x,8,groupWidth,innerHeight);
+            fit(`exp${key}Label`,0,0,labelWidth,innerHeight,compact?26:19);
             fit(`map${key}Slot`,barX,barY,barWidth,barHeight);
-            fit(`map${key}Track`,barX+3,barY+3,barWidth-6,barHeight-6);
-            fit(`map${key}Fill`,barX+3,barY+3,barWidth-6,barHeight-6);
+            fit(`map${key}Track`,barX+2,barY+2,barWidth-4,barHeight-4);
+            fit(`map${key}Fill`,barX+2,barY+2,barWidth-4,barHeight-4);
             fit(`exp${key}`,barX,barY,barWidth,barHeight,compact?26:19);
+            this.labels[`exp${key}Label`].color="#c9d2c8";
         }
-        const playerWidth=compact?348:300,playerHeight=compact?132:112,barX=compact?96:84;
-        fit("mapPlayerArea",16,height+12,playerWidth,playerHeight);
+        const playerWidth=compact?344:300,playerHeight=compact?136:116,barX=compact?96:84;
+        fit("mapPlayerArea",16,height+24,playerWidth,playerHeight);
         fit("mapPlayerPanel",0,0,playerWidth,playerHeight);
         const frame=compact?76:64;
         fit("mapAvatarFrame",12,(playerHeight-frame)/2,frame,frame);
         fit("mapAvatarPlaceholder",18,(playerHeight-frame)/2+6,frame-12,frame-12);
-        fit("expPlayerName",barX,compact?6:8,playerWidth-barX-12,compact?36:26,compact?26:20);
-        for(const [key,y] of [["Hp",compact?46:40],["Mp",compact?90:76]] as const) {
-            const h=compact?32:26,w=playerWidth-barX-12;
-            fit(`map${key}Slot`,barX,y,w,h);fit(`map${key}Track`,barX+3,y+3,w-6,h-6);
-            fit(`map${key}Fill`,barX+3,y+3,w-6,h-6);
+        fit("expPlayerName",barX,compact?8:10,playerWidth-barX-16,compact?40:24,compact?26:19);
+        this.labels.expPlayerName.color="#d9decf";
+        for(const [key,y] of [["Hp",compact?48:42],["Mp",compact?92:78]] as const) {
+            const h=compact?36:28,w=playerWidth-barX-16;
+            fit(`map${key}Slot`,barX,y,w,h);fit(`map${key}Track`,barX+2,y+2,w-4,h-4);
+            fit(`map${key}Fill`,barX+2,y+2,w-4,h-4);
+            const iconSize=compact?26:20;
+            fit(`map${key}Icon`,barX+4,y+(h-iconSize)/2,iconSize,iconSize);
             fit(`exp${key}Value`,barX,y,w,h,compact?26:19);
+        }
+        for(const name of ["expHpValue","expMpValue","expStamina","expWeight"]) {
+            const label=this.labels[name];
+            label.align="center";label.valign="middle";label.wordWrap=false;
+            label.padding=[0,0,0,0];
+            // Center the visible YaHei glyphs, not just the font's taller line box.
+            label.textIns.pos(0,Math.round(label.fontSize*0.15));
         }
     }
     private layoutMapControls(): void {
-        const compact=this.compactMap,area=this.mapAreas.mapActionsArea,height=compact?202:174;
-        area.pos(16,this.root.height-height-16);area.size(this.root.width-32,height);
-        const buttonHeight=compact?112:100,buttonWidth=compact?124:112;
+        const compact=this.compactMap,area=this.mapAreas.mapActionsArea,height=compact?196:164;
+        area.size(this.root.width-40,height);area.pos(20,this.root.height-height-20);
+        const buttonHeight=compact?116:100,buttonWidth=compact?124:108;
         for(const [i,key] of ["expStorage","expBuild"].entries()) {
             const button=this.buttons[key];
-            button.pos(i*(buttonWidth+12),height-buttonHeight);
-            const icon=button.getChildAt(2) as Laya.GImage,size=compact?46:42;
+            button.size(buttonWidth,buttonHeight);button.getChildAt(0).size(buttonWidth,buttonHeight);
+            button.pos(i*(buttonWidth+16),height-buttonHeight);
+            const label=button.getChildAt(1);label.size(buttonWidth-16,label.height);
+            const icon=button.getChildAt(2) as Laya.GImage,size=compact?48:44;
             icon.pos((buttonWidth-size)/2,12);icon.size(size,size);
         }
         const exit=this.buttons.expAbandon,exitArea=this.mapAreas.mapExitArea;
         exitArea.pos(0,0);exitArea.size(exit.width,exit.height);exit.pos(0,0);
         const icon=exit.getChildAt(2) as Laya.GImage;
         icon.pos(12,(exit.height-24)/2);icon.size(24,24);
-        const notice=this.labels.expNotice;
-        notice.pos(buttonWidth*2+40,height-48);notice.size(area.width-buttonWidth*2-56,44);
-        notice.fontSize=compact?26:18;
+        const notice=this.labels.expNotice,skin=this.expeditionNodes.mapNoticeSkin;
+        notice.fontSize=compact?26:18;notice.textIns.typeset(true);
+        const noticeWidth=Math.min(area.width-buttonWidth*2-72,Math.max(120,notice.textIns.textWidth+40));
+        const noticeHeight=compact?48:40;
+        const noticeX=Math.max(buttonWidth*2+40,(area.width-noticeWidth)/2);
+        notice.pos(noticeX,height-noticeHeight);notice.size(noticeWidth,noticeHeight);
+        notice.align="center";notice.valign="middle";
+        skin.pos(notice.x,notice.y);skin.size(noticeWidth,noticeHeight);
+        skin.visible=notice.visible&&!!notice.text;skin.alpha=0.96;
     }
     private layoutMapContext(points:Map<number,MapPoint>,reach:Set<number>): void {
         const compact=this.compactMap,area=this.mapAreas.nodeActionArea;
-        const width=compact?288:236,height=compact?252:210,x=this.root.width-width-16;
-        const ys=[(compact?96:80)+16,this.root.height-height-20];
+        const width=compact?288:248,height=compact?252:212,x=this.root.width-width-20;
+        const ys=[compact?104:96,this.root.height-height-20];
         const score=(y:number) => [...reach].reduce((sum,id) => {
             const p=points.get(id);if(!p)return sum;
             const left=p.x-this.scroller.scrollingPosX-64;
@@ -465,19 +488,19 @@ export class ExpeditionPanel extends InventoryPanel {
                 Math.max(0,Math.min(y+height,p.y+104)-Math.max(y,p.y-100));
             return sum+overlap*(id===this.expedition.inventory!.node?10:1);
         },0);
-        area.pos(x,score(ys[0])<=score(ys[1])?ys[0]:ys[1]);area.size(width,height);
+        area.size(width,height);area.pos(x,score(ys[0])<=score(ys[1])?ys[0]:ys[1]);
         const background=this.expeditionNodes.expContextBackground;
         background.pos(0,0);background.size(width,height);
-        const icon=this.expeditionNodes.expContextIcon,size=compact?88:72;
-        icon.pos(12,12);icon.size(size,size);
+        const icon=this.expeditionNodes.expContextIcon,size=compact?80:64;
+        icon.pos(16,16);icon.size(size,size);
         const title=this.labels.expContextTitle,titleX=size+20;
-        title.pos(titleX,18);title.size(width-titleX-12,compact?68:58);
-        title.fontSize=compact?30:24;title.align="left";
+        title.pos(titleX+4,18);title.size(width-titleX-20,compact?72:60);
+        title.fontSize=compact?28:22;title.align="left";title.bold=false;
         const status=this.labels.expContextStatus;
-        status.pos(16,compact?110:92);status.size(width-32,compact?32:26);
+        status.pos(16,compact?110:92);status.size(width-32,compact?40:26);
         status.fontSize=compact?26:18;status.align="center";status.valign="middle";
-        const button=this.buttons.expUse,buttonHeight=compact?80:60;
-        button.pos(12,height-buttonHeight-16);button.size(width-24,buttonHeight);
+        const button=this.buttons.expUse,buttonHeight=compact?76:56;
+        button.pos(16,height-buttonHeight-16);button.size(width-32,buttonHeight);
         button.getChildAt(0).size(button.width,button.height);
         const label=button.getChildAt(1) as Laya.GTextField;
         label.pos(4,2);label.size(button.width-8,button.height-4);
@@ -487,9 +510,13 @@ export class ExpeditionPanel extends InventoryPanel {
         this.mapImageLoaded(image);
     }
     private mapImageLoaded(image: Laya.GImage): void {
-        const inset=image.src.endsWith("/map-panel.png")?16:image.src.endsWith("/map-slot.png")?6:
+        const inset=image.src.endsWith("/map-bar-frame.png")?12:image.src.includes("/map-bar-")?10:
+            image.src.endsWith("/map-panel.png")||image.src.includes("/map-toolbar-")?18:
+            image.src.endsWith("/map-player-panel.png")?24:
+            image.src.endsWith("/map-header-panel.png")?24:image.src.endsWith("/map-slot.png")?6:
             image.src.includes("/map-button-")?10:0;
-        const texture=image.texture,grid=[inset,inset,inset,inset,0];
+        const texture=image.texture,grid=image.src.endsWith("/map-header-panel.png")?
+            [24,32,24,32,0]:[inset,inset,inset,inset,0];
         if (!inset || !texture || texture._sizeGrid?.join(",")===grid.join(",") &&
             image.graphics.cmds.some(cmd=>cmd.cmdID===Laya.Draw9GridTextureCmd.ID)) return;
         // Direct PNG previews bypass the IDE importer; retain real nine-slice drawing there too.
@@ -503,7 +530,8 @@ export class ExpeditionPanel extends InventoryPanel {
         const movementLock=!!this.movement && (button.name==="expStorage" || button.name==="expBuild");
         const disabled=!button.mouseEnabled&&!movementLock;
         if (!button.mouseEnabled) state="normal";
-        const src=MAP_ART+`map-button-${disabled?"disabled":state}.png`;
+        const stem=button.name==="expStorage"||button.name==="expBuild"?"map-toolbar":"map-button";
+        const src=MAP_ART+`${stem}-${disabled?"disabled":state}.png`;
         if (image.src!==src) image.src=src;
         this.mapImageLoaded(image);
         button.graphics.clear();
@@ -515,7 +543,8 @@ export class ExpeditionPanel extends InventoryPanel {
         const c=this.expedition.archive!.config,s=this.expedition.inventory!;
         this.layoutMapHud();
         for (const name of ["mapHeaderPanel","mapClockGlyph",
-            "mapPlayerPanel","mapAvatarFrame","mapAvatarPlaceholder","mapHpSlot","mapHpTrack","mapMpSlot","mapMpTrack"])
+            "mapPlayerPanel","mapAvatarFrame","mapAvatarPlaceholder","mapHpIcon","mapMpIcon",
+            "mapHpSlot","mapHpTrack","mapMpSlot","mapMpTrack"])
             this.expeditionNodes[name].visible=true;
         this.mapLabel("expClock",this.timeText());
         for (const [key,title] of [["Stamina","体力"],["Weight","负重"]]) {
@@ -523,6 +552,8 @@ export class ExpeditionPanel extends InventoryPanel {
             const weight=Inventory.weight(c,s);
             const value=key==="Stamina"?s.stamina!:weight.current,max=key==="Stamina"?c.rules.staminaMax:weight.limit;
             this.mapLabel(`exp${key}`,`${value} / ${max}`);
+            this.labels[`exp${key}`].color=key==="Weight"&&value>max?"#ffd1b3":
+                key==="Stamina"&&value<=c.rules.normalCost?"#ffe1b1":"#f4f3e5";
             this.expeditionNodes[`map${key}Slot`].visible=true;
             this.expeditionNodes[`map${key}Track`].visible=true;
             this.mapMeter(key,value,max);
@@ -538,6 +569,7 @@ export class ExpeditionPanel extends InventoryPanel {
         ] as const) {
             this.mapMeter(key,value,max);
             this.mapLabel(`exp${key}Value`,`${key==="Hp"?"生命":"灵力"}  ${Core.format(value)} / ${Core.format(max)}`);
+            this.labels[`exp${key}Value`].color=key==="Hp"&&value<=max*0.3?"#ffe0c3":"#f4f3e5";
         }
     }
     private mapMeter(key: string,value: number,max: number): void {
@@ -869,7 +901,7 @@ export class ExpeditionPanel extends InventoryPanel {
                     // The source's transparent padding preserves the painted caps and shadow.
                     const height=active?7:6;
                     graphics.drawTexture(texture,-span*0.3,-height/2,span*1.6,height,matrix,
-                        active?0.86:0.44,active?"#e6d6a2":"#e0e5df");
+                        active?0.94:0.68,active?"#f2d897":"#edf0e0");
                 }
                 offset+=step;
             }

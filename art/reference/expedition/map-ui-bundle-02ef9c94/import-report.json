@@ -1,0 +1,181 @@
+{
+  "source": "C:/Users/Administrator/Downloads/segment_bundle_02ef9c94-64df-4ea8-91c2-c8d2d6d277aa/新建文件夹",
+  "files": [
+    {
+      "source": "segment_001.png",
+      "source_sha256": "f0aa6d98b066cda98aa42d567d6b73ba55dfbc4865261d00de50c9f485ac61cc",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-header-panel.png",
+      "sha256": "3bc047613c7fe6f8a795a97dd49ac4efa2613de66f55bdd8c9f911263c4887f7",
+      "uuid": "d0c77a77-5010-4691-9380-dc38991fcec5",
+      "grid": [
+        24,
+        32,
+        24,
+        32,
+        0
+      ]
+    },
+    {
+      "source": "segment_002.png",
+      "source_sha256": "2633a52bb2978c614e9e0e0987b9f6c209f801e16d7af3fe6494b2ac3c69b95d",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-player-panel.png",
+      "sha256": "82da9af6fac1ba95d9c51dfe873d2a1ddd0e59f0e2e305b2521f83172e615dff",
+      "uuid": "140f6f7a-0a24-48fa-8e36-723bd39ceec7",
+      "grid": [
+        24,
+        24,
+        24,
+        24,
+        0
+      ]
+    },
+    {
+      "source": "map-panel.png",
+      "source_sha256": "7989db3076b17f4af1cd35487389ff3d4a2841b4075c50db797ff8dae044a23c",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-panel.png",
+      "sha256": "5a464d8fe30e2a2bd2ea81ed456aa28d4bb638a66948ad1604ea4304c3d8a71c",
+      "uuid": "0ae1f005-3df5-4c72-8cbc-421e980e522e",
+      "grid": [
+        18,
+        18,
+        18,
+        18,
+        0
+      ]
+    },
+    {
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-toolbar-normal.png",
+      "sha256": "5a464d8fe30e2a2bd2ea81ed456aa28d4bb638a66948ad1604ea4304c3d8a71c",
+      "uuid": "2708b8fd-0149-48a5-b97b-926fc0afaaeb",
+      "grid": [
+        18,
+        18,
+        18,
+        18,
+        0
+      ]
+    },
+    {
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-toolbar-hover.png",
+      "sha256": "ef113f62509ac4773d3edb1a84bfa898f5a983330f6f82f4fbb39e7e5b2303da",
+      "uuid": "64872aa2-ee24-46d1-aa5c-0c4c2b163cad",
+      "grid": [
+        18,
+        18,
+        18,
+        18,
+        0
+      ]
+    },
+    {
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-toolbar-pressed.png",
+      "sha256": "3dda0e833989e10176c245c4957c8220e9cd6651cf194498c88054cc3227cf3f",
+      "uuid": "db6e0547-d297-47d4-a72f-3c58428b7828",
+      "grid": [
+        18,
+        18,
+        18,
+        18,
+        0
+      ]
+    },
+    {
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-toolbar-disabled.png",
+      "sha256": "f055f99471357c8616a5cfcb0c436ea95566a82b12fe20f9c91b7d4889f187ae",
+      "uuid": "5146c18c-6496-4c04-9680-772b8c9f9ed7",
+      "grid": [
+        18,
+        18,
+        18,
+        18,
+        0
+      ]
+    },
+    {
+      "source": "segment_011.png",
+      "source_sha256": "d113ef8be7ac8e82875277ce1d8b839d4f69d658da212db755f057e54238b5ad",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-button-normal.png",
+      "sha256": "2686505535f912e0d4998541afddbb9ca7f22628d3155d7941dc91d572390fdb",
+      "uuid": "4fefbb13-272f-4358-a1bc-14823a0c0108",
+      "grid": [
+        10,
+        10,
+        10,
+        10,
+        0
+      ]
+    },
+    {
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-button-hover.png",
+      "sha256": "e4f32a294189c570d1552e2c0118069ad43832b14ca26c5745bdf385d9bea046",
+      "uuid": "8e68b2ce-6164-4b6b-9cb0-1e5667ea14ae",
+      "grid": [
+        10,
+        10,
+        10,
+        10,
+        0
+      ]
+    },
+    {
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-button-pressed.png",
+      "sha256": "6ed62cad359ba05387ff262aad0080dd5c330ebaeff89034d0686c7d5d5969ee",
+      "uuid": "5cb94c46-be8a-45c8-a73d-5e1e673a82b7",
+      "grid": [
+        10,
+        10,
+        10,
+        10,
+        0
+      ]
+    },
+    {
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-button-disabled.png",
+      "sha256": "4b1ec76ff12d0a24d62b7682b9979c52ad5770ce1e2a03b9ff2839a2fa731ab3",
+      "uuid": "cb50f1ee-dfd6-4fa4-ba25-2c708e291fcf",
+      "grid": [
+        10,
+        10,
+        10,
+        10,
+        0
+      ]
+    },
+    {
+      "source": "segment_023.png",
+      "source_sha256": "7aa6f8a50f6eedaaf9147a3d168ce9302a095aea2d84cb2c998565b8afa7e150",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-icon-inventory.png",
+      "sha256": "3f99d291091fc7755ba6f7905004f9c3efbbf51da6f234821e2a95e45eade9c8",
+      "uuid": "0bc45119-fb60-442e-a8d9-440f38fc7df6"
+    },
+    {
+      "source": "segment_024.png",
+      "source_sha256": "427a949e60809997dad4ce8aaad6573f1afc767a74d93ddf716a4ed20d5bc9c1",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-icon-build.png",
+      "sha256": "a38b6ded4041e3ae4a6ea8b8cacbb442cfc66dc37a3ac213abe05e490ada81f0",
+      "uuid": "0a5a7e9c-169a-4ae0-bc64-94a6c7e2d70f"
+    },
+    {
+      "source": "segment_026.png",
+      "source_sha256": "48eef622df65be9851e752b2ce9b6642fa97f5756dd7a3e2adda4d54ccb7f8dc",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-icon-clock.png",
+      "sha256": "f9b7b154e5c430ea07e6ad0a39617b4ec8d3e12f871e5dad1c759732fa2fe0ab",
+      "uuid": "e99d4a7d-726d-4ad2-b518-8c0db674b4b2"
+    },
+    {
+      "source": "segment_027.png",
+      "source_sha256": "6630abfad162b6aac151f8862fc0b2a3f6f5b72b3472772fd8847e1e105cb022",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-icon-mp.png",
+      "sha256": "900f5822229a2b3986786a083242ee6fe5f39ef9218c2c28444c460666d7dd88",
+      "uuid": "e6ed7e32-55ab-47eb-97c4-2725e51c6b17"
+    },
+    {
+      "source": "segment_028.png",
+      "source_sha256": "f4a21be4679d4526db28c182088f4872c24c30e693f05772eb76a1bb218a9cc1",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-icon-hp.png",
+      "sha256": "b4bc8049249545aaf65743c5fc5a497fa7961706ebccdae6609b605598609f2c",
+      "uuid": "1a58ac18-8887-46f9-aeaf-dc378cdc1506"
+    }
+  ],
+  "scope": "Map UI only; existing layout, terrain, nodes, gameplay and saves retained."
+}

@@ -97,13 +97,13 @@ async function move(p, target) {
     for (const frame of result.frames)
         assert.ok(frame.player.visible && frame.player.passive && frame.player.locator,
             "Player avatar and its small ground locator remain visible and noninteractive");
-    assert.ok(result.sources.every(src => src && src.endsWith("/map-button-normal.png")),
+    assert.ok(result.sources.every(src => src && src.endsWith("/map-toolbar-normal.png")),
         `Moving must not clear or dim toolbar skins: ${JSON.stringify([...new Set(result.sources)])}`);
     for (const frame of result.frames) {
         for (const control of frame.controls) {
             assert.ok(control.visible && control.texture && control.nineSlice && control.alpha === 1,
                 "Toolbar stays visible, opaque and textured on every sampled frame");
-            assert.ok(control.src.endsWith("/map-button-normal.png"), "Toolbar appearance remains steady while moving");
+            assert.ok(control.src.endsWith("/map-toolbar-normal.png"), "Toolbar appearance remains steady while moving");
             assert.equal(control.enabled, !frame.moving, "Temporary input lock remains intact");
         }
         if (frame.moving) {

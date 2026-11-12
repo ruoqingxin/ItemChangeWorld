@@ -25,6 +25,15 @@ async function click(p, name) {
     await ready(p);
 }
 async function inspect(p, name) {
+    await p.waitForFunction(() => {
+        const panel=window.__skillBattlePreview.panel;
+        return window.__skillBattlePreview.trial.inventory.map.present.every(id=>{
+            const node=panel.buttons[`expNode${id}`];
+            return !!node.getChildByName("expReachHint").texture &&
+                !!node.getChildByName("expDone").texture &&
+                (!node.visible || !!node.getChildAt(0).texture);
+        });
+    });
     const state = await p.evaluate(() => {
         const {panel,view,trial} = window.__skillBattlePreview, issues = [];
         const art = "ui/atlas/module/expedition/handpainted/";
@@ -37,15 +46,47 @@ async function inspect(p, name) {
         for(const name of ["mapTimerFrame","mapKillsFrame","mapStaminaFrame","mapWeightFrame"])
             if(view.getElement(name).visible)issues.push([name,"redundant frame"]);
         for (const name of ["mapAvatarFrame","mapAvatarPlaceholder","mapClockGlyph",
-            "expStorageActionIcon","expBuildActionIcon","expAbandonActionIcon"]) {
+            "mapHpIcon","mapMpIcon","expStorageActionIcon","expBuildActionIcon","expAbandonActionIcon"]) {
             const n = view.getElement(name);
             if (!n.texture || !n.src.startsWith(art) || n.filters?.length) issues.push([name,"icon"]);
+        }
+        for (const [name,file] of [
+            ["mapHeaderPanel","map-header-panel.png"],["mapPlayerPanel","map-player-panel.png"],
+            ["expStorageSkin","map-toolbar-normal.png"],["expBuildSkin","map-toolbar-normal.png"],
+            ["mapHpIcon","map-icon-hp.png"],["mapMpIcon","map-icon-mp.png"],
+        ]) {
+            if(view.getElement(name).src!==art+file)issues.push([name,"new bundle binding"]);
         }
         for (const key of ["Hp","Mp","Stamina","Weight"]) {
             const track = panel.expeditionNodes[`map${key}Track`], fill = panel.expeditionNodes[`map${key}Fill`];
             if (!track.visible || !track.texture || !fill.texture || !fill.scrollRect ||
                 fill.scrollRect.width < 0 || fill.scrollRect.width > fill.width) issues.push([key,"meter"]);
+            const frame=panel.expeditionNodes[`map${key}Slot`];
+            if(frame.src!==art+"map-bar-frame.png"||track.src!==art+"map-bar-track.png"||
+                fill.src!==art+`map-bar-${key.toLowerCase()}.png`||
+                ![frame,track,fill].every(n=>n.graphics.cmds.some(c=>c.cmdID===Laya.Draw9GridTextureCmd.ID)))
+                issues.push([key,"capsule artwork"]);
+            const label=panel.labels[key==="Hp"||key==="Mp"?`exp${key}Value`:`exp${key}`];
+            if(label.x!==frame.x||label.y!==frame.y||label.width!==frame.width||label.height!==frame.height||
+                label.align!=="center"||label.valign!=="middle"||label.wordWrap)
+                issues.push([key,"full-bar text centering"]);
         }
+        const header=view.getElement("mapHeaderArea"),player=view.getElement("mapPlayerArea");
+        if(header.x!==8||header.y!==8||header.width!==panel.root.width-16||
+            header.height!==(panel.compactMap?80:64))issues.push("header inset");
+        const groups=["mapClockArea","mapKillsArea","mapStaminaArea","mapWeightArea"].map(n=>view.getElement(n));
+        for(let i=1;i<groups.length;i++)
+            if(groups[i].x<groups[i-1].x+groups[i-1].width+12)issues.push(["HUD groups overlap",i]);
+        if(player.y<header.y+header.height+12)issues.push("player HUD spacing");
+        for(const key of ["expStorage","expBuild"]) {
+            const button=panel.buttons[key],label=button.getChildAt(1),icon=button.getChildAt(2);
+            if(label.font!=="Microsoft YaHei"||label.bold||icon.y+icon.height>label.y)
+                issues.push([key,"tool hierarchy"]);
+        }
+        const notice=panel.labels.expNotice,noticeSkin=panel.expeditionNodes.mapNoticeSkin;
+        if(noticeSkin.visible!==!!notice.text||noticeSkin.mouseEnabled)issues.push("passive notice backing");
+        if(noticeSkin.visible&&(notice.x<panel.buttons.expBuild.x+panel.buttons.expBuild.width+16||
+            notice.x+notice.width>panel.mapAreas.mapActionsArea.width))issues.push("notice bounds");
         const marker = panel.expeditionNodes.expPlayer, avatar = marker.getChildByName("expPlayerAvatar");
         if (!marker.visible || marker.mouseEnabled || !avatar.visible || avatar.mouseEnabled || !avatar.texture ||
             !avatar.src.endsWith("/map-player-traveler.png")) issues.push("traveler");
@@ -92,7 +133,7 @@ async function inspect(p, name) {
             if(icon.visible&&icon.alpha!==1)issues.push([id,"opaque grounded icon"]);
             if(n.visible&&(base.src!==art+"map-transit-stone.png"||!base.texture||
                 base.texture.width!==128||base.texture.height!==128||
-                base.width!==104||base.height!==104||base.color!=="#d8ddd5"||base.alpha!==1))
+                base.width!==104||base.height!==104||base.color!=="#ffffff"||base.alpha!==1))
                 issues.push([id,"imported transit stone"]);
             if(badge.src!==art+"map-completed-badge.png"||!badge.texture||
                 badge.texture.width!==120||badge.texture.height!==120||
@@ -104,7 +145,7 @@ async function inspect(p, name) {
         if(commands.some(c=>![6,7].includes(c.height)) ||
             (!locked&&neighbors.length&&!commands.some(c=>c.height===7)) ||
             (locked&&commands.some(c=>c.height===7)))issues.push("route emphasis");
-        if(commands.some(c=>c.alpha!==(c.height===7?0.86:0.44)))issues.push("restrained route opacity");
+        if(commands.some(c=>c.alpha!==(c.height===7?0.94:0.68)))issues.push("restrained route opacity");
         if(panel.buttons.expUse.visible) {
             const area=view.getElement("nodeActionArea"),background=panel.expeditionNodes.expContextBackground;
             if(area.width>288||area.height>252||background.width!==area.width||background.height!==area.height)
@@ -115,7 +156,8 @@ async function inspect(p, name) {
             if (!n.visible) return;
             if (n instanceof Laya.GTextField && n.text) {
                 n.textIns.typeset(true);
-                if (n.textIns.textWidth > n.width+3 || n.textIns.textHeight > n.height+3) issues.push([n.name,"text"]);
+                if (n.textIns.textWidth > n.width+3 || n.textIns.textHeight > n.height+3)
+                    issues.push([n.name,"text",n.textIns.textWidth,n.textIns.textHeight,n.width,n.height]);
             }
             for(let i=0;i<n.numChildren;i++) scan(n.getChildAt(i));
         };
@@ -135,6 +177,7 @@ async function inspect(p, name) {
     try {
         for(const [name,width,height,touch] of [
             ["desktop",1280,720,false],["wide",1560,720,false],["mobile",844,390,true],
+            ["small-mobile",667,375,true],
         ]) {
             const context = await browser.newContext({viewport:{width,height},hasTouch:touch,isMobile:touch});
             const p = await context.newPage(), errors = [], failed = [];
@@ -162,6 +205,8 @@ async function inspect(p, name) {
                             if(fill.visible!==(ratio>0)||Math.abs(fill.scrollRect.width/fill.width-ratio)>0.001 ||
                                 fill.scaleX!==1) throw Error(`Incorrect cropped ${key}: ${ratio}`);
                         }
+                        if(panel.labels.expHpValue.color!==(ratio<=0.3?"#ffe0c3":"#f4f3e5"))
+                            throw Error("Low-health contrast must use the actual value");
                     }
                 } finally { Object.assign(s,original);panel.refresh(); }
             });
@@ -169,10 +214,10 @@ async function inspect(p, name) {
                 const at=await point(p,"expBuild");
                 await p.mouse.move(at.x,at.y); await p.waitForTimeout(50);
                 assert.ok(await p.evaluate(()=>window.__skillBattlePreview.panel.buttons.expBuild.getChildAt(0).src
-                    .endsWith("/map-button-hover.png")));
+                    .endsWith("/map-toolbar-hover.png")));
                 await p.mouse.down(); await p.waitForTimeout(50);
                 assert.ok(await p.evaluate(()=>window.__skillBattlePreview.panel.buttons.expBuild.getChildAt(0).src
-                    .endsWith("/map-button-pressed.png")));
+                    .endsWith("/map-toolbar-pressed.png")));
                 await p.mouse.move(at.x+170,at.y-80); await p.mouse.up();
             }
             await click(p,"expAbandon");
