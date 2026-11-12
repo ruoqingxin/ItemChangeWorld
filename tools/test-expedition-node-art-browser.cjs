@@ -176,10 +176,14 @@ async function checkLighting(p, name) {
                     const size = ({ normal: 104, elite: 144, boss: 192 })[data.kind] || 104;
                     if (!n.visible || n.alpha !== 1 || base.visible !== empty || icon.visible === empty)
                         issues.push(["hidden", id]);
-                    if (!base.src.endsWith("/node-base.png") || base.grayed || icon.grayed) issues.push(["base", id]);
+                    if (!base.src.endsWith("/map-transit-stone.png") || base.grayed || icon.grayed) issues.push(["base", id]);
                     if (base.width !== 104 || icon.width !== size || icon.height !== size || n.width !== 116)
                         issues.push(["size", id]);
-                    if (icon.x + icon.width / 2 !== 58 || icon.y !== -6-(size-104)*0.75) issues.push(["alignment", id]);
+                    const art=icon.src.match(/node-(.+)\.png$/)[1];
+                    const feet={"enemy-normal":114,"enemy-elite":115,"enemy-boss":103,
+                        start:123,extract:113,recovery:105,search:105,supply:119,borrow:118,insight:119};
+                    if (icon.x + icon.width / 2 !== 58 ||
+                        Math.abs(icon.y+(feet[art]||128)*size/128-96)>0.001) issues.push(["alignment", id]);
                     if (n.getChildAt(1).visible) issues.push(["node label", id]);
                 }
                 for (const [i, kind] of ["normal", "elite", "boss"].entries()) {
@@ -203,7 +207,7 @@ async function checkLighting(p, name) {
                     toX:c.matrix.tx+c.matrix.a*c.width/1.6,toY:c.matrix.ty+c.matrix.b*c.width/1.6 }));
                 if (!lines.length || lines.some(c => Math.hypot(c.toX - c.fromX, c.toY - c.fromY) > 12.01))
                     issues.push("dashed lines");
-                if (strokes.some(c => c.texture !== panel.expeditionNodes.mapRouteTexture.texture || ![6,8].includes(c.height)))
+                if (strokes.some(c => c.texture !== panel.expeditionNodes.mapRouteTexture.texture || ![6,7].includes(c.height)))
                     issues.push("handpainted route texture");
                 for (const [a, b] of trial.inventory.map.edges) {
                     const route = panel.mapRoutes.get(`${a}:${b}`);

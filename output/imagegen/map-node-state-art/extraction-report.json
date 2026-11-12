@@ -1,0 +1,182 @@
+{
+  "source": "art/reference/expedition/map-node-state-source.png",
+  "source_sha256": "f52dddb062ac82ee9ceecb092d9961fce5c504876d80bd603bd0f19143d1a847",
+  "source_size": [
+    2736,
+    1536
+  ],
+  "count": 4,
+  "runtime_directory": "assets/ui/atlas/module/expedition/handpainted",
+  "ground_exported": false,
+  "bound_to_runtime": false,
+  "gameplay_changed": false,
+  "saves_changed": false,
+  "method": "Crop supplied true-alpha artwork; drop alpha below 8/255 and zero invisible RGB. Preserve source colors, remaining alpha and native cutout proportions. Fit only the two runtime foot markers to existing display proportions; stone and badge use uniform scaling. No color key, redraw or ground export.",
+  "files": [
+    {
+      "name": "map-transit-stone",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-transit-stone.png",
+      "native_file": "output/imagegen/map-node-state-art/native-cuts/map-transit-stone.png",
+      "source_rect": [
+        0,
+        500,
+        670,
+        480
+      ],
+      "source_bounds": [
+        47,
+        568,
+        605,
+        358
+      ],
+      "size": [
+        128,
+        128
+      ],
+      "display_size": [
+        104,
+        104
+      ],
+      "sha256": "da24a178142b99bbe9502dd721097aab81e7a4f903b8b39c15f801539690b6fd",
+      "native_sha256": "8f3a53a53e47d91c7dae83547a11151e5e8f5925306007059d138209dab5a097",
+      "uuid": "715fd65d-46f8-4d02-b064-751b7ec09708",
+      "solid_pixels": 6563,
+      "partial_pixels": 349,
+      "transparent_pixels": 9472,
+      "center_alpha": 253,
+      "components": [
+        6864
+      ],
+      "visible_bounds": {
+        "left": 4,
+        "top": 28,
+        "width": 120,
+        "height": 71
+      }
+    },
+    {
+      "name": "map-current-locator",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-current-locator.png",
+      "native_file": "output/imagegen/map-node-state-art/native-cuts/map-current-locator.png",
+      "source_rect": [
+        1940,
+        320,
+        770,
+        300
+      ],
+      "source_bounds": [
+        1984,
+        377,
+        688,
+        143
+      ],
+      "size": [
+        304,
+        72
+      ],
+      "display_size": [
+        76,
+        18
+      ],
+      "sha256": "607d63b63503c534e32d12985f3a61514c92fe356a1e986d2b0f6c1f05cfe152",
+      "native_sha256": "d2949229253c11f8ce4b830977970f65f105c44f39de78dca7f1aa0cb550cf63",
+      "uuid": "37cfb1a2-874b-4c55-959f-bc8757e7c469",
+      "solid_pixels": 2813,
+      "partial_pixels": 2252,
+      "transparent_pixels": 16823,
+      "center_alpha": 0,
+      "components": [
+        4769
+      ],
+      "visible_bounds": {
+        "left": 6,
+        "top": 2,
+        "width": 292,
+        "height": 67
+      }
+    },
+    {
+      "name": "map-reachable-locator",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-reachable-locator.png",
+      "native_file": "output/imagegen/map-node-state-art/native-cuts/map-reachable-locator.png",
+      "source_rect": [
+        1940,
+        650,
+        770,
+        350
+      ],
+      "source_bounds": [
+        1989,
+        727,
+        680,
+        175
+      ],
+      "size": [
+        320,
+        56
+      ],
+      "display_size": [
+        80,
+        14
+      ],
+      "sha256": "d7f8b62217fbe17b09d1b048a4df9a35066723f077def12337b4c204a0a27ab4",
+      "native_sha256": "2f4d7593050343e3ee338d6d75371c143df68f10b09bb694be751f359f083cde",
+      "uuid": "b4436c93-3fa8-4205-95f9-341a45c30771",
+      "solid_pixels": 1500,
+      "partial_pixels": 1182,
+      "transparent_pixels": 15238,
+      "center_alpha": 0,
+      "components": [
+        1274,
+        1238
+      ],
+      "visible_bounds": {
+        "left": 10,
+        "top": 2,
+        "width": 300,
+        "height": 52
+      }
+    },
+    {
+      "name": "map-completed-badge",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+      "native_file": "output/imagegen/map-node-state-art/native-cuts/map-completed-badge.png",
+      "source_rect": [
+        2070,
+        980,
+        500,
+        380
+      ],
+      "source_bounds": [
+        2157,
+        1000,
+        304,
+        300
+      ],
+      "size": [
+        120,
+        120
+      ],
+      "display_size": [
+        30,
+        30
+      ],
+      "sha256": "0b0acf7590c509081807e709a67ff40e8cf932761493c1cbffddaa0bfa39dfee",
+      "native_sha256": "ae0139e2b6ff94bc8be3b7189c80a71523ec2b29bdfdcc16e7effcf53f24d5c4",
+      "uuid": "f8384e06-51e0-400a-a1f3-efe10811b5ed",
+      "solid_pixels": 9245,
+      "partial_pixels": 454,
+      "transparent_pixels": 4701,
+      "center_alpha": 253,
+      "components": [
+        9637
+      ],
+      "visible_bounds": {
+        "left": 4,
+        "top": 4,
+        "width": 112,
+        "height": 111
+      }
+    }
+  ]
+}

@@ -806,10 +806,12 @@
                           "_$id": "mapui_expPlayerRing",
                           "_$type": "GImage",
                           "name": "expPlayerRing",
-                          "width": 116,
-                          "height": 116,
+                          "x": 20,
+                          "y": 142,
+                          "width": 76,
+                          "height": 18,
                           "_mouseState": 1,
-                          "src": "ui/atlas/module/expedition/map-ui-current-ring.png",
+                          "src": "ui/atlas/module/expedition/handpainted/map-current-locator.png",
                           "autoSize": false
                         },
                         {

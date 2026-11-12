@@ -39,11 +39,13 @@ async function move(p, target) {
                 moving,
                 player: (() => {
                     const marker = panel.expeditionNodes.expPlayer, avatar = marker.getChildByName("expPlayerAvatar");
-                    return { x: marker.x, y: marker.y, visible: marker.visible && avatar?.visible,
+                    return { x: marker.x, y: marker.y, avatarY: avatar.y,
+                        visible: marker.visible && avatar?.visible,
                         passive: !marker.mouseEnabled && !avatar?.mouseEnabled,
                         locator: (() => {
                             const ring=marker.getChildByName("expPlayerRing");
-                            return ring?.visible&&ring.width===76&&ring.height===18;
+                            return ring?.visible&&ring.width===76&&ring.height===18&&
+                                Math.abs((ring.y-avatar.y)-72)<0.001;
                         })() };
                 })(),
                 controls: ["expStorage", "expBuild"].map(key => {
@@ -80,12 +82,18 @@ async function move(p, target) {
             shown: trial.inventory.map.present.filter(id => panel.buttons[`expNode${id}`].visible),
             actionVisible: panel.buttons.expUse.visible,
             expectsAction: trial.inventory.map.nodes.find(n => n.id === trial.inventory.node).kind !== "transit",
+            expectsLift: trial.inventory.map.nodes.find(n => n.id === trial.inventory.node).kind === "transit" ? 64 : 0,
+            avatarY: panel.expeditionNodes.expPlayer.getChildByName("expPlayerAvatar").y,
             expectedShown: trial.inventory.map.nodes.filter(n=>112+n.x*242-58<panel.scroller.contentWidth).map(n=>n.id) };
     });
     assert.ok(result.frames.some(f => f.moving), "Sample the animation, not just its settled state");
     assert.ok(result.frames.some(f => !f.moving), "Also sample the arrival refresh");
     assert.ok(new Set(result.frames.filter(f => f.moving).map(f => `${f.player.x},${f.player.y}`)).size > 2,
         "Player avatar follows the movement animation");
+    const movingHeights=result.frames.filter(f=>f.moving).map(f=>f.player.avatarY);
+    assert.ok(movingHeights.every(y=>y>=6&&y<=70), "Visual lift stays between the node anchors");
+    assert.ok(new Set(movingHeights.map(y=>y.toFixed(2))).size>2, "Foot anchor blends during travel");
+    assert.equal(result.avatarY,70-result.expectsLift,"Arrival preserves the final visual anchor");
     for (const frame of result.frames)
         assert.ok(frame.player.visible && frame.player.passive && frame.player.locator,
             "Player avatar and its small ground locator remain visible and noninteractive");

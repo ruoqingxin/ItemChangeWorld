@@ -79,15 +79,11 @@ async function fixture(p, kind) {
         const button = panel.buttons[`expNode${n.id}`], badge = button.getChildByName("expDone");
         const passive = node => !node.mouseEnabled &&
             Array.from({ length: node.numChildren }, (_, i) => node.getChildAt(i)).every(passive);
-        const text = node => {
-            let result = node instanceof Laya.GTextField ? node.text : "";
-            for (let i = 0; i < node.numChildren; i++) result += text(node.getChildAt(i));
-            return result;
-        };
         return {
             status: panel.labels.expContextStatus.text, action: panel.buttons.expUse.getChildAt(1).text,
             enabled: panel.buttons.expUse.mouseEnabled, skin: panel.buttons.expUse.getChildAt(0).src,
-            done: badge.visible, check: text(badge), passive: passive(badge),
+            done: badge.visible, badgeSrc: badge.src, badgeTexture: !!badge.texture,
+            badgeSize: [badge.width, badge.height], passive: passive(badge),
             gray: button.getChildAt(2).grayed, opaque: button.alpha === 1 && button.getChildAt(2).alpha === 1,
             hints: s.map.present.some(id => panel.buttons[`expNode${id}`].visible &&
                 panel.buttons[`expNode${id}`].getChildByName("expReachHint").visible),
@@ -124,7 +120,8 @@ async function fixture(p, kind) {
                         const n = panel.mapAreas[name]; return [n.x, n.y, n.width, n.height];
                     })];
                 return { ringAlpha: ring.alpha, currentHasHint: panel.buttons[`expNode${trial.inventory.node}`]
-                    .getChildByName("expReachHint").visible, reachable: hint.visible && !!hint.filters?.length,
+                    .getChildByName("expReachHint").visible, reachable: hint.visible && !!hint.texture &&
+                    hint.src.endsWith("/map-reachable-locator.png") && !hint.filters?.length,
                     passive: !hint.mouseEnabled && !ring.mouseEnabled };
             });
             assert.ok(initial.reachable && initial.passive && !initial.currentHasHint);
@@ -146,7 +143,7 @@ async function fixture(p, kind) {
                     .getChildByName("expReachHint").alpha), 0.6, "Press has feedback without resizing the node");
                 await p.mouse.move(width / 2, height - 25); await p.mouse.up();
                 assert.equal(await p.evaluate(() => window.__skillBattlePreview.panel.buttons.expNode2
-                    .getChildByName("expReachHint").alpha), 0.82);
+                    .getChildByName("expReachHint").alpha), 0.96);
             }
             assert.equal(await p.evaluate(key => localStorage.getItem(key), key), saved,
                 "Hover, press cancellation and the idle pulse never save");
@@ -187,7 +184,11 @@ async function fixture(p, kind) {
                 const complete = ["source-complete", "source-empty"].includes(kind);
                 assert.equal(state.done, complete || kind === "used", `${kind}: completion badge uses committed flags`);
                 assert.equal(state.gray, complete, `${kind}: only a completed source becomes gray`);
-                if (state.done) assert.equal(state.check, "\u2713");
+                if (state.done) {
+                    assert.ok(state.badgeSrc.endsWith("/map-completed-badge.png") && state.badgeTexture,
+                        "Completed nodes use the supplied badge artwork");
+                    assert.deepEqual(state.badgeSize, [30, 30], "Badge bounds stay unchanged");
+                }
                 if (!touch || ["source-complete", "recovery-ready", "enemy-boss"].includes(kind))
                     await screenshot(p, `${name}-${kind}`);
             }

@@ -168,11 +168,15 @@ for (const [file, type, content] of files) {
             if(name!=="mapAvatarFrame")assert.equal(meta.importer.sizeGrid.length,5,"Real nine-slice import");
         }
         for(const name of ["mapClockGlyph","mapAvatarPlaceholder","mapHpTrack","mapHpFill","mapMpTrack","mapMpFill",
-            "mapStaminaTrack","mapStaminaFill","mapWeightTrack","mapWeightFill","expPlayerAvatar","mapRouteTexture"]) {
+            "mapStaminaTrack","mapStaminaFill","mapWeightTrack","mapWeightFill","expPlayerAvatar","expPlayerRing","mapRouteTexture"]) {
             const n=nodes.get(name);
             assert.equal(n._$type,"GImage",`${name}: no code-drawn artwork`);
             assert.ok(n.src.startsWith("ui/atlas/module/expedition/handpainted/"));
         }
+        const locator=nodes.get("expPlayerRing");
+        assert.equal(locator.src,"ui/atlas/module/expedition/handpainted/map-current-locator.png");
+        assert.deepEqual([locator.x,locator.y,locator.width,locator.height],[20,142,76,18],
+            "Authored current locator matches its existing runtime footprint");
         for(let i=1;i<=32;i++) {
             const icon=nodes.get(`expNode${i}Icon`); assert.deepEqual([icon.width,icon.height],[104,104]);
             assert.equal(nodes.get(`expNode${i}`)._$child[1].visible,false,"Node captions stay hidden in the prefab too");

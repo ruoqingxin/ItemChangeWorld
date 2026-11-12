@@ -52,6 +52,14 @@ async function inspect(p, name) {
         const locator=marker.getChildByName("expPlayerRing");
         if(!locator.visible||locator.width!==76||locator.height!==18||avatar.width!==72||avatar.height!==90)
             issues.push("player locator");
+        if(locator.src!==art+"map-current-locator.png"||!locator.texture||
+            locator.texture.width!==304||locator.texture.height!==72||locator.filters?.length)
+            issues.push("imported current locator");
+        const transit=trial.inventory.map.nodes.find(n=>n.id===trial.inventory.node).kind==="transit";
+        const lift=transit?64:0;
+        if(locator.y!==142-lift||avatar.y!==70-lift||locator.x+locator.width/2!==58||
+            avatar.x+avatar.width/2!==58)
+            issues.push("player ground alignment");
         if(view.getElement("mapKillsArea").width>450)issues.push("oversized kill strip");
         const format=n=>(n/100).toFixed(2).replace(/\.?0+$/,""),setup=trial.archive.config.build.setup.player;
         if(panel.labels.expHpValue.text!==`生命  ${format(trial.inventory.hp)} / ${format(setup.maxHp)}` ||
@@ -70,12 +78,33 @@ async function inspect(p, name) {
         for(const id of trial.inventory.map.present) {
             const n=panel.buttons[`expNode${id}`],hint=n.getChildByName("expReachHint");
             if(n.visible&&hint.visible!==(!locked&&neighbors.includes(id)))issues.push([id,"reach hint"]);
+            if(hint.src!==art+"map-reachable-locator.png"||!hint.texture||
+                hint.texture.width!==320||hint.texture.height!==56||hint.filters?.length||
+                hint.width!==80||hint.height!==18||hint.y+hint.height/2!==99||hint.mouseEnabled)
+                issues.push([id,"imported reach hint"]);
+            const base=n.getChildAt(0),badge=n.getChildByName("expDone");
+            const icon=n.getChildAt(2),data=trial.inventory.map.nodes.find(node=>node.id===id);
+            const shadows=n.graphics.cmds;
+            if(n.visible&&(data.kind==="transit"?shadows.length!==0:
+                shadows.length!==4||shadows.some(c=>c.cmdID!==Laya.DrawEllipseCmd.ID||
+                    c.x+c.width/2!==58||c.y+c.height/2!==99)))
+                issues.push([id,"passive ground shadow"]);
+            if(icon.visible&&icon.alpha!==1)issues.push([id,"opaque grounded icon"]);
+            if(n.visible&&(base.src!==art+"map-transit-stone.png"||!base.texture||
+                base.texture.width!==128||base.texture.height!==128||
+                base.width!==104||base.height!==104||base.color!=="#d8ddd5"||base.alpha!==1))
+                issues.push([id,"imported transit stone"]);
+            if(badge.src!==art+"map-completed-badge.png"||!badge.texture||
+                badge.texture.width!==120||badge.texture.height!==120||
+                badge.width!==30||badge.height!==30||badge.mouseEnabled||badge.numChildren)
+                issues.push([id,"imported completed badge"]);
         }
         const commands = panel.expeditionNodes.expLines.graphics.cmds;
         if (!commands.length || commands.some(c=>c.cmdID!==Laya.DrawTextureCmd.ID)) issues.push("textured routes");
-        if(commands.some(c=>![6,8].includes(c.height)) ||
-            (!locked&&neighbors.length&&!commands.some(c=>c.height===8)) ||
-            (locked&&commands.some(c=>c.height===8)))issues.push("route emphasis");
+        if(commands.some(c=>![6,7].includes(c.height)) ||
+            (!locked&&neighbors.length&&!commands.some(c=>c.height===7)) ||
+            (locked&&commands.some(c=>c.height===7)))issues.push("route emphasis");
+        if(commands.some(c=>c.alpha!==(c.height===7?0.86:0.44)))issues.push("restrained route opacity");
         if(panel.buttons.expUse.visible) {
             const area=view.getElement("nodeActionArea"),background=panel.expeditionNodes.expContextBackground;
             if(area.width>288||area.height>252||background.width!==area.width||background.height!==area.height)
