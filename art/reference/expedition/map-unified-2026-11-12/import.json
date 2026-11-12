@@ -1,0 +1,891 @@
+{
+  "sources": [
+    {
+      "file": "art/reference/expedition/map-unified-2026-11-12/panels.png",
+      "supplied_filename": "_cosres_apps-ai-tools_nextimage_storage_out_user_2682_1794480133691_2b856492b6c6476887d90a106ea928f0.png",
+      "sha256": "2b2209b0be87d108239aad44568898b3f38939a2f2a0cdef7101ef618b88c992"
+    },
+    {
+      "file": "art/reference/expedition/map-unified-2026-11-12/nodes.png",
+      "supplied_filename": "_cosres_apps-ai-tools_nextimage_storage_out_user_2682_1794480342920_1903cfa61192491f8a1471150b0439bf.png",
+      "sha256": "304668b707adc5a24f13577dd0373c0bde91d7a1cf628657c5ebc1a0b938017d"
+    },
+    {
+      "file": "art/reference/expedition/map-unified-2026-11-12/icons.png",
+      "supplied_filename": "_cosres_apps-ai-tools_nextimage_storage_out_user_2682_1794480554637_60e9da4de4604360b387e9e293aa7970.png",
+      "sha256": "dc1efad0e5d82f3fca072ec671d157b51abc3458e97faea21d3f42d21d278c74"
+    },
+    {
+      "file": "art/reference/expedition/map-unified-2026-11-12/atmosphere.png",
+      "supplied_filename": "_cosres_apps-ai-tools_nextimage_storage_out_user_2682_1794483208680_ef37f8c0fe7740aaa15961c75cccd655.png",
+      "sha256": "78c6b4232e93bd1fd79777a72ce38b30f5060e82672c4527cbf4280301522e63"
+    }
+  ],
+  "method": "Deterministic extraction of the supplied true-alpha sheets; normalize alpha and clear invisible RGB. Tone down panel gold and the HP highlight; dim only the entrance portal. Preserve panel corners with nine-slice. All 12 atmosphere nodes and 12 clean detail/counter variants use 256px canvases. Balance the 12 map subjects optically: reduce the elite, enlarge the packages, preserve aspect ratios and effects within a 240x224 envelope. Center the visible artwork horizontally with exactly 16px bottom transparent padding on every 256px canvas. Include the insight stone's full tip. Leave the existing faint transit underlay and clean UI variants unchanged; outline the supplied route dash. Counters and action details retain the second sheet's clean artwork. No AI redraw.",
+  "preserved_progress_bars": [
+    {
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-bar-frame.png",
+      "sha256": "ef804db6e23596c460a27634f2a238907c801914e84e8c727d2b259f4c84294e"
+    },
+    {
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-bar-frame.png.meta",
+      "sha256": "312eeda7df9a2857db7d5acd1dfbdb3d36a14b8ee4f4f3828298a92416fcc963"
+    },
+    {
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-bar-hp.png",
+      "sha256": "f687006cf70159e8f3c9c5606b617410781dd91ea1c2d0332a7160123ad69d9e"
+    },
+    {
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-bar-hp.png.meta",
+      "sha256": "a5eea1e1fbd90da0a045b8dd4a78c55986661e51e099268f24393842cc68d7be"
+    },
+    {
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-bar-mp.png",
+      "sha256": "5ef01800c3afd1e9157ef5c34bbb4a706643e0af98bb8ba59d2194754e4992e9"
+    },
+    {
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-bar-mp.png.meta",
+      "sha256": "548c0b29fff121a064aaebbdbe3173e0f2a7a5700d1b83ab5a7e1f0fc469a4ab"
+    },
+    {
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-bar-stamina.png",
+      "sha256": "0480c40220ea417bd56e9551b671db4092df52b2e562b4acd079166775e0d126"
+    },
+    {
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-bar-stamina.png.meta",
+      "sha256": "b2d7f47eead828eb6d421a3457a5c14dd7635ef42de228f5a26499111d62adfb"
+    },
+    {
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-bar-track.png",
+      "sha256": "5fafc85af37ee93696131f4c43f9d6cfc15dffcea1f4916ae2c4e83822f58e0b"
+    },
+    {
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-bar-track.png.meta",
+      "sha256": "d03e1b4a40072a216c6babaf5740b63d0bf618bb534cd035bc6595e0954d1edb"
+    },
+    {
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-bar-weight.png",
+      "sha256": "d8be0e897a28e97ac0edeaf7c64a3f642d8549aa1a6a7bd93b164ff7d57ef02d"
+    },
+    {
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-bar-weight.png.meta",
+      "sha256": "b8e9db133382aba54b5e0ec7a33188e5b6ab4050735896af33d765459b80614c"
+    }
+  ],
+  "files": [
+    {
+      "name": "map-header-panel",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-header-panel.png",
+      "size": [
+        1024,
+        81
+      ],
+      "sha256": "9feb0fb228deef939ffc32c90cccd96ecd4169b5dccc24b3f9b61abb5d97f424",
+      "uuid": "d0c77a77-5010-4691-9380-dc38991fcec5",
+      "previous_uuid": "d0c77a77-5010-4691-9380-dc38991fcec5",
+      "origin": "map-header-panel",
+      "grid": [
+        24,
+        32,
+        24,
+        32,
+        0
+      ],
+      "native_sha256": "a522e1c88f1b755eaee6c9fae590e9e9783155063bf5c14b15df418ffebc3c3a"
+    },
+    {
+      "name": "map-player-panel",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-player-panel.png",
+      "size": [
+        300,
+        122
+      ],
+      "sha256": "e8169ac3866b9de90e54468ac2b7c9979880e8e4034e418e7e92c0ba83c338ff",
+      "uuid": "140f6f7a-0a24-48fa-8e36-723bd39ceec7",
+      "previous_uuid": "140f6f7a-0a24-48fa-8e36-723bd39ceec7",
+      "origin": "map-player-panel",
+      "grid": [
+        24,
+        24,
+        24,
+        24,
+        0
+      ],
+      "native_sha256": "43420a692f64184bd199a83ae9bba93e8e06346ff8baa08dcad2a83aa221a010"
+    },
+    {
+      "name": "map-panel",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-panel.png",
+      "size": [
+        96,
+        96
+      ],
+      "sha256": "ea00e7392f345d7cb2b8701cb268e972324429fbdc97e56d46ce2363da1ea488",
+      "uuid": "0ae1f005-3df5-4c72-8cbc-421e980e522e",
+      "previous_uuid": "0ae1f005-3df5-4c72-8cbc-421e980e522e",
+      "origin": "map-panel",
+      "grid": [
+        18,
+        18,
+        18,
+        18,
+        0
+      ],
+      "native_sha256": "4c4151344aaef89ca86423a61775b203765768cbc133df9f0ee6ae028759bb0c"
+    },
+    {
+      "name": "map-notice-panel",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-notice-panel.png",
+      "size": [
+        160,
+        40
+      ],
+      "sha256": "83b36567c344fa04c595e7aeb2ae6f0a3df038c754fe39fd8ffc2869750d627b",
+      "uuid": "29b3fb5f-ae6b-4701-920e-33fef878b3b2",
+      "previous_uuid": "29b3fb5f-ae6b-4701-920e-33fef878b3b2",
+      "origin": "map-notice-panel",
+      "grid": [
+        10,
+        10,
+        10,
+        10,
+        0
+      ],
+      "native_sha256": "512534256a2233cdc311f8611246a617ed6d5b4686808a53674756541fe115a2"
+    },
+    {
+      "name": "map-button-normal",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-button-normal.png",
+      "size": [
+        128,
+        48
+      ],
+      "sha256": "6ff12cfc7350b48959d56e9aca680dedb84a4166b888e22e2be1577474a49667",
+      "uuid": "4fefbb13-272f-4358-a1bc-14823a0c0108",
+      "previous_uuid": "4fefbb13-272f-4358-a1bc-14823a0c0108",
+      "origin": "map-button-normal",
+      "grid": [
+        10,
+        10,
+        10,
+        10,
+        0
+      ],
+      "native_sha256": "86e9fc296b78ea58bf95941111a1c50b967cf18110e2250571f943eeedfaf3ee"
+    },
+    {
+      "name": "map-toolbar-normal",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-toolbar-normal.png",
+      "size": [
+        96,
+        96
+      ],
+      "sha256": "549bd44a0fab9c5013d147aa646a2637f17fda7b40af128856d079135f03c0f2",
+      "uuid": "2708b8fd-0149-48a5-b97b-926fc0afaaeb",
+      "previous_uuid": "2708b8fd-0149-48a5-b97b-926fc0afaaeb",
+      "origin": "map-toolbar-normal",
+      "grid": [
+        18,
+        18,
+        18,
+        18,
+        0
+      ],
+      "native_sha256": "82f03fba408b592f452aead1d7525cd5c11f38274279b2e197813059df45a586"
+    },
+    {
+      "name": "map-button-hover",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-button-hover.png",
+      "size": [
+        128,
+        48
+      ],
+      "sha256": "647ccd819268d5b70747211bd0ab60aab018d7a03568f3a70e1c16ad370a0ec5",
+      "uuid": "8e68b2ce-6164-4b6b-9cb0-1e5667ea14ae",
+      "previous_uuid": "8e68b2ce-6164-4b6b-9cb0-1e5667ea14ae",
+      "origin": "map-button-hover",
+      "grid": [
+        10,
+        10,
+        10,
+        10,
+        0
+      ],
+      "native_sha256": "e4e80b4dbfbf4b96335860f58ec20c10898d25a32f8dbba4d0237e7bcc0050c8"
+    },
+    {
+      "name": "map-toolbar-hover",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-toolbar-hover.png",
+      "size": [
+        96,
+        96
+      ],
+      "sha256": "db7dc756e1d966ae70483e5b8330fba1bc7142b5172516bf85fec4c3a0250eb8",
+      "uuid": "64872aa2-ee24-46d1-aa5c-0c4c2b163cad",
+      "previous_uuid": "64872aa2-ee24-46d1-aa5c-0c4c2b163cad",
+      "origin": "map-toolbar-hover",
+      "grid": [
+        18,
+        18,
+        18,
+        18,
+        0
+      ],
+      "native_sha256": "fb10c7a62bf7f037ae2ba1917903958abf8388875535d100bc4169832f89a4be"
+    },
+    {
+      "name": "map-button-pressed",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-button-pressed.png",
+      "size": [
+        128,
+        48
+      ],
+      "sha256": "b733ca842d6b58af58b437a04911c28e4ae2b0261b202e67ac3705c8e025916c",
+      "uuid": "5cb94c46-be8a-45c8-a73d-5e1e673a82b7",
+      "previous_uuid": "5cb94c46-be8a-45c8-a73d-5e1e673a82b7",
+      "origin": "map-button-pressed",
+      "grid": [
+        10,
+        10,
+        10,
+        10,
+        0
+      ],
+      "native_sha256": "5ef2a585f995da4289412dd7bb4c5ad9fb5b3d70ddc9bafc77b61cd4691c91e0"
+    },
+    {
+      "name": "map-toolbar-pressed",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-toolbar-pressed.png",
+      "size": [
+        96,
+        96
+      ],
+      "sha256": "0df4d9106b01ee283dcdf69c628712c1bb5830c243bd30f8784c1328cc87eade",
+      "uuid": "db6e0547-d297-47d4-a72f-3c58428b7828",
+      "previous_uuid": "db6e0547-d297-47d4-a72f-3c58428b7828",
+      "origin": "map-toolbar-pressed",
+      "grid": [
+        18,
+        18,
+        18,
+        18,
+        0
+      ],
+      "native_sha256": "e7fdea1d93e99a63d36a139b2488992948ee94bdc761bf9fc4388681075c59c7"
+    },
+    {
+      "name": "map-button-disabled",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-button-disabled.png",
+      "size": [
+        128,
+        48
+      ],
+      "sha256": "a85264fd39936e338236234dacc937ebc7ce8d5fc0de86fc2e8c793fb82a4be8",
+      "uuid": "cb50f1ee-dfd6-4fa4-ba25-2c708e291fcf",
+      "previous_uuid": "cb50f1ee-dfd6-4fa4-ba25-2c708e291fcf",
+      "origin": "map-button-disabled",
+      "grid": [
+        10,
+        10,
+        10,
+        10,
+        0
+      ],
+      "native_sha256": "edcb0ab471337427fd1442e6ced488204e1a470300a0c49103fa71681e9a45e9"
+    },
+    {
+      "name": "map-toolbar-disabled",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-toolbar-disabled.png",
+      "size": [
+        96,
+        96
+      ],
+      "sha256": "273abef32f43a6617184519e01932112f7f44b6a6335ebb9527ad435da000dd3",
+      "uuid": "5146c18c-6496-4c04-9680-772b8c9f9ed7",
+      "previous_uuid": "5146c18c-6496-4c04-9680-772b8c9f9ed7",
+      "origin": "map-toolbar-disabled",
+      "grid": [
+        18,
+        18,
+        18,
+        18,
+        0
+      ],
+      "native_sha256": "f2b621910afedc0afbf6d216b54b63315ab73190acb9b56ff2382a4ee490db54"
+    },
+    {
+      "name": "map-avatar-frame",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-avatar-frame.png",
+      "size": [
+        128,
+        128
+      ],
+      "sha256": "6e14b2ea2707521493ec5a58e7852b41f76f19daeacb880104a693cc811ecb62",
+      "uuid": "2a6b056e-fd95-4079-b80e-4339953bac58",
+      "previous_uuid": "2a6b056e-fd95-4079-b80e-4339953bac58",
+      "origin": "map-avatar-frame",
+      "grid": null,
+      "native_sha256": "e291170cd574005fcba0f3422c12ed2604aaccae65bcc98da057bdc2ccab2be7"
+    },
+    {
+      "name": "clean/node-start",
+      "file": "assets/ui/image/expeditionNodes/clean/node-start.png",
+      "size": [
+        256,
+        256
+      ],
+      "sha256": "d26a3b4b21b47cac4fbb21cee32a35e4b3e2217a260a15c97c7ba4780f679b4a",
+      "uuid": "1a59d15b-2965-4ad5-84dc-a7e2f5bce170",
+      "previous_uuid": null,
+      "origin": "node-start",
+      "grid": null,
+      "native_sha256": "d292d52ed88a656d22c071db14f825dd40692b27a1d633bc49e417f89561c134"
+    },
+    {
+      "name": "node-start",
+      "file": "assets/ui/image/expeditionNodes/node-start.png",
+      "size": [
+        256,
+        256
+      ],
+      "sha256": "1ca2e93f49f259fdf38f3573e988680862f4b41cd6fa2809ed1e462b0c733b28",
+      "uuid": "b37989ba-5e8a-4998-a989-812fb939a95f",
+      "previous_uuid": "b37989ba-5e8a-4998-a989-812fb939a95f",
+      "origin": "atmosphere-start",
+      "grid": null,
+      "native_sha256": "d2f1a7ceab966043dd53d351751ce02560713b0ec804648427e3e2433415a570"
+    },
+    {
+      "name": "clean/node-transit",
+      "file": "assets/ui/image/expeditionNodes/clean/node-transit.png",
+      "size": [
+        256,
+        256
+      ],
+      "sha256": "0495879c7c1e5e8890c1ed9457e5dc194f97e554c2520d8f11c0d3abe7756d76",
+      "uuid": "7bd17244-9f65-498a-bd44-6b7fddff799b",
+      "previous_uuid": null,
+      "origin": "node-transit",
+      "grid": null,
+      "native_sha256": "2d643ff78279d76a1c7276ed858a2ec7450fd4bcd0187e0f57c7a83ef068a496"
+    },
+    {
+      "name": "node-transit",
+      "file": "assets/ui/image/expeditionNodes/node-transit.png",
+      "size": [
+        256,
+        256
+      ],
+      "sha256": "cb8bedd02157853e388df392efcac25b38f2677bf822f3f9c090c029a27d427c",
+      "uuid": "b42cd6d3-5ee8-4791-8362-d07d7b26376e",
+      "previous_uuid": "b42cd6d3-5ee8-4791-8362-d07d7b26376e",
+      "origin": "atmosphere-transit",
+      "grid": null,
+      "native_sha256": "582a6375f1be2040a8c4d474b7facaeedf041ecd369a21eedaed47d7daa73d17"
+    },
+    {
+      "name": "map-transit-stone",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-transit-stone.png",
+      "size": [
+        256,
+        256
+      ],
+      "sha256": "cb8bedd02157853e388df392efcac25b38f2677bf822f3f9c090c029a27d427c",
+      "uuid": "715fd65d-46f8-4d02-b064-751b7ec09708",
+      "previous_uuid": "715fd65d-46f8-4d02-b064-751b7ec09708",
+      "origin": "atmosphere-transit",
+      "grid": null,
+      "native_sha256": "582a6375f1be2040a8c4d474b7facaeedf041ecd369a21eedaed47d7daa73d17"
+    },
+    {
+      "name": "map-transit-stone-muted",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-transit-stone-muted.png",
+      "size": [
+        256,
+        256
+      ],
+      "sha256": "87c2107e4b7d044344f7ebdcc3b1450d81113cc775d686135e22a9dc6962f175",
+      "uuid": "17500959-c7b0-4838-b451-acbd3e1cf7aa",
+      "previous_uuid": "17500959-c7b0-4838-b451-acbd3e1cf7aa",
+      "origin": "atmosphere-transit-muted",
+      "grid": null,
+      "native_sha256": "582a6375f1be2040a8c4d474b7facaeedf041ecd369a21eedaed47d7daa73d17"
+    },
+    {
+      "name": "clean/node-enemy-normal",
+      "file": "assets/ui/image/expeditionNodes/clean/node-enemy-normal.png",
+      "size": [
+        256,
+        256
+      ],
+      "sha256": "eecdfd4e867d4a46d2cc7371ca212268a0d009be900f9fffb93c3139ef7b5434",
+      "uuid": "f3a1f1eb-b28e-48be-a1ad-7c1d2df646b9",
+      "previous_uuid": null,
+      "origin": "node-enemy-normal",
+      "grid": null,
+      "native_sha256": "7dda67ca3b58c29400f049f98fd62d5cf5812daab59f5aa903d69212d41c616c"
+    },
+    {
+      "name": "node-enemy-normal",
+      "file": "assets/ui/image/expeditionNodes/node-enemy-normal.png",
+      "size": [
+        256,
+        256
+      ],
+      "sha256": "d1d5250ea15a0991a57de5a797180cda3728f4591559e1e746a747e0f927167c",
+      "uuid": "7402b693-cb1f-4120-8c53-463c9f300ca9",
+      "previous_uuid": "7402b693-cb1f-4120-8c53-463c9f300ca9",
+      "origin": "atmosphere-enemy-normal",
+      "grid": null,
+      "native_sha256": "e661c77089778bac5a0900121610138223bc776b2d5aa260b7e7bfee68417c1e"
+    },
+    {
+      "name": "clean/node-enemy-elite",
+      "file": "assets/ui/image/expeditionNodes/clean/node-enemy-elite.png",
+      "size": [
+        256,
+        256
+      ],
+      "sha256": "12395a4df2fb8bfa384addc11a5e755b2f6b3f393b0661fe8bd531783699eae7",
+      "uuid": "91ef34cd-bc6b-44e0-9629-0a8a2bb55ce7",
+      "previous_uuid": null,
+      "origin": "node-enemy-elite",
+      "grid": null,
+      "native_sha256": "576ae7f8edcb7d17480b1d931ac6b13b97d97ec6ef7d466a9d8b423d0de081ff"
+    },
+    {
+      "name": "node-enemy-elite",
+      "file": "assets/ui/image/expeditionNodes/node-enemy-elite.png",
+      "size": [
+        256,
+        256
+      ],
+      "sha256": "a54deae6e05c665814a8345bc8134bd1caa9cd4dc99ecfc45322f6ad0da9492d",
+      "uuid": "a668b1fd-0df6-42cc-827f-1107f3006755",
+      "previous_uuid": "a668b1fd-0df6-42cc-827f-1107f3006755",
+      "origin": "atmosphere-enemy-elite",
+      "grid": null,
+      "native_sha256": "64d241bec90e0c1f55aa8e83629d0aef70058bc7faea71bfaf4336af67cd2f49"
+    },
+    {
+      "name": "clean/node-enemy-boss",
+      "file": "assets/ui/image/expeditionNodes/clean/node-enemy-boss.png",
+      "size": [
+        256,
+        256
+      ],
+      "sha256": "658431277cc5943ffc2bc27597fe4f56c682629bae9d1157dd52fd51c4dec565",
+      "uuid": "b6fd6152-e284-4871-962e-baa9c511a435",
+      "previous_uuid": null,
+      "origin": "node-enemy-boss",
+      "grid": null,
+      "native_sha256": "61adea25c49d2c99e297750f2bc2e25f92a0724c236222fad4698898344cb747"
+    },
+    {
+      "name": "node-enemy-boss",
+      "file": "assets/ui/image/expeditionNodes/node-enemy-boss.png",
+      "size": [
+        256,
+        256
+      ],
+      "sha256": "6ddf4165b7d93b668c08e9646a026ce1dd92062ca33a541ef349f690665e5d19",
+      "uuid": "e5f65abd-a961-442e-b583-abaedb5af254",
+      "previous_uuid": "e5f65abd-a961-442e-b583-abaedb5af254",
+      "origin": "atmosphere-enemy-boss",
+      "grid": null,
+      "native_sha256": "16a6802e99f6ec8ec29ebc8cd56fde39b9af9308d0ae95db64e0463376eed4d0"
+    },
+    {
+      "name": "clean/node-search",
+      "file": "assets/ui/image/expeditionNodes/clean/node-search.png",
+      "size": [
+        256,
+        256
+      ],
+      "sha256": "84c1730dfcd96e60c6461d9018cc3b1b030620eabb2e265d3e4327c8d9066c7b",
+      "uuid": "4332bc5e-0f24-47db-9cc6-5c3ee1933a57",
+      "previous_uuid": null,
+      "origin": "node-search",
+      "grid": null,
+      "native_sha256": "17fe09e66452b3f4fbc63652498ec87664226f3d62635b7f78c8bcba3e22f64d"
+    },
+    {
+      "name": "node-search",
+      "file": "assets/ui/image/expeditionNodes/node-search.png",
+      "size": [
+        256,
+        256
+      ],
+      "sha256": "a16c252f34c449153695e14b31579face85ecc692aa96ffcab8598ce9cecb862",
+      "uuid": "b37b6dc9-3980-4e31-9459-8e43718b81c4",
+      "previous_uuid": "b37b6dc9-3980-4e31-9459-8e43718b81c4",
+      "origin": "atmosphere-search",
+      "grid": null,
+      "native_sha256": "2b83406b298541146a4e2f733db230b7b022c9912481c72fb0364bf68ffd3d66"
+    },
+    {
+      "name": "clean/node-supply",
+      "file": "assets/ui/image/expeditionNodes/clean/node-supply.png",
+      "size": [
+        256,
+        256
+      ],
+      "sha256": "49c6635261f66c0bd1fa780f2b7b0cb33de192dd6133df20dad152f3511ac2a5",
+      "uuid": "bab77b23-795d-44ff-92be-2fd2b782e0a1",
+      "previous_uuid": null,
+      "origin": "node-supply",
+      "grid": null,
+      "native_sha256": "857df05f43c06f2804f067f9dea3dbb02f04df59504220e817c5b0785ac80094"
+    },
+    {
+      "name": "node-supply",
+      "file": "assets/ui/image/expeditionNodes/node-supply.png",
+      "size": [
+        256,
+        256
+      ],
+      "sha256": "8d52053c205a27099b6b80acb49be7d50c16a9385beb3371dc39d1229e410c35",
+      "uuid": "7cccf010-a497-48c8-8db2-53d5378ba6a2",
+      "previous_uuid": "7cccf010-a497-48c8-8db2-53d5378ba6a2",
+      "origin": "atmosphere-supply",
+      "grid": null,
+      "native_sha256": "2f100261aa48219d7c1792682d6eb959fd4b20ed90db127e8c9dc53e5b9dfef7"
+    },
+    {
+      "name": "clean/node-recovery",
+      "file": "assets/ui/image/expeditionNodes/clean/node-recovery.png",
+      "size": [
+        256,
+        256
+      ],
+      "sha256": "1e9c8a12467777b4335d82300f60e6b17ee996243c82c91af8773538f8e2ef83",
+      "uuid": "cbb4f464-3b50-4d05-9276-c32aa07cf609",
+      "previous_uuid": null,
+      "origin": "node-recovery",
+      "grid": null,
+      "native_sha256": "2bcea30f07a1c6b7be95840ff05427ae1965945a524f575078784cea30f7580e"
+    },
+    {
+      "name": "node-recovery",
+      "file": "assets/ui/image/expeditionNodes/node-recovery.png",
+      "size": [
+        256,
+        256
+      ],
+      "sha256": "20031d15fd7f27be85ee6f36227d62ae698b431cae6536dd2153b53441f7908b",
+      "uuid": "c4e31583-a80a-4098-9f6f-117079279304",
+      "previous_uuid": "c4e31583-a80a-4098-9f6f-117079279304",
+      "origin": "atmosphere-recovery",
+      "grid": null,
+      "native_sha256": "8e9e7bef6ad3e0516c5f4e4d8811997fa718b55a2f2edf11a3c0d5e704db1544"
+    },
+    {
+      "name": "clean/node-borrow",
+      "file": "assets/ui/image/expeditionNodes/clean/node-borrow.png",
+      "size": [
+        256,
+        256
+      ],
+      "sha256": "7b09a09ff0587bac6f1bf8dd3d23d9d72d6f3493c94517c8b3836430290486ac",
+      "uuid": "dff2423e-440c-4646-8241-f5fbeffd4208",
+      "previous_uuid": null,
+      "origin": "node-borrow",
+      "grid": null,
+      "native_sha256": "45c648d2bb99da641424229f3283c2d69707d72256a2ed9a63d0936b12fe18a3"
+    },
+    {
+      "name": "node-borrow",
+      "file": "assets/ui/image/expeditionNodes/node-borrow.png",
+      "size": [
+        256,
+        256
+      ],
+      "sha256": "f20269f408a90a35781078c136b50e439ba3e62cfd24422ba0871c79e39d9f4d",
+      "uuid": "a6c56939-a81b-4d7a-845b-6d5d356b0ac7",
+      "previous_uuid": "a6c56939-a81b-4d7a-845b-6d5d356b0ac7",
+      "origin": "atmosphere-borrow",
+      "grid": null,
+      "native_sha256": "02a020a634762829ae5107b79387172e2f7ff0d3ed11c82ce7efcb55ffc4c009"
+    },
+    {
+      "name": "clean/node-insight",
+      "file": "assets/ui/image/expeditionNodes/clean/node-insight.png",
+      "size": [
+        256,
+        256
+      ],
+      "sha256": "e7c7fea3c98d5e7aa266fba45b623f2679e9d9ffbbcb351fc04f4777a20a0248",
+      "uuid": "5fc35044-477c-40ae-92e4-fca2779f5de5",
+      "previous_uuid": null,
+      "origin": "node-insight",
+      "grid": null,
+      "native_sha256": "535c7ea396b960684bc90d6fd06f0cb75bdaf12cac7b69e5ce08d37288e4c564"
+    },
+    {
+      "name": "node-insight",
+      "file": "assets/ui/image/expeditionNodes/node-insight.png",
+      "size": [
+        256,
+        256
+      ],
+      "sha256": "3e757ccc9f7045250e56a55f5af970341b50a0425590096c8f10e9c472785476",
+      "uuid": "29367c60-5ee1-4987-a4a9-49c59bfa0f88",
+      "previous_uuid": "29367c60-5ee1-4987-a4a9-49c59bfa0f88",
+      "origin": "atmosphere-insight",
+      "grid": null,
+      "native_sha256": "f26732bc79a9a6e4e050828acda65e2cf2fe7933288ad330244fbb7c947926db"
+    },
+    {
+      "name": "clean/node-extract",
+      "file": "assets/ui/image/expeditionNodes/clean/node-extract.png",
+      "size": [
+        256,
+        256
+      ],
+      "sha256": "9313fb2cc5a50b10b5f42f788b736cdf50de59f7b2b90aefd1a686b361fd339b",
+      "uuid": "3f09da25-c4b3-4223-91df-8c8d1298d8f1",
+      "previous_uuid": null,
+      "origin": "node-extract",
+      "grid": null,
+      "native_sha256": "4c9701a0738f8d253d04aa86ca833711f63f805f14f9e5c2d9f15baec062cbb0"
+    },
+    {
+      "name": "node-extract",
+      "file": "assets/ui/image/expeditionNodes/node-extract.png",
+      "size": [
+        256,
+        256
+      ],
+      "sha256": "f14b4849b5e831b96557f5cf3f2618fb58135747826333ff842ae99a54cf796d",
+      "uuid": "5a2c2bb6-54d5-4099-93da-bd2af385b624",
+      "previous_uuid": "5a2c2bb6-54d5-4099-93da-bd2af385b624",
+      "origin": "atmosphere-extract",
+      "grid": null,
+      "native_sha256": "4200d6c9c0ac4b93ac3f19a6734b2d0002635437b5ca350bb329f238afd028e2"
+    },
+    {
+      "name": "clean/node-battle-loot",
+      "file": "assets/ui/image/expeditionNodes/clean/node-battle-loot.png",
+      "size": [
+        256,
+        256
+      ],
+      "sha256": "6e928931a79c3d3b5cc7c697be25a305ef94e8051a856e0679d791df90037a74",
+      "uuid": "df368504-d8d3-4f0a-aa6f-7da9109cbd0e",
+      "previous_uuid": null,
+      "origin": "node-battle-loot",
+      "grid": null,
+      "native_sha256": "e8e95402275fa8038b3fa22a13d6d0cf8305d0d675d80e907d0786df1235ba94"
+    },
+    {
+      "name": "node-battle-loot",
+      "file": "assets/ui/image/expeditionNodes/node-battle-loot.png",
+      "size": [
+        256,
+        256
+      ],
+      "sha256": "a7e82a14a0485b3cd91c1f79dfda3b8acc55b9ad36d4e1f1b3b0b01b32086233",
+      "uuid": "0fb59beb-596d-4961-a517-83bcb55b8cf3",
+      "previous_uuid": "0fb59beb-596d-4961-a517-83bcb55b8cf3",
+      "origin": "atmosphere-battle-loot",
+      "grid": null,
+      "native_sha256": "392be3e889b81c1ff12b9bd25031670203c0b8d14f56fa0da7722d277d83ee1e"
+    },
+    {
+      "name": "map-icon-inventory",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-icon-inventory.png",
+      "size": [
+        128,
+        128
+      ],
+      "sha256": "8020eed90821a315738fdf8800054b03156e1de9bf8908f8fa78072433371f93",
+      "uuid": "0bc45119-fb60-442e-a8d9-440f38fc7df6",
+      "previous_uuid": "0bc45119-fb60-442e-a8d9-440f38fc7df6",
+      "origin": "map-icon-inventory",
+      "grid": null,
+      "native_sha256": "614d90bd21d4fe01b05d47803e42e2a3dbcc4152080774a966c9ff2d2b07533a"
+    },
+    {
+      "name": "map-icon-build",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-icon-build.png",
+      "size": [
+        128,
+        128
+      ],
+      "sha256": "7fdd2a886356fd0eb1fd704e023d3bd495cc17281592e45caf270fa294912fa8",
+      "uuid": "0a5a7e9c-169a-4ae0-bc64-94a6c7e2d70f",
+      "previous_uuid": "0a5a7e9c-169a-4ae0-bc64-94a6c7e2d70f",
+      "origin": "map-icon-build",
+      "grid": null,
+      "native_sha256": "26a1f4dd4c12bdc5d921d47709d3bc45ae119e0e56961de314b92341e3ce1894"
+    },
+    {
+      "name": "map-icon-exit",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-icon-exit.png",
+      "size": [
+        128,
+        128
+      ],
+      "sha256": "8871889ae981909f4bf377606964e57204b3695a4983e160b7c312f2df2b7041",
+      "uuid": "0de2b9d4-a593-4165-b5f3-944d34d5c066",
+      "previous_uuid": "0de2b9d4-a593-4165-b5f3-944d34d5c066",
+      "origin": "map-icon-exit",
+      "grid": null,
+      "native_sha256": "f60a1728cfccada8806b1c93e48be7b9c6f04a0d4459b710e1610d18b076828e"
+    },
+    {
+      "name": "map-icon-clock",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-icon-clock.png",
+      "size": [
+        128,
+        128
+      ],
+      "sha256": "7cc98d5694b9b1d9d08d115d6b89a5d1b7432df58563db6289b18f34bac26438",
+      "uuid": "e99d4a7d-726d-4ad2-b518-8c0db674b4b2",
+      "previous_uuid": "e99d4a7d-726d-4ad2-b518-8c0db674b4b2",
+      "origin": "map-icon-clock",
+      "grid": null,
+      "native_sha256": "e2d52d0abfd6451f8286fa0df459c2f2f191059b2476595cce02d23bd1e05d50"
+    },
+    {
+      "name": "map-icon-hp",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-icon-hp.png",
+      "size": [
+        128,
+        128
+      ],
+      "sha256": "3153dbc36f314dac1f154ee27459d210b83709ad4d6c9da7e39eaa9866f8c31d",
+      "uuid": "1a58ac18-8887-46f9-aeaf-dc378cdc1506",
+      "previous_uuid": "1a58ac18-8887-46f9-aeaf-dc378cdc1506",
+      "origin": "map-icon-hp",
+      "grid": null,
+      "native_sha256": "4d2dd6d89bc89e3e9f3314fbc4ef9c119390735f5651feb0cd259e4d79c6689e"
+    },
+    {
+      "name": "map-icon-mp",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-icon-mp.png",
+      "size": [
+        128,
+        128
+      ],
+      "sha256": "8820e2378c6910c29d84549d893053843f5e64434a948977b0ea087395465ed3",
+      "uuid": "e6ed7e32-55ab-47eb-97c4-2725e51c6b17",
+      "previous_uuid": "e6ed7e32-55ab-47eb-97c4-2725e51c6b17",
+      "origin": "map-icon-mp",
+      "grid": null,
+      "native_sha256": "8d60c4a48444bf2b4bb58ed8680234b521800452beba63ab650c548ab6d79410"
+    },
+    {
+      "name": "map-current-locator",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-current-locator.png",
+      "size": [
+        304,
+        72
+      ],
+      "sha256": "b26290711578b11b97600e36ddc19535f105cfddfa2253ba333d9b9655656db5",
+      "uuid": "37cfb1a2-874b-4c55-959f-bc8757e7c469",
+      "previous_uuid": "37cfb1a2-874b-4c55-959f-bc8757e7c469",
+      "origin": "map-current-locator",
+      "grid": null,
+      "native_sha256": "246637184f1f6684c3e5329f3e12e7c56573517f3a0ca3afb5f62e5e50b20a8a"
+    },
+    {
+      "name": "map-reachable-locator",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-reachable-locator.png",
+      "size": [
+        320,
+        56
+      ],
+      "sha256": "57563568247395a458504965a0aa3f9338dbbf1eec5c3e72d4a9b3f024e3e563",
+      "uuid": "b4436c93-3fa8-4205-95f9-341a45c30771",
+      "previous_uuid": "b4436c93-3fa8-4205-95f9-341a45c30771",
+      "origin": "map-reachable-locator",
+      "grid": null,
+      "native_sha256": "5a3f116444ae4a1dcb31bc522c96bd0a07c24d7e333d1f6615295db767a12714"
+    },
+    {
+      "name": "map-completed-badge",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+      "size": [
+        120,
+        120
+      ],
+      "sha256": "78a0812d1f35b4e8bba7e7a2e4c5cd989cb92d5340ba3db4e0614b1a18837640",
+      "uuid": "f8384e06-51e0-400a-a1f3-efe10811b5ed",
+      "previous_uuid": "f8384e06-51e0-400a-a1f3-efe10811b5ed",
+      "origin": "map-completed-badge",
+      "grid": null,
+      "native_sha256": "eaf5d7b1a54a0172d19593e4f417e5835e8351507c3a9464cc1b2200b1f7d3e9"
+    },
+    {
+      "name": "map-route-dash-contrast",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-route-dash-contrast.png",
+      "size": [
+        64,
+        32
+      ],
+      "sha256": "1c52d4b2ca5967fb278b4e664c4046f03c308c99b7fd583209139d3508a37ac8",
+      "uuid": "4775f188-0a5a-49b4-a0f8-845fa1130c59",
+      "previous_uuid": "4775f188-0a5a-49b4-a0f8-845fa1130c59",
+      "origin": "map-route-dash",
+      "grid": null,
+      "native_sha256": "f21f88f22a1e47eed056006c1f364db5c48ede79d424c34fc15a3a4e894a64ed"
+    },
+    {
+      "name": "map-route-dash",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-route-dash.png",
+      "size": [
+        64,
+        32
+      ],
+      "sha256": "3191e9d163af994707569811888ab9a3f21774ab8d0fc0cb0c1949449d5b6932",
+      "uuid": "7416ea93-34dc-469c-811b-ac53f11db542",
+      "previous_uuid": "7416ea93-34dc-469c-811b-ac53f11db542",
+      "origin": "map-route-dash",
+      "grid": null,
+      "native_sha256": "f21f88f22a1e47eed056006c1f364db5c48ede79d424c34fc15a3a4e894a64ed"
+    },
+    {
+      "name": "inventory-search-spinner",
+      "file": "assets/ui/atlas/module/expedition/handpainted/inventory-search-spinner.png",
+      "size": [
+        128,
+        128
+      ],
+      "sha256": "79e4e7e98add0aabe12e747c8a881b13751098faeeb293f1ae0f1b649d82890d",
+      "uuid": "fcc82064-5fc1-4a10-837e-b03ee3b07003",
+      "previous_uuid": "fcc82064-5fc1-4a10-837e-b03ee3b07003",
+      "origin": "inventory-search-spinner",
+      "grid": null,
+      "native_sha256": "212a1c0d2c6e4baad6e6a76b9a44354a7aa05027a8f3ebe827e505cd683e663a"
+    },
+    {
+      "name": "map-player-portrait",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-player-portrait.png",
+      "size": [
+        128,
+        128
+      ],
+      "sha256": "72915f15708807ebac0f79797dc5197ff3f94cbaba28b7f2748f72d56fae1954",
+      "uuid": "66283e3b-740d-4846-9acc-94d5c5909524",
+      "previous_uuid": "66283e3b-740d-4846-9acc-94d5c5909524",
+      "origin": "map-player-portrait",
+      "grid": null,
+      "native_sha256": "c77dfbf141c8852d696b59137fad3ad32d301c9dfdba392fc424e5e0ad06e734"
+    },
+    {
+      "name": "map-player-traveler",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-player-traveler.png",
+      "size": [
+        128,
+        160
+      ],
+      "sha256": "6dddaf4e19d2451f3e6980fd0e9ebf7f00f57596588d7599b8b825311bcb05e0",
+      "uuid": "fc5d3065-71f7-4919-aa09-fe19a4339cd3",
+      "previous_uuid": "fc5d3065-71f7-4919-aa09-fe19a4339cd3",
+      "origin": "map-player-traveler",
+      "grid": null,
+      "native_sha256": "c2dc41c502b0b853d55489fee5151230efe7300cbf1365fe89ff52f8bebdbe5b"
+    }
+  ]
+}

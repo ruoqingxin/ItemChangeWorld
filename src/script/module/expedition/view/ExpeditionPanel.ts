@@ -16,12 +16,6 @@ const MARKER_HALF = 58;
 const TRANSIT_PLAYER_LIFT = 64;
 const REACH_HINT_ALPHA = 0.96;
 const TRANSIT_STONE_COLOR = "#ffffff";
-const ENEMY_ICON_SIZES = { normal: 104, elite: 144, boss: 192 };
-// Visible foot rows in the 128px source canvases, excluding transparent padding.
-const NODE_ART_FEET: { [art: string]: number } = {
-    "enemy-normal":114,"enemy-elite":115,"enemy-boss":103,
-    start:123,extract:113,recovery:105,search:105,supply:119,borrow:118,insight:119,
-};
 const MAP_ART = "ui/atlas/module/expedition/handpainted/";
 
 export class ExpeditionPanel extends InventoryPanel {
@@ -36,7 +30,7 @@ export class ExpeditionPanel extends InventoryPanel {
     private openingGround = false;
     private pendingPath: number[] | null = null;
     private mapRoutes = new Map<string,MapPoint[]>();
-    private movement: { points: MapPoint[]; lifts: number[]; lengths: number[]; total: number; startedAt: number;
+    private movement: { points: MapPoint[]; lifts: number[]; shifts: number[]; lengths: number[]; total: number; startedAt: number;
         duration: number; cameraFrom: number; cameraTo: number } | null = null;
     constructor(view: UIBaseView, readonly expedition: ExpeditionRunManager,
         navigate: (s: SkillBattlePage) => void, screen: "start"|"battle"|"settlement",
@@ -88,9 +82,16 @@ export class ExpeditionPanel extends InventoryPanel {
         this.expeditionNodes.mapRouteTexture.on(Laya.Event.LOADED,this,this.mapArtLoaded);
         this.elements.screenBackground.filters=null;
         const content=this.expeditionNodes.expMapContent;
+        const template=this.buttons.expNode1;
         for(let id=33;id<=44;id++) {
             const node=new Laya.GWidget();node.name=`expNode${id}`;node.mouseEnabled=true;
-            node.addChild(new Laya.GImage());node.addChild(new Laya.GTextField());node.addChild(new Laya.GImage());
+            for(let index=0;index<3;index++) {
+                const source=template.getChildAt(index) as Laya.GWidget;
+                const child=index===1?new Laya.GTextField():new Laya.GImage();
+                child.pos(source.x,source.y);child.size(source.width,source.height);
+                if(child instanceof Laya.GImage)child.autoSize=(source as Laya.GImage).autoSize;
+                node.addChild(child);
+            }
             content.addChild(node);this.expeditionNodes[node.name]=node;this.buttons[node.name]=node;
             node.on(Laya.Event.CLICK,this,()=>this.command(node.name));
         }
@@ -369,7 +370,8 @@ export class ExpeditionPanel extends InventoryPanel {
         n.visible=true;
         if (mapNode) n.pos(x,y); else placeInDesign(n,this.root,x,y);
         n.size(w,h);n.mouseEnabled=enabled;n.alpha=this.pageRole==="map"||enabled||selected?1:0.55;
-        const skin=n.getChildAt(0) as Laya.GImage;skin.size(w,h);
+        const skin=n.getChildAt(0) as Laya.GImage;
+        if(!mapNode)skin.size(w,h);
         label.text=value;label.pos(4,2);label.size(w-8,h-4);label.fontSize=18;
         label.color=selected?"#ffd879":"#e8edf0";label.textIns.color=label.color;
         label.align="center";label.valign="middle";label.textIns.wordWrap=true;
@@ -393,7 +395,7 @@ export class ExpeditionPanel extends InventoryPanel {
             image.src.endsWith("/map-panel.png")||image.src.includes("/map-toolbar-")?18:
             image.src.endsWith("/map-player-panel.png")?24:
             image.src.endsWith("/map-header-panel.png")?24:image.src.endsWith("/map-slot.png")?6:
-            image.src.includes("/map-button-")?10:0;
+            image.src.includes("/map-button-")||image.src.endsWith("/map-notice-panel.png")?10:0;
         const texture=image.texture,grid=image.src.endsWith("/map-header-panel.png")?
             [24,32,24,32,0]:[inset,inset,inset,inset,0];
         if (!inset || !texture || texture._sizeGrid?.join(",")===grid.join(",") &&
@@ -480,21 +482,27 @@ export class ExpeditionPanel extends InventoryPanel {
     private renderPlayerMarker(): void {
         const marker=this.expeditionNodes.expPlayer;
         marker.visible=true;marker.mouseEnabled=false;marker.zOrder=2;
-        marker.size(116,160);marker.graphics.clear();
+        marker.size(116,162);marker.graphics.clear();
         const ring=marker.getChildByName("expPlayerRing");
-        if(ring) {ring.visible=true;ring.pos(20,142);ring.size(76,18);ring.alpha=0.95;}
+        if(ring) {ring.visible=true;ring.pos(16,142);ring.size(84,20);ring.alpha=0.95;}
         const avatar=marker.getChildByName("expPlayerAvatar") as Laya.GImage;
         avatar.visible=true;avatar.pos(22,70);avatar.size(72,90);
-        this.alignPlayerArtwork(this.playerLift(this.expedition.inventory!.node));
+        const current=this.expedition.inventory!.node;
+        this.alignPlayerArtwork(this.playerLift(current),this.playerShift(current));
     }
     private playerLift(id: number): number {
         const node=Rules.node(this.expedition.archive!.config,id,this.expedition.inventory!);
         return node.kind==="transit"?TRANSIT_PLAYER_LIFT:0;
     }
-    private alignPlayerArtwork(lift: number): void {
+    private playerShift(id: number): number {
+        const node=Rules.node(this.expedition.archive!.config,id,this.expedition.inventory!);
+        const image=this.buttons[`expNode${id}`].getChildAt(2) as Laya.GImage;
+        return node.enemy?-(image.width/2+28):0;
+    }
+    private alignPlayerArtwork(lift: number,shift: number): void {
         const marker=this.expeditionNodes.expPlayer;
-        marker.getChildByName("expPlayerRing").y=142-lift;
-        marker.getChildByName("expPlayerAvatar").y=70-lift;
+        marker.getChildByName("expPlayerRing").pos(16+shift,142-lift);
+        marker.getChildByName("expPlayerAvatar").pos(22+shift,70-lift);
     }
     private renderMapFeedback(): void {
         if(!this.opened||!this.mapOpen||!this.expeditionNodes.expeditionRoot?.visible)return;
@@ -510,7 +518,7 @@ export class ExpeditionPanel extends InventoryPanel {
     private mapPositions(s: ExpeditionState): Map<number,MapPoint> {
         const height=this.expeditionNodes.expViewport.height;
         const rows=s.map.nodes.map(n=>{
-            const size=ENEMY_ICON_SIZES[n.kind]||104;
+            const size=(this.buttons[`expNode${n.id}`].getChildAt(2) as Laya.GImage).height;
             let hash=2166136261;
             for(const char of `${s.runId}:${n.key}`)hash=Math.imul(hash^char.charCodeAt(0),16777619)>>>0;
             hash=Math.imul(hash^(hash>>>16),0x7feb352d);
@@ -578,8 +586,8 @@ export class ExpeditionPanel extends InventoryPanel {
             this.button(key,"",px-58,py-52,116,116,reach.has(id),id===s.node||id===this.selectedNode);
             const b=this.buttons[key],l=b.getChildAt(1) as Laya.GTextField;
             const base=b.getChildAt(0) as Laya.GImage;
-            base.src=MAP_ART+"map-transit-stone.png";
-            base.pos(6,18);base.size(104,104);base.visible=n.kind==="transit";
+            base.src=MAP_ART+"map-transit-stone-muted.png";
+            base.visible=n.kind==="transit";
             base.grayed=explored;base.alpha=1;base.color=TRANSIT_STONE_COLOR;
             l.visible=false;
             const image=b.getChildAt(2) as Laya.GImage;
@@ -587,14 +595,12 @@ export class ExpeditionPanel extends InventoryPanel {
                 ({normal:"enemy-normal",elite:"enemy-elite",boss:"enemy-boss",borrow:"borrow",insight:"insight",
                     extract:"extract",recovery:"recovery",start:"start",transit:"transit"})[n.kind];
             image.src=`ui/image/expeditionNodes/node-${art}.png`;
-            const size=ENEMY_ICON_SIZES[n.kind]||104;
-            image.pos((116-size)/2,96-(NODE_ART_FEET[art]||128)*size/128);
-            image.size(size,size);image.visible=n.kind!=="transit";
+            image.visible=n.kind!=="transit";
             this.styleNodeIcon(image,cleared,explored);
             b.graphics.clear();
             if(image.visible) {
                 for(let layer=0;layer<4;layer++) {
-                    const width=Math.min(96,size*0.64)-layer*8,height=12-layer*2;
+                    const width=Math.min(96,image.width*0.64)-layer*8,height=12-layer*2;
                     b.graphics.drawEllipse(58-width/2,99-height/2,width,height,"rgba(16,22,19,0.045)",null,0);
                 }
             }
@@ -648,7 +654,8 @@ export class ExpeditionPanel extends InventoryPanel {
             const context=this.expeditionNodes.expContextBackground;
             context.visible=true;
             const contextIcon=this.expeditionNodes.expContextIcon as Laya.GImage;
-            contextIcon.src=(this.buttons[`expNode${n.id}`].getChildAt(2) as Laya.GImage).src;
+            contextIcon.src=(this.buttons[`expNode${n.id}`].getChildAt(2) as Laya.GImage).src
+                .replace("/expeditionNodes/","/expeditionNodes/clean/");
             contextIcon.visible=true;
             this.styleNodeIcon(contextIcon,!!n.enemy&&s.map.cleared.includes(n.id),
                 !!source&&source.revealed===source.entries.length);
@@ -668,13 +675,18 @@ export class ExpeditionPanel extends InventoryPanel {
     }
     private beginMovement(path: number[], points: Map<number,MapPoint>): void {
         const route: MapPoint[]=[points.get(path[0])!];
-        const lifts=[this.playerLift(path[0])];
+        const lifts=[this.playerLift(path[0])],shifts=[this.playerShift(path[0])];
         for(let i=1;i<path.length;i++) {
             const edge=this.mapRoutes.get(`${path[i-1]}:${path[i]}`)||
                 [points.get(path[i-1])!,points.get(path[i])!];
             const from=this.playerLift(path[i-1]),to=this.playerLift(path[i]);
+            const shiftFrom=this.playerShift(path[i-1]),shiftTo=this.playerShift(path[i]);
             route.push(...edge.slice(1));
-            for(let j=1;j<edge.length;j++)lifts.push(from+(to-from)*j/(edge.length-1));
+            for(let j=1;j<edge.length;j++) {
+                const ratio=j/(edge.length-1);
+                lifts.push(from+(to-from)*ratio);
+                shifts.push(shiftFrom+(shiftTo-shiftFrom)*ratio);
+            }
         }
         const lengths=route.map((p,i)=>i?Math.hypot(p.x-route[i-1].x,p.y-route[i-1].y):0);
         const total=lengths.reduce((sum,n)=>sum+n,0),last=route[route.length-1];
@@ -683,26 +695,27 @@ export class ExpeditionPanel extends InventoryPanel {
             last.x-this.scroller.viewWidth*0.42));
         if(total<1&&Math.abs(cameraTo-cameraFrom)<1)return;
         this.scroller.cancelDragging();
-        this.movement={points:route,lifts,lengths,total,startedAt:performance.now(),
+        this.movement={points:route,lifts,shifts,lengths,total,startedAt:performance.now(),
             duration:Math.min(1000,Math.max(360,total/1.4)),cameraFrom,cameraTo};
         Laya.timer.frameLoop(1,this,this.movementTick);
     }
     private positionMovement(now: number): boolean {
         const m=this.movement!;
         const t=Math.min(1,Math.max(0,(now-m.startedAt)/m.duration)),ease=t*t*(3-2*t);
-        let distance=m.total*ease,p=m.points[0],lift=m.lifts[0];
+        let distance=m.total*ease,p=m.points[0],lift=m.lifts[0],shift=m.shifts[0];
         for(let i=1;i<m.points.length;i++) {
             const length=m.lengths[i];
             if(distance<=length&&length>0) {
                 const from=m.points[i-1],to=m.points[i],ratio=distance/length;
                 p={x:from.x+(to.x-from.x)*ratio,y:from.y+(to.y-from.y)*ratio};
-                lift=m.lifts[i-1]+(m.lifts[i]-m.lifts[i-1])*ratio;break;
+                lift=m.lifts[i-1]+(m.lifts[i]-m.lifts[i-1])*ratio;
+                shift=m.shifts[i-1]+(m.shifts[i]-m.shifts[i-1])*ratio;break;
             }
-            distance-=length;p=m.points[i];lift=m.lifts[i];
+            distance-=length;p=m.points[i];lift=m.lifts[i];shift=m.shifts[i];
         }
         this.expeditionNodes.expPlayer.pos(p.x-MARKER_HALF,p.y-MARKER_HALF);
         // Blend the visual foot anchor without changing route or camera coordinates.
-        this.alignPlayerArtwork(lift);
+        this.alignPlayerArtwork(lift,shift);
         this.scroller.posX=m.cameraFrom+(m.cameraTo-m.cameraFrom)*ease;
         return t===1;
     }
@@ -720,9 +733,10 @@ export class ExpeditionPanel extends InventoryPanel {
         const lines=this.expeditionNodes.expLines;lines.visible=true;lines.graphics.clear();
         const rectangles:number[][]=[];
         for(const [id,p] of points) {
-            const image=this.buttons[`expNode${id}`].getChildAt(2) as Laya.GImage;
-            const halfWidth=Math.max(54,image.width/2-4),above=Math.max(54,30-image.y);
-            rectangles.push([p.x-halfWidth-2,p.y-above-2,p.x+halfWidth+2,p.y+56]);
+            const node=this.buttons[`expNode${id}`],image=node.getChildAt(2) as Laya.GImage;
+            const transit=node.getChildAt(0).visible;
+            const halfWidth=transit?44:Math.max(54,image.width/2-4),above=transit?8:Math.max(54,30-image.y);
+            rectangles.push([p.x-halfWidth-2,p.y-above-2,p.x+halfWidth+2,p.y+(transit?44:56)]);
         }
         const interval=(p:{x:number;y:number},q:{x:number;y:number},box:number[])=>{
             let low=0,high=1;
@@ -775,9 +789,9 @@ export class ExpeditionPanel extends InventoryPanel {
                     const span=Math.hypot(endX-x,endY-y);
                     const matrix=new Laya.Matrix(ux,uy,-uy,ux,x,y);
                     // The source's transparent padding preserves the painted caps and shadow.
-                    const height=active?7:6;
+                    const height=active?11:9;
                     graphics.drawTexture(texture,-span*0.3,-height/2,span*1.6,height,matrix,
-                        active?0.94:0.68,active?"#f2d897":"#edf0e0");
+                        active?1:0.82,active?"#ffe0a0":"#d6e0d4");
                 }
                 offset+=step;
             }

@@ -35,7 +35,8 @@ for (const [file, type, content] of files) {
                     `${file}: extended background must cover the authored page`);
             } else {
                 const left=x-(node.anchorX||0)*node.width, top=y-(node.anchorY||0)*node.height;
-                assert.ok(left >= 0 && top >= 0 && left + node.width <= parent.width && top + node.height <= parent.height,
+                const transitMargin=file.endsWith("SkillBattleMapView")&&/^expNode\d+Skin$/.test(node.name)?6:0;
+                assert.ok(left >= 0 && top >= 0 && left + node.width <= parent.width && top + node.height <= parent.height+transitMargin,
                     `${file}: ${node.name} exceeds ${parent.name}`);
             }
         }
@@ -170,6 +171,10 @@ for (const [file, type, content] of files) {
             "Static map UI must not be repositioned by the panel");
         assert.doesNotMatch(controllerSource,/this\.(?:button|text)\("exp(?:Storage|Build|Abandon|Use|ContextTitle|Notice)"/,
             "Data refresh does not pass hardcoded coordinates to fixed controls");
+        assert.doesNotMatch(controllerSource,/ENEMY_ICON_SIZES|NODE_ART_FEET/,
+            "Node scale and placement must not vary by enemy category");
+        assert.doesNotMatch(controllerSource,/(?:image|base)\.(?:size|pos)\(/,
+            "Node data refresh must retain prefab-authored artwork geometry");
         for(const [key,title] of [["Stamina","体力"],["Weight","负重"]]) {
             assert.equal(nodes.get(`exp${key}`).text,"-- / --","No fabricated resource values");
             assert.equal(nodes.get(`exp${key}Label`).text,title,"Separate resource label");
@@ -199,10 +204,15 @@ for (const [file, type, content] of files) {
         }
         const locator=nodes.get("expPlayerRing");
         assert.equal(locator.src,"ui/atlas/module/expedition/handpainted/map-current-locator.png");
-        assert.deepEqual([locator.x,locator.y,locator.width,locator.height],[20,142,76,18],
+        assert.deepEqual([locator.x,locator.y,locator.width,locator.height],[16,142,84,20],
             "Authored current locator matches its existing runtime footprint");
         for(let i=1;i<=32;i++) {
             const icon=nodes.get(`expNode${i}Icon`); assert.deepEqual([icon.width,icon.height],[104,104]);
+            assert.deepEqual([icon.x,icon.y||0],[6,0],"All node artwork uses one authored placement");
+            assert.equal(icon.autoSize,false,"Source texture dimensions must not override the prefab image size");
+            const base=nodes.get(`expNode${i}Skin`);
+            assert.deepEqual([base.x,base.y,base.width,base.height],[6,18,104,104],
+                "Transit artwork geometry is authored in the prefab");
             assert.equal(nodes.get(`expNode${i}`)._$child[1].visible,false,"Node captions stay hidden in the prefab too");
         }
     }

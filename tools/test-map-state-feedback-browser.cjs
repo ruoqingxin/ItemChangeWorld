@@ -6,8 +6,20 @@ const sharp = require("sharp");
 const url = process.env.SKILL_BATTLE_URL || "http://127.0.0.1:18138";
 const output = path.resolve(__dirname, "../tmp/map-feedback");
 const key = "nowchange.stage4-expedition.v1";
+const artBounds = {};
 const ready = p => p.waitForFunction(() => window.__skillBattlePreview?.panel?.opened &&
     window.__skillBattlePreview.view.isOpened);
+
+async function visibleBounds(file) {
+    const { data, info } = await sharp(file).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+    let left = info.width, top = info.height, right = 0, bottom = 0;
+    for (let y = 0; y < info.height; y++) for (let x = 0; x < info.width; x++) {
+        if (data[(y * info.width + x) * 4 + 3] < 16) continue;
+        left = Math.min(left, x); top = Math.min(top, y);
+        right = Math.max(right, x + 1); bottom = Math.max(bottom, y + 1);
+    }
+    return [left / info.width, top / info.height, right / info.width, bottom / info.height];
+}
 
 async function point(p, name) {
     return p.evaluate(name => {
@@ -48,7 +60,7 @@ async function screenshot(p, name) {
     assert.ok((await sharp(image).stats()).channels.slice(0, 3).every(c => c.stdev > 15), "Nonblank canvas");
 }
 async function fixture(p, kind) {
-    return p.evaluate(kind => {
+    return p.evaluate(async ({ kind, artBounds }) => {
         const { panel, trial } = window.__skillBattlePreview;
         trial.data.save.state = structuredClone(window.__feedbackOriginal);
         const s = trial.data.save.state, c = trial.archive.config;
@@ -76,9 +88,17 @@ async function fixture(p, kind) {
         }
         const before = JSON.stringify(s);
         panel.notice = ""; panel.selectedNode = n.id; panel.centerMap = true; panel.refresh();
+        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
         const button = panel.buttons[`expNode${n.id}`], badge = button.getChildByName("expDone");
         const passive = node => !node.mouseEnabled &&
             Array.from({ length: node.numChildren }, (_, i) => node.getChildAt(i)).every(passive);
+        const bounds = (image, alpha) => {
+            const first = image.localToGlobal(new Laya.Point(alpha[0] * image.width, alpha[1] * image.height));
+            const last = image.localToGlobal(new Laya.Point(alpha[2] * image.width, alpha[3] * image.height));
+            return [first.x, first.y, last.x, last.y];
+        };
+        const avatar = panel.expeditionNodes.expPlayer.getChildByName("expPlayerAvatar");
+        const viewport = panel.expeditionNodes.expViewport;
         return {
             status: panel.labels.expContextStatus.text, action: panel.buttons.expUse.getChildAt(1).text,
             enabled: panel.buttons.expUse.mouseEnabled, skin: panel.buttons.expUse.getChildAt(0).src,
@@ -88,12 +108,19 @@ async function fixture(p, kind) {
             hints: s.map.present.some(id => panel.buttons[`expNode${id}`].visible &&
                 panel.buttons[`expNode${id}`].getChildByName("expReachHint").visible),
             unchanged: before === JSON.stringify(trial.data.save.state),
+            playerBounds: bounds(avatar, artBounds.player),
+            enemyBounds: kind.startsWith("enemy-") ? bounds(button.getChildAt(2), artBounds[n.kind]) : null,
+            viewportBounds: bounds(viewport, [0, 0, 1, 1]),
         };
-    }, kind);
+    }, { kind, artBounds });
 }
 
 (async () => {
     await fs.mkdir(output, { recursive: true });
+    artBounds.player = await visibleBounds(path.resolve(__dirname,
+        "../assets/ui/atlas/module/expedition/handpainted/map-player-traveler.png"));
+    for (const kind of ["normal", "elite", "boss"])
+        artBounds[kind] = await visibleBounds(path.resolve(__dirname, `../assets/ui/image/expeditionNodes/node-enemy-${kind}.png`));
     const browser = await chromium.launch({ headless: true, channel: "chromium" });
     try {
         for (const [name, width, height, touch] of [
@@ -165,6 +192,14 @@ async function fixture(p, kind) {
                 if (kind.startsWith("enemy-")) {
                     assert.equal(state.enabled, false); assert.ok(state.skin.endsWith("/map-button-disabled.png"));
                     assert.match(state.status, /体力不足/); assert.equal(state.hints, false);
+                    assert.ok(state.playerBounds[2] < state.enemyBounds[0],
+                        `${kind}: visible player artwork is separated from the enemy`);
+                    assert.ok(state.playerBounds[0] >= state.viewportBounds[0] &&
+                        state.playerBounds[1] >= state.viewportBounds[1] &&
+                        state.playerBounds[2] <= state.viewportBounds[2] &&
+                        state.playerBounds[3] <= state.viewportBounds[3],
+                    `${kind}: the player is fully inside the map viewport: ${JSON.stringify({
+                        player: state.playerBounds, viewport: state.viewportBounds })}`);
                 } else if (kind === "source-new") {
                     assert.equal(state.status, "尚未搜索"); assert.equal(state.action, "搜索");
                 } else if (kind === "source-paused") {

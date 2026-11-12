@@ -96,7 +96,7 @@ async function click(page, key, touch) {
                     const positions = panel.mapPositions({...state,map});
                     const values = map.nodes.map(n => ({...positions.get(n.id),id:n.id,kind:n.kind}));
                     for (const [i,a] of values.entries()) {
-                        const size = ({normal:104,elite:144,boss:192})[a.kind] || 104;
+                        const size = panel.buttons[`expNode${a.id}`].getChildAt(2).height;
                         if (a.y-58-(size-104)*0.75 < panel.mapBandTop-22 || a.y+102>height)
                             issues.push([seed,"clipped",a.id]);
                         for (const b of values.slice(i+1))

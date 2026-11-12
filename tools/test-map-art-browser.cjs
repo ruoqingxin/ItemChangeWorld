@@ -101,15 +101,17 @@ async function inspect(p, name) {
         if (!marker.visible || marker.mouseEnabled || !avatar.visible || avatar.mouseEnabled || !avatar.texture ||
             !avatar.src.endsWith("/map-player-traveler.png")) issues.push("traveler");
         const locator=marker.getChildByName("expPlayerRing");
-        if(!locator.visible||locator.width!==76||locator.height!==18||avatar.width!==72||avatar.height!==90)
+        if(!locator.visible||locator.width!==84||locator.height!==20||avatar.width!==72||avatar.height!==90)
             issues.push("player locator");
         if(locator.src!==art+"map-current-locator.png"||!locator.texture||
             locator.texture.width!==304||locator.texture.height!==72||locator.filters?.length)
             issues.push("imported current locator");
-        const transit=trial.inventory.map.nodes.find(n=>n.id===trial.inventory.node).kind==="transit";
+        const currentNode=trial.inventory.map.nodes.find(n=>n.id===trial.inventory.node);
+        const transit=currentNode.kind==="transit";
         const lift=transit?64:0;
-        if(locator.y!==142-lift||avatar.y!==70-lift||locator.x+locator.width/2!==58||
-            avatar.x+avatar.width/2!==58)
+        const shift=currentNode.enemy?-(panel.buttons[`expNode${currentNode.id}`].getChildAt(2).width/2+28):0;
+        if(locator.y!==142-lift||avatar.y!==70-lift||locator.x+locator.width/2!==58+shift||
+            avatar.x+avatar.width/2!==58+shift)
             issues.push("player ground alignment");
         if(view.getElement("mapKillsArea").width>450)issues.push("oversized kill strip");
         const format=n=>(n/100).toFixed(2).replace(/\.?0+$/,""),setup=trial.archive.config.build.setup.player;
@@ -141,8 +143,8 @@ async function inspect(p, name) {
                     c.x+c.width/2!==58||c.y+c.height/2!==99)))
                 issues.push([id,"passive ground shadow"]);
             if(icon.visible&&icon.alpha!==1)issues.push([id,"opaque grounded icon"]);
-            if(n.visible&&(base.src!==art+"map-transit-stone.png"||!base.texture||
-                base.texture.width!==128||base.texture.height!==128||
+            if(n.visible&&(base.src!==art+"map-transit-stone-muted.png"||!base.texture||
+                base.texture.width!==256||base.texture.height!==256||
                 base.width!==104||base.height!==104||base.color!=="#ffffff"||base.alpha!==1))
                 issues.push([id,"imported transit stone"]);
             if(badge.src!==art+"map-completed-badge.png"||!badge.texture||
@@ -152,10 +154,13 @@ async function inspect(p, name) {
         }
         const commands = panel.expeditionNodes.expLines.graphics.cmds;
         if (!commands.length || commands.some(c=>c.cmdID!==Laya.DrawTextureCmd.ID)) issues.push("textured routes");
-        if(commands.some(c=>![6,7].includes(c.height)) ||
-            (!locked&&neighbors.length&&!commands.some(c=>c.height===7)) ||
-            (locked&&commands.some(c=>c.height===7)))issues.push("route emphasis");
-        if(commands.some(c=>c.alpha!==(c.height===7?0.94:0.68)))issues.push("restrained route opacity");
+        if(commands.some(c=>![9,11].includes(c.height)) ||
+            (!locked&&neighbors.length&&!commands.some(c=>c.height===11)) ||
+            (locked&&commands.some(c=>c.height===11)))issues.push("route emphasis");
+        if(commands.some(c=>c.alpha!==(c.height===11?1:0.82)))issues.push("readable route opacity");
+        if(commands.some(c=>c.texture!==(panel.expeditionNodes.mapRouteTexture).texture)||
+            !panel.expeditionNodes.mapRouteTexture.src.endsWith("/map-route-dash-contrast.png"))
+            issues.push("outlined route artwork");
         if(panel.buttons.expUse.visible) {
             const area=view.getElement("nodeActionArea"),background=panel.expeditionNodes.expContextBackground;
             if(area.width!==authoredContext.width||area.height!==authoredContext.height||

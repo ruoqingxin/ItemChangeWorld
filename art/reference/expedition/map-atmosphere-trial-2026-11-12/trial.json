@@ -1,0 +1,136 @@
+{
+  "source_sha256": "78c6b4232e93bd1fd79777a72ce38b30f5060e82672c4527cbf4280301522e63",
+  "method": "Preview-only deterministic true-alpha crops. Size subjects by their largest opaque component, reserve a separate effect margin, reduce low-alpha haze without color-keying, keep production assets unchanged.",
+  "sprites": [
+    {
+      "kind": "boss",
+      "cell": 4,
+      "core": 512,
+      "padding": 64,
+      "fit": [
+        480,
+        480
+      ],
+      "foot": 496,
+      "tone": 1.6,
+      "file": "boss.png",
+      "edge": 640,
+      "sourceBody": {
+        "left": 150,
+        "top": 31,
+        "width": 468,
+        "height": 418,
+        "count": 107700
+      },
+      "opaqueComponent": {
+        "left": 150,
+        "top": 31,
+        "width": 468,
+        "height": 418,
+        "count": 107700
+      },
+      "sha256": "320890823ae5057b66459206410d1d6c83ff7b63be2cf649c6a6de6a8f378a8b"
+    },
+    {
+      "kind": "transit",
+      "cell": 1,
+      "core": 256,
+      "padding": 32,
+      "fit": [
+        208,
+        110
+      ],
+      "foot": 184,
+      "tone": 2.6,
+      "file": "transit.png",
+      "edge": 320,
+      "sourceBody": {
+        "left": 87,
+        "top": 221,
+        "width": 530,
+        "height": 267,
+        "count": 88406
+      },
+      "opaqueComponent": {
+        "left": 87,
+        "top": 221,
+        "width": 530,
+        "height": 267,
+        "count": 88406
+      },
+      "sha256": "0cd301f956364f0201e853415e365a2dd6a5bb13198b7d9d88be7c6f69d6864d"
+    },
+    {
+      "kind": "extract",
+      "cell": 10,
+      "core": 256,
+      "padding": 32,
+      "fit": [
+        224,
+        224
+      ],
+      "foot": 240,
+      "tone": 1.6,
+      "body": {
+        "left": 120,
+        "top": 16,
+        "width": 435,
+        "height": 352
+      },
+      "file": "extract.png",
+      "edge": 320,
+      "sourceBody": {
+        "left": 120,
+        "top": 16,
+        "width": 435,
+        "height": 352
+      },
+      "opaqueComponent": {
+        "left": 59,
+        "top": 16,
+        "width": 552,
+        "height": 423,
+        "count": 155666
+      },
+      "sha256": "08e4dbab8e561bf0acda8c42bcc10d55ce9dd0c8dadb8c07b3012679026bab52"
+    }
+  ],
+  "preserved": [
+    {
+      "file": "assets/ui/image/expeditionNodes/node-enemy-normal.png",
+      "sha256": "eecdfd4e867d4a46d2cc7371ca212268a0d009be900f9fffb93c3139ef7b5434"
+    },
+    {
+      "file": "assets/ui/image/expeditionNodes/node-enemy-elite.png",
+      "sha256": "12395a4df2fb8bfa384addc11a5e755b2f6b3f393b0661fe8bd531783699eae7"
+    },
+    {
+      "file": "assets/ui/image/expeditionNodes/node-enemy-boss.png",
+      "sha256": "c92ee2ea29f5874188975227a2abac67292d5775a151c592cc3d4049945a4150"
+    },
+    {
+      "file": "assets/ui/image/expeditionNodes/node-transit.png",
+      "sha256": "f4d45a2105e3695d2c1a7a779708039bcc89eaa49a22ccabcf945f756682502f"
+    },
+    {
+      "file": "assets/ui/image/expeditionNodes/node-extract.png",
+      "sha256": "497548d4116ead763dc25290761d3ba154ff3a96228aa3d9a1fb2c473f287301"
+    },
+    {
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-transit-stone-muted.png",
+      "sha256": "1c80393c3a092d92c2a740dfd375c00f60153bcb9400269942535bd5d57f17ee"
+    },
+    {
+      "file": "assets/ui/prefab/module/expedition/SkillBattleMapView.lh",
+      "sha256": "e7d39ecd6706df77bd2052e38612e7087ee161b4c9ada56ff5b484a12b5844b2"
+    },
+    {
+      "file": "src/script/module/expedition/view/ExpeditionPanel.ts",
+      "sha256": "9e06c1d2be6b6fdeff05579a8935b6e2ae93c7ba14ab2d507706791c61b9dae2"
+    },
+    {
+      "file": "assets/ui/texture/expedition/ancient-sect-ground-final.png",
+      "sha256": "7c0625965bdb8c03bd7d5e9e1813a5f13f7452c934721168b27b53b80f31482b"
+    }
+  ]
+}
