@@ -23,7 +23,7 @@ export interface ExpeditionSource {
     node: number; entries: InventoryItem[]; opened: boolean; revealed: number; progressMs: number;
 }
 export interface ExpeditionState extends InventoryState {
-    map: { version: string; generatorVersion?: 2; nodes: ExpeditionNode[]; edges: Array<[number,number]>; present: number[]; visible: number[];
+    map: { version: string; generatorVersion?: 2 | 3; nodes: ExpeditionNode[]; edges: Array<[number,number]>; present: number[]; visible: number[];
         cleared: number[]; used: number[]; sources: ExpeditionSource[]; warnings: number[]; warning: number | null };
 }
 export type ExpeditionCommand = InventoryCommand |

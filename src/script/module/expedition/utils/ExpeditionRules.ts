@@ -91,12 +91,12 @@ export class ExpeditionRules {
                 !Number.isSafeInteger(r.weight) || r.weight <= 0)) throw new Error("掉落子项无效");
         }
     }
-    static start(c: ExpeditionConfig, p: NewBuildProfile, seed: number, runId: string, generatorVersion: 1|2 = 2): ExpeditionState {
+    static start(c: ExpeditionConfig, p: NewBuildProfile, seed: number, runId: string, generatorVersion: 1|2|3 = 3): ExpeditionState {
         this.validateConfig(c,p);
         const base = Inventory.start(c,p,seed,runId);
         const state: ExpeditionState = { ...base, node: 1, stamina: c.rules.staminaMax,
             sourceLayouts: [], interactionSource: null, map: { version: c.mapVersion,
-                ...(generatorVersion===2?{generatorVersion:2 as const}:{}), nodes: [], edges: [],
+                ...(generatorVersion!==1?{generatorVersion}:{}), nodes: [], edges: [],
             present: [], visible: [], cleared: [], used: [], sources: [], warnings: [], warning: null } };
         let slot = 0;
         for (const item of state.items) {
@@ -109,7 +109,135 @@ export class ExpeditionRules {
         Inventory.validate(c,state);
         return state;
     }
+    private static generateFreeMap(c: ExpeditionConfig, s: ExpeditionState, seed: number): void {
+        const random = new Random(seed,"free-map");
+        const range = (a:number,b:number) => a+random.below(b-a+1);
+        const pick = (kind:string) => Core.clone(c.nodes.find(n=>n.kind===kind)!);
+        const add = (row:ExpeditionNode,x:number,y:number,mainOrder=-1) => {
+            const id = s.map.nodes.length+1;
+            s.map.nodes.push({...row,id,key:`${row.key}@${id}`,x,y,mainOrder,
+                ...(row.enemy?{encounterKey:row.key}:{})});
+            return id;
+        };
+        const normals = random.shuffle(c.nodes.filter(n=>n.kind==="normal"));
+        const elites = random.shuffle(c.nodes.filter(n=>n.kind==="elite"));
+        const searches = random.shuffle(c.nodes.filter(n=>n.kind==="search"));
+        const transitCount = range(c.rules.transitMin,c.rules.transitMax);
+        const searchCount = range(c.rules.searchMin,c.rules.searchMax);
+        const transitRoll = range(7,9), mainSearch = range(1,2);
+        const mainTransit = Math.max(transitRoll,9-mainSearch);
+        const main = random.shuffle([
+            ...normals.splice(0,6), ...elites.splice(0,2),
+            ...searches.splice(0,mainSearch), ...Array.from({length:mainTransit},()=>pick("transit"))
+        ]);
+        if (main[main.length-1].kind==="transit") {
+            const index=random.shuffle(main.flatMap((n,i)=>n.kind!=="transit"?[i]:[]))[0];
+            [main[index],main[main.length-1]]=[main[main.length-1],main[index]];
+        }
+        // Keep a playable reference walk, not three mandatory reward checkpoints.
+        const fights = main.flatMap((n,i)=>n.enemy?[i]:[]);
+        const first = range(fights[1]+1,fights[2]);
+        const later = random.shuffle(Array.from({length:main.length-first},(_,i)=>first+i+1)).slice(0,2);
+        for (const index of [first,...later].sort((a,b)=>b-a)) main.splice(index,0,pick("borrow"));
+        add(pick("start"),0,0,0);
+        const columns = random.shuffle(Array.from({length:24},(_,i)=>i+1)).slice(0,main.length).sort((a,b)=>a-b);
+        const lanes = [-1.1,0,1.1];
+        main.forEach((row,i)=>add(row,columns[i],lanes[random.below(lanes.length)],i+1));
+        for (let id=2;id<=s.map.nodes.length;id++) s.map.edges.push([id-1,id]);
+        const referenceEnd = s.map.nodes.length;
+        const extra = random.shuffle([
+            ...normals,...elites,...searches.slice(0,searchCount-mainSearch),pick("insight"),
+            ...Array.from({length:transitCount-mainTransit},()=>pick("transit")),
+            ...Array.from({length:range(1,2)},()=>pick("recovery")),
+            ...Array.from({length:range(1,2)},()=>pick("extract"))
+        ]);
+        const point = (id:number) => s.map.nodes[id-1];
+        const distanceToEdge = (p:ExpeditionNode,a:ExpeditionNode,b:ExpeditionNode) => {
+            const dx=(b.x-a.x)*242, dy=(b.y-a.y)*158;
+            const t=Math.max(0,Math.min(1,((p.x-a.x)*242*dx+(p.y-a.y)*158*dy)/(dx*dx+dy*dy)));
+            return Math.hypot((p.x-a.x)*242-t*dx,(p.y-a.y)*158-t*dy);
+        };
+        const occupied = (x:number,y:number) => s.map.nodes.some(n=>n.x===x&&n.y===y);
+        const slots = random.shuffle(columns.flatMap(x=>lanes.map(y=>({x,y})))
+            .concat(Array.from({length:24},(_,i)=>i+1).filter(x=>!columns.includes(x))
+                .flatMap(x=>lanes.map(y=>({x,y})))));
+        for (const slot of slots) {
+            if (s.map.nodes.length-referenceEnd===extra.length) break;
+            if (occupied(slot.x,slot.y)||s.map.nodes.filter(n=>n.x===slot.x).length>=2) continue;
+            const p={...pick("transit"),...slot};
+            if (s.map.edges.some(([a,b])=>distanceToEdge(p,point(a),point(b))<96)) continue;
+            add(p,slot.x,slot.y);
+        }
+        if (s.map.nodes.length-referenceEnd!==extra.length) throw new Error("随机地图可用位置不足");
+        const cross = (a:ExpeditionNode,b:ExpeditionNode,p:ExpeditionNode) =>
+            (b.x-a.x)*(p.y-a.y)-(b.y-a.y)*(p.x-a.x);
+        const candidates:Array<{a:number;b:number;length:number;score:number}> = [];
+        for (const a of s.map.nodes) for (const b of s.map.nodes) {
+            if (a.id>=b.id || s.map.nodes.some(p=>p.id!==a.id&&p.id!==b.id&&distanceToEdge(p,a,b)<90)) continue;
+            const length=Math.hypot((a.x-b.x)*242,(a.y-b.y)*158);
+            candidates.push({a:a.id,b:b.id,length,score:length*(0.8+random.below(401)/1000)});
+        }
+        candidates.sort((a,b)=>a.score-b.score||a.a-b.a||a.b-b.b);
+        const legal = (a:number,b:number) => !s.map.edges.some(([u,v])=>{
+            if ((u===a&&v===b)||(u===b&&v===a)) return true;
+            if ([u,v].includes(a)||[u,v].includes(b)) return false;
+            return cross(point(a),point(b),point(u))*cross(point(a),point(b),point(v))<0 &&
+                cross(point(u),point(v),point(a))*cross(point(u),point(v),point(b))<0;
+        });
+        const groups = s.map.nodes.map(n=>n.id);
+        const root = (id:number):number => groups[id-1]===id?id:(groups[id-1]=root(groups[id-1]));
+        const connect = (a:number,b:number) => {
+            s.map.edges.push([a,b]); groups[root(a)-1]=root(b);
+        };
+        for (let id=2;id<=referenceEnd;id++) groups[id-1]=1;
+        for (const {a,b} of candidates) if (root(a)!==root(b)&&legal(a,b)) connect(a,b);
+        if (s.map.nodes.some(n=>root(n.id)!==root(1))) throw new Error("随机地图未连通");
+        const degree = (id:number) => s.map.edges.filter(e=>e.includes(id)).length;
+        const additional = s.map.nodes.slice(referenceEnd);
+        const transitExtra = extra.filter(n=>n.kind==="transit").length;
+        const loopTarget = range(3,9);
+        const hops = (from:number,to:number) => {
+            const queue=[from], distances=new Map([[from,0]]);
+            for (const id of queue) for (const [a,b] of s.map.edges) {
+                const next=a===id?b:b===id?a:null;
+                if (next===null||distances.has(next)) continue;
+                const distance=distances.get(id)!+1;
+                if (next===to) return distance;
+                distances.set(next,distance); queue.push(next);
+            }
+            return 0;
+        };
+        const loopsByDetour = candidates.filter(e=>e.length<242*4).map(e=>({
+            ...e,detour:hops(e.a,e.b)*(0.75+random.below(501)/1000)
+        })).sort((a,b)=>b.detour-a.detour||a.score-b.score);
+        let loops=0;
+        for (const {a,b} of loopsByDetour) {
+            const internal=additional.filter(n=>degree(n.id)>1).length;
+            if (loops>=loopTarget&&internal>=transitExtra) break;
+            if (degree(a)>=4||degree(b)>=4||!legal(a,b)) continue;
+            connect(a,b); loops++;
+        }
+        // Assign meaningful encounters to dead ends; blank transit never ends a branch.
+        const interior = random.shuffle(additional.filter(n=>degree(n.id)>1));
+        const transitSlots = new Set(interior.slice(0,transitExtra).map(n=>n.id));
+        if (transitSlots.size!==transitExtra) throw new Error("随机地图中转节点缺少出口");
+        const events = random.shuffle(extra.filter(n=>n.kind!=="transit"));
+        for (const n of additional) {
+            const row=transitSlots.has(n.id)?pick("transit"):events.pop()!;
+            Object.assign(n,row,{id:n.id,x:n.x,y:n.y,mainOrder:-1,key:`${row.key}@${n.id}`,
+                ...(row.enemy?{encounterKey:row.key}:{})});
+        }
+        const boss = add(pick("boss"),26,0);
+        const terminal = add(pick("extract"),27,0);
+        const frontier = s.map.nodes.filter(n=>n.id<boss);
+        const farthest = Math.max(...frontier.map(n=>n.x));
+        const approaches = frontier.filter(n=>n.x===farthest);
+        const approach = approaches[random.below(approaches.length)];
+        s.map.edges.push([approach.id,boss],[boss,terminal]);
+        s.map.present=s.map.nodes.map(n=>n.id); s.map.visible=[1]; s.revealed=[1];
+    }
     private static generateMap(c: ExpeditionConfig, s: ExpeditionState, seed: number): void {
+        if (s.map.generatorVersion===3) { this.generateFreeMap(c,s,seed); return; }
         const random = new Random(seed,"map");
         const pick = (kind: string) => Core.clone(c.nodes.find(n=>n.kind===kind)!);
         const range = (a:number,b:number) => a+random.below(b-a+1);

@@ -1,5 +1,5 @@
 {
-  "documentVersion": "2026-11-11",
+  "documentVersion": "2026-11-13",
   "purpose": "documentation-only-not-runtime-config",
   "authority": "../README.md",
   "confirmed": {
@@ -117,6 +117,13 @@
       "independentPassiveBuildings": 1,
       "initialVisibleMainNodes": null,
       "randomizeNodeContentsAndGraph": true,
+      "fixedPositionAnchors": ["start", "boss", "last-extract"],
+      "fixedThreeLegTopology": false,
+      "borrowNodesAreMandatoryMergePoints": false,
+      "regularBattleCountIsReferenceRouteOnly": true,
+      "meaningfulDeadEndsAllowed": true,
+      "blankTransitDeadEndsAllowed": false,
+      "equalRiskRewardPerRunRequired": false,
       "travelAdjacentOnly": true,
       "newArrivalWidthIncrementInNodePitches": 2,
       "initialBrowseWidth": "current-viewport",
@@ -193,12 +200,24 @@
     }
   },
   "acceptedAdjustableTestStartingPoints": {
+    "freeMap20261113": {
+      "source": "06_地图搜索撤离与计时.md；用户明确三个锚点之外以乐趣为主并批准调整",
+      "generatorVersionForNewRuns": 3,
+      "preservedCurrentV4Generators": [1, 2, 3],
+      "preserveExistingNodeEnemyAndSourceBudgets": true,
+      "preserveThreeSequentialBorrowOpportunities": true,
+      "randomizeNonBossExtractionPositions": true,
+      "localLoopsAndShortcutsAllowed": true,
+      "fixedRouteRoles": false,
+      "saveBodyVersion": 4
+    },
     "mapResources20261111": {
       "source": "地图重构与体力负重确认包_2026-11-11.md；用户批准推荐及药品占格",
       "totalNodeRange": [36, 44],
       "transitNodeRange": [10, 14],
       "regularRouteMoveRange": [20, 26],
       "routesPerLegRange": [2, 4],
+      "routesPerLegRangeSupersededBy": "freeMap20261113",
       "nestedBranchesAndIntermediateJoins": true,
       "singleRouteStretchesAllowed": true,
       "staminaMax": 1000,

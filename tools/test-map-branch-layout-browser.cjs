@@ -34,11 +34,12 @@ function layouts(count, version) { return Array.from({ length: count }, (_, i) =
     const map = Rules.apply(config, profile, initial, { type: "enter" }, 1000, seed).state.map;
     return { seed, map };
 }); }
-const fixtures = layouts(512, 2), legacy = layouts(64, 1);
+const fixtures = layouts(512, 3), legacy = [...layouts(32, 2),...layouts(32, 1)];
 const proof = fixtures.find(({ map }) =>
-    map.edges.filter(e => e.includes(2)).length === 5 &&
-    new Set(map.nodes.filter(n => n.x > 0 && n.x < 8).map(n => n.y)).size === 4);
-assert.ok(proof, "A four-way first fork is available for real-input checks");
+    map.nodes[1].kind === "transit" && map.nodes[1].x <= 2 &&
+    map.edges.filter(e => e.includes(2)).length >= 3 &&
+    map.edges.some(e => e.includes(2) && e.some(id => map.nodes[id-1].enemy && map.nodes[id-1].x <= 3)));
+assert.ok(proof, "A safe opening fork with an adjacent enemy is available for real-input checks");
 
 async function click(page, key, touch) {
     const point = await page.evaluate(key => {
@@ -73,9 +74,9 @@ async function click(page, key, touch) {
             await click(page, "expNode2", touch);
             await page.waitForFunction(() => !window.__skillBattlePreview.panel.movement);
             const targets = proof.map.edges.filter(e => e.includes(2)).map(e => e.find(id => id !== 2))
-                .filter(id => id !== 1)
+                .filter(id => proof.map.nodes[id-1].enemy && proof.map.nodes[id-1].x <= 3)
                 .sort((a,b) => proof.map.nodes[a-1].y-proof.map.nodes[b-1].y);
-            const target = targets[name === "desktop" ? 2 : 3];
+            const target = targets[touch ? targets.length-1 : 0];
             await click(page, `expNode${target}`, touch);
             await page.waitForFunction(() => !window.__skillBattlePreview.panel.movement);
             const arrival = await page.evaluate(() => {
@@ -85,7 +86,7 @@ async function click(page, key, touch) {
                     locked: !node.enemy || state.map.present.filter(id => id !== state.node)
                         .every(id => !panel.buttons[`expNode${id}`].visible || !panel.buttons[`expNode${id}`].mouseEnabled) };
             });
-            assert.equal(arrival.id, target, "Mouse/touch can enter the third/fourth route");
+            assert.equal(arrival.id, target, "Mouse/touch can enter a generated side of the fork");
             assert.equal(arrival.stamina, config.rules.staminaMax-config.rules.moveCost*2);
             assert.equal(arrival.phase, "ready", "Route arrival never starts combat automatically");
             assert.ok(arrival.locked, "Enemy lock applies on the new routes too");
@@ -107,7 +108,7 @@ async function click(page, key, touch) {
             }, [...fixtures,...legacy]);
             assert.deepEqual(geometry.issues, [], `${name}: 512 new and 64 existing-v4 maps fit without overlapping hit areas`);
             assert.ok(geometry.untouched, "Layout never changes the authoritative state");
-            let captured = false, variedRoutes = 0, checkedRoutes = 0;
+            let captured = false;
             for (const fixture of [...fixtures.slice(0,64),...legacy.slice(0,16)]) {
                 const result = await page.evaluate(fixture => {
                     const { panel, trial } = window.__skillBattlePreview;
@@ -134,8 +135,6 @@ async function click(page, key, touch) {
                                 Math.abs((m.tx-p.x)*dy-(m.ty-p.y)*dx)/length<0.0001;
                         });
                     }).length;
-                    const legWidths = [0,1,2].map(leg =>
-                        new Set(fixture.map.nodes.filter(n => n.x > leg*8 && n.x < (leg+1)*8).map(n => n.y)).size);
                     const own = panel.expeditionNodes.expPlayer;
                     const nodes = fixture.map.nodes.map(n => panel.buttons[`expNode${n.id}`]);
                     const positions = fixture.map.nodes.map(n => {
@@ -150,16 +149,14 @@ async function click(page, key, touch) {
                     });
                     const overlaps = positions.flatMap((a,i) => positions.slice(i+1)
                         .filter(b => Math.abs(a.x-b.x)<116 && Math.abs(a.y-b.y)<116).map(b => [a.id,b.id]));
-                    const variation = [0,1,2].map(leg => {
-                        const main = fixture.map.nodes.filter(n => n.x>leg*8 && n.x<(leg+1)*8 && n.mainOrder>=0)
-                            .map(n => positions.find(p => p.id===n.id).y);
-                        return Math.max(...main)-Math.min(...main);
+                    const laneVariation = [...new Set(fixture.map.nodes.map(n => n.y))].map(lane => {
+                        const ys=positions.filter(p=>p.lane===lane).map(p=>p.y);
+                        return Math.max(...ys)-Math.min(...ys);
                     });
                     panel.refresh();
                     const stable = positions.every(p => panel.buttons[`expNode${p.id}`].y+52===p.y);
-                    if (legWidths[0] === 4)
-                        panel.scroller.posX = 112+4*242-panel.scroller.viewWidth/2;
-                    return { missing, bentDashes, legWidths, clips: clips.map(n => n.id),overlaps,variation,stable,
+                    panel.scroller.posX = 112+3*242-panel.scroller.viewWidth/2;
+                    return { missing, bentDashes, clips: clips.map(n => n.id),overlaps,laneVariation,stable,
                         height:panel.expeditionNodes.expViewport.height,
                         untouched:JSON.stringify(trial.data.save.state)===stateBefore,
                         spread:Math.max(...positions.map(p=>p.y))-Math.min(...positions.map(p=>p.y)),
@@ -169,23 +166,20 @@ async function click(page, key, touch) {
                 assert.equal(result.bentDashes, 0, `${name}/seed${fixture.seed}: every rendered dash follows a direct edge`);
                 assert.deepEqual(result.clips, [], `${name}/seed${fixture.seed}: top-lane enemies stay below the header`);
                 assert.deepEqual(result.overlaps, [], `${name}/seed${fixture.seed}: node hit areas do not overlap`);
-                variedRoutes += result.variation.filter(range => range>8).length;
-                checkedRoutes += result.variation.length;
-                assert.ok(result.variation.some(range => range>24),
-                    `${name}/seed${fixture.seed}: individual node heights vary (${result.variation}, height ${result.height})`);
+                assert.ok(result.laneVariation.some(range => range>24),
+                    `${name}/seed${fixture.seed}: individual node heights vary (${result.laneVariation}, height ${result.height})`);
                 assert.ok(result.stable && result.untouched, "Refresh keeps heights stable without altering saved map data");
                 assert.ok(result.visible && result.passive);
-                if (!captured && result.legWidths[0] === 4) {
-                    assert.ok(result.spread>380, "Node positions use the expanded vertical area");
+                if (!captured && fixture.map.generatorVersion === 3) {
+                    assert.ok(result.spread>300, "Node positions use the expanded vertical area");
                     await page.waitForTimeout(160);
-                    const image = await page.screenshot({ path: path.join(output, `${name}-four-routes.png`) });
+                    const image = await page.screenshot({ path: path.join(output, `${name}-free-map.png`) });
                     const stats = await sharp(image).stats();
                     assert.ok(stats.channels.slice(0,3).every(c => c.stdev > 15));
                     captured = true;
                 }
             }
-            assert.ok(variedRoutes/checkedRoutes>0.95, "Main routes are not laid out as uniform horizontal rows");
-            assert.ok(captured, "Render a four-lane first segment");
+            assert.ok(captured, "Render a free-form generated map");
             await page.evaluate(() => {
                 const { trial, panel } = window.__skillBattlePreview;
                 trial.data.save.state = window.__branchOriginal; delete window.__branchOriginal; panel.refresh();
@@ -207,7 +201,7 @@ async function click(page, key, touch) {
             assert.deepEqual(await page.evaluate(snapshot), savedLayout, "Reload restores the same node heights without rewriting the map");
             assert.deepEqual(errors, []);
             await context.close();
-            console.log(`PASS branch layout ${name}: real third/fourth-route input, 576 geometry/80 render fixtures, stable heights across refresh/inventory/reload, expanded vertical area, every edge drawn, no clipping/overlapping hit areas or save mutation.`);
+            console.log(`PASS branch layout ${name}: real fork input, 576 geometry/80 render fixtures including both earlier generators, stable heights across refresh/inventory/reload, expanded vertical area, every edge drawn, no clipping/overlapping hit areas or save mutation.`);
         }
     } finally { await browser.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });

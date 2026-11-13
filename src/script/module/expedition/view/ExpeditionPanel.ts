@@ -488,14 +488,15 @@ export class ExpeditionPanel extends InventoryPanel {
             hash = Math.imul(hash ^ (hash >>> 16), 0x7feb352d);
             hash = Math.imul(hash ^ (hash >>> 15), 0x846ca68b);
             hash = (hash ^ (hash >>> 16)) >>> 0;
-            const above = Math.max(PLAYER_MARKER_OFFSET, 58 + (size - 104) * 0.75);
+            const above = 58 + (size - 104) * 0.75;
+            const topSpace = Math.max(PLAYER_MARKER_OFFSET, above);
             const below = Math.max(64, 46 + (size - 104) * 0.25);
             const hud = this.mapAreas.mapPlayerArea;
             const x = 112 + n.x * 242, underHud = x < hud.width + 70;
             return {
                 id: n.id, x: 112 + n.x * 242, lane: n.y, above, below,
                 desired: height / 2 - 4 + n.y * 158 + (hash % 89) - 44,
-                min: Math.max(this.mapBandTop - 22 + above, underHud ? hud.y + hud.height + above + 8 : 0),
+                min: Math.max(this.mapBandTop - 22 + topSpace, underHud ? hud.y + hud.height + topSpace + 8 : 0),
                 max: height - 104, y: 0
             };
         }).sort((a, b) => a.lane - b.lane || a.id - b.id);

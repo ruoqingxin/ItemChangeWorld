@@ -29,6 +29,9 @@ function choose(f){while(f.s.flow.pending){const flow=f.s.flow,p=flow.pending;
 function enter(f){f.s.inventoryCommand({type:"enter"});choose(f);}
 function apply(s,command,c=cfg){return R.apply(c,B.profile(c.build),s,command,1100,1).state;}
 function ready(seed=1,c=cfg){const f=fixture(c,seed);enter(f);return f.s.inventory;}
+function generated(seed,version=3){
+    return R.apply(cfg,profile,R.start(cfg,profile,seed,"distribution",version),{type:"enter"},1000,seed).state;
+}
 function ns(s,id){return s.map.edges.flatMap(([a,b])=>a===id?[b]:b===id?[a]:[]);}
 function pathTo(s,id,avoid=new Set()){const queue=[[s.node]],seen=new Set([s.node]);if(s.node===id)return[s.node];
     for(const p of queue)for(const n of ns(s,p.at(-1))){if(seen.has(n)||avoid.has(n))continue;
@@ -58,7 +61,7 @@ else console.log("SKIP historical export-vs-HEAD check (--rules-only); no config
 test("512 random graphs: counts, connectivity, sequential borrows, eight-fight main route and boss gate",()=>{
     const graphs=new Set(),sizes=new Set(),rec=new Set(),exits=new Set();
     for(let seed=1;seed<=512;seed++){
-        let s=R.start(cfg,profile,seed,"distribution");s=R.apply(cfg,profile,s,{type:"enter"},1000,seed).state;
+        const s=generated(seed);
         const nodes=s.map.nodes,kind=k=>nodes.filter(n=>n.kind===k);
         assert.ok(nodes.length>=36&&nodes.length<=44);sizes.add(nodes.length);
         for(const [k,n]of [["normal",11],["elite",3],["boss",1],["borrow",3],["insight",1]])assert.equal(kind(k).length,n);
@@ -74,7 +77,7 @@ test("512 random graphs: counts, connectivity, sequential borrows, eight-fight m
         for(let i=1;i<main.length;i++)assert.ok(ns(s,main[i-1].id).includes(main[i].id));
         const regular=main.filter(n=>n.x<26);assert.equal(regular.filter(n=>n.kind==="normal").length,6);
         assert.equal(regular.filter(n=>n.kind==="elite").length,2);assert.equal(regular.filter(n=>n.kind==="borrow").length,3);
-        assert.ok(regular.length>=20&&regular.length<=26);
+        assert.ok(regular.length-1>=20&&regular.length-1<=26);
         const boss=kind("boss")[0],last=nodes.find(n=>n.x===27);assert.deepEqual(ns(s,last.id),[boss.id]);
         assert.equal(pathTo(s,last.id,new Set([boss.id])),null);
         assert.ok(kind("extract").some(n=>n.id!==last.id&&pathTo(s,n.id,new Set([boss.id]))));
@@ -82,13 +85,13 @@ test("512 random graphs: counts, connectivity, sequential borrows, eight-fight m
     }
     assert.ok(graphs.size>400);assert.ok(sizes.size>=7);assert.deepEqual([...rec].sort(),[1,2]);assert.deepEqual([...exits].sort(),[2,3]);
 });
-test("512 random graphs: real 2/3/4 routes, nested forks, early joins and single-route stretches",()=>{
+test("512 existing generator-v2 graphs retain real 2/3/4 routes and nested branches",()=>{
     const widths=new Set(),perLeg=[new Set(),new Set(),new Set()];
     let nested=0,joined=0,single=0;
     for(let seed=1;seed<=512;seed++) {
-        const s=ready(seed);
+        const s=generated(seed,2);
         assert.equal(s.map.generatorVersion,2);
-        assert.deepEqual(ready(seed).map,s.map,"Same seed keeps the complete graph deterministic");
+        assert.deepEqual(generated(seed,2).map,s.map,"Same seed keeps the complete graph deterministic");
         for(let leg=0;leg<3;leg++) {
             const from=leg*8,to=(leg+1)*8,interior=s.map.nodes.filter(n=>n.x>from&&n.x<to);
             const width=new Set(interior.map(n=>n.y)).size;
@@ -112,18 +115,78 @@ test("512 random graphs: real 2/3/4 routes, nested forks, early joins and single
     for(const widths of perLeg)assert.deepEqual([...widths].sort(),[2,3,4],"Every leg can roll all route counts");
     assert.ok(nested>50&&joined>50&&single>50,"Nested branch, intermediate join and single-path cases are exercised");
 });
+test("2048 free maps: variable reward positions, local loops, useful dead ends and no fixed three-leg gates",()=>{
+    const borrows=new Set(),recoveries=new Set(),exits=new Set(),widths=new Set(),loops=new Set(),sizes=new Set();
+    let bypassable=0,sideForks=0,shortcuts=0;
+    for(let seed=1;seed<=2048;seed++){
+        const s=generated(seed),nodes=s.map.nodes;
+        assert.equal(s.map.generatorVersion,3);
+        if(seed<=64)assert.deepEqual(generated(seed).map,s.map);
+        assert.ok(nodes.length>=36&&nodes.length<=44);sizes.add(nodes.length);
+        for(const n of nodes){
+            assert.ok(pathTo(s,n.id),`${seed}: connected ${n.id}`);
+            if(n.kind==="transit")assert.ok(ns(s,n.id).length>=2,`${seed}: no blank dead end`);
+        }
+        loops.add(s.map.edges.length-nodes.length+1);
+        const position=kind=>nodes.filter(n=>n.kind===kind).map(n=>[n.x,n.y]).sort().join(";");
+        borrows.add(position("borrow"));recoveries.add(position("recovery"));exits.add(position("extract"));
+        const xs=[...new Set(nodes.map(n=>n.x))].sort((a,b)=>a-b);
+        for(let i=1;i<xs.length;i++){
+            const x=(xs[i-1]+xs[i])/2;
+            widths.add(s.map.edges.filter(([a,b])=>Math.min(nodes[a-1].x,nodes[b-1].x)<x&&Math.max(nodes[a-1].x,nodes[b-1].x)>x).length);
+        }
+        const end=nodes.filter(n=>n.mainOrder>=0).sort((a,b)=>b.mainOrder-a.mainOrder)[0];
+        bypassable+=nodes.filter(n=>n.kind==="borrow"&&pathTo(s,end.id,new Set([n.id]))).length;
+        sideForks+=nodes.filter(n=>n.mainOrder<0&&n.kind!=="boss"&&ns(s,n.id).length>=3).length;
+        if(pathTo(s,end.id).length<nodes.filter(n=>n.mainOrder>=0).length)shortcuts++;
+        const boss=nodes.find(n=>n.kind==="boss"),last=nodes.find(n=>n.x===27);
+        assert.deepEqual(ns(s,last.id),[boss.id]);assert.equal(pathTo(s,last.id,new Set([boss.id])),null);
+        assert.ok(nodes.some(n=>n.kind==="extract"&&n.id!==last.id&&pathTo(s,n.id,new Set([boss.id]))));
+    }
+    console.log("Free map distribution",JSON.stringify({rewardLayouts:borrows.size,recoveryLayouts:recoveries.size,
+        exitLayouts:exits.size,bypassable,sideForks,shortcuts,widths:[...widths].sort((a,b)=>a-b),loops:[...loops].sort((a,b)=>a-b)}));
+    assert.ok(borrows.size>1900&&recoveries.size>300&&exits.size>300,"Rewards are not attached to three fixed merge points");
+    assert.ok(bypassable>1500&&sideForks>1000&&shortcuts>1200,"Alternate walks, branching side paths and shortcuts occur");
+    assert.ok(widths.size>=5&&loops.size>=5&&sizes.size>=7,"Graph shape and scale vary across runs");
+});
+test("1024 broad-range seeds plus boundaries: connected, noncrossing edges, valid budgets and no blank dead ends",()=>{
+    const before=JSON.stringify(cfg);
+    for(const seed of [0,-1,0x100000000])assert.throws(()=>generated(seed),/随机种子/);
+    const seeds=[1,0xffffffff,0x80000000,0x7fffffff,
+        ...Array.from({length:1024},(_,i)=>Math.imul(i+1,0x9e3779b9)>>>0)];
+    for(const seed of seeds){
+        const s=generated(seed),nodes=s.map.nodes;
+        assert.ok(nodes.length>=36&&nodes.length<=44,`Node budget ${seed}`);
+        assert.equal(nodes.filter(n=>n.enemy).length,15);
+        assert.equal(nodes.filter(n=>n.kind==="borrow").length,3);
+        for(const n of nodes){
+            assert.ok(pathTo(s,n.id),`Connected ${seed}/${n.id}`);
+            if(n.kind==="transit")assert.ok(ns(s,n.id).length>=2,`Useful transit ${seed}/${n.id}`);
+        }
+        const cross=(a,b,p)=>(b.x-a.x)*(p.y-a.y)-(b.y-a.y)*(p.x-a.x);
+        for(const [i,e]of s.map.edges.entries())for(const f of s.map.edges.slice(i+1)){
+            if(e.some(id=>f.includes(id)))continue;
+            const [a,b]=e.map(id=>nodes[id-1]),[u,v]=f.map(id=>nodes[id-1]);
+            assert.ok(!(cross(a,b,u)*cross(a,b,v)<0&&cross(u,v,a)*cross(u,v,b)<0),
+                `No unmarked logical crossing ${seed}/${e}/${f}`);
+        }
+    }
+    assert.equal(JSON.stringify(cfg),before,"Generation does not edit the configuration");
+});
 test("new generator replay, existing v4 graph preserved and unknown generator rejected",()=>{
     const fresh=fixture();enter(fresh);travel(fresh,2);
-    assert.equal(fresh.s.inventory.map.generatorVersion,2);
+    assert.equal(fresh.s.inventory.map.generatorVersion,3);
     assert.deepEqual(fresh.restore().inventory,fresh.s.inventory);
-    const legacy=fixture(),old=legacy.s.archive;
-    old.state=R.start(old.config,old.profile,old.seed,old.runId,1);
-    legacy.data.set(S.key,JSON.stringify(old));legacy.s=legacy.restore();enter(legacy);travel(legacy,2);
-    assert.equal("generatorVersion" in legacy.s.inventory.map,false);
-    const saved=legacy.data.get(S.key);
-    assert.deepEqual(legacy.restore().inventory,legacy.s.inventory);
-    assert.equal(legacy.data.get(S.key),saved,"Opening an existing v4 save never rewrites or rerolls it");
-    const bad=fresh.s.archive;bad.state.map.generatorVersion=3;
+    for(const version of [1,2]){
+        const legacy=fixture(),old=legacy.s.archive;
+        old.state=R.start(old.config,old.profile,old.seed,old.runId,version);
+        legacy.data.set(S.key,JSON.stringify(old));legacy.s=legacy.restore();enter(legacy);travel(legacy,2);
+        assert.equal(legacy.s.inventory.map.generatorVersion,version===1?undefined:2);
+        const saved=legacy.data.get(S.key);
+        assert.deepEqual(legacy.restore().inventory,legacy.s.inventory);
+        assert.equal(legacy.data.get(S.key),saved,"Opening an existing v4 save never rewrites or rerolls it");
+    }
+    const bad=fresh.s.archive;bad.state.map.generatorVersion=4;
     assert.throws(()=>S.validate(bad),/生成版本/);
     delete bad.state.map.generatorVersion;
     assert.throws(()=>S.validate(bad),/重放/);
@@ -147,9 +210,11 @@ test("adjacent only, arrival never starts combat, uncleared enemy locks all dire
 });
 test("independent move/fight/search costs; battle actions are free",()=>{
     const f=fixture();enter(f);travel(f,2);assert.equal(f.s.inventory.stamina,980);
-    const n=f.s.inventory.map.nodes.find(n=>n.enemy&&n.mainOrder>=0);travel(f,n.id);
-    const before=f.s.inventory.stamina;f.s.mapCommand({type:"fight"});assert.equal(f.s.inventory.stamina,before-10);
-    win(f);assert.equal(f.s.inventory.stamina,before-10);f.s.openSource();assert.equal(f.s.inventory.stamina,before-15);
+    const n=f.s.inventory.map.nodes.find(n=>n.enemy&&n.mainOrder>=0);
+    for(let id=3;id<=n.id;id++)travel(f,id);
+    const cost=n.kind==="elite"?cfg.rules.eliteCost:cfg.rules.normalCost;
+    const before=f.s.inventory.stamina;f.s.mapCommand({type:"fight"});assert.equal(f.s.inventory.stamina,before-cost);
+    win(f);assert.equal(f.s.inventory.stamina,before-cost);f.s.openSource();assert.equal(f.s.inventory.stamina,before-cost-5);
 });
 test("insufficient stamina keeps remainder, subtracts current HP without lowering max; can kill before action",()=>{
     let s=ready();s.stamina=8;const max=cfg.build.setup.player.maxHp;s=apply(s,{type:"travel",node:2});
