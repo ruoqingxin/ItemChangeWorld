@@ -192,16 +192,16 @@ async function checkLighting(p, name) {
                         issues.push(["header", kind]);
                 }
                 const marker = panel.expeditionNodes.expPlayer;
-                const ring = marker.getChildByName("expPlayerRing");
+                const ring = marker.getChildByName("expPlayerFrame");
                 const avatar = marker.getChildByName("expPlayerAvatar");
                 if (!marker.visible || marker.mouseEnabled || marker.zOrder < 1 || !ring?.visible ||
-                    ring.width!==76 || ring.height!==18 ||
+                    ring.width!==90 || ring.height!==90 ||
                     !avatar?.visible || avatar.mouseEnabled ||
-                    !avatar.texture || !avatar.src.endsWith("/map-player-traveler.png")) issues.push("player avatar");
+                    !avatar.texture || !avatar.src.endsWith("/map-player-portrait.png")) issues.push("player avatar");
                 const current = trial.inventory.map.nodes.find(n => n.id === trial.inventory.node);
                 const currentButton = panel.buttons[`expNode${current.id}`];
-                if (marker.x+58 !== 112+current.x*242 ||
-                    marker.y+58 !== currentButton.y+52) issues.push("player location");
+                if (marker.x+45 !== currentButton.x+58 ||
+                    marker.y !== currentButton.y-80) issues.push("player location");
                 const strokes = panel.expeditionNodes.expLines.graphics.cmds.filter(c => c.cmdID === Laya.DrawTextureCmd.ID);
                 const lines = strokes.map(c => ({ fromX:c.matrix.tx,fromY:c.matrix.ty,
                     toX:c.matrix.tx+c.matrix.a*c.width/1.6,toY:c.matrix.ty+c.matrix.b*c.width/1.6 }));

@@ -1,6 +1,10 @@
 const { chromium } = require("playwright");
 const assert = require("node:assert/strict");
+const fs = require("node:fs/promises");
+const path = require("node:path");
+const sharp = require("sharp");
 const url = process.env.SKILL_BATTLE_URL || "http://127.0.0.1:18128";
+const output = path.resolve(__dirname, "../tmp/map-portrait");
 const ready = p => p.waitForFunction(() => window.__skillBattlePreview?.panel?.opened &&
     window.__skillBattlePreview.view.isOpened);
 
@@ -43,10 +47,13 @@ async function move(p, target) {
                         visible: marker.visible && avatar?.visible,
                         passive: !marker.mouseEnabled && !avatar?.mouseEnabled,
                         locator: (() => {
-                            const ring=marker.getChildByName("expPlayerRing");
-                            return ring?.visible&&ring.width===84&&ring.height===20&&
-                                Math.abs(ring.x+ring.width/2-avatar.x-avatar.width/2)<0.001&&
-                                Math.abs((ring.y-avatar.y)-72)<0.001;
+                            const frame=marker.getChildByName("expPlayerFrame");
+                            return frame?.visible&&frame.width===90&&frame.height===90&&frame.alpha===1&&
+                                !frame.mouseEnabled&&!!frame.texture&&!!avatar.texture&&
+                                frame.src.endsWith("/map-avatar-frame.png")&&
+                                avatar.src.endsWith("/map-player-portrait.png")&&
+                                avatar.width===74&&avatar.height===74&&
+                                avatar.x===8&&avatar.y===8&&!marker.getChildByName("expPlayerRing");
                         })() };
                 })(),
                 controls: ["expStorage", "expBuild"].map(key => {
@@ -83,10 +90,9 @@ async function move(p, target) {
             shown: trial.inventory.map.present.filter(id => panel.buttons[`expNode${id}`].visible),
             actionVisible: panel.buttons.expUse.visible,
             expectsAction: trial.inventory.map.nodes.find(n => n.id === trial.inventory.node).kind !== "transit",
-            expectsLift: trial.inventory.map.nodes.find(n => n.id === trial.inventory.node).kind === "transit" ? 64 : 0,
-            expectsShift:(()=>{
-                const node=trial.inventory.map.nodes.find(n=>n.id===trial.inventory.node);
-                return node.enemy?-(panel.buttons[`expNode${node.id}`].getChildAt(2).width/2+28):0;
+            markerOffset: (() => {
+                const marker=panel.expeditionNodes.expPlayer,node=panel.buttons[`expNode${trial.inventory.node}`];
+                return [marker.x+marker.width/2-node.x-node.width/2,marker.y-node.y];
             })(),
             avatarX:panel.expeditionNodes.expPlayer.getChildByName("expPlayerAvatar").x,
             avatarY: panel.expeditionNodes.expPlayer.getChildByName("expPlayerAvatar").y,
@@ -96,17 +102,13 @@ async function move(p, target) {
     assert.ok(result.frames.some(f => !f.moving), "Also sample the arrival refresh");
     assert.ok(new Set(result.frames.filter(f => f.moving).map(f => `${f.player.x},${f.player.y}`)).size > 2,
         "Player avatar follows the movement animation");
-    const movingHeights=result.frames.filter(f=>f.moving).map(f=>f.player.avatarY);
-    assert.ok(movingHeights.every(y=>y>=6&&y<=70), "Visual lift stays between the node anchors");
-    assert.ok(new Set(movingHeights.map(y=>y.toFixed(2))).size>2, "Foot anchor blends during travel");
-    assert.equal(result.avatarY,70-result.expectsLift,"Arrival preserves the final visual anchor");
-    assert.equal(result.avatarX,22+result.expectsShift,"Arrival separates the player from enemy artwork");
-    if(result.expectsShift)
-        assert.ok(new Set(result.frames.filter(f=>f.moving).map(f=>f.player.avatarX.toFixed(2))).size>2,
-            "The enemy stand-off offset blends during travel instead of snapping at arrival");
+    assert.ok(result.frames.every(f=>f.player.avatarX===8&&f.player.avatarY===8),
+        "Portrait never uses node-specific lift or horizontal shifts");
+    assert.deepEqual([result.avatarX,result.avatarY],[8,8]);
+    assert.deepEqual(result.markerOffset,[0,-80],"Arrival centers the portrait at one fixed offset above every node");
     for (const frame of result.frames)
         assert.ok(frame.player.visible && frame.player.passive && frame.player.locator,
-            "Player avatar and its small ground locator remain visible and noninteractive");
+            "Portrait and its frame remain visible and noninteractive");
     assert.ok(result.sources.every(src => src && src.endsWith("/map-toolbar-normal.png")),
         `Moving must not clear or dim toolbar skins: ${JSON.stringify([...new Set(result.sources)])}`);
     for (const frame of result.frames) {
@@ -128,10 +130,11 @@ async function move(p, target) {
 }
 
 (async () => {
+    await fs.mkdir(output,{recursive:true});
     const browser = await chromium.launch({ headless: true, channel: "chromium" });
     try {
         for (const [name, width, height, touch] of [["desktop", 1280, 720, false], ["wide", 1560, 720, false],
-            ["mobile", 844, 390, true]]) {
+            ["mobile", 844, 390, true],["small-mobile",667,375,true]]) {
             const context = await browser.newContext({ viewport: { width, height }, hasTouch: touch, isMobile: touch });
             const p = await context.newPage(), errors = [];
             p.touchMode = touch;
@@ -144,6 +147,40 @@ async function move(p, target) {
             }
             await p.waitForFunction(() => window.__skillBattlePreview.panel.pageRole === "map");
             for (const target of [2, 1, 2, 1]) await move(p, target);
+            await click(p,"expNode2");
+            await p.waitForFunction(()=>!window.__skillBattlePreview.panel.movement);
+            const image=await p.screenshot({path:path.join(output,`${name}-transit.png`)});
+            assert.ok((await sharp(image).stats()).channels.slice(0,3).every(c=>c.stdev>15),"Nonblank portrait map");
+            await move(p,3);
+            await p.screenshot({path:path.join(output,`${name}-enemy.png`)});
+            const placement=await p.evaluate(async () => {
+                const {panel,trial}=window.__skillBattlePreview,s=trial.data.save.state;
+                const original={node:s.node,revealed:s.revealed,selected:panel.selectedNode,center:panel.centerMap,
+                    scroll:panel.scroller.posX};
+                const before=JSON.stringify(s),issues=[];
+                try {
+                    s.revealed=[...s.map.present];
+                    for(const id of s.map.present) {
+                        s.node=id;panel.selectedNode=null;panel.centerMap=true;panel.refresh();
+                        await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+                        const marker=panel.expeditionNodes.expPlayer,node=panel.buttons[`expNode${id}`];
+                        if(marker.x+45!==node.x+58||marker.y!==node.y-80||
+                            marker.width!==90||marker.height!==90)issues.push([id,"fixed portrait anchor"]);
+                        const point=marker.localToGlobal(new Laya.Point());
+                        const viewport=panel.expeditionNodes.expViewport;
+                        const local=viewport.globalToLocal(point);
+                        if(local.x<0||local.y<0||local.x+90>viewport.width||local.y+90>viewport.height)
+                            issues.push([id,"portrait outside viewport",local.x,local.y,viewport.width,viewport.height]);
+                    }
+                } finally {
+                    s.node=original.node;s.revealed=original.revealed;
+                    panel.selectedNode=original.selected;panel.centerMap=original.center;
+                    panel.refresh();panel.scroller.posX=original.scroll;
+                }
+                return {issues,unchanged:JSON.stringify(s)===before};
+            });
+            assert.deepEqual(placement.issues,[],"Every generated node uses the same fully visible portrait placement");
+            assert.ok(placement.unchanged,"Portrait placement checks never mutate game state");
             await p.evaluate(() => {
                 const { panel, trial } = window.__skillBattlePreview;
                 trial.data.save.state.map.used.push(trial.inventory.node);

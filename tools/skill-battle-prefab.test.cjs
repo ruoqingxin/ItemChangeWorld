@@ -211,15 +211,17 @@ for (const [file, type, content] of files) {
             if(name!=="mapAvatarFrame")assert.equal(meta.importer.sizeGrid.length,5,"Real nine-slice import");
         }
         for(const name of ["mapClockGlyph","mapAvatarPlaceholder","mapHpTrack","mapHpFill","mapMpTrack","mapMpFill",
-            "mapStaminaTrack","mapStaminaFill","mapWeightTrack","mapWeightFill","expPlayerAvatar","expPlayerRing","mapRouteTexture"]) {
+            "mapStaminaTrack","mapStaminaFill","mapWeightTrack","mapWeightFill","expPlayerAvatar","expPlayerFrame","mapRouteTexture"]) {
             const n=nodes.get(name);
             assert.equal(n._$type,"GImage",`${name}: no code-drawn artwork`);
             assert.ok(n.src.startsWith("ui/atlas/module/expedition/handpainted/"));
         }
-        const locator=nodes.get("expPlayerRing");
-        assert.equal(locator.src,"ui/atlas/module/expedition/handpainted/map-current-locator.png");
-        assert.deepEqual([locator.x,locator.y,locator.width,locator.height],[16,142,84,20],
-            "Authored current locator matches its existing runtime footprint");
+        const locator=nodes.get("expPlayerFrame"),portrait=nodes.get("expPlayerAvatar");
+        assert.ok(!nodes.has("expPlayerRing"),"The ground locator is replaced by a portrait frame");
+        assert.equal(locator.src,"ui/atlas/module/expedition/handpainted/map-avatar-frame.png");
+        assert.deepEqual([locator.x||0,locator.y||0,locator.width,locator.height],[0,0,90,90]);
+        assert.equal(portrait.src,"ui/atlas/module/expedition/handpainted/map-player-portrait.png");
+        assert.deepEqual([portrait.x,portrait.y,portrait.width,portrait.height],[8,8,74,74]);
         for(let i=1;i<=32;i++) {
             const icon=nodes.get(`expNode${i}Icon`); assert.deepEqual([icon.width,icon.height],[104,104]);
             assert.deepEqual([icon.x,icon.y||0],[6,0],"All node artwork uses one authored placement");

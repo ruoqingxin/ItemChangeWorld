@@ -500,7 +500,7 @@
           "_$ref": "mapui_mapTimerFrame"
         },
         {
-          "_$ref": "mapui_expPlayerRing"
+          "_$ref": "mapui_expPlayerFrame"
         },
         {
           "_$ref": "map_foundation_mapKillsArea"
@@ -826,32 +826,30 @@
                       "_$id": "exp_SkillBattleStartView_138",
                       "_$type": "GWidget",
                       "name": "expPlayer",
-                      "width": 116,
-                      "height": 162,
+                      "width": 90,
+                      "height": 90,
                       "_mouseState": 1,
                       "_$child": [
-                        {
-                          "_$id": "mapui_expPlayerRing",
-                          "_$type": "GImage",
-                          "name": "expPlayerRing",
-                          "x": 16,
-                          "y": 142,
-                          "width": 84,
-                          "height": 20,
-                          "_mouseState": 1,
-                          "src": "ui/atlas/module/expedition/handpainted/map-current-locator.png",
-                          "autoSize": false
-                        },
                         {
                           "_$id": "map_art_expPlayerAvatar",
                           "_$type": "GImage",
                           "name": "expPlayerAvatar",
-                          "x": 30,
-                          "y": 90,
-                          "width": 56,
-                          "height": 70,
+                          "x": 8,
+                          "y": 8,
+                          "width": 74,
+                          "height": 74,
                           "_mouseState": 1,
-                          "src": "ui/atlas/module/expedition/handpainted/map-player-traveler.png",
+                          "src": "ui/atlas/module/expedition/handpainted/map-player-portrait.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "mapui_expPlayerFrame",
+                          "_$type": "GImage",
+                          "name": "expPlayerFrame",
+                          "width": 90,
+                          "height": 90,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/expedition/handpainted/map-avatar-frame.png",
                           "autoSize": false
                         }
                       ]

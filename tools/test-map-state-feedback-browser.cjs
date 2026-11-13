@@ -97,7 +97,8 @@ async function fixture(p, kind) {
             const last = image.localToGlobal(new Laya.Point(alpha[2] * image.width, alpha[3] * image.height));
             return [first.x, first.y, last.x, last.y];
         };
-        const avatar = panel.expeditionNodes.expPlayer.getChildByName("expPlayerAvatar");
+        const marker = panel.expeditionNodes.expPlayer;
+        const frame = marker.getChildByName("expPlayerFrame");
         const viewport = panel.expeditionNodes.expViewport;
         return {
             status: panel.labels.expContextStatus.text, action: panel.buttons.expUse.getChildAt(1).text,
@@ -107,7 +108,9 @@ async function fixture(p, kind) {
             gray: button.getChildAt(2).grayed, opaque: button.alpha === 1 && button.getChildAt(2).alpha === 1,
             hints: s.map.present.some(id => !!panel.buttons[`expNode${id}`].getChildByName("expReachHint")),
             unchanged: before === JSON.stringify(trial.data.save.state),
-            playerBounds: bounds(avatar, artBounds.player),
+            playerBounds: bounds(frame, [0, 0, 1, 1]),
+            playerOffset: [marker.x + marker.width / 2 - button.x - button.width / 2,
+                marker.y - button.y],
             enemyBounds: kind.startsWith("enemy-") ? bounds(button.getChildAt(2), artBounds[n.kind]) : null,
             viewportBounds: bounds(viewport, [0, 0, 1, 1]),
         };
@@ -116,8 +119,6 @@ async function fixture(p, kind) {
 
 (async () => {
     await fs.mkdir(output, { recursive: true });
-    artBounds.player = await visibleBounds(path.resolve(__dirname,
-        "../assets/ui/atlas/module/expedition/handpainted/map-player-traveler.png"));
     for (const kind of ["normal", "elite", "boss"])
         artBounds[kind] = await visibleBounds(path.resolve(__dirname, `../assets/ui/image/expeditionNodes/node-enemy-${kind}.png`));
     const browser = await chromium.launch({ headless: true, channel: "chromium" });
@@ -139,24 +140,24 @@ async function fixture(p, kind) {
             const saved = await p.evaluate(key => localStorage.getItem(key), key);
             const initial = await p.evaluate(() => {
                 const { panel, trial } = window.__skillBattlePreview;
-                const marker = panel.expeditionNodes.expPlayer, ring = marker.getChildByName("expPlayerRing");
+                const marker = panel.expeditionNodes.expPlayer, frame = marker.getChildByName("expPlayerFrame");
                 window.__feedbackLayout = [marker.width, marker.height,
                     ...["mapHeaderArea", "mapPlayerArea", "mapActionsArea"].flatMap(name => {
                         const n = panel.mapAreas[name]; return [n.x, n.y, n.width, n.height];
                     })];
-                return { ringAlpha: ring.alpha, currentVisible: marker.visible && ring.visible,
+                return { frameAlpha: frame.alpha, currentVisible: marker.visible && frame.visible,
                     hints: trial.inventory.map.present.some(id =>
                         !!panel.buttons[`expNode${id}`].getChildByName("expReachHint")),
-                    passive: !marker.mouseEnabled && !ring.mouseEnabled };
+                    passive: !marker.mouseEnabled && !frame.mouseEnabled,
+                    groundRing: !!marker.getChildByName("expPlayerRing") };
             });
-            assert.ok(initial.currentVisible && initial.passive && !initial.hints);
-            await p.waitForFunction(alpha => {
-                const ring = window.__skillBattlePreview.panel.expeditionNodes.expPlayer.getChildByName("expPlayerRing");
-                return Math.abs(ring.alpha - alpha) > 0.04;
-            }, initial.ringAlpha);
+            assert.ok(initial.currentVisible && initial.passive && !initial.hints && !initial.groundRing);
+            await p.waitForTimeout(180);
+            assert.equal(await p.evaluate(() => window.__skillBattlePreview.panel.expeditionNodes.expPlayer
+                .getChildByName("expPlayerFrame").alpha), initial.frameAlpha, "Portrait frame does not pulse");
             await p.emulateMedia({ reducedMotion: "reduce" }); await p.waitForTimeout(120);
             assert.equal(await p.evaluate(() => window.__skillBattlePreview.panel.expeditionNodes.expPlayer
-                .getChildByName("expPlayerRing").alpha), 0.95, "Reduced-motion preference disables the pulse");
+                .getChildByName("expPlayerFrame").alpha), 1, "Portrait remains opaque with reduced motion");
             await p.emulateMedia({ reducedMotion: "no-preference" });
             if (!touch) {
                 const at = await point(p, "expNode2");
@@ -174,7 +175,7 @@ async function fixture(p, kind) {
                 assert.deepEqual(await nodeState(), before);
             }
             assert.equal(await p.evaluate(key => localStorage.getItem(key), key), saved,
-                "Hover, press cancellation and the idle pulse never save");
+                "Hover, press cancellation and the static portrait never save");
             await screenshot(p, `${name}-reachable`);
             await click(p, "expNode2", touch); await click(p, "expNode3", touch);
             await screenshot(p, `${name}-enemy`);
@@ -191,11 +192,12 @@ async function fixture(p, kind) {
                 const state = await fixture(p, kind);
                 assert.ok(state.unchanged && state.passive && state.opaque, `${kind}: passive display, original node opacity`);
                 assert.equal(state.hints, false, `${kind}: reachable halos stay removed`);
+                assert.deepEqual(state.playerOffset, [0, -80], `${kind}: portrait stays at one fixed offset above the node`);
                 if (kind.startsWith("enemy-")) {
                     assert.equal(state.enabled, false); assert.ok(state.skin.endsWith("/map-button-disabled.png"));
                     assert.match(state.status, /体力不足/); assert.equal(state.hints, false);
-                    assert.ok(state.playerBounds[2] < state.enemyBounds[0],
-                        `${kind}: visible player artwork is separated from the enemy`);
+                    assert.ok(state.playerBounds[3] < state.enemyBounds[1],
+                        `${kind}: portrait is above the enemy artwork`);
                     assert.ok(state.playerBounds[0] >= state.viewportBounds[0] &&
                         state.playerBounds[1] >= state.viewportBounds[1] &&
                         state.playerBounds[2] <= state.viewportBounds[2] &&
@@ -281,11 +283,11 @@ async function fixture(p, kind) {
             });
             await click(p, "expStorage", touch);
             const pausedAlpha = await p.evaluate(() => window.__feedbackMap.expeditionNodes.expPlayer
-                .getChildByName("expPlayerRing").alpha);
+                .getChildByName("expPlayerFrame").alpha);
             await p.waitForTimeout(180);
             assert.ok(await p.evaluate(alpha => !window.__feedbackMap.opened &&
-                window.__feedbackMap.expeditionNodes.expPlayer.getChildByName("expPlayerRing").alpha === alpha,
-            pausedAlpha), "Leaving the map stops its display animation");
+                window.__feedbackMap.expeditionNodes.expPlayer.getChildByName("expPlayerFrame").alpha === alpha,
+            pausedAlpha), "Leaving the map preserves the static portrait");
             await click(p, "invToggle", touch);
             assert.equal(await p.evaluate(key => localStorage.getItem(key), key), arrived.saved,
                 "Returning to the map does not add an action or replay any feedback");

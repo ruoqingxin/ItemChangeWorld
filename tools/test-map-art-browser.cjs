@@ -116,20 +116,18 @@ async function inspect(p, name) {
             notice.x+notice.width>panel.mapAreas.mapActionsArea.width))issues.push("notice bounds");
         const marker = panel.expeditionNodes.expPlayer, avatar = marker.getChildByName("expPlayerAvatar");
         if (!marker.visible || marker.mouseEnabled || !avatar.visible || avatar.mouseEnabled || !avatar.texture ||
-            !avatar.src.endsWith("/map-player-traveler.png")) issues.push("traveler");
-        const locator=marker.getChildByName("expPlayerRing");
-        if(!locator.visible||locator.width!==84||locator.height!==20||avatar.width!==72||avatar.height!==90)
+            !avatar.src.endsWith("/map-player-portrait.png")) issues.push("portrait");
+        const locator=marker.getChildByName("expPlayerFrame");
+        if(!locator.visible||locator.width!==90||locator.height!==90||avatar.width!==74||avatar.height!==74||
+            marker.getChildByName("expPlayerRing"))
             issues.push("player locator");
-        if(locator.src!==art+"map-current-locator.png"||!locator.texture||
-            locator.texture.width!==304||locator.texture.height!==72||locator.filters?.length)
+        if(locator.src!==art+"map-avatar-frame.png"||!locator.texture||locator.filters?.length)
             issues.push("imported current locator");
         const currentNode=trial.inventory.map.nodes.find(n=>n.id===trial.inventory.node);
-        const transit=currentNode.kind==="transit";
-        const lift=transit?64:0;
-        const shift=currentNode.enemy?-(panel.buttons[`expNode${currentNode.id}`].getChildAt(2).width/2+28):0;
-        if(locator.y!==142-lift||avatar.y!==70-lift||locator.x+locator.width/2!==58+shift||
-            avatar.x+avatar.width/2!==58+shift)
-            issues.push("player ground alignment");
+        const currentButton=panel.buttons[`expNode${currentNode.id}`];
+        if(locator.x!==0||locator.y!==0||avatar.x!==8||avatar.y!==8||
+            marker.x+45!==currentButton.x+58||marker.y!==currentButton.y-80)
+            issues.push("fixed portrait alignment");
         if(view.getElement("mapKillsArea").width>450)issues.push("oversized kill strip");
         const format=n=>(n/100).toFixed(2).replace(/\.?0+$/,""),setup=trial.archive.config.build.setup.player;
         if(panel.labels.expHpValue.text!==`生命  ${format(trial.inventory.hp)} / ${format(setup.maxHp)}` ||

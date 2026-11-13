@@ -12,8 +12,8 @@ import { placeInDesign, visitRegion } from "../../gameplay/utils/GameplayLayout"
 import type { SkillBattlePage } from "../../gameplay/utils/GameplayLayout";
 
 type MapPoint = { x: number; y: number };
-const MARKER_HALF = 58;
-const TRANSIT_PLAYER_LIFT = 64;
+const PLAYER_MARKER_SIZE = 90;
+const PLAYER_MARKER_OFFSET = 132;
 const TRANSIT_STONE_COLOR = "#ffffff";
 const MAP_ART = "ui/atlas/module/expedition/handpainted/";
 
@@ -30,7 +30,7 @@ export class ExpeditionPanel extends InventoryPanel {
     private pendingPath: number[] | null = null;
     private mapRoutes = new Map<string, MapPoint[]>();
     private movement: {
-        points: MapPoint[]; lifts: number[]; shifts: number[]; lengths: number[]; total: number; startedAt: number;
+        points: MapPoint[]; lengths: number[]; total: number; startedAt: number;
         duration: number; cameraFrom: number; cameraTo: number
     } | null = null;
     constructor(view: UIBaseView, readonly expedition: ExpeditionRunManager,
@@ -144,7 +144,6 @@ export class ExpeditionPanel extends InventoryPanel {
                 this.labels.expClock.color = this.expedition.inventory?.map.warning ? "#f1b586" : "#fff2d2";
             }
             this.renderSearchSpinner();
-            this.renderMapFeedback();
         }, false);
     }
     refresh(): void {
@@ -472,35 +471,10 @@ export class ExpeditionPanel extends InventoryPanel {
     private renderPlayerMarker(): void {
         const marker = this.expeditionNodes.expPlayer;
         marker.visible = true; marker.mouseEnabled = false; marker.zOrder = 2;
-        marker.size(116, 162); marker.graphics.clear();
-        const ring = marker.getChildByName("expPlayerRing");
-        if (ring) { ring.visible = true; ring.pos(16, 142); ring.size(84, 20); ring.alpha = 0.95; }
+        marker.graphics.clear();
         const avatar = marker.getChildByName("expPlayerAvatar") as Laya.GImage;
-        avatar.visible = true; avatar.pos(22, 70); avatar.size(72, 90);
-        const current = this.expedition.inventory!.node;
-        this.alignPlayerArtwork(this.playerLift(current), this.playerShift(current));
-    }
-    private playerLift(id: number): number {
-        const node = Rules.node(this.expedition.archive!.config, id, this.expedition.inventory!);
-        return node.kind === "transit" ? TRANSIT_PLAYER_LIFT : 0;
-    }
-    private playerShift(id: number): number {
-        const node = Rules.node(this.expedition.archive!.config, id, this.expedition.inventory!);
-        const image = this.buttons[`expNode${id}`].getChildAt(2) as Laya.GImage;
-        return node.enemy ? -(image.width / 2 + 28) : 0;
-    }
-    private alignPlayerArtwork(lift: number, shift: number): void {
-        const marker = this.expeditionNodes.expPlayer;
-        marker.getChildByName("expPlayerRing").pos(16 + shift, 142 - lift);
-        marker.getChildByName("expPlayerAvatar").pos(22 + shift, 70 - lift);
-    }
-    private renderMapFeedback(): void {
-        if (!this.opened || !this.mapOpen || !this.expeditionNodes.expeditionRoot?.visible) return;
-        const ring = this.expeditionNodes.expPlayer.getChildByName("expPlayerRing");
-        const reducedMotion = typeof window.matchMedia === "function" &&
-            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        if (ring) ring.alpha = this.movement || reducedMotion ?
-            0.95 : 0.88 + Math.sin(performance.now() * Math.PI / 1200) * 0.12;
+        const frame = marker.getChildByName("expPlayerFrame") as Laya.GImage;
+        avatar.visible = true; frame.visible = true;
     }
     private get mapBandTop(): number {
         return 112 + (this.expeditionNodes.expViewport.height - 720) / 2;
@@ -514,7 +488,8 @@ export class ExpeditionPanel extends InventoryPanel {
             hash = Math.imul(hash ^ (hash >>> 16), 0x7feb352d);
             hash = Math.imul(hash ^ (hash >>> 15), 0x846ca68b);
             hash = (hash ^ (hash >>> 16)) >>> 0;
-            const above = 58 + (size - 104) * 0.75, below = Math.max(64, 46 + (size - 104) * 0.25);
+            const above = Math.max(PLAYER_MARKER_OFFSET, 58 + (size - 104) * 0.75);
+            const below = Math.max(64, 46 + (size - 104) * 0.25);
             const hud = this.mapAreas.mapPlayerArea;
             const x = 112 + n.x * 242, underHud = x < hud.width + 70;
             return {
@@ -619,8 +594,7 @@ export class ExpeditionPanel extends InventoryPanel {
             this.beginMovement(path, points);
         }
         if (this.movement) this.positionMovement(performance.now());
-        else marker.pos(p.x - MARKER_HALF, p.y - MARKER_HALF);
-        this.renderMapFeedback();
+        else marker.pos(p.x - PLAYER_MARKER_SIZE / 2, p.y - PLAYER_MARKER_OFFSET);
         this.scroller.touchEffect = this.movement ? Laya.ScrollTouchEffect.Off : Laya.ScrollTouchEffect.On;
         this.scroller.mouseWheelDisabled = !!this.movement;
         const recovered = Rules.recovery(c, s);
@@ -667,18 +641,10 @@ export class ExpeditionPanel extends InventoryPanel {
     }
     private beginMovement(path: number[], points: Map<number, MapPoint>): void {
         const route: MapPoint[] = [points.get(path[0])!];
-        const lifts = [this.playerLift(path[0])], shifts = [this.playerShift(path[0])];
         for (let i = 1; i < path.length; i++) {
             const edge = this.mapRoutes.get(`${path[i - 1]}:${path[i]}`) ||
                 [points.get(path[i - 1])!, points.get(path[i])!];
-            const from = this.playerLift(path[i - 1]), to = this.playerLift(path[i]);
-            const shiftFrom = this.playerShift(path[i - 1]), shiftTo = this.playerShift(path[i]);
             route.push(...edge.slice(1));
-            for (let j = 1; j < edge.length; j++) {
-                const ratio = j / (edge.length - 1);
-                lifts.push(from + (to - from) * ratio);
-                shifts.push(shiftFrom + (shiftTo - shiftFrom) * ratio);
-            }
         }
         const lengths = route.map((p, i) => i ? Math.hypot(p.x - route[i - 1].x, p.y - route[i - 1].y) : 0);
         const total = lengths.reduce((sum, n) => sum + n, 0), last = route[route.length - 1];
@@ -688,7 +654,7 @@ export class ExpeditionPanel extends InventoryPanel {
         if (total < 1 && Math.abs(cameraTo - cameraFrom) < 1) return;
         this.scroller.cancelDragging();
         this.movement = {
-            points: route, lifts, shifts, lengths, total, startedAt: performance.now(),
+            points: route, lengths, total, startedAt: performance.now(),
             duration: Math.min(1000, Math.max(360, total / 1.4)), cameraFrom, cameraTo
         };
         Laya.timer.frameLoop(1, this, this.movementTick);
@@ -696,20 +662,17 @@ export class ExpeditionPanel extends InventoryPanel {
     private positionMovement(now: number): boolean {
         const m = this.movement!;
         const t = Math.min(1, Math.max(0, (now - m.startedAt) / m.duration)), ease = t * t * (3 - 2 * t);
-        let distance = m.total * ease, p = m.points[0], lift = m.lifts[0], shift = m.shifts[0];
+        let distance = m.total * ease, p = m.points[0];
         for (let i = 1; i < m.points.length; i++) {
             const length = m.lengths[i];
             if (distance <= length && length > 0) {
                 const from = m.points[i - 1], to = m.points[i], ratio = distance / length;
                 p = { x: from.x + (to.x - from.x) * ratio, y: from.y + (to.y - from.y) * ratio };
-                lift = m.lifts[i - 1] + (m.lifts[i] - m.lifts[i - 1]) * ratio;
-                shift = m.shifts[i - 1] + (m.shifts[i] - m.shifts[i - 1]) * ratio; break;
+                break;
             }
-            distance -= length; p = m.points[i]; lift = m.lifts[i]; shift = m.shifts[i];
+            distance -= length; p = m.points[i];
         }
-        this.expeditionNodes.expPlayer.pos(p.x - MARKER_HALF, p.y - MARKER_HALF);
-        // Blend the visual foot anchor without changing route or camera coordinates.
-        this.alignPlayerArtwork(lift, shift);
+        this.expeditionNodes.expPlayer.pos(p.x - PLAYER_MARKER_SIZE / 2, p.y - PLAYER_MARKER_OFFSET);
         this.scroller.posX = m.cameraFrom + (m.cameraTo - m.cameraFrom) * ease;
         return t === 1;
     }
