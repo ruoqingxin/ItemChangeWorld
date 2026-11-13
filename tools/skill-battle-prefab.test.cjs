@@ -144,12 +144,14 @@ for (const [file, type, content] of files) {
             const button=nodes.get(name);
             assert.deepEqual([button.width,button.height],[108,100],"Readable, equally-sized map tools");
             assert.deepEqual([button._$child[2].width,button._$child[2].height],[44,44],"Prominent action icons");
-            assert.equal(button._$child[1].fontSize,21);
+            assert.equal(button._$child[1].fontSize,25);
+            assert.equal(button._$child[1].font,"SimSun");
+            assert.equal(button._$child[1].bold,true);
             assert.deepEqual(button._$child[0].relations[0].data,[1,0,2,0],"Button skin follows its owner");
         }
         assert.deepEqual([nodes.get("expAbandon").width,nodes.get("expAbandon").height],[168,52],
             "Exit stays left with a readable horizontal icon and label");
-        assert.equal(nodes.get("expUseText").fontSize,24,"Primary node action is visibly stronger than secondary text");
+        assert.equal(nodes.get("expUseText").fontSize,28,"Primary node action matches the approved preview");
         assert.ok(nodes.has("mapClockGlyph"),"Timer has an independent clock glyph");
         for(const name of ["expPlayerName","expHpValue","expMpValue","expStamina","expWeight"])
             assert.ok(nodes.has(name),`Map HUD binding ${name}`);

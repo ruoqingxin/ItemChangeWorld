@@ -759,6 +759,16 @@
           "width": 1280,
           "height": 720,
           "mouseThrough": true,
+          "controllers": {
+            "_$type": "Record",
+            "mapLayout": {
+              "_$type": "Controller",
+              "pages": [
+                "desktop",
+                "compact"
+              ]
+            }
+          },
           "relations": [
             {
               "_$type": "Relation",
@@ -2418,8 +2428,6 @@
                   "height": 282,
                   "_mouseState": 1,
                   "mouseThrough": true,
-                  "src": "ui/atlas/module/expedition/handpainted/map-panel.png",
-                  "autoSize": false,
                   "relations": [
                     {
                       "_$type": "Relation",
@@ -2433,7 +2441,9 @@
                         0
                       ]
                     }
-                  ]
+                  ],
+                  "src": "ui/atlas/module/expedition/handpainted/map-panel.png",
+                  "autoSize": false
                 },
                 {
                   "_$id": "exp_SkillBattleStartView_140",
@@ -2457,11 +2467,15 @@
                   "height": 56,
                   "_mouseState": 1,
                   "text": "",
-                  "fontSize": 24,
-                  "color": "#e3c98c",
-                  "overflow": "shrink",
+                  "font": "SimSun",
+                  "fontSize": 30,
+                  "color": "#f3d68a",
+                  "bold": true,
                   "align": "center",
-                  "valign": "middle"
+                  "valign": "middle",
+                  "overflow": "shrink",
+                  "stroke": 1,
+                  "strokeColor": "#0a1b14"
                 },
                 {
                   "_$id": "map_layout_context_status",
@@ -2474,7 +2488,7 @@
                   "_mouseState": 1,
                   "text": "",
                   "fontSize": 18,
-                  "color": "#c4ccc4",
+                  "color": "#e3e5d7",
                   "align": "center",
                   "valign": "middle",
                   "overflow": "shrink"
@@ -2488,63 +2502,6 @@
                   "width": 208,
                   "height": 64,
                   "_mouseState": 2,
-                  "_$child": [
-                    {
-                      "_$id": "exp_SkillBattleStartView_142",
-                      "_$type": "GImage",
-                      "name": "expUseSkin",
-                      "width": 208,
-                      "height": 64,
-                      "_mouseState": 1,
-                      "src": "ui/atlas/module/expedition/handpainted/map-button-normal.png",
-                      "autoSize": false,
-                      "relations": [
-                        {
-                          "_$type": "Relation",
-                          "target": {
-                            "_$ref": "exp_SkillBattleStartView_144"
-                          },
-                          "data": [
-                            1,
-                            0,
-                            2,
-                            0
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_143",
-                      "_$type": "GTextField",
-                      "name": "expUseText",
-                      "x": 4,
-                      "y": 2,
-                      "width": 200,
-                      "height": 60,
-                      "_mouseState": 1,
-                      "text": "",
-                      "fontSize": 24,
-                      "color": "#fbf7e9",
-                      "bold": false,
-                      "align": "center",
-                      "valign": "middle",
-                      "overflow": "shrink",
-                      "relations": [
-                        {
-                          "_$type": "Relation",
-                          "target": {
-                            "_$ref": "exp_SkillBattleStartView_144"
-                          },
-                          "data": [
-                            1,
-                            0,
-                            2,
-                            0
-                          ]
-                        }
-                      ]
-                    }
-                  ],
                   "relations": [
                     {
                       "_$type": "Relation",
@@ -2558,6 +2515,66 @@
                         0
                       ]
                     }
+                  ],
+                  "_$child": [
+                    {
+                      "_$id": "exp_SkillBattleStartView_142",
+                      "_$type": "GImage",
+                      "name": "expUseSkin",
+                      "width": 208,
+                      "height": 64,
+                      "_mouseState": 1,
+                      "relations": [
+                        {
+                          "_$type": "Relation",
+                          "target": {
+                            "_$ref": "exp_SkillBattleStartView_144"
+                          },
+                          "data": [
+                            1,
+                            0,
+                            2,
+                            0
+                          ]
+                        }
+                      ],
+                      "src": "ui/atlas/module/expedition/handpainted/map-button-normal.png",
+                      "autoSize": false
+                    },
+                    {
+                      "_$id": "exp_SkillBattleStartView_143",
+                      "_$type": "GTextField",
+                      "name": "expUseText",
+                      "x": 4,
+                      "y": 2,
+                      "width": 200,
+                      "height": 60,
+                      "_mouseState": 1,
+                      "relations": [
+                        {
+                          "_$type": "Relation",
+                          "target": {
+                            "_$ref": "exp_SkillBattleStartView_144"
+                          },
+                          "data": [
+                            1,
+                            0,
+                            2,
+                            0
+                          ]
+                        }
+                      ],
+                      "text": "",
+                      "font": "SimSun",
+                      "fontSize": 28,
+                      "color": "#fff2d2",
+                      "bold": true,
+                      "align": "center",
+                      "valign": "middle",
+                      "overflow": "shrink",
+                      "stroke": 1,
+                      "strokeColor": "#0a1b14"
+                    }
                   ]
                 }
               ]
@@ -2566,9 +2583,26 @@
               "_$id": "region_78",
               "_$type": "GWidget",
               "name": "mapHeaderArea",
+              "x": 8,
+              "y": 8,
               "width": 1264,
               "height": 64,
               "mouseThrough": true,
+              "gears": [
+                {
+                  "_$type": "GearNumber",
+                  "controller": {
+                    "_$ref": "exp_SkillBattleStartView_1",
+                    "_$ctrl": "mapLayout"
+                  },
+                  "propPath": "height",
+                  "values": {
+                    "0": 64,
+                    "1": 80,
+                    "_$type": "Record"
+                  }
+                }
+              ],
               "relations": [
                 {
                   "_$type": "Relation",
@@ -2606,9 +2640,7 @@
                     }
                   ],
                   "src": "ui/atlas/module/expedition/handpainted/map-header-panel.png",
-                  "autoSize": false,
-                  "x": 0,
-                  "y": 0
+                  "autoSize": false
                 },
                 {
                   "_$id": "map_clock_area",
@@ -2619,6 +2651,33 @@
                   "width": 148,
                   "height": 48,
                   "mouseThrough": true,
+                  "gears": [
+                    {
+                      "_$type": "GearNumber",
+                      "controller": {
+                        "_$ref": "exp_SkillBattleStartView_1",
+                        "_$ctrl": "mapLayout"
+                      },
+                      "propPath": "width",
+                      "values": {
+                        "0": 148,
+                        "1": 168,
+                        "_$type": "Record"
+                      }
+                    }
+                  ],
+                  "relations": [
+                    {
+                      "_$type": "Relation",
+                      "target": {
+                        "_$ref": "region_78"
+                      },
+                      "data": [
+                        2,
+                        0
+                      ]
+                    }
+                  ],
                   "_$child": [
                     {
                       "_$id": "mapui_mapTimerFrame",
@@ -2626,27 +2685,20 @@
                       "name": "mapTimerFrame",
                       "width": 136,
                       "height": 48,
+                      "visible": false,
                       "_mouseState": 1,
                       "src": "ui/atlas/module/expedition/handpainted/map-slot.png",
-                      "autoSize": false,
-                      "visible": false
+                      "autoSize": false
                     },
                     {
                       "_$id": "exp_SkillBattleStartView_3",
                       "_$type": "GTextField",
                       "name": "expClock",
                       "x": 42,
+                      "y": 2,
                       "width": 100,
                       "height": 48,
                       "_mouseState": 1,
-                      "text": "20:00",
-                      "fontSize": 28,
-                      "color": "#e8edf0",
-                      "align": "center",
-                      "valign": "middle",
-                      "overflow": "shrink",
-                      "y": 0,
-                      "bold": true,
                       "gears": [
                         {
                           "_$type": "GearNumber",
@@ -2657,7 +2709,8 @@
                           "propPath": "fontSize",
                           "values": {
                             "0": 28,
-                            "1": 32
+                            "1": 32,
+                            "_$type": "Record"
                           }
                         }
                       ],
@@ -2674,19 +2727,27 @@
                             0
                           ]
                         }
-                      ]
+                      ],
+                      "text": "20:00",
+                      "font": "Microsoft YaHei",
+                      "fontSize": 28,
+                      "color": "#fff2d2",
+                      "bold": true,
+                      "align": "center",
+                      "valign": "middle",
+                      "overflow": "shrink",
+                      "stroke": 1,
+                      "strokeColor": "#0a1b14"
                     },
                     {
                       "_$id": "map_foundation_mapClockGlyph",
                       "_$type": "GImage",
                       "name": "mapClockGlyph",
-                      "x": 4,
-                      "y": 11,
-                      "width": 26,
-                      "height": 26,
+                      "x": 2,
+                      "y": 3,
+                      "width": 40,
+                      "height": 40,
                       "_mouseState": 1,
-                      "src": "ui/atlas/module/expedition/handpainted/map-icon-clock.png",
-                      "autoSize": false,
                       "gears": [
                         {
                           "_$type": "GearNumber",
@@ -2696,8 +2757,9 @@
                           },
                           "propPath": "width",
                           "values": {
-                            "0": 26,
-                            "1": 30
+                            "0": 40,
+                            "1": 30,
+                            "_$type": "Record"
                           }
                         },
                         {
@@ -2708,8 +2770,9 @@
                           },
                           "propPath": "height",
                           "values": {
-                            "0": 26,
-                            "1": 30
+                            "0": 40,
+                            "1": 30,
+                            "_$type": "Record"
                           }
                         }
                       ],
@@ -2724,33 +2787,9 @@
                             0
                           ]
                         }
-                      ]
-                    }
-                  ],
-                  "gears": [
-                    {
-                      "_$type": "GearNumber",
-                      "controller": {
-                        "_$ref": "exp_SkillBattleStartView_1",
-                        "_$ctrl": "mapLayout"
-                      },
-                      "propPath": "width",
-                      "values": {
-                        "0": 148,
-                        "1": 168
-                      }
-                    }
-                  ],
-                  "relations": [
-                    {
-                      "_$type": "Relation",
-                      "target": {
-                        "_$ref": "region_78"
-                      },
-                      "data": [
-                        2,
-                        0
-                      ]
+                      ],
+                      "src": "ui/atlas/module/expedition/handpainted/map-icon-clock.png",
+                      "autoSize": false
                     }
                   ]
                 },
@@ -2764,6 +2803,21 @@
                   "height": 48,
                   "_mouseState": 2,
                   "mouseThrough": true,
+                  "gears": [
+                    {
+                      "_$type": "GearNumber",
+                      "controller": {
+                        "_$ref": "exp_SkillBattleStartView_1",
+                        "_$ctrl": "mapLayout"
+                      },
+                      "propPath": "width",
+                      "values": {
+                        "0": 336,
+                        "1": 420,
+                        "_$type": "Record"
+                      }
+                    }
+                  ],
                   "relations": [
                     {
                       "_$type": "Relation",
@@ -2793,6 +2847,7 @@
                       "name": "mapKillsFrame",
                       "width": 336,
                       "height": 48,
+                      "visible": false,
                       "_mouseState": 1,
                       "relations": [
                         {
@@ -2809,20 +2864,16 @@
                         }
                       ],
                       "src": "ui/atlas/module/expedition/handpainted/map-slot.png",
-                      "autoSize": false,
-                      "visible": false
+                      "autoSize": false
                     },
                     {
                       "_$id": "map_foundation_mapKillIcon0",
                       "_$type": "GImage",
                       "name": "mapKillIcon0",
-                      "x": 0,
                       "y": 8,
                       "width": 32,
                       "height": 32,
                       "_mouseState": 1,
-                      "src": "ui/image/expeditionNodes/clean/node-enemy-normal.png",
-                      "autoSize": false,
                       "gears": [
                         {
                           "_$type": "GearNumber",
@@ -2833,7 +2884,8 @@
                           "propPath": "width",
                           "values": {
                             "0": 32,
-                            "1": 38
+                            "1": 38,
+                            "_$type": "Record"
                           }
                         },
                         {
@@ -2845,7 +2897,8 @@
                           "propPath": "height",
                           "values": {
                             "0": 32,
-                            "1": 38
+                            "1": 38,
+                            "_$type": "Record"
                           }
                         }
                       ],
@@ -2860,7 +2913,9 @@
                             0
                           ]
                         }
-                      ]
+                      ],
+                      "src": "ui/image/expeditionNodes/hud/node-enemy-normal.png",
+                      "autoSize": false
                     },
                     {
                       "_$id": "map_foundation_expKillCount0",
@@ -2870,13 +2925,6 @@
                       "width": 72,
                       "height": 48,
                       "_mouseState": 1,
-                      "text": "普通 0",
-                      "fontSize": 19,
-                      "color": "#d4dacf",
-                      "align": "center",
-                      "valign": "middle",
-                      "overflow": "shrink",
-                      "y": 0,
                       "gears": [
                         {
                           "_$type": "GearNumber",
@@ -2887,7 +2935,8 @@
                           "propPath": "width",
                           "values": {
                             "0": 72,
-                            "1": 90
+                            "1": 90,
+                            "_$type": "Record"
                           }
                         },
                         {
@@ -2898,19 +2947,11 @@
                           },
                           "propPath": "fontSize",
                           "values": {
-                            "0": 19,
-                            "1": 26
+                            "0": 22,
+                            "1": 26,
+                            "_$type": "Record"
                           }
                         }
-                      ],
-                      "font": "Microsoft YaHei",
-                      "bold": false,
-                      "wordWrap": false,
-                      "padding": [
-                        0,
-                        0,
-                        0,
-                        0
                       ],
                       "relations": [
                         {
@@ -2933,7 +2974,23 @@
                             0
                           ]
                         }
-                      ]
+                      ],
+                      "text": "普通 0",
+                      "font": "SimSun",
+                      "fontSize": 22,
+                      "color": "#fff2d2",
+                      "bold": true,
+                      "align": "center",
+                      "valign": "middle",
+                      "overflow": "shrink",
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        0
+                      ],
+                      "stroke": 1,
+                      "strokeColor": "#0a1b14"
                     },
                     {
                       "_$id": "map_foundation_mapKillIcon1",
@@ -2944,8 +3001,6 @@
                       "width": 32,
                       "height": 32,
                       "_mouseState": 1,
-                      "src": "ui/image/expeditionNodes/clean/node-enemy-elite.png",
-                      "autoSize": false,
                       "gears": [
                         {
                           "_$type": "GearNumber",
@@ -2956,7 +3011,8 @@
                           "propPath": "width",
                           "values": {
                             "0": 32,
-                            "1": 38
+                            "1": 38,
+                            "_$type": "Record"
                           }
                         },
                         {
@@ -2968,7 +3024,8 @@
                           "propPath": "height",
                           "values": {
                             "0": 32,
-                            "1": 38
+                            "1": 38,
+                            "_$type": "Record"
                           }
                         }
                       ],
@@ -2993,7 +3050,9 @@
                             0
                           ]
                         }
-                      ]
+                      ],
+                      "src": "ui/image/expeditionNodes/hud/node-enemy-elite.png",
+                      "autoSize": false
                     },
                     {
                       "_$id": "map_foundation_expKillCount1",
@@ -3003,13 +3062,6 @@
                       "width": 72,
                       "height": 48,
                       "_mouseState": 1,
-                      "text": "精英 0",
-                      "fontSize": 19,
-                      "color": "#d4dacf",
-                      "align": "center",
-                      "valign": "middle",
-                      "overflow": "shrink",
-                      "y": 0,
                       "gears": [
                         {
                           "_$type": "GearNumber",
@@ -3020,7 +3072,8 @@
                           "propPath": "width",
                           "values": {
                             "0": 72,
-                            "1": 90
+                            "1": 90,
+                            "_$type": "Record"
                           }
                         },
                         {
@@ -3031,19 +3084,11 @@
                           },
                           "propPath": "fontSize",
                           "values": {
-                            "0": 19,
-                            "1": 26
+                            "0": 22,
+                            "1": 26,
+                            "_$type": "Record"
                           }
                         }
-                      ],
-                      "font": "Microsoft YaHei",
-                      "bold": false,
-                      "wordWrap": false,
-                      "padding": [
-                        0,
-                        0,
-                        0,
-                        0
                       ],
                       "relations": [
                         {
@@ -3066,7 +3111,23 @@
                             0
                           ]
                         }
-                      ]
+                      ],
+                      "text": "精英 0",
+                      "font": "SimSun",
+                      "fontSize": 22,
+                      "color": "#fff2d2",
+                      "bold": true,
+                      "align": "center",
+                      "valign": "middle",
+                      "overflow": "shrink",
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        0
+                      ],
+                      "stroke": 1,
+                      "strokeColor": "#0a1b14"
                     },
                     {
                       "_$id": "map_foundation_mapKillIcon2",
@@ -3077,8 +3138,6 @@
                       "width": 32,
                       "height": 32,
                       "_mouseState": 1,
-                      "src": "ui/image/expeditionNodes/clean/node-enemy-boss.png",
-                      "autoSize": false,
                       "gears": [
                         {
                           "_$type": "GearNumber",
@@ -3089,7 +3148,8 @@
                           "propPath": "width",
                           "values": {
                             "0": 32,
-                            "1": 38
+                            "1": 38,
+                            "_$type": "Record"
                           }
                         },
                         {
@@ -3101,7 +3161,8 @@
                           "propPath": "height",
                           "values": {
                             "0": 32,
-                            "1": 38
+                            "1": 38,
+                            "_$type": "Record"
                           }
                         }
                       ],
@@ -3126,7 +3187,9 @@
                             0
                           ]
                         }
-                      ]
+                      ],
+                      "src": "ui/image/expeditionNodes/hud/node-enemy-boss.png",
+                      "autoSize": false
                     },
                     {
                       "_$id": "map_foundation_expKillCount2",
@@ -3136,13 +3199,6 @@
                       "width": 72,
                       "height": 48,
                       "_mouseState": 1,
-                      "text": "首领 0",
-                      "fontSize": 19,
-                      "color": "#d4dacf",
-                      "align": "center",
-                      "valign": "middle",
-                      "overflow": "shrink",
-                      "y": 0,
                       "gears": [
                         {
                           "_$type": "GearNumber",
@@ -3153,7 +3209,8 @@
                           "propPath": "width",
                           "values": {
                             "0": 72,
-                            "1": 90
+                            "1": 90,
+                            "_$type": "Record"
                           }
                         },
                         {
@@ -3164,19 +3221,11 @@
                           },
                           "propPath": "fontSize",
                           "values": {
-                            "0": 19,
-                            "1": 26
+                            "0": 22,
+                            "1": 26,
+                            "_$type": "Record"
                           }
                         }
-                      ],
-                      "font": "Microsoft YaHei",
-                      "bold": false,
-                      "wordWrap": false,
-                      "padding": [
-                        0,
-                        0,
-                        0,
-                        0
                       ],
                       "relations": [
                         {
@@ -3199,21 +3248,23 @@
                             0
                           ]
                         }
-                      ]
-                    }
-                  ],
-                  "gears": [
-                    {
-                      "_$type": "GearNumber",
-                      "controller": {
-                        "_$ref": "exp_SkillBattleStartView_1",
-                        "_$ctrl": "mapLayout"
-                      },
-                      "propPath": "width",
-                      "values": {
-                        "0": 336,
-                        "1": 420
-                      }
+                      ],
+                      "text": "首领 0",
+                      "font": "SimSun",
+                      "fontSize": 22,
+                      "color": "#fff2d2",
+                      "bold": true,
+                      "align": "center",
+                      "valign": "middle",
+                      "overflow": "shrink",
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        0
+                      ],
+                      "stroke": 1,
+                      "strokeColor": "#0a1b14"
                     }
                   ]
                 },
@@ -3227,6 +3278,21 @@
                   "height": 48,
                   "_mouseState": 2,
                   "mouseThrough": true,
+                  "gears": [
+                    {
+                      "_$type": "GearNumber",
+                      "controller": {
+                        "_$ref": "exp_SkillBattleStartView_1",
+                        "_$ctrl": "mapLayout"
+                      },
+                      "propPath": "width",
+                      "values": {
+                        "0": 264,
+                        "1": 288,
+                        "_$type": "Record"
+                      }
+                    }
+                  ],
                   "relations": [
                     {
                       "_$type": "Relation",
@@ -3256,26 +3322,18 @@
                       "name": "mapStaminaFrame",
                       "width": 264,
                       "height": 48,
+                      "visible": false,
                       "_mouseState": 1,
                       "src": "ui/atlas/module/expedition/handpainted/map-slot.png",
-                      "autoSize": false,
-                      "visible": false
+                      "autoSize": false
                     },
                     {
                       "_$id": "map_foundation_expStaminaLabel",
                       "_$type": "GTextField",
                       "name": "expStaminaLabel",
-                      "x": 0,
                       "width": 48,
                       "height": 48,
                       "_mouseState": 1,
-                      "text": "体力",
-                      "fontSize": 19,
-                      "color": "#c9d2c8",
-                      "align": "center",
-                      "valign": "middle",
-                      "overflow": "shrink",
-                      "y": 0,
                       "gears": [
                         {
                           "_$type": "GearNumber",
@@ -3286,7 +3344,8 @@
                           "propPath": "width",
                           "values": {
                             "0": 48,
-                            "1": 60
+                            "1": 60,
+                            "_$type": "Record"
                           }
                         },
                         {
@@ -3297,19 +3356,11 @@
                           },
                           "propPath": "fontSize",
                           "values": {
-                            "0": 19,
-                            "1": 26
+                            "0": 22,
+                            "1": 26,
+                            "_$type": "Record"
                           }
                         }
-                      ],
-                      "font": "Microsoft YaHei",
-                      "bold": false,
-                      "wordWrap": false,
-                      "padding": [
-                        0,
-                        0,
-                        0,
-                        0
                       ],
                       "relations": [
                         {
@@ -3322,7 +3373,23 @@
                             0
                           ]
                         }
-                      ]
+                      ],
+                      "text": "体力",
+                      "font": "SimSun",
+                      "fontSize": 22,
+                      "color": "#fff2d2",
+                      "bold": true,
+                      "align": "center",
+                      "valign": "middle",
+                      "overflow": "shrink",
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        0
+                      ],
+                      "stroke": 1,
+                      "strokeColor": "#0a1b14"
                     },
                     {
                       "_$id": "map_foundation_mapStaminaSlot",
@@ -3333,8 +3400,6 @@
                       "width": 196,
                       "height": 28,
                       "_mouseState": 1,
-                      "src": "ui/atlas/module/expedition/handpainted/map-bar-frame.png",
-                      "autoSize": false,
                       "gears": [
                         {
                           "_$type": "GearNumber",
@@ -3345,7 +3410,8 @@
                           "propPath": "height",
                           "values": {
                             "0": 28,
-                            "1": 34
+                            "1": 34,
+                            "_$type": "Record"
                           }
                         }
                       ],
@@ -3372,7 +3438,9 @@
                             0
                           ]
                         }
-                      ]
+                      ],
+                      "src": "ui/atlas/module/expedition/handpainted/map-bar-frame.png",
+                      "autoSize": false
                     },
                     {
                       "_$id": "map_foundation_mapStaminaTrack",
@@ -3383,8 +3451,6 @@
                       "width": 188,
                       "height": 20,
                       "_mouseState": 1,
-                      "src": "ui/atlas/module/expedition/handpainted/map-bar-track.png",
-                      "autoSize": false,
                       "relations": [
                         {
                           "_$type": "Relation",
@@ -3402,7 +3468,9 @@
                             0
                           ]
                         }
-                      ]
+                      ],
+                      "src": "ui/atlas/module/expedition/handpainted/map-bar-track.png",
+                      "autoSize": false
                     },
                     {
                       "_$id": "map_foundation_mapStaminaFill",
@@ -3414,8 +3482,6 @@
                       "height": 20,
                       "visible": false,
                       "_mouseState": 1,
-                      "src": "ui/atlas/module/expedition/handpainted/map-bar-stamina.png",
-                      "autoSize": false,
                       "relations": [
                         {
                           "_$type": "Relation",
@@ -3433,7 +3499,9 @@
                             0
                           ]
                         }
-                      ]
+                      ],
+                      "src": "ui/atlas/module/expedition/handpainted/map-bar-stamina.png",
+                      "autoSize": false
                     },
                     {
                       "_$id": "map_foundation_expStamina",
@@ -3444,21 +3512,6 @@
                       "width": 196,
                       "height": 28,
                       "_mouseState": 1,
-                      "text": "-- / --",
-                      "fontSize": 19,
-                      "color": "#ecebe1",
-                      "align": "center",
-                      "valign": "middle",
-                      "overflow": "shrink",
-                      "font": "Microsoft YaHei",
-                      "bold": false,
-                      "wordWrap": false,
-                      "padding": [
-                        0,
-                        0,
-                        0,
-                        0
-                      ],
                       "gears": [
                         {
                           "_$type": "GearNumber",
@@ -3469,7 +3522,8 @@
                           "propPath": "fontSize",
                           "values": {
                             "0": 19,
-                            "1": 26
+                            "1": 26,
+                            "_$type": "Record"
                           }
                         },
                         {
@@ -3481,7 +3535,8 @@
                           "propPath": "textIns.y",
                           "values": {
                             "0": 3,
-                            "1": 4
+                            "1": 4,
+                            "_$type": "Record"
                           }
                         }
                       ],
@@ -3502,21 +3557,23 @@
                             0
                           ]
                         }
-                      ]
-                    }
-                  ],
-                  "gears": [
-                    {
-                      "_$type": "GearNumber",
-                      "controller": {
-                        "_$ref": "exp_SkillBattleStartView_1",
-                        "_$ctrl": "mapLayout"
-                      },
-                      "propPath": "width",
-                      "values": {
-                        "0": 264,
-                        "1": 288
-                      }
+                      ],
+                      "text": "-- / --",
+                      "font": "Microsoft YaHei",
+                      "fontSize": 19,
+                      "color": "#ecebe1",
+                      "bold": true,
+                      "align": "center",
+                      "valign": "middle",
+                      "overflow": "shrink",
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        0
+                      ],
+                      "stroke": 1,
+                      "strokeColor": "#0a1b14"
                     }
                   ]
                 },
@@ -3530,6 +3587,21 @@
                   "height": 48,
                   "_mouseState": 2,
                   "mouseThrough": true,
+                  "gears": [
+                    {
+                      "_$type": "GearNumber",
+                      "controller": {
+                        "_$ref": "exp_SkillBattleStartView_1",
+                        "_$ctrl": "mapLayout"
+                      },
+                      "propPath": "width",
+                      "values": {
+                        "0": 232,
+                        "1": 248,
+                        "_$type": "Record"
+                      }
+                    }
+                  ],
                   "relations": [
                     {
                       "_$type": "Relation",
@@ -3559,26 +3631,18 @@
                       "name": "mapWeightFrame",
                       "width": 232,
                       "height": 48,
+                      "visible": false,
                       "_mouseState": 1,
                       "src": "ui/atlas/module/expedition/handpainted/map-slot.png",
-                      "autoSize": false,
-                      "visible": false
+                      "autoSize": false
                     },
                     {
                       "_$id": "map_foundation_expWeightLabel",
                       "_$type": "GTextField",
                       "name": "expWeightLabel",
-                      "x": 0,
                       "width": 48,
                       "height": 48,
                       "_mouseState": 1,
-                      "text": "负重",
-                      "fontSize": 19,
-                      "color": "#c9d2c8",
-                      "align": "center",
-                      "valign": "middle",
-                      "overflow": "shrink",
-                      "y": 0,
                       "gears": [
                         {
                           "_$type": "GearNumber",
@@ -3589,7 +3653,8 @@
                           "propPath": "width",
                           "values": {
                             "0": 48,
-                            "1": 60
+                            "1": 60,
+                            "_$type": "Record"
                           }
                         },
                         {
@@ -3600,19 +3665,11 @@
                           },
                           "propPath": "fontSize",
                           "values": {
-                            "0": 19,
-                            "1": 26
+                            "0": 22,
+                            "1": 26,
+                            "_$type": "Record"
                           }
                         }
-                      ],
-                      "font": "Microsoft YaHei",
-                      "bold": false,
-                      "wordWrap": false,
-                      "padding": [
-                        0,
-                        0,
-                        0,
-                        0
                       ],
                       "relations": [
                         {
@@ -3625,7 +3682,23 @@
                             0
                           ]
                         }
-                      ]
+                      ],
+                      "text": "负重",
+                      "font": "SimSun",
+                      "fontSize": 22,
+                      "color": "#fff2d2",
+                      "bold": true,
+                      "align": "center",
+                      "valign": "middle",
+                      "overflow": "shrink",
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        0
+                      ],
+                      "stroke": 1,
+                      "strokeColor": "#0a1b14"
                     },
                     {
                       "_$id": "map_foundation_mapWeightSlot",
@@ -3636,8 +3709,6 @@
                       "width": 164,
                       "height": 28,
                       "_mouseState": 1,
-                      "src": "ui/atlas/module/expedition/handpainted/map-bar-frame.png",
-                      "autoSize": false,
                       "gears": [
                         {
                           "_$type": "GearNumber",
@@ -3648,7 +3719,8 @@
                           "propPath": "height",
                           "values": {
                             "0": 28,
-                            "1": 34
+                            "1": 34,
+                            "_$type": "Record"
                           }
                         }
                       ],
@@ -3675,7 +3747,9 @@
                             0
                           ]
                         }
-                      ]
+                      ],
+                      "src": "ui/atlas/module/expedition/handpainted/map-bar-frame.png",
+                      "autoSize": false
                     },
                     {
                       "_$id": "map_foundation_mapWeightTrack",
@@ -3686,8 +3760,6 @@
                       "width": 156,
                       "height": 20,
                       "_mouseState": 1,
-                      "src": "ui/atlas/module/expedition/handpainted/map-bar-track.png",
-                      "autoSize": false,
                       "relations": [
                         {
                           "_$type": "Relation",
@@ -3705,7 +3777,9 @@
                             0
                           ]
                         }
-                      ]
+                      ],
+                      "src": "ui/atlas/module/expedition/handpainted/map-bar-track.png",
+                      "autoSize": false
                     },
                     {
                       "_$id": "map_foundation_mapWeightFill",
@@ -3717,8 +3791,6 @@
                       "height": 20,
                       "visible": false,
                       "_mouseState": 1,
-                      "src": "ui/atlas/module/expedition/handpainted/map-bar-weight.png",
-                      "autoSize": false,
                       "relations": [
                         {
                           "_$type": "Relation",
@@ -3736,7 +3808,9 @@
                             0
                           ]
                         }
-                      ]
+                      ],
+                      "src": "ui/atlas/module/expedition/handpainted/map-bar-weight.png",
+                      "autoSize": false
                     },
                     {
                       "_$id": "map_foundation_expWeight",
@@ -3747,21 +3821,6 @@
                       "width": 164,
                       "height": 28,
                       "_mouseState": 1,
-                      "text": "-- / --",
-                      "fontSize": 19,
-                      "color": "#ecebe1",
-                      "align": "center",
-                      "valign": "middle",
-                      "overflow": "shrink",
-                      "font": "Microsoft YaHei",
-                      "bold": false,
-                      "wordWrap": false,
-                      "padding": [
-                        0,
-                        0,
-                        0,
-                        0
-                      ],
                       "gears": [
                         {
                           "_$type": "GearNumber",
@@ -3772,7 +3831,8 @@
                           "propPath": "fontSize",
                           "values": {
                             "0": 19,
-                            "1": 26
+                            "1": 26,
+                            "_$type": "Record"
                           }
                         },
                         {
@@ -3784,7 +3844,8 @@
                           "propPath": "textIns.y",
                           "values": {
                             "0": 3,
-                            "1": 4
+                            "1": 4,
+                            "_$type": "Record"
                           }
                         }
                       ],
@@ -3805,21 +3866,23 @@
                             0
                           ]
                         }
-                      ]
-                    }
-                  ],
-                  "gears": [
-                    {
-                      "_$type": "GearNumber",
-                      "controller": {
-                        "_$ref": "exp_SkillBattleStartView_1",
-                        "_$ctrl": "mapLayout"
-                      },
-                      "propPath": "width",
-                      "values": {
-                        "0": 232,
-                        "1": 248
-                      }
+                      ],
+                      "text": "-- / --",
+                      "font": "Microsoft YaHei",
+                      "fontSize": 19,
+                      "color": "#ecebe1",
+                      "bold": true,
+                      "align": "center",
+                      "valign": "middle",
+                      "overflow": "shrink",
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        0
+                      ],
+                      "stroke": 1,
+                      "strokeColor": "#0a1b14"
                     }
                   ]
                 },
@@ -3889,22 +3952,6 @@
                   "src": "ui/atlas/module/expedition/handpainted/map-toolbar-disabled.png",
                   "autoSize": false
                 }
-              ],
-              "x": 8,
-              "y": 8,
-              "gears": [
-                {
-                  "_$type": "GearNumber",
-                  "controller": {
-                    "_$ref": "exp_SkillBattleStartView_1",
-                    "_$ctrl": "mapLayout"
-                  },
-                  "propPath": "height",
-                  "values": {
-                    "0": 64,
-                    "1": 80
-                  }
-                }
               ]
             },
             {
@@ -3916,6 +3963,21 @@
               "width": 1240,
               "height": 164,
               "mouseThrough": true,
+              "gears": [
+                {
+                  "_$type": "GearNumber",
+                  "controller": {
+                    "_$ref": "exp_SkillBattleStartView_1",
+                    "_$ctrl": "mapLayout"
+                  },
+                  "propPath": "height",
+                  "values": {
+                    "0": 164,
+                    "1": 196,
+                    "_$type": "Record"
+                  }
+                }
+              ],
               "relations": [
                 {
                   "_$type": "Relation",
@@ -3935,15 +3997,13 @@
                   "_$id": "map_polish_notice",
                   "_$type": "GImage",
                   "name": "mapNoticeSkin",
+                  "x": 676,
+                  "y": 124,
                   "width": 160,
                   "height": 40,
                   "visible": false,
-                  "_mouseState": 1,
-                  "src": "ui/atlas/module/expedition/handpainted/map-notice-panel.png",
-                  "autoSize": false,
-                  "x": 676,
-                  "y": 124,
                   "alpha": 0.96,
+                  "_mouseState": 1,
                   "relations": [
                     {
                       "_$type": "Relation",
@@ -3961,7 +4021,9 @@
                         0
                       ]
                     }
-                  ]
+                  ],
+                  "src": "ui/atlas/module/expedition/handpainted/map-notice-panel.png",
+                  "autoSize": false
                 },
                 {
                   "_$id": "exp_SkillBattleStartView_6",
@@ -3972,21 +4034,6 @@
                   "width": 160,
                   "height": 40,
                   "_mouseState": 1,
-                  "text": "",
-                  "fontSize": 18,
-                  "color": "#efa797",
-                  "overflow": "visible",
-                  "fitContent": 1,
-                  "wordWrap": false,
-                  "maxWidth": 600,
-                  "padding": [
-                    8,
-                    20,
-                    8,
-                    20
-                  ],
-                  "align": "center",
-                  "valign": "middle",
                   "gears": [
                     {
                       "_$type": "GearNumber",
@@ -3997,7 +4044,8 @@
                       "propPath": "fontSize",
                       "values": {
                         "0": 18,
-                        "1": 26
+                        "1": 26,
+                        "_$type": "Record"
                       }
                     }
                   ],
@@ -4014,6 +4062,19 @@
                         0
                       ]
                     }
+                  ],
+                  "text": "",
+                  "fontSize": 18,
+                  "color": "#efa797",
+                  "fitContent": 1,
+                  "align": "center",
+                  "valign": "middle",
+                  "maxWidth": 600,
+                  "padding": [
+                    8,
+                    20,
+                    8,
+                    20
                   ]
                 },
                 {
@@ -4024,148 +4085,6 @@
                   "width": 108,
                   "height": 100,
                   "_mouseState": 2,
-                  "_$child": [
-                    {
-                      "_$id": "exp_SkillBattleStartView_145",
-                      "_$type": "GImage",
-                      "name": "expStorageSkin",
-                      "width": 108,
-                      "height": 100,
-                      "_mouseState": 1,
-                      "src": "ui/atlas/module/expedition/handpainted/map-toolbar-normal.png",
-                      "autoSize": false,
-                      "relations": [
-                        {
-                          "_$type": "Relation",
-                          "target": {
-                            "_$ref": "exp_SkillBattleStartView_147"
-                          },
-                          "data": [
-                            1,
-                            0,
-                            2,
-                            0
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_146",
-                      "_$type": "GTextField",
-                      "name": "expStorageText",
-                      "x": 8,
-                      "y": 60,
-                      "width": 92,
-                      "height": 30,
-                      "_mouseState": 1,
-                      "text": "行囊",
-                      "fontSize": 21,
-                      "color": "#f1eee0",
-                      "bold": false,
-                      "align": "center",
-                      "valign": "middle",
-                      "overflow": "shrink",
-                      "gears": [
-                        {
-                          "_$type": "GearNumber",
-                          "controller": {
-                            "_$ref": "exp_SkillBattleStartView_1",
-                            "_$ctrl": "mapLayout"
-                          },
-                          "propPath": "height",
-                          "values": {
-                            "0": 30,
-                            "1": 40
-                          }
-                        },
-                        {
-                          "_$type": "GearNumber",
-                          "controller": {
-                            "_$ref": "exp_SkillBattleStartView_1",
-                            "_$ctrl": "mapLayout"
-                          },
-                          "propPath": "fontSize",
-                          "values": {
-                            "0": 21,
-                            "1": 28
-                          }
-                        }
-                      ],
-                      "font": "Microsoft YaHei",
-                      "wordWrap": false,
-                      "padding": [
-                        0,
-                        0,
-                        0,
-                        0
-                      ],
-                      "relations": [
-                        {
-                          "_$type": "Relation",
-                          "target": {
-                            "_$ref": "exp_SkillBattleStartView_147"
-                          },
-                          "data": [
-                            1,
-                            0,
-                            16,
-                            0
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "_$id": "map_foundation_expStorageActionIcon",
-                      "_$type": "GImage",
-                      "name": "expStorageActionIcon",
-                      "x": 32,
-                      "y": 12,
-                      "width": 44,
-                      "height": 44,
-                      "_mouseState": 1,
-                      "src": "ui/atlas/module/expedition/handpainted/map-icon-inventory.png",
-                      "autoSize": false,
-                      "gears": [
-                        {
-                          "_$type": "GearNumber",
-                          "controller": {
-                            "_$ref": "exp_SkillBattleStartView_1",
-                            "_$ctrl": "mapLayout"
-                          },
-                          "propPath": "width",
-                          "values": {
-                            "0": 44,
-                            "1": 48
-                          }
-                        },
-                        {
-                          "_$type": "GearNumber",
-                          "controller": {
-                            "_$ref": "exp_SkillBattleStartView_1",
-                            "_$ctrl": "mapLayout"
-                          },
-                          "propPath": "height",
-                          "values": {
-                            "0": 44,
-                            "1": 48
-                          }
-                        }
-                      ],
-                      "relations": [
-                        {
-                          "_$type": "Relation",
-                          "target": {
-                            "_$ref": "exp_SkillBattleStartView_147"
-                          },
-                          "data": [
-                            6,
-                            0
-                          ]
-                        }
-                      ]
-                    }
-                  ],
-                  "x": 0,
                   "gears": [
                     {
                       "_$type": "GearNumber",
@@ -4176,7 +4095,8 @@
                       "propPath": "width",
                       "values": {
                         "0": 108,
-                        "1": 124
+                        "1": 124,
+                        "_$type": "Record"
                       }
                     },
                     {
@@ -4188,7 +4108,8 @@
                       "propPath": "height",
                       "values": {
                         "0": 100,
-                        "1": 116
+                        "1": 116,
+                        "_$type": "Record"
                       }
                     }
                   ],
@@ -4203,6 +4124,152 @@
                         0
                       ]
                     }
+                  ],
+                  "_$child": [
+                    {
+                      "_$id": "exp_SkillBattleStartView_145",
+                      "_$type": "GImage",
+                      "name": "expStorageSkin",
+                      "width": 108,
+                      "height": 100,
+                      "_mouseState": 1,
+                      "relations": [
+                        {
+                          "_$type": "Relation",
+                          "target": {
+                            "_$ref": "exp_SkillBattleStartView_147"
+                          },
+                          "data": [
+                            1,
+                            0,
+                            2,
+                            0
+                          ]
+                        }
+                      ],
+                      "src": "ui/atlas/module/expedition/handpainted/map-toolbar-normal.png",
+                      "autoSize": false
+                    },
+                    {
+                      "_$id": "exp_SkillBattleStartView_146",
+                      "_$type": "GTextField",
+                      "name": "expStorageText",
+                      "x": 8,
+                      "y": 60,
+                      "width": 92,
+                      "height": 30,
+                      "_mouseState": 1,
+                      "gears": [
+                        {
+                          "_$type": "GearNumber",
+                          "controller": {
+                            "_$ref": "exp_SkillBattleStartView_1",
+                            "_$ctrl": "mapLayout"
+                          },
+                          "propPath": "height",
+                          "values": {
+                            "0": 30,
+                            "1": 40,
+                            "_$type": "Record"
+                          }
+                        },
+                        {
+                          "_$type": "GearNumber",
+                          "controller": {
+                            "_$ref": "exp_SkillBattleStartView_1",
+                            "_$ctrl": "mapLayout"
+                          },
+                          "propPath": "fontSize",
+                          "values": {
+                            "0": 25,
+                            "1": 30,
+                            "_$type": "Record"
+                          }
+                        }
+                      ],
+                      "relations": [
+                        {
+                          "_$type": "Relation",
+                          "target": {
+                            "_$ref": "exp_SkillBattleStartView_147"
+                          },
+                          "data": [
+                            1,
+                            0,
+                            16,
+                            0
+                          ]
+                        }
+                      ],
+                      "text": "行囊",
+                      "font": "SimSun",
+                      "fontSize": 25,
+                      "color": "#fff2d2",
+                      "bold": true,
+                      "align": "center",
+                      "valign": "middle",
+                      "overflow": "shrink",
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        0
+                      ],
+                      "stroke": 1,
+                      "strokeColor": "#0a1b14"
+                    },
+                    {
+                      "_$id": "map_foundation_expStorageActionIcon",
+                      "_$type": "GImage",
+                      "name": "expStorageActionIcon",
+                      "x": 32,
+                      "y": 12,
+                      "width": 44,
+                      "height": 44,
+                      "_mouseState": 1,
+                      "gears": [
+                        {
+                          "_$type": "GearNumber",
+                          "controller": {
+                            "_$ref": "exp_SkillBattleStartView_1",
+                            "_$ctrl": "mapLayout"
+                          },
+                          "propPath": "width",
+                          "values": {
+                            "0": 44,
+                            "1": 48,
+                            "_$type": "Record"
+                          }
+                        },
+                        {
+                          "_$type": "GearNumber",
+                          "controller": {
+                            "_$ref": "exp_SkillBattleStartView_1",
+                            "_$ctrl": "mapLayout"
+                          },
+                          "propPath": "height",
+                          "values": {
+                            "0": 44,
+                            "1": 48,
+                            "_$type": "Record"
+                          }
+                        }
+                      ],
+                      "relations": [
+                        {
+                          "_$type": "Relation",
+                          "target": {
+                            "_$ref": "exp_SkillBattleStartView_147"
+                          },
+                          "data": [
+                            6,
+                            0
+                          ]
+                        }
+                      ],
+                      "src": "ui/atlas/module/expedition/handpainted/map-icon-inventory.png",
+                      "autoSize": false
+                    }
                   ]
                 },
                 {
@@ -4214,147 +4281,6 @@
                   "width": 108,
                   "height": 100,
                   "_mouseState": 2,
-                  "_$child": [
-                    {
-                      "_$id": "exp_SkillBattleStartView_148",
-                      "_$type": "GImage",
-                      "name": "expBuildSkin",
-                      "width": 108,
-                      "height": 100,
-                      "_mouseState": 1,
-                      "src": "ui/atlas/module/expedition/handpainted/map-toolbar-normal.png",
-                      "autoSize": false,
-                      "relations": [
-                        {
-                          "_$type": "Relation",
-                          "target": {
-                            "_$ref": "exp_SkillBattleStartView_150"
-                          },
-                          "data": [
-                            1,
-                            0,
-                            2,
-                            0
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "_$id": "exp_SkillBattleStartView_149",
-                      "_$type": "GTextField",
-                      "name": "expBuildText",
-                      "x": 8,
-                      "y": 60,
-                      "width": 92,
-                      "height": 30,
-                      "_mouseState": 1,
-                      "text": "构筑",
-                      "fontSize": 21,
-                      "color": "#f1eee0",
-                      "bold": false,
-                      "align": "center",
-                      "valign": "middle",
-                      "overflow": "shrink",
-                      "gears": [
-                        {
-                          "_$type": "GearNumber",
-                          "controller": {
-                            "_$ref": "exp_SkillBattleStartView_1",
-                            "_$ctrl": "mapLayout"
-                          },
-                          "propPath": "height",
-                          "values": {
-                            "0": 30,
-                            "1": 40
-                          }
-                        },
-                        {
-                          "_$type": "GearNumber",
-                          "controller": {
-                            "_$ref": "exp_SkillBattleStartView_1",
-                            "_$ctrl": "mapLayout"
-                          },
-                          "propPath": "fontSize",
-                          "values": {
-                            "0": 21,
-                            "1": 28
-                          }
-                        }
-                      ],
-                      "font": "Microsoft YaHei",
-                      "wordWrap": false,
-                      "padding": [
-                        0,
-                        0,
-                        0,
-                        0
-                      ],
-                      "relations": [
-                        {
-                          "_$type": "Relation",
-                          "target": {
-                            "_$ref": "exp_SkillBattleStartView_150"
-                          },
-                          "data": [
-                            1,
-                            0,
-                            16,
-                            0
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "_$id": "map_foundation_expBuildActionIcon",
-                      "_$type": "GImage",
-                      "name": "expBuildActionIcon",
-                      "x": 32,
-                      "y": 12,
-                      "width": 44,
-                      "height": 44,
-                      "_mouseState": 1,
-                      "src": "ui/atlas/module/expedition/handpainted/map-icon-build.png",
-                      "autoSize": false,
-                      "gears": [
-                        {
-                          "_$type": "GearNumber",
-                          "controller": {
-                            "_$ref": "exp_SkillBattleStartView_1",
-                            "_$ctrl": "mapLayout"
-                          },
-                          "propPath": "width",
-                          "values": {
-                            "0": 44,
-                            "1": 48
-                          }
-                        },
-                        {
-                          "_$type": "GearNumber",
-                          "controller": {
-                            "_$ref": "exp_SkillBattleStartView_1",
-                            "_$ctrl": "mapLayout"
-                          },
-                          "propPath": "height",
-                          "values": {
-                            "0": 44,
-                            "1": 48
-                          }
-                        }
-                      ],
-                      "relations": [
-                        {
-                          "_$type": "Relation",
-                          "target": {
-                            "_$ref": "exp_SkillBattleStartView_150"
-                          },
-                          "data": [
-                            6,
-                            0
-                          ]
-                        }
-                      ]
-                    }
-                  ],
                   "gears": [
                     {
                       "_$type": "GearNumber",
@@ -4365,7 +4291,8 @@
                       "propPath": "width",
                       "values": {
                         "0": 108,
-                        "1": 124
+                        "1": 124,
+                        "_$type": "Record"
                       }
                     },
                     {
@@ -4377,7 +4304,8 @@
                       "propPath": "height",
                       "values": {
                         "0": 100,
-                        "1": 116
+                        "1": 116,
+                        "_$type": "Record"
                       }
                     }
                   ],
@@ -4402,6 +4330,152 @@
                         0
                       ]
                     }
+                  ],
+                  "_$child": [
+                    {
+                      "_$id": "exp_SkillBattleStartView_148",
+                      "_$type": "GImage",
+                      "name": "expBuildSkin",
+                      "width": 108,
+                      "height": 100,
+                      "_mouseState": 1,
+                      "relations": [
+                        {
+                          "_$type": "Relation",
+                          "target": {
+                            "_$ref": "exp_SkillBattleStartView_150"
+                          },
+                          "data": [
+                            1,
+                            0,
+                            2,
+                            0
+                          ]
+                        }
+                      ],
+                      "src": "ui/atlas/module/expedition/handpainted/map-toolbar-normal.png",
+                      "autoSize": false
+                    },
+                    {
+                      "_$id": "exp_SkillBattleStartView_149",
+                      "_$type": "GTextField",
+                      "name": "expBuildText",
+                      "x": 8,
+                      "y": 60,
+                      "width": 92,
+                      "height": 30,
+                      "_mouseState": 1,
+                      "gears": [
+                        {
+                          "_$type": "GearNumber",
+                          "controller": {
+                            "_$ref": "exp_SkillBattleStartView_1",
+                            "_$ctrl": "mapLayout"
+                          },
+                          "propPath": "height",
+                          "values": {
+                            "0": 30,
+                            "1": 40,
+                            "_$type": "Record"
+                          }
+                        },
+                        {
+                          "_$type": "GearNumber",
+                          "controller": {
+                            "_$ref": "exp_SkillBattleStartView_1",
+                            "_$ctrl": "mapLayout"
+                          },
+                          "propPath": "fontSize",
+                          "values": {
+                            "0": 25,
+                            "1": 30,
+                            "_$type": "Record"
+                          }
+                        }
+                      ],
+                      "relations": [
+                        {
+                          "_$type": "Relation",
+                          "target": {
+                            "_$ref": "exp_SkillBattleStartView_150"
+                          },
+                          "data": [
+                            1,
+                            0,
+                            16,
+                            0
+                          ]
+                        }
+                      ],
+                      "text": "构筑",
+                      "font": "SimSun",
+                      "fontSize": 25,
+                      "color": "#fff2d2",
+                      "bold": true,
+                      "align": "center",
+                      "valign": "middle",
+                      "overflow": "shrink",
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        0
+                      ],
+                      "stroke": 1,
+                      "strokeColor": "#0a1b14"
+                    },
+                    {
+                      "_$id": "map_foundation_expBuildActionIcon",
+                      "_$type": "GImage",
+                      "name": "expBuildActionIcon",
+                      "x": 32,
+                      "y": 12,
+                      "width": 44,
+                      "height": 44,
+                      "_mouseState": 1,
+                      "gears": [
+                        {
+                          "_$type": "GearNumber",
+                          "controller": {
+                            "_$ref": "exp_SkillBattleStartView_1",
+                            "_$ctrl": "mapLayout"
+                          },
+                          "propPath": "width",
+                          "values": {
+                            "0": 44,
+                            "1": 48,
+                            "_$type": "Record"
+                          }
+                        },
+                        {
+                          "_$type": "GearNumber",
+                          "controller": {
+                            "_$ref": "exp_SkillBattleStartView_1",
+                            "_$ctrl": "mapLayout"
+                          },
+                          "propPath": "height",
+                          "values": {
+                            "0": 44,
+                            "1": 48,
+                            "_$type": "Record"
+                          }
+                        }
+                      ],
+                      "relations": [
+                        {
+                          "_$type": "Relation",
+                          "target": {
+                            "_$ref": "exp_SkillBattleStartView_150"
+                          },
+                          "data": [
+                            6,
+                            0
+                          ]
+                        }
+                      ],
+                      "src": "ui/atlas/module/expedition/handpainted/map-icon-build.png",
+                      "autoSize": false
+                    }
                   ]
                 },
                 {
@@ -4411,6 +4485,34 @@
                   "width": 168,
                   "height": 52,
                   "mouseThrough": true,
+                  "gears": [
+                    {
+                      "_$type": "GearNumber",
+                      "controller": {
+                        "_$ref": "exp_SkillBattleStartView_1",
+                        "_$ctrl": "mapLayout"
+                      },
+                      "propPath": "width",
+                      "values": {
+                        "0": 168,
+                        "1": 204,
+                        "_$type": "Record"
+                      }
+                    },
+                    {
+                      "_$type": "GearNumber",
+                      "controller": {
+                        "_$ref": "exp_SkillBattleStartView_1",
+                        "_$ctrl": "mapLayout"
+                      },
+                      "propPath": "height",
+                      "values": {
+                        "0": 52,
+                        "1": 64,
+                        "_$type": "Record"
+                      }
+                    }
+                  ],
                   "_$child": [
                     {
                       "_$id": "exp_SkillBattleStartView_153",
@@ -4419,6 +4521,20 @@
                       "width": 168,
                       "height": 52,
                       "_mouseState": 2,
+                      "relations": [
+                        {
+                          "_$type": "Relation",
+                          "target": {
+                            "_$ref": "map_exit_area"
+                          },
+                          "data": [
+                            1,
+                            0,
+                            2,
+                            0
+                          ]
+                        }
+                      ],
                       "_$child": [
                         {
                           "_$id": "exp_SkillBattleStartView_151",
@@ -4427,8 +4543,6 @@
                           "width": 168,
                           "height": 52,
                           "_mouseState": 1,
-                          "src": "ui/atlas/module/expedition/handpainted/map-button-normal.png",
-                          "autoSize": false,
                           "relations": [
                             {
                               "_$type": "Relation",
@@ -4442,7 +4556,9 @@
                                 0
                               ]
                             }
-                          ]
+                          ],
+                          "src": "ui/atlas/module/expedition/handpainted/map-button-normal.png",
+                          "autoSize": false
                         },
                         {
                           "_$id": "exp_SkillBattleStartView_152",
@@ -4452,22 +4568,6 @@
                           "width": 120,
                           "height": 52,
                           "_mouseState": 1,
-                          "text": "放弃本局",
-                          "fontSize": 18,
-                          "color": "#d8c7ba",
-                          "align": "center",
-                          "valign": "middle",
-                          "overflow": "shrink",
-                          "y": 0,
-                          "font": "Microsoft YaHei",
-                          "bold": false,
-                          "wordWrap": false,
-                          "padding": [
-                            0,
-                            0,
-                            0,
-                            0
-                          ],
                           "gears": [
                             {
                               "_$type": "GearNumber",
@@ -4477,8 +4577,9 @@
                               },
                               "propPath": "fontSize",
                               "values": {
-                                "0": 18,
-                                "1": 26
+                                "0": 22,
+                                "1": 26,
+                                "_$type": "Record"
                               }
                             }
                           ],
@@ -4495,7 +4596,23 @@
                                 0
                               ]
                             }
-                          ]
+                          ],
+                          "text": "放弃本局",
+                          "font": "SimSun",
+                          "fontSize": 22,
+                          "color": "#fff2d2",
+                          "bold": true,
+                          "align": "center",
+                          "valign": "middle",
+                          "overflow": "shrink",
+                          "padding": [
+                            0,
+                            0,
+                            0,
+                            0
+                          ],
+                          "stroke": 1,
+                          "strokeColor": "#0a1b14"
                         },
                         {
                           "_$id": "map_foundation_expAbandonActionIcon",
@@ -4506,8 +4623,6 @@
                           "width": 24,
                           "height": 24,
                           "_mouseState": 1,
-                          "src": "ui/atlas/module/expedition/handpainted/map-icon-exit.png",
-                          "autoSize": false,
                           "relations": [
                             {
                               "_$type": "Relation",
@@ -4519,69 +4634,13 @@
                                 0
                               ]
                             }
-                          ]
-                        }
-                      ],
-                      "x": 0,
-                      "y": 0,
-                      "relations": [
-                        {
-                          "_$type": "Relation",
-                          "target": {
-                            "_$ref": "map_exit_area"
-                          },
-                          "data": [
-                            1,
-                            0,
-                            2,
-                            0
-                          ]
+                          ],
+                          "src": "ui/atlas/module/expedition/handpainted/map-icon-exit.png",
+                          "autoSize": false
                         }
                       ]
                     }
-                  ],
-                  "x": 0,
-                  "y": 0,
-                  "gears": [
-                    {
-                      "_$type": "GearNumber",
-                      "controller": {
-                        "_$ref": "exp_SkillBattleStartView_1",
-                        "_$ctrl": "mapLayout"
-                      },
-                      "propPath": "width",
-                      "values": {
-                        "0": 168,
-                        "1": 204
-                      }
-                    },
-                    {
-                      "_$type": "GearNumber",
-                      "controller": {
-                        "_$ref": "exp_SkillBattleStartView_1",
-                        "_$ctrl": "mapLayout"
-                      },
-                      "propPath": "height",
-                      "values": {
-                        "0": 52,
-                        "1": 64
-                      }
-                    }
                   ]
-                }
-              ],
-              "gears": [
-                {
-                  "_$type": "GearNumber",
-                  "controller": {
-                    "_$ref": "exp_SkillBattleStartView_1",
-                    "_$ctrl": "mapLayout"
-                  },
-                  "propPath": "height",
-                  "values": {
-                    "0": 164,
-                    "1": 196
-                  }
                 }
               ]
             },
@@ -4595,16 +4654,54 @@
               "height": 116,
               "_mouseState": 2,
               "mouseThrough": true,
+              "gears": [
+                {
+                  "_$type": "GearNumber",
+                  "controller": {
+                    "_$ref": "exp_SkillBattleStartView_1",
+                    "_$ctrl": "mapLayout"
+                  },
+                  "propPath": "width",
+                  "values": {
+                    "0": 300,
+                    "1": 344,
+                    "_$type": "Record"
+                  }
+                },
+                {
+                  "_$type": "GearNumber",
+                  "controller": {
+                    "_$ref": "exp_SkillBattleStartView_1",
+                    "_$ctrl": "mapLayout"
+                  },
+                  "propPath": "height",
+                  "values": {
+                    "0": 116,
+                    "1": 136,
+                    "_$type": "Record"
+                  }
+                }
+              ],
+              "relations": [
+                {
+                  "_$type": "Relation",
+                  "target": {
+                    "_$ref": "region_78"
+                  },
+                  "data": [
+                    12,
+                    0
+                  ]
+                }
+              ],
               "_$child": [
                 {
                   "_$id": "map_foundation_mapPlayerPanel",
                   "_$type": "GImage",
                   "name": "mapPlayerPanel",
                   "width": 300,
-                  "height": 116,
+                  "height": 124,
                   "_mouseState": 1,
-                  "src": "ui/atlas/module/expedition/handpainted/map-player-panel.png",
-                  "autoSize": false,
                   "relations": [
                     {
                       "_$type": "Relation",
@@ -4618,7 +4715,9 @@
                         0
                       ]
                     }
-                  ]
+                  ],
+                  "src": "ui/atlas/module/expedition/handpainted/map-player-panel.png",
+                  "autoSize": false
                 },
                 {
                   "_$id": "map_foundation_mapAvatarPlaceholder",
@@ -4629,8 +4728,6 @@
                   "width": 52,
                   "height": 52,
                   "_mouseState": 1,
-                  "src": "ui/atlas/module/expedition/handpainted/map-player-portrait.png",
-                  "autoSize": false,
                   "gears": [
                     {
                       "_$type": "GearNumber",
@@ -4641,7 +4738,8 @@
                       "propPath": "width",
                       "values": {
                         "0": 52,
-                        "1": 64
+                        "1": 64,
+                        "_$type": "Record"
                       }
                     },
                     {
@@ -4653,7 +4751,8 @@
                       "propPath": "height",
                       "values": {
                         "0": 52,
-                        "1": 64
+                        "1": 64,
+                        "_$type": "Record"
                       }
                     }
                   ],
@@ -4668,7 +4767,9 @@
                         0
                       ]
                     }
-                  ]
+                  ],
+                  "src": "ui/atlas/module/expedition/handpainted/map-player-portrait.png",
+                  "autoSize": false
                 },
                 {
                   "_$id": "map_foundation_expPlayerName",
@@ -4679,12 +4780,6 @@
                   "width": 200,
                   "height": 24,
                   "_mouseState": 1,
-                  "text": "散修",
-                  "fontSize": 19,
-                  "color": "#d9decf",
-                  "align": "center",
-                  "valign": "middle",
-                  "overflow": "shrink",
                   "gears": [
                     {
                       "_$type": "GearNumber",
@@ -4695,7 +4790,8 @@
                       "propPath": "y",
                       "values": {
                         "0": 10,
-                        "1": 8
+                        "1": 8,
+                        "_$type": "Record"
                       }
                     },
                     {
@@ -4707,7 +4803,8 @@
                       "propPath": "width",
                       "values": {
                         "0": 200,
-                        "1": 232
+                        "1": 232,
+                        "_$type": "Record"
                       }
                     },
                     {
@@ -4719,7 +4816,8 @@
                       "propPath": "height",
                       "values": {
                         "0": 24,
-                        "1": 40
+                        "1": 40,
+                        "_$type": "Record"
                       }
                     },
                     {
@@ -4730,19 +4828,11 @@
                       },
                       "propPath": "fontSize",
                       "values": {
-                        "0": 19,
-                        "1": 26
+                        "0": 22,
+                        "1": 28,
+                        "_$type": "Record"
                       }
                     }
-                  ],
-                  "font": "Microsoft YaHei",
-                  "bold": false,
-                  "wordWrap": false,
-                  "padding": [
-                    0,
-                    0,
-                    0,
-                    0
                   ],
                   "relations": [
                     {
@@ -4755,7 +4845,23 @@
                         0
                       ]
                     }
-                  ]
+                  ],
+                  "text": "散修",
+                  "font": "SimSun",
+                  "fontSize": 22,
+                  "color": "#f3d68a",
+                  "bold": true,
+                  "align": "center",
+                  "valign": "middle",
+                  "overflow": "shrink",
+                  "padding": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "stroke": 1,
+                  "strokeColor": "#0a1b14"
                 },
                 {
                   "_$id": "map_foundation_mapHpSlot",
@@ -4766,8 +4872,6 @@
                   "width": 200,
                   "height": 28,
                   "_mouseState": 1,
-                  "src": "ui/atlas/module/expedition/handpainted/map-bar-frame.png",
-                  "autoSize": false,
                   "gears": [
                     {
                       "_$type": "GearNumber",
@@ -4778,7 +4882,8 @@
                       "propPath": "height",
                       "values": {
                         "0": 28,
-                        "1": 36
+                        "1": 36,
+                        "_$type": "Record"
                       }
                     },
                     {
@@ -4790,7 +4895,8 @@
                       "propPath": "y",
                       "values": {
                         "0": 42,
-                        "1": 48
+                        "1": 48,
+                        "_$type": "Record"
                       }
                     }
                   ],
@@ -4807,7 +4913,9 @@
                         0
                       ]
                     }
-                  ]
+                  ],
+                  "src": "ui/atlas/module/expedition/handpainted/map-bar-frame.png",
+                  "autoSize": false
                 },
                 {
                   "_$id": "map_art_mapHpTrack",
@@ -4818,8 +4926,6 @@
                   "width": 192,
                   "height": 20,
                   "_mouseState": 1,
-                  "src": "ui/atlas/module/expedition/handpainted/map-bar-track.png",
-                  "autoSize": false,
                   "relations": [
                     {
                       "_$type": "Relation",
@@ -4837,7 +4943,9 @@
                         0
                       ]
                     }
-                  ]
+                  ],
+                  "src": "ui/atlas/module/expedition/handpainted/map-bar-track.png",
+                  "autoSize": false
                 },
                 {
                   "_$id": "map_foundation_mapHpFill",
@@ -4848,8 +4956,6 @@
                   "width": 192,
                   "height": 20,
                   "_mouseState": 1,
-                  "src": "ui/atlas/module/expedition/handpainted/map-bar-hp.png",
-                  "autoSize": false,
                   "relations": [
                     {
                       "_$type": "Relation",
@@ -4867,7 +4973,9 @@
                         0
                       ]
                     }
-                  ]
+                  ],
+                  "src": "ui/atlas/module/expedition/handpainted/map-bar-hp.png",
+                  "autoSize": false
                 },
                 {
                   "_$id": "map_foundation_expHpValue",
@@ -4878,21 +4986,6 @@
                   "width": 200,
                   "height": 28,
                   "_mouseState": 1,
-                  "text": "-- / --",
-                  "fontSize": 19,
-                  "color": "#ecebe1",
-                  "align": "center",
-                  "valign": "middle",
-                  "overflow": "shrink",
-                  "font": "Microsoft YaHei",
-                  "bold": false,
-                  "wordWrap": false,
-                  "padding": [
-                    0,
-                    0,
-                    0,
-                    0
-                  ],
                   "gears": [
                     {
                       "_$type": "GearNumber",
@@ -4903,7 +4996,8 @@
                       "propPath": "fontSize",
                       "values": {
                         "0": 19,
-                        "1": 26
+                        "1": 26,
+                        "_$type": "Record"
                       }
                     },
                     {
@@ -4915,7 +5009,8 @@
                       "propPath": "textIns.y",
                       "values": {
                         "0": 3,
-                        "1": 4
+                        "1": 4,
+                        "_$type": "Record"
                       }
                     }
                   ],
@@ -4936,7 +5031,23 @@
                         0
                       ]
                     }
-                  ]
+                  ],
+                  "text": "-- / --",
+                  "font": "Microsoft YaHei",
+                  "fontSize": 19,
+                  "color": "#ecebe1",
+                  "bold": true,
+                  "align": "center",
+                  "valign": "middle",
+                  "overflow": "shrink",
+                  "padding": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "stroke": 1,
+                  "strokeColor": "#0a1b14"
                 },
                 {
                   "_$id": "map_foundation_mapMpSlot",
@@ -4947,8 +5058,6 @@
                   "width": 200,
                   "height": 28,
                   "_mouseState": 1,
-                  "src": "ui/atlas/module/expedition/handpainted/map-bar-frame.png",
-                  "autoSize": false,
                   "gears": [
                     {
                       "_$type": "GearNumber",
@@ -4959,7 +5068,8 @@
                       "propPath": "height",
                       "values": {
                         "0": 28,
-                        "1": 36
+                        "1": 36,
+                        "_$type": "Record"
                       }
                     }
                   ],
@@ -4986,7 +5096,9 @@
                         0
                       ]
                     }
-                  ]
+                  ],
+                  "src": "ui/atlas/module/expedition/handpainted/map-bar-frame.png",
+                  "autoSize": false
                 },
                 {
                   "_$id": "map_art_mapMpTrack",
@@ -4997,8 +5109,6 @@
                   "width": 192,
                   "height": 20,
                   "_mouseState": 1,
-                  "src": "ui/atlas/module/expedition/handpainted/map-bar-track.png",
-                  "autoSize": false,
                   "relations": [
                     {
                       "_$type": "Relation",
@@ -5016,7 +5126,9 @@
                         0
                       ]
                     }
-                  ]
+                  ],
+                  "src": "ui/atlas/module/expedition/handpainted/map-bar-track.png",
+                  "autoSize": false
                 },
                 {
                   "_$id": "map_foundation_mapMpFill",
@@ -5027,8 +5139,6 @@
                   "width": 192,
                   "height": 20,
                   "_mouseState": 1,
-                  "src": "ui/atlas/module/expedition/handpainted/map-bar-mp.png",
-                  "autoSize": false,
                   "relations": [
                     {
                       "_$type": "Relation",
@@ -5046,7 +5156,9 @@
                         0
                       ]
                     }
-                  ]
+                  ],
+                  "src": "ui/atlas/module/expedition/handpainted/map-bar-mp.png",
+                  "autoSize": false
                 },
                 {
                   "_$id": "map_foundation_expMpValue",
@@ -5057,21 +5169,6 @@
                   "width": 200,
                   "height": 28,
                   "_mouseState": 1,
-                  "text": "-- / --",
-                  "fontSize": 19,
-                  "color": "#ecebe1",
-                  "align": "center",
-                  "valign": "middle",
-                  "overflow": "shrink",
-                  "font": "Microsoft YaHei",
-                  "bold": false,
-                  "wordWrap": false,
-                  "padding": [
-                    0,
-                    0,
-                    0,
-                    0
-                  ],
                   "gears": [
                     {
                       "_$type": "GearNumber",
@@ -5082,7 +5179,8 @@
                       "propPath": "fontSize",
                       "values": {
                         "0": 19,
-                        "1": 26
+                        "1": 26,
+                        "_$type": "Record"
                       }
                     },
                     {
@@ -5094,7 +5192,8 @@
                       "propPath": "textIns.y",
                       "values": {
                         "0": 3,
-                        "1": 4
+                        "1": 4,
+                        "_$type": "Record"
                       }
                     }
                   ],
@@ -5115,7 +5214,23 @@
                         0
                       ]
                     }
-                  ]
+                  ],
+                  "text": "-- / --",
+                  "font": "Microsoft YaHei",
+                  "fontSize": 19,
+                  "color": "#ecebe1",
+                  "bold": true,
+                  "align": "center",
+                  "valign": "middle",
+                  "overflow": "shrink",
+                  "padding": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "stroke": 1,
+                  "strokeColor": "#0a1b14"
                 },
                 {
                   "_$id": "map_bundle_mapHpIcon",
@@ -5126,8 +5241,6 @@
                   "width": 20,
                   "height": 20,
                   "_mouseState": 1,
-                  "src": "ui/atlas/module/expedition/handpainted/map-icon-hp.png",
-                  "autoSize": false,
                   "gears": [
                     {
                       "_$type": "GearNumber",
@@ -5138,7 +5251,8 @@
                       "propPath": "width",
                       "values": {
                         "0": 20,
-                        "1": 26
+                        "1": 26,
+                        "_$type": "Record"
                       }
                     },
                     {
@@ -5150,7 +5264,8 @@
                       "propPath": "height",
                       "values": {
                         "0": 20,
-                        "1": 26
+                        "1": 26,
+                        "_$type": "Record"
                       }
                     }
                   ],
@@ -5167,7 +5282,9 @@
                         0
                       ]
                     }
-                  ]
+                  ],
+                  "src": "ui/atlas/module/expedition/handpainted/map-icon-hp.png",
+                  "autoSize": false
                 },
                 {
                   "_$id": "map_bundle_mapMpIcon",
@@ -5178,8 +5295,6 @@
                   "width": 20,
                   "height": 20,
                   "_mouseState": 1,
-                  "src": "ui/atlas/module/expedition/handpainted/map-icon-mp.png",
-                  "autoSize": false,
                   "gears": [
                     {
                       "_$type": "GearNumber",
@@ -5190,7 +5305,8 @@
                       "propPath": "width",
                       "values": {
                         "0": 20,
-                        "1": 26
+                        "1": 26,
+                        "_$type": "Record"
                       }
                     },
                     {
@@ -5202,7 +5318,8 @@
                       "propPath": "height",
                       "values": {
                         "0": 20,
-                        "1": 26
+                        "1": 26,
+                        "_$type": "Record"
                       }
                     }
                   ],
@@ -5219,7 +5336,9 @@
                         0
                       ]
                     }
-                  ]
+                  ],
+                  "src": "ui/atlas/module/expedition/handpainted/map-icon-mp.png",
+                  "autoSize": false
                 },
                 {
                   "_$id": "map_foundation_mapAvatarFrame",
@@ -5230,8 +5349,6 @@
                   "width": 64,
                   "height": 64,
                   "_mouseState": 1,
-                  "src": "ui/atlas/module/expedition/handpainted/map-avatar-frame.png",
-                  "autoSize": false,
                   "gears": [
                     {
                       "_$type": "GearNumber",
@@ -5242,7 +5359,8 @@
                       "propPath": "width",
                       "values": {
                         "0": 64,
-                        "1": 76
+                        "1": 76,
+                        "_$type": "Record"
                       }
                     },
                     {
@@ -5254,7 +5372,8 @@
                       "propPath": "height",
                       "values": {
                         "0": 64,
-                        "1": 76
+                        "1": 76,
+                        "_$type": "Record"
                       }
                     }
                   ],
@@ -5269,45 +5388,9 @@
                         0
                       ]
                     }
-                  ]
-                }
-              ],
-              "gears": [
-                {
-                  "_$type": "GearNumber",
-                  "controller": {
-                    "_$ref": "exp_SkillBattleStartView_1",
-                    "_$ctrl": "mapLayout"
-                  },
-                  "propPath": "width",
-                  "values": {
-                    "0": 300,
-                    "1": 344
-                  }
-                },
-                {
-                  "_$type": "GearNumber",
-                  "controller": {
-                    "_$ref": "exp_SkillBattleStartView_1",
-                    "_$ctrl": "mapLayout"
-                  },
-                  "propPath": "height",
-                  "values": {
-                    "0": 116,
-                    "1": 136
-                  }
-                }
-              ],
-              "relations": [
-                {
-                  "_$type": "Relation",
-                  "target": {
-                    "_$ref": "region_78"
-                  },
-                  "data": [
-                    12,
-                    0
-                  ]
+                  ],
+                  "src": "ui/atlas/module/expedition/handpainted/map-avatar-frame.png",
+                  "autoSize": false
                 }
               ]
             },
@@ -5319,20 +5402,10 @@
               "height": 32,
               "visible": false,
               "_mouseState": 1,
-              "src": "ui/atlas/module/expedition/handpainted/map-route-dash-contrast.png",
+              "src": "ui/atlas/module/expedition/handpainted/map-route-dash.png",
               "autoSize": false
             }
-          ],
-          "controllers": {
-            "_$type": "Record",
-            "mapLayout": {
-              "_$type": "Controller",
-              "pages": [
-                "desktop",
-                "compact"
-              ]
-            }
-          }
+          ]
         }
       ]
     }

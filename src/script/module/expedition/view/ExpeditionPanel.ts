@@ -51,7 +51,8 @@ export class ExpeditionPanel extends InventoryPanel {
         visitRegion(view,root,n => {
             this.expeditionNodes[n.name]=n;
             if (n instanceof Laya.GTextField) {
-                n.font="Microsoft YaHei";this.labels[n.name]=n;return false;
+                if (!n.font) n.font="Microsoft YaHei";
+                this.labels[n.name]=n;return false;
             }
             else if (/^exp(?:Node\d+|Storage|Build|Use|Abandon)$/.test(n.name)) {
                 this.buttons[n.name]=n;
@@ -151,7 +152,7 @@ export class ExpeditionPanel extends InventoryPanel {
             }
             if (this.mapOpen && this.labels.expClock?.visible) {
                 this.labels.expClock.text=this.timeText();
-                this.labels.expClock.color=this.expedition.inventory?.map.warning?"#f1b586":"#f5f2e7";
+                this.labels.expClock.color=this.expedition.inventory?.map.warning?"#f1b586":"#fff2d2";
             }
             this.renderSearchSpinner();
             this.renderMapFeedback();
@@ -392,12 +393,9 @@ export class ExpeditionPanel extends InventoryPanel {
     }
     private mapImageLoaded(image: Laya.GImage): void {
         const inset=image.src.endsWith("/map-bar-frame.png")?12:image.src.includes("/map-bar-")?10:
-            image.src.endsWith("/map-panel.png")||image.src.includes("/map-toolbar-")?18:
-            image.src.endsWith("/map-player-panel.png")?24:
-            image.src.endsWith("/map-header-panel.png")?24:image.src.endsWith("/map-slot.png")?6:
-            image.src.includes("/map-button-")||image.src.endsWith("/map-notice-panel.png")?10:0;
-        const texture=image.texture,grid=image.src.endsWith("/map-header-panel.png")?
-            [24,32,24,32,0]:[inset,inset,inset,inset,0];
+            /\/map-(?:(?:header-|player-)?panel|(?:toolbar|button)-[^/]+)\.png$/.test(image.src)?18:
+            image.src.endsWith("/map-slot.png")?6:image.src.endsWith("/map-notice-panel.png")?10:0;
+        const texture=image.texture,grid=[inset,inset,inset,inset,0];
         if (!inset || !texture || texture._sizeGrid?.join(",")===grid.join(",") &&
             image.graphics.cmds.some(cmd=>cmd.cmdID===Laya.Draw9GridTextureCmd.ID)) return;
         // Direct PNG previews bypass the IDE importer; retain real nine-slice drawing there too.
@@ -416,6 +414,8 @@ export class ExpeditionPanel extends InventoryPanel {
         if (image.src!==src) image.src=src;
         this.mapImageLoaded(image);
         button.graphics.clear();
+        if (button.name==="expUse"&&!disabled)
+            button.graphics.drawRect(8,8,button.width-16,button.height-16,"rgba(237,202,115,0.07)");
     }
     private mapLabel(key: string,value: string): void {
         const label=this.labels[key];label.visible=true;label.text=value;
@@ -428,13 +428,14 @@ export class ExpeditionPanel extends InventoryPanel {
             "mapHpSlot","mapHpTrack","mapMpSlot","mapMpTrack"])
             this.expeditionNodes[name].visible=true;
         this.mapLabel("expClock",this.timeText());
+        this.labels.expClock.color=s.map.warning?"#f1b586":"#fff2d2";
         for (const [key,title] of [["Stamina","体力"],["Weight","负重"]]) {
             this.mapLabel(`exp${key}Label`,title);
             const weight=Inventory.weight(c,s);
             const value=key==="Stamina"?s.stamina!:weight.current,max=key==="Stamina"?c.rules.staminaMax:weight.limit;
             this.mapLabel(`exp${key}`,`${value} / ${max}`);
             this.labels[`exp${key}`].color=key==="Weight"&&value>max?"#ffd1b3":
-                key==="Stamina"&&value<=c.rules.normalCost?"#ffe1b1":"#f4f3e5";
+                key==="Stamina"&&value<=c.rules.normalCost?"#ffe1b1":"#fff9e7";
             this.expeditionNodes[`map${key}Slot`].visible=true;
             this.expeditionNodes[`map${key}Track`].visible=true;
             this.mapMeter(key,value,max);
@@ -450,7 +451,7 @@ export class ExpeditionPanel extends InventoryPanel {
         ] as const) {
             this.mapMeter(key,value,max);
             this.mapLabel(`exp${key}Value`,`${key==="Hp"?"生命":"灵力"}  ${Core.format(value)} / ${Core.format(max)}`);
-            this.labels[`exp${key}Value`].color=key==="Hp"&&value<=max*0.3?"#ffe0c3":"#f4f3e5";
+            this.labels[`exp${key}Value`].color=key==="Hp"&&value<=max*0.3?"#ffe0c3":"#fff9e7";
         }
     }
     private mapMeter(key: string,value: number,max: number): void {
@@ -665,8 +666,8 @@ export class ExpeditionPanel extends InventoryPanel {
                 used?"已使用":n.kind==="recovery"?recovered.hp||recovered.mp?
                     `生命+${Core.format(recovered.hp)}  灵力+${Core.format(recovered.mp)}`:"生命灵力已满":
                 n.kind==="extract"?"携带物品可带出":n.kind==="start"?"入境处":"尚未使用");
-            this.labels.expContextStatus.color=enemy?"#efb7a5":used||searched?"#b8dbc6":
-                n.kind==="extract"?"#b7ded9":"#d4d9d1";
+            this.labels.expContextStatus.color=tired?"#efb7a5":used||searched?"#b8dbc6":
+                n.kind==="extract"?"#b7ded9":"#e3e5d7";
             this.mapAction("expUse",action,reach.has(n.id)&&!used&&!tired&&(
                     (n.kind!=="recovery"||!!recovered.hp||!!recovered.mp)&&
                     (!!source||!["start","transit"].includes(n.kind))));
@@ -771,7 +772,7 @@ export class ExpeditionPanel extends InventoryPanel {
     private dashedRoute(graphics: Laya.Graphics, route: MapPoint[],active:boolean): void {
         const texture=(this.expeditionNodes.mapRouteTexture as Laya.GImage).texture;
         if(!texture)return;
-        const dash=12,gap=9,period=dash+gap;
+        const dash=18,gap=12,period=dash+gap;
         // Anchor collinear segments to the same phase so shared routes cannot fill each other's gaps.
         for(let i=1;i<route.length;i++) {
             const a=route[i-1],b=route[i],dx=b.x-a.x,dy=b.y-a.y,length=Math.hypot(dx,dy);
@@ -788,10 +789,12 @@ export class ExpeditionPanel extends InventoryPanel {
                     const endX=start.x+ux*(offset+step),endY=start.y+uy*(offset+step);
                     const span=Math.hypot(endX-x,endY-y);
                     const matrix=new Laya.Matrix(ux,uy,-uy,ux,x,y);
-                    // The source's transparent padding preserves the painted caps and shadow.
-                    const height=active?11:9;
-                    graphics.drawTexture(texture,-span*0.3,-height/2,span*1.6,height,matrix,
-                        active?1:0.82,active?"#ffe0a0":"#d6e0d4");
+                    // Reuse the painted capsule for a cyan rim and a light core, like the reference.
+                    const draw=(height:number,alpha:number,color:string) =>
+                        graphics.drawTexture(texture,-span*0.14,-height/2,span*1.28,height,matrix,alpha,color);
+                    draw(active?30:26,active?0.32:0.24,"#08dce8");
+                    draw(active?18:16,1,active?"#44ffff":"#28eaf5");
+                    draw(active?10:8,1,active?"#ffffff":"#d7ffff");
                 }
                 offset+=step;
             }

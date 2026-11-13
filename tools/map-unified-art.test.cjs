@@ -20,16 +20,6 @@ function bounds({ data, info }) {
     }
     return [left, top, right, bottom];
 }
-function gold({ data }) {
-    let brightness = 0, chroma = 0, count = 0;
-    for (let at = 0; at < data.length; at += 4) {
-        const [r, g, b, a] = data.subarray(at, at + 4);
-        if (a < 180 || r < 85 || r < g * 0.95 || g < b * 1.15) continue;
-        brightness += (r + g + b) / 3; chroma += (r - b) / Math.max(r, g, b); count++;
-    }
-    assert.ok(count > 100, "A measurable gold edge");
-    return { brightness: brightness / count, chroma: chroma / count };
-}
 function whiteRatio({ data }) {
     let white = 0, total = 0;
     for (let at = 0; at < data.length; at += 4) {
@@ -71,11 +61,10 @@ async function main() {
         nodes: path.join(reference, "nodes.png"),
         icons: path.join(reference, "icons.png"),
     };
-    const originalHeader = await sharp(sheets.panels).extract({ left: 20, top: 30, width: 2710, height: 190 })
-        .ensureAlpha().raw().toBuffer({ resolveWithObject: true });
-    const originalGold = gold(originalHeader), runtimeGold = gold(await pixels(path.join(art, "map-header-panel.png")));
-    assert.ok(runtimeGold.brightness < originalGold.brightness * 0.98, "Header gold is less bright");
-    assert.ok(runtimeGold.chroma < originalGold.chroma * 0.98, "Header gold is less yellow/saturated");
+    const normal = fs.readFileSync(path.join(art, "map-panel.png"));
+    for (const name of ["map-header-panel", "map-player-panel", "map-button-normal", "map-toolbar-normal"])
+        assert.deepEqual(fs.readFileSync(path.join(art, name + ".png")), normal,
+            "Approved panels and buttons share exactly the same emerald and fine gold material");
     const originalHp = await sharp(sheets.icons).extract({ left: 0, top: 384, width: 688, height: 384 })
         .ensureAlpha().raw().toBuffer({ resolveWithObject: true });
     assert.ok(whiteRatio(await pixels(path.join(art, "map-icon-hp.png"))) < whiteRatio(originalHp) * 0.4,
@@ -122,6 +111,17 @@ async function main() {
         const clean = await pixels(path.join(root, `assets/ui/image/expeditionNodes/clean/node-enemy-${kind}.png`));
         assert.deepEqual([clean.info.width, clean.info.height], [256, 256]);
         assert.notDeepEqual(image.data, clean.data, "Map atmosphere and clean UI variants are separate");
+        const hud = await pixels(path.join(root, `assets/ui/image/expeditionNodes/hud/node-enemy-${kind}.png`));
+        assert.deepEqual([hud.info.width, hud.info.height], [256, 256]);
+        const hudBody = componentBounds(hud.data, 256, 256);
+        assert.ok(Math.abs(hudBody.width - box.width) <= 8 && Math.abs(hudBody.height - box.height) <= 3,
+            `${kind}: the new HUD subject matches map subject size without aspect distortion`);
+        assert.ok(Math.abs(hudBody.left + hudBody.width / 2 - box.left - box.width / 2) <= 0.5,
+            `${kind}: HUD and map subjects share their horizontal center`);
+        assert.equal(hudBody.top + hudBody.height, box.top + box.height,
+            `${kind}: HUD and map subjects share their solid foot anchor`);
+        assert.ok(Math.abs(eyeSpacing(hud) / eyeSpacing(image) - 1) < 0.09,
+            `${kind}: faces retain matching optical scale, without including helmets or effects`);
     }
     assert.ok(enemyMasses[0] < enemyMasses[1] && enemyMasses[1] < enemyMasses[2],
         "Visual mass follows ordinary < elite < boss; do not enlarge the ordinary face to match their helmets");
@@ -159,11 +159,11 @@ async function main() {
     const visit = node => { nodes.set(node.name, node); (node._$child || []).forEach(visit); };
     visit(prefab);
     for (const [i, kind] of ["normal", "elite", "boss"].entries())
-        assert.equal(nodes.get(`mapKillIcon${i}`).src, `ui/image/expeditionNodes/clean/node-enemy-${kind}.png`,
-            "Counters retain the clean second-sheet artwork, without map haze");
+        assert.equal(nodes.get(`mapKillIcon${i}`).src, `ui/image/expeditionNodes/hud/node-enemy-${kind}.png`,
+            "Only the top counters use the new dedicated no-atmosphere artwork");
     assert.deepEqual(["x", "y", "width", "height"].map(key => nodes.get("nodeActionArea")[key]), [1000, 219, 248, 282],
         "The operation panel retains its prefab-authored placement");
     assert.ok(nodes.get("mapNoticeSkin").src.endsWith("/map-notice-panel.png"), "Use the supplied dedicated notice panel");
-    console.log("PASS unified map style: all 256px nodes, consistent subject padding, clean HUD variants, muted gold, aligned states and unchanged operation panel.");
+    console.log("PASS unified map style: approved shared material, all 256px nodes, consistent subject padding, clean HUD variants, aligned states and unchanged operation panel.");
 }
 main().catch(error => { console.error(error); process.exitCode = 1; });

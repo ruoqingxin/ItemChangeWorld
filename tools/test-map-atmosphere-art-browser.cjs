@@ -67,8 +67,8 @@ async function inspect(page) {
                 throw Error(`Node must retain its prefab image placement: ${node.kind}`);
         }
         for (const [i, kind] of ["normal", "elite", "boss"].entries())
-            if (view.getElement(`mapKillIcon${i}`).src !== `ui/image/expeditionNodes/clean/node-enemy-${kind}.png`)
-                throw Error("HUD counters must keep their clean artwork");
+            if (view.getElement(`mapKillIcon${i}`).src !== `ui/image/expeditionNodes/hud/node-enemy-${kind}.png`)
+                throw Error("HUD counters must use the dedicated no-atmosphere artwork");
         const context = view.getElement("expContextIcon", false);
         if (context?.visible && !context.src.includes("/expeditionNodes/clean/"))
             throw Error("Action icon must remain clean");

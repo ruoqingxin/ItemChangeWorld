@@ -18,6 +18,7 @@ const supplied = {
     nodes: "_cosres_apps-ai-tools_nextimage_storage_out_user_2682_1794480342920_1903cfa61192491f8a1471150b0439bf.png",
     icons: "_cosres_apps-ai-tools_nextimage_storage_out_user_2682_1794480554637_60e9da4de4604360b387e9e293aa7970.png",
     atmosphere: "_cosres_apps-ai-tools_nextimage_storage_out_user_2682_1794483208680_ef37f8c0fe7740aaa15961c75cccd655.png",
+    "hud-enemies": "_cosres_apps-ai-tools_nextimage_storage_out_user_2682_1794488341501_1c1e74ad1e014b3a9603eaccfcd22d70.png",
 };
 const hash = bytes => crypto.createHash("sha256").update(bytes).digest("hex");
 const relative = file => path.relative(root, file).replaceAll("\\", "/");
@@ -120,8 +121,10 @@ function oldGold(data, at) {
 }
 async function save(name, bytes, origin, options = {}) {
     const file = path.join(root, options.node ? nodeArt : art, `${name}.png`);
-    if (process.argv.includes("--nodes-only") &&
-        !(options.node && !name.startsWith("clean/") || name === "map-transit-stone")) {
+    const hudOnly = process.argv.includes("--hud-only");
+    const mapNode = options.node && name.startsWith("node-") || name === "map-transit-stone";
+    if (hudOnly ? !(options.node && name.startsWith("hud/")) :
+        process.argv.includes("--nodes-only") && !mapNode) {
         const previous = priorReport?.files.find(record => record.file === relative(file));
         assert.ok(previous && fs.existsSync(file), `Preserved asset must already exist: ${name}`);
         records.push({ ...previous, sha256: hash(fs.readFileSync(file)) });
@@ -270,6 +273,38 @@ async function nodes() {
         }
     }
 }
+async function hudEnemies() {
+    const cuts = { normal: [1990, 762], elite: [1090, 900], boss: [0, 1090] };
+    for (const [kind, [left, width]] of Object.entries(cuts)) {
+        const name = `node-enemy-${kind}`, origin = `hud-enemy-${kind}`;
+        const native = await sharp(sources["hud-enemies"])
+            .extract({ left, top: 0, width, height: 1536 }).png().toBuffer();
+        nativeCuts.set(origin, native);
+        const source = await raw(native);
+        for (let at = 0; at < source.data.length; at += 4) {
+            const alpha = Math.min(1, source.data[at + 3] / 252);
+            source.data[at + 3] = alpha < 0.035 ? 0 : Math.round(255 * Math.pow(alpha, 1.6));
+            if (!source.data[at + 3]) source.data.fill(0, at, at + 4);
+        }
+        const target = await raw(path.join(root, nodeArt, `${name}.png`));
+        const targetBody = componentBounds(target.data, 256, 256);
+        const sourceBody = componentBounds(source.data, width, 1536);
+        const visible = bounds(source.data, width, 1536, 8);
+        const scale = Math.min(targetBody.width / sourceBody.width, targetBody.height / sourceBody.height);
+        const resized = await sharp(source.data, { raw: source.info }).extract(visible)
+            .resize(Math.round(visible.width * scale), Math.round(visible.height * scale)).png().toBuffer();
+        // Measure the saved alpha silhouette, matching solid artwork rather than absent effects.
+        const probe = await raw(await clean(resized));
+        const body = componentBounds(probe.data, probe.info.width, probe.info.height);
+        const x = Math.round(targetBody.left + (targetBody.width - body.width) / 2 - body.left);
+        const y = targetBody.top + targetBody.height - body.top - body.height;
+        assert.ok(x > 0 && y > 0 && x + probe.info.width < 256 && y + probe.info.height < 256,
+            `${kind}: preserve all artwork inside the transparent canvas`);
+        const image = await sharp({ create: { width: 256, height: 256, channels: 4, background: transparent } })
+            .composite([{ input: resized, left: x, top: y }]).png().toBuffer();
+        await save(`hud/${name}`, image, origin, { node: true });
+    }
+}
 async function routeOutline(bytes) {
     const { data, info } = await raw(bytes), outline = Buffer.alloc(data.length);
     for (let y = 0; y < info.height; y++) for (let x = 0; x < info.width; x++) {
@@ -343,7 +378,7 @@ async function icons() {
 async function preview() {
     const bg = path.join(root, "assets/ui/texture/expedition/ancient-sect-ground-final.png");
     const layers = [];
-    const selected = records.filter(r => r.file.startsWith(nodeArt) && !r.file.includes("/clean/") || [
+    const selected = records.filter(r => r.file.startsWith(nodeArt + "node-") || [
         "map-player-traveler", "map-player-portrait", "map-avatar-frame", "map-icon-hp",
         "map-icon-mp", "map-current-locator", "map-reachable-locator", "inventory-search-spinner",
     ].includes(r.name));
@@ -355,7 +390,7 @@ async function preview() {
     }
     await sharp(bg).resize(1240, 544, { fit: "cover" }).composite(layers).png()
         .toFile(path.join(output, "cutout-on-ground.png"));
-    const nodes = records.filter(r => r.file.startsWith(nodeArt) && !r.file.includes("/clean/"));
+    const nodes = records.filter(r => r.file.startsWith(nodeArt + "node-"));
     const gridWidth = 4 * 280 + 16, gridHeight = 3 * 300 + 16;
     const grid = Buffer.alloc(gridWidth * gridHeight * 4);
     for (let y = 0; y < gridHeight; y++) for (let x = 0; x < gridWidth; x++) {
@@ -371,13 +406,31 @@ async function preview() {
         nodes.map((record, i) => ({ input: path.join(root, record.file),
             left: 16 + i % 4 * 280, top: 16 + Math.floor(i / 4) * 300 })))
         .png().toFile(path.join(output, "node-alignment-256.png"));
+    const comparisons = [];
+    for (const [i, kind] of ["normal", "elite", "boss"].entries())
+        for (const [row, directory] of ["", "hud/"].entries())
+            comparisons.push({ input: path.join(root, nodeArt, `${directory}node-enemy-${kind}.png`),
+                left: i * 272, top: row * 272 });
+    const backdrop = Buffer.alloc(800 * 528 * 4);
+    for (let y = 0; y < 528; y++) for (let x = 0; x < 800; x++) {
+        const at = (y * 800 + x) * 4;
+        const value = Math.floor(x / 8) % 2 === Math.floor(y / 8) % 2 ? 65 : 75;
+        backdrop[at] = backdrop[at + 1] = backdrop[at + 2] = value; backdrop[at + 3] = 255;
+    }
+    await sharp(backdrop, { raw: { width: 800, height: 528, channels: 4 } }).composite(comparisons)
+        .png().toFile(path.join(output, "hud-enemy-alignment.png"));
 }
 async function check() {
     const report = JSON.parse(fs.readFileSync(reportFile, "utf8")), ids = new Set();
-    assert.equal(report.files.length, 53);
+    const approved = require("./import-map-approved-style.cjs");
+    const overrides = fs.existsSync(approved.manifest) ?
+        new Map(JSON.parse(fs.readFileSync(approved.manifest, "utf8")).files.map(entry => [entry.file, entry])) : new Map();
+    if (overrides.size) await approved.check();
+    assert.equal(report.files.length, 56);
     for (const source of report.sources)
         assert.equal(hash(fs.readFileSync(path.join(root, source.file))), source.sha256, "Preserved source sheet");
-    for (const record of report.files) {
+    for (const original of report.files) {
+        const record = { ...original, ...overrides.get(original.file) };
         const file = path.join(root, record.file), bytes = fs.readFileSync(file);
         assert.equal(hash(bytes), record.sha256, record.name);
         const meta = JSON.parse(fs.readFileSync(`${file}.meta`, "utf8"));
@@ -403,7 +456,7 @@ async function check() {
     }
     for (const entry of report.preserved_progress_bars)
         assert.equal(hash(fs.readFileSync(path.join(root, entry.file))), entry.sha256, "Progress artwork is unchanged");
-    console.log("PASS unified map import: 53 sprites, 4 preserved sheets, all nodes 256px, UUIDs, alpha and unchanged progress art.");
+    console.log(`PASS unified map import: ${report.files.length} sprites, ${report.sources.length} preserved sheets, all nodes 256px, UUIDs, alpha and unchanged progress art.`);
 }
 async function main() {
     if (process.argv.includes("--check")) return check();
@@ -423,7 +476,7 @@ async function main() {
             const file = path.join(root, art, name);
             return { file: relative(file), sha256: hash(fs.readFileSync(file)) };
         });
-    await panels(); await nodes(); await icons();
+    await panels(); await nodes(); await icons(); await hudEnemies();
     for (const [name, bytes] of nativeCuts) fs.writeFileSync(path.join(output, `${name}-native.png`), bytes);
     fs.writeFileSync(reportFile, JSON.stringify({
         sources: Object.keys(supplied).map(name => ({ file: relative(path.join(reference, `${name}.png`)),
@@ -434,8 +487,9 @@ async function main() {
             "Balance the 12 map subjects optically: reduce the elite, enlarge the packages, preserve aspect ratios " +
             "and effects within a 240x224 envelope. Center the visible artwork horizontally with exactly 16px bottom " +
             "transparent padding on every 256px canvas. Include the insight stone's full tip. " +
-            "Leave the existing faint transit underlay and clean UI variants unchanged; outline the supplied route dash. " +
-            "Counters and action details retain the second sheet's clean artwork. No AI redraw.",
+            "Leave the existing faint transit underlay and clean action-detail variants unchanged; outline the supplied route dash. " +
+            "Extract three dedicated counter icons from the fifth sheet, matching the atmosphere versions' solid subject " +
+            "centers, sizes and foot anchors without stretching or runtime sizing. No AI redraw.",
         preserved_progress_bars: progress,
         files: records,
     }, null, 2) + "\n");

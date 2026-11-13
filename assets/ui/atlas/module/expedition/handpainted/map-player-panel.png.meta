@@ -5,10 +5,10 @@
     "sRGB": true,
     "premultiplyAlpha": true,
     "sizeGrid": [
-      24,
-      24,
-      24,
-      24,
+      18,
+      18,
+      18,
+      18,
       0
     ]
   }

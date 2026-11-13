@@ -90,8 +90,21 @@ async function inspect(p, name) {
         if(player.y<header.y+header.height+12)issues.push("player HUD spacing");
         for(const key of ["expStorage","expBuild"]) {
             const button=panel.buttons[key],label=button.getChildAt(1),icon=button.getChildAt(2);
-            if(label.font!=="Microsoft YaHei"||label.bold||icon.y+icon.height>label.y)
+            if(label.font!=="SimSun"||!label.bold||label.fontSize!==(panel.compactMap?30:25)||
+                icon.y+icon.height>label.y)
                 issues.push([key,"tool hierarchy"]);
+        }
+        for(const name of ["mapHeaderPanel","mapPlayerPanel","expContextBackground",
+            "expStorageSkin","expBuildSkin","expAbandonSkin","expUseSkin"]) {
+            const image=view.getElement(name);
+            if(image.texture&&image.texture._sizeGrid.join(",")!=="18,18,18,18,0")
+                issues.push([name,"approved shared nine-slice"]);
+        }
+        for(const name of ["expContextTitle","expUseText","expStorageText","expBuildText","expAbandonText",
+            "expPlayerName","expKillCount0","expKillCount1","expKillCount2","expStaminaLabel","expWeightLabel"]) {
+            const label=view.getElement(name);
+            if(label.font!=="SimSun"||!label.bold||label.stroke<0.8||label.stroke>1||label.strokeColor!=="#0a1b14")
+                issues.push([name,"approved serif typography"]);
         }
         const notice=panel.labels.expNotice,noticeSkin=panel.expeditionNodes.mapNoticeSkin;
         if(noticeSkin.visible!==!!notice.text||noticeSkin.mouseEnabled)issues.push("passive notice backing");
@@ -154,13 +167,20 @@ async function inspect(p, name) {
         }
         const commands = panel.expeditionNodes.expLines.graphics.cmds;
         if (!commands.length || commands.some(c=>c.cmdID!==Laya.DrawTextureCmd.ID)) issues.push("textured routes");
-        if(commands.some(c=>![9,11].includes(c.height)) ||
-            (!locked&&neighbors.length&&!commands.some(c=>c.height===11)) ||
-            (locked&&commands.some(c=>c.height===11)))issues.push("route emphasis");
-        if(commands.some(c=>c.alpha!==(c.height===11?1:0.82)))issues.push("readable route opacity");
+        if(commands.length%3||commands.some(c=>![8,10,16,18,26,30].includes(c.height)) ||
+            (!locked&&neighbors.length&&!commands.some(c=>c.height===18)) ||
+            (locked&&commands.some(c=>c.height===18)))issues.push("route emphasis");
+        for(let i=0;i<commands.length;i+=3) {
+            const [halo,rim,core]=commands.slice(i,i+3),active=rim.height===18;
+            if(halo.height!==(active?30:26)||halo.alpha!==(active?0.32:0.24)||
+                core.height!==(active?10:8)||rim.alpha!==1||core.alpha!==1||
+                halo.width!==rim.width||rim.width!==core.width||
+                halo.x!==rim.x||rim.x!==core.x)
+                issues.push("readable cyan route layers");
+        }
         if(commands.some(c=>c.texture!==(panel.expeditionNodes.mapRouteTexture).texture)||
-            !panel.expeditionNodes.mapRouteTexture.src.endsWith("/map-route-dash-contrast.png"))
-            issues.push("outlined route artwork");
+            !panel.expeditionNodes.mapRouteTexture.src.endsWith("/map-route-dash.png"))
+            issues.push("unoutlined cyan route artwork");
         if(panel.buttons.expUse.visible) {
             const area=view.getElement("nodeActionArea"),background=panel.expeditionNodes.expContextBackground;
             if(area.width!==authoredContext.width||area.height!==authoredContext.height||
@@ -223,7 +243,7 @@ async function inspect(p, name) {
                             if(fill.visible!==(ratio>0)||Math.abs(fill.scrollRect.width/fill.width-ratio)>0.001 ||
                                 fill.scaleX!==1) throw Error(`Incorrect cropped ${key}: ${ratio}`);
                         }
-                        if(panel.labels.expHpValue.color!==(ratio<=0.3?"#ffe0c3":"#f4f3e5"))
+                        if(panel.labels.expHpValue.color!==(ratio<=0.3?"#ffe0c3":"#fff9e7"))
                             throw Error("Low-health contrast must use the actual value");
                     }
                 } finally { Object.assign(s,original);panel.refresh(); }

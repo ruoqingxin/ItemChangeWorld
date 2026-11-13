@@ -5,8 +5,8 @@ const path = require("node:path");
 const sharp = require("sharp");
 
 const root = path.resolve(__dirname, "..");
-const source = path.join(root,"assets/ui/texture/test/bg.png");
-const reference = path.join(root,"art/reference/expedition/ancient-sect-ground-final-source.png");
+const source = path.join(root,"assets/ui/texture/test/_cosres_apps-ai-tools_nextimage_storage_out_user_2682_1794536422461_93adf61eeb2b4561ace9bb84f066bca9.png");
+const reference = path.join(root,"art/reference/expedition/ancient-sect-ground-2026-11-13-source.png");
 const runtime = path.join(root,"assets/ui/texture/expedition/ancient-sect-ground-final.png");
 const preview = path.join(root,"tmp/map-final-ground");
 const hash = bytes => crypto.createHash("sha256").update(bytes).digest("hex");

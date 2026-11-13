@@ -1,0 +1,204 @@
+{
+  "source_sha256": "ea00e7392f345d7cb2b8701cb268e972324429fbdc97e56d46ce2363da1ea488",
+  "method": "User-approved serif preview: shared emerald material and fine gold edge, with same-alpha interaction states.",
+  "files": [
+    {
+      "name": "map-panel",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-panel.png",
+      "state": "normal",
+      "size": [
+        96,
+        96
+      ],
+      "grid": [
+        18,
+        18,
+        18,
+        18,
+        0
+      ],
+      "uuid": "0ae1f005-3df5-4c72-8cbc-421e980e522e",
+      "sha256": "ca22ee85414cf7f8ef3ffb5b74ec80b83f138b21c02be09d19af9a4c969fda4e"
+    },
+    {
+      "name": "map-header-panel",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-header-panel.png",
+      "state": "normal",
+      "size": [
+        96,
+        96
+      ],
+      "grid": [
+        18,
+        18,
+        18,
+        18,
+        0
+      ],
+      "uuid": "d0c77a77-5010-4691-9380-dc38991fcec5",
+      "sha256": "ca22ee85414cf7f8ef3ffb5b74ec80b83f138b21c02be09d19af9a4c969fda4e"
+    },
+    {
+      "name": "map-player-panel",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-player-panel.png",
+      "state": "normal",
+      "size": [
+        96,
+        96
+      ],
+      "grid": [
+        18,
+        18,
+        18,
+        18,
+        0
+      ],
+      "uuid": "140f6f7a-0a24-48fa-8e36-723bd39ceec7",
+      "sha256": "ca22ee85414cf7f8ef3ffb5b74ec80b83f138b21c02be09d19af9a4c969fda4e"
+    },
+    {
+      "name": "map-toolbar-normal",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-toolbar-normal.png",
+      "state": "normal",
+      "size": [
+        96,
+        96
+      ],
+      "grid": [
+        18,
+        18,
+        18,
+        18,
+        0
+      ],
+      "uuid": "2708b8fd-0149-48a5-b97b-926fc0afaaeb",
+      "sha256": "ca22ee85414cf7f8ef3ffb5b74ec80b83f138b21c02be09d19af9a4c969fda4e"
+    },
+    {
+      "name": "map-toolbar-hover",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-toolbar-hover.png",
+      "state": "hover",
+      "size": [
+        96,
+        96
+      ],
+      "grid": [
+        18,
+        18,
+        18,
+        18,
+        0
+      ],
+      "uuid": "64872aa2-ee24-46d1-aa5c-0c4c2b163cad",
+      "sha256": "a38257200aa8e20a325fda1c0847e307d488f680898f1a331de158e458a1d69f"
+    },
+    {
+      "name": "map-toolbar-pressed",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-toolbar-pressed.png",
+      "state": "pressed",
+      "size": [
+        96,
+        96
+      ],
+      "grid": [
+        18,
+        18,
+        18,
+        18,
+        0
+      ],
+      "uuid": "db6e0547-d297-47d4-a72f-3c58428b7828",
+      "sha256": "db2e9ea21c5678850d5f672e27d0612e26fcd8e208daedf174e73d45d2b1be1d"
+    },
+    {
+      "name": "map-toolbar-disabled",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-toolbar-disabled.png",
+      "state": "disabled",
+      "size": [
+        96,
+        96
+      ],
+      "grid": [
+        18,
+        18,
+        18,
+        18,
+        0
+      ],
+      "uuid": "5146c18c-6496-4c04-9680-772b8c9f9ed7",
+      "sha256": "315587f5d43f04fa837d49a04f70a9905e0c751a5f7112338515fb73cbed7b07"
+    },
+    {
+      "name": "map-button-normal",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-button-normal.png",
+      "state": "normal",
+      "size": [
+        96,
+        96
+      ],
+      "grid": [
+        18,
+        18,
+        18,
+        18,
+        0
+      ],
+      "uuid": "4fefbb13-272f-4358-a1bc-14823a0c0108",
+      "sha256": "ca22ee85414cf7f8ef3ffb5b74ec80b83f138b21c02be09d19af9a4c969fda4e"
+    },
+    {
+      "name": "map-button-hover",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-button-hover.png",
+      "state": "hover",
+      "size": [
+        96,
+        96
+      ],
+      "grid": [
+        18,
+        18,
+        18,
+        18,
+        0
+      ],
+      "uuid": "8e68b2ce-6164-4b6b-9cb0-1e5667ea14ae",
+      "sha256": "a38257200aa8e20a325fda1c0847e307d488f680898f1a331de158e458a1d69f"
+    },
+    {
+      "name": "map-button-pressed",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-button-pressed.png",
+      "state": "pressed",
+      "size": [
+        96,
+        96
+      ],
+      "grid": [
+        18,
+        18,
+        18,
+        18,
+        0
+      ],
+      "uuid": "5cb94c46-be8a-45c8-a73d-5e1e673a82b7",
+      "sha256": "db2e9ea21c5678850d5f672e27d0612e26fcd8e208daedf174e73d45d2b1be1d"
+    },
+    {
+      "name": "map-button-disabled",
+      "file": "assets/ui/atlas/module/expedition/handpainted/map-button-disabled.png",
+      "state": "disabled",
+      "size": [
+        96,
+        96
+      ],
+      "grid": [
+        18,
+        18,
+        18,
+        18,
+        0
+      ],
+      "uuid": "cb50f1ee-dfd6-4fa4-ba25-2c708e291fcf",
+      "sha256": "315587f5d43f04fa837d49a04f70a9905e0c751a5f7112338515fb73cbed7b07"
+    }
+  ]
+}

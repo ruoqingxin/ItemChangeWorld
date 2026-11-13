@@ -19,9 +19,14 @@
       "file": "art/reference/expedition/map-unified-2026-11-12/atmosphere.png",
       "supplied_filename": "_cosres_apps-ai-tools_nextimage_storage_out_user_2682_1794483208680_ef37f8c0fe7740aaa15961c75cccd655.png",
       "sha256": "78c6b4232e93bd1fd79777a72ce38b30f5060e82672c4527cbf4280301522e63"
+    },
+    {
+      "file": "art/reference/expedition/map-unified-2026-11-12/hud-enemies.png",
+      "supplied_filename": "_cosres_apps-ai-tools_nextimage_storage_out_user_2682_1794488341501_1c1e74ad1e014b3a9603eaccfcd22d70.png",
+      "sha256": "81b914713de26341eaf31df20594b008f2666dc8d082704cf503af85532e436e"
     }
   ],
-  "method": "Deterministic extraction of the supplied true-alpha sheets; normalize alpha and clear invisible RGB. Tone down panel gold and the HP highlight; dim only the entrance portal. Preserve panel corners with nine-slice. All 12 atmosphere nodes and 12 clean detail/counter variants use 256px canvases. Balance the 12 map subjects optically: reduce the elite, enlarge the packages, preserve aspect ratios and effects within a 240x224 envelope. Center the visible artwork horizontally with exactly 16px bottom transparent padding on every 256px canvas. Include the insight stone's full tip. Leave the existing faint transit underlay and clean UI variants unchanged; outline the supplied route dash. Counters and action details retain the second sheet's clean artwork. No AI redraw.",
+  "method": "Deterministic extraction of the supplied true-alpha sheets; normalize alpha and clear invisible RGB. Tone down panel gold and the HP highlight; dim only the entrance portal. Preserve panel corners with nine-slice. All 12 atmosphere nodes and 12 clean detail/counter variants use 256px canvases. Balance the 12 map subjects optically: reduce the elite, enlarge the packages, preserve aspect ratios and effects within a 240x224 envelope. Center the visible artwork horizontally with exactly 16px bottom transparent padding on every 256px canvas. Include the insight stone's full tip. Leave the existing faint transit underlay and clean action-detail variants unchanged; outline the supplied route dash. Extract three dedicated counter icons from the fifth sheet, matching the atmosphere versions' solid subject centers, sizes and foot anchors without stretching or runtime sizing. No AI redraw.",
   "preserved_progress_bars": [
     {
       "file": "assets/ui/atlas/module/expedition/handpainted/map-bar-frame.png",
@@ -80,7 +85,7 @@
         1024,
         81
       ],
-      "sha256": "9feb0fb228deef939ffc32c90cccd96ecd4169b5dccc24b3f9b61abb5d97f424",
+      "sha256": "ca22ee85414cf7f8ef3ffb5b74ec80b83f138b21c02be09d19af9a4c969fda4e",
       "uuid": "d0c77a77-5010-4691-9380-dc38991fcec5",
       "previous_uuid": "d0c77a77-5010-4691-9380-dc38991fcec5",
       "origin": "map-header-panel",
@@ -100,7 +105,7 @@
         300,
         122
       ],
-      "sha256": "e8169ac3866b9de90e54468ac2b7c9979880e8e4034e418e7e92c0ba83c338ff",
+      "sha256": "ca22ee85414cf7f8ef3ffb5b74ec80b83f138b21c02be09d19af9a4c969fda4e",
       "uuid": "140f6f7a-0a24-48fa-8e36-723bd39ceec7",
       "previous_uuid": "140f6f7a-0a24-48fa-8e36-723bd39ceec7",
       "origin": "map-player-panel",
@@ -120,7 +125,7 @@
         96,
         96
       ],
-      "sha256": "ea00e7392f345d7cb2b8701cb268e972324429fbdc97e56d46ce2363da1ea488",
+      "sha256": "ca22ee85414cf7f8ef3ffb5b74ec80b83f138b21c02be09d19af9a4c969fda4e",
       "uuid": "0ae1f005-3df5-4c72-8cbc-421e980e522e",
       "previous_uuid": "0ae1f005-3df5-4c72-8cbc-421e980e522e",
       "origin": "map-panel",
@@ -160,7 +165,7 @@
         128,
         48
       ],
-      "sha256": "6ff12cfc7350b48959d56e9aca680dedb84a4166b888e22e2be1577474a49667",
+      "sha256": "ca22ee85414cf7f8ef3ffb5b74ec80b83f138b21c02be09d19af9a4c969fda4e",
       "uuid": "4fefbb13-272f-4358-a1bc-14823a0c0108",
       "previous_uuid": "4fefbb13-272f-4358-a1bc-14823a0c0108",
       "origin": "map-button-normal",
@@ -180,7 +185,7 @@
         96,
         96
       ],
-      "sha256": "549bd44a0fab9c5013d147aa646a2637f17fda7b40af128856d079135f03c0f2",
+      "sha256": "ca22ee85414cf7f8ef3ffb5b74ec80b83f138b21c02be09d19af9a4c969fda4e",
       "uuid": "2708b8fd-0149-48a5-b97b-926fc0afaaeb",
       "previous_uuid": "2708b8fd-0149-48a5-b97b-926fc0afaaeb",
       "origin": "map-toolbar-normal",
@@ -200,7 +205,7 @@
         128,
         48
       ],
-      "sha256": "647ccd819268d5b70747211bd0ab60aab018d7a03568f3a70e1c16ad370a0ec5",
+      "sha256": "a38257200aa8e20a325fda1c0847e307d488f680898f1a331de158e458a1d69f",
       "uuid": "8e68b2ce-6164-4b6b-9cb0-1e5667ea14ae",
       "previous_uuid": "8e68b2ce-6164-4b6b-9cb0-1e5667ea14ae",
       "origin": "map-button-hover",
@@ -220,7 +225,7 @@
         96,
         96
       ],
-      "sha256": "db7dc756e1d966ae70483e5b8330fba1bc7142b5172516bf85fec4c3a0250eb8",
+      "sha256": "a38257200aa8e20a325fda1c0847e307d488f680898f1a331de158e458a1d69f",
       "uuid": "64872aa2-ee24-46d1-aa5c-0c4c2b163cad",
       "previous_uuid": "64872aa2-ee24-46d1-aa5c-0c4c2b163cad",
       "origin": "map-toolbar-hover",
@@ -240,7 +245,7 @@
         128,
         48
       ],
-      "sha256": "b733ca842d6b58af58b437a04911c28e4ae2b0261b202e67ac3705c8e025916c",
+      "sha256": "db2e9ea21c5678850d5f672e27d0612e26fcd8e208daedf174e73d45d2b1be1d",
       "uuid": "5cb94c46-be8a-45c8-a73d-5e1e673a82b7",
       "previous_uuid": "5cb94c46-be8a-45c8-a73d-5e1e673a82b7",
       "origin": "map-button-pressed",
@@ -260,7 +265,7 @@
         96,
         96
       ],
-      "sha256": "0df4d9106b01ee283dcdf69c628712c1bb5830c243bd30f8784c1328cc87eade",
+      "sha256": "db2e9ea21c5678850d5f672e27d0612e26fcd8e208daedf174e73d45d2b1be1d",
       "uuid": "db6e0547-d297-47d4-a72f-3c58428b7828",
       "previous_uuid": "db6e0547-d297-47d4-a72f-3c58428b7828",
       "origin": "map-toolbar-pressed",
@@ -280,7 +285,7 @@
         128,
         48
       ],
-      "sha256": "a85264fd39936e338236234dacc937ebc7ce8d5fc0de86fc2e8c793fb82a4be8",
+      "sha256": "315587f5d43f04fa837d49a04f70a9905e0c751a5f7112338515fb73cbed7b07",
       "uuid": "cb50f1ee-dfd6-4fa4-ba25-2c708e291fcf",
       "previous_uuid": "cb50f1ee-dfd6-4fa4-ba25-2c708e291fcf",
       "origin": "map-button-disabled",
@@ -300,7 +305,7 @@
         96,
         96
       ],
-      "sha256": "273abef32f43a6617184519e01932112f7f44b6a6335ebb9527ad435da000dd3",
+      "sha256": "315587f5d43f04fa837d49a04f70a9905e0c751a5f7112338515fb73cbed7b07",
       "uuid": "5146c18c-6496-4c04-9680-772b8c9f9ed7",
       "previous_uuid": "5146c18c-6496-4c04-9680-772b8c9f9ed7",
       "origin": "map-toolbar-disabled",
@@ -886,6 +891,48 @@
       "origin": "map-player-traveler",
       "grid": null,
       "native_sha256": "c2dc41c502b0b853d55489fee5151230efe7300cbf1365fe89ff52f8bebdbe5b"
+    },
+    {
+      "name": "hud/node-enemy-normal",
+      "file": "assets/ui/image/expeditionNodes/hud/node-enemy-normal.png",
+      "size": [
+        256,
+        256
+      ],
+      "sha256": "00f2fd0c5bb9a096d3c9b8dbe079ba24a269d07a51d1f008e9a397cdd01355e9",
+      "uuid": "34cf573b-3832-4082-8f35-f071d81efe7e",
+      "previous_uuid": null,
+      "origin": "hud-enemy-normal",
+      "grid": null,
+      "native_sha256": "cf8becb771012896fe445dd92e0464e88be21add1d4edf2e7c39050f3f950e90"
+    },
+    {
+      "name": "hud/node-enemy-elite",
+      "file": "assets/ui/image/expeditionNodes/hud/node-enemy-elite.png",
+      "size": [
+        256,
+        256
+      ],
+      "sha256": "8282c5d936d1bdea5b37c3545e3de5ac8268db62786bb24048d7a0316bf188bd",
+      "uuid": "6bf50500-3456-4494-9274-ed771f5c71b8",
+      "previous_uuid": null,
+      "origin": "hud-enemy-elite",
+      "grid": null,
+      "native_sha256": "692b3170037c343141b64408c0edfc4294b4f738dbcb5fcb1aa9fac4d7533566"
+    },
+    {
+      "name": "hud/node-enemy-boss",
+      "file": "assets/ui/image/expeditionNodes/hud/node-enemy-boss.png",
+      "size": [
+        256,
+        256
+      ],
+      "sha256": "936f4ac484a4514a83995c10845f43e4f98b2ba23b907ad30ea0be91bcb7fc24",
+      "uuid": "18a7dd48-81d1-4cde-a619-c65e9140362e",
+      "previous_uuid": null,
+      "origin": "hud-enemy-boss",
+      "grid": null,
+      "native_sha256": "d281266f09b295153797c715e42830715dbd11f96a62b64793d2dc2cf69e4497"
     }
   ]
 }
