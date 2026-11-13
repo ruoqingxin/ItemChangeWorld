@@ -35,8 +35,7 @@ async function inspect(p, name) {
         const panel=window.__skillBattlePreview.panel;
         return window.__skillBattlePreview.trial.inventory.map.present.every(id=>{
             const node=panel.buttons[`expNode${id}`];
-            return !!node.getChildByName("expReachHint").texture &&
-                !!node.getChildByName("expDone").texture &&
+            return !!node.getChildByName("expDone").texture &&
                 (!node.visible || !!node.getChildAt(0).texture);
         });
     });
@@ -148,11 +147,7 @@ async function inspect(p, name) {
         const neighbors=trial.inventory.map.edges.flatMap(([a,b])=>a===current?[b]:b===current?[a]:[]);
         for(const id of trial.inventory.map.present) {
             const n=panel.buttons[`expNode${id}`],hint=n.getChildByName("expReachHint");
-            if(n.visible&&hint.visible!==(!locked&&neighbors.includes(id)))issues.push([id,"reach hint"]);
-            if(hint.src!==art+"map-reachable-locator.png"||!hint.texture||
-                hint.texture.width!==320||hint.texture.height!==56||hint.filters?.length||
-                hint.width!==80||hint.height!==18||hint.y+hint.height/2!==99||hint.mouseEnabled)
-                issues.push([id,"imported reach hint"]);
+            if(hint)issues.push([id,"removed reach hint"]);
             const base=n.getChildAt(0),badge=n.getChildByName("expDone");
             const icon=n.getChildAt(2),data=trial.inventory.map.nodes.find(node=>node.id===id);
             const shadows=n.graphics.cmds;

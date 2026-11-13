@@ -105,8 +105,7 @@ async function fixture(p, kind) {
             done: badge.visible, badgeSrc: badge.src, badgeTexture: !!badge.texture,
             badgeSize: [badge.width, badge.height], passive: passive(badge),
             gray: button.getChildAt(2).grayed, opaque: button.alpha === 1 && button.getChildAt(2).alpha === 1,
-            hints: s.map.present.some(id => panel.buttons[`expNode${id}`].visible &&
-                panel.buttons[`expNode${id}`].getChildByName("expReachHint").visible),
+            hints: s.map.present.some(id => !!panel.buttons[`expNode${id}`].getChildByName("expReachHint")),
             unchanged: before === JSON.stringify(trial.data.save.state),
             playerBounds: bounds(avatar, artBounds.player),
             enemyBounds: kind.startsWith("enemy-") ? bounds(button.getChildAt(2), artBounds[n.kind]) : null,
@@ -141,17 +140,16 @@ async function fixture(p, kind) {
             const initial = await p.evaluate(() => {
                 const { panel, trial } = window.__skillBattlePreview;
                 const marker = panel.expeditionNodes.expPlayer, ring = marker.getChildByName("expPlayerRing");
-                const hint = panel.buttons.expNode2.getChildByName("expReachHint");
                 window.__feedbackLayout = [marker.width, marker.height,
                     ...["mapHeaderArea", "mapPlayerArea", "mapActionsArea"].flatMap(name => {
                         const n = panel.mapAreas[name]; return [n.x, n.y, n.width, n.height];
                     })];
-                return { ringAlpha: ring.alpha, currentHasHint: panel.buttons[`expNode${trial.inventory.node}`]
-                    .getChildByName("expReachHint").visible, reachable: hint.visible && !!hint.texture &&
-                    hint.src.endsWith("/map-reachable-locator.png") && !hint.filters?.length,
-                    passive: !hint.mouseEnabled && !ring.mouseEnabled };
+                return { ringAlpha: ring.alpha, currentVisible: marker.visible && ring.visible,
+                    hints: trial.inventory.map.present.some(id =>
+                        !!panel.buttons[`expNode${id}`].getChildByName("expReachHint")),
+                    passive: !marker.mouseEnabled && !ring.mouseEnabled };
             });
-            assert.ok(initial.reachable && initial.passive && !initial.currentHasHint);
+            assert.ok(initial.currentVisible && initial.passive && !initial.hints);
             await p.waitForFunction(alpha => {
                 const ring = window.__skillBattlePreview.panel.expeditionNodes.expPlayer.getChildByName("expPlayerRing");
                 return Math.abs(ring.alpha - alpha) > 0.04;
@@ -162,15 +160,18 @@ async function fixture(p, kind) {
             await p.emulateMedia({ reducedMotion: "no-preference" });
             if (!touch) {
                 const at = await point(p, "expNode2");
+                const nodeState = () => p.evaluate(() => {
+                    const node = window.__skillBattlePreview.panel.buttons.expNode2;
+                    return { bounds: [node.x, node.y, node.width, node.height],
+                        hint: !!node.getChildByName("expReachHint") };
+                });
+                const before = await nodeState();
                 await p.mouse.move(at.x, at.y); await p.waitForTimeout(40);
-                assert.equal(await p.evaluate(() => window.__skillBattlePreview.panel.buttons.expNode2
-                    .getChildByName("expReachHint").alpha), 1, "Hover emphasizes only the reachable hint");
+                assert.deepEqual(await nodeState(), before, "Hover does not restore the removed halo or resize nodes");
                 await p.mouse.down(); await p.waitForTimeout(40);
-                assert.equal(await p.evaluate(() => window.__skillBattlePreview.panel.buttons.expNode2
-                    .getChildByName("expReachHint").alpha), 0.6, "Press has feedback without resizing the node");
+                assert.deepEqual(await nodeState(), before, "Press does not restore the removed halo or resize nodes");
                 await p.mouse.move(width / 2, height - 25); await p.mouse.up();
-                assert.equal(await p.evaluate(() => window.__skillBattlePreview.panel.buttons.expNode2
-                    .getChildByName("expReachHint").alpha), 0.96);
+                assert.deepEqual(await nodeState(), before);
             }
             assert.equal(await p.evaluate(key => localStorage.getItem(key), key), saved,
                 "Hover, press cancellation and the idle pulse never save");
@@ -189,6 +190,7 @@ async function fixture(p, kind) {
                 "source-complete", "source-empty", "used", "recovery-full", "recovery-ready", "extract"]) {
                 const state = await fixture(p, kind);
                 assert.ok(state.unchanged && state.passive && state.opaque, `${kind}: passive display, original node opacity`);
+                assert.equal(state.hints, false, `${kind}: reachable halos stay removed`);
                 if (kind.startsWith("enemy-")) {
                     assert.equal(state.enabled, false); assert.ok(state.skin.endsWith("/map-button-disabled.png"));
                     assert.match(state.status, /体力不足/); assert.equal(state.hints, false);
@@ -289,7 +291,7 @@ async function fixture(p, kind) {
                 "Returning to the map does not add an action or replay any feedback");
             assert.deepEqual(errors, []); assert.deepEqual(missing, []);
             await context.close();
-            console.log(`PASS map feedback ${name}: reachable/pressed/current/completed states, reduced motion, all enemy costs, paused/complete sources, recovery, extraction confirmation, unchanged layout and no display-only saves.`);
+            console.log(`PASS map feedback ${name}: no reachable halos, current/completed states, reduced motion, all enemy costs, paused/complete sources, recovery, extraction confirmation, unchanged layout and no display-only saves.`);
         }
     } finally { await browser.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });

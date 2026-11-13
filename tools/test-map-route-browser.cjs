@@ -34,10 +34,11 @@ async function inspect(page, name, reachable) {
             const [halo, rim, core] = commands.slice(index, index + 3);
             const highlighted = rim.height === 22;
             if (highlighted) active++;
-            if (halo.height !== (highlighted ? 34 : 14) || core.height !== (highlighted ? 12 : 4) ||
-                rim.alpha !== (highlighted ? 1 : 0.95) || core.alpha !== (highlighted ? 1 : 0.45) ||
-                halo.alpha !== (highlighted ? 0.45 : 0.8))
-                issues.push("Thick glowing reachable route versus thin muted route");
+            if (halo.height !== (highlighted ? 30 : 16) || rim.height !== (highlighted ? 22 : 10) ||
+                core.height !== (highlighted ? 12 : 4) ||
+                rim.alpha !== (highlighted ? 1 : 0.85) || core.alpha !== (highlighted ? 1 : 0.6) ||
+                halo.alpha !== (highlighted ? 0.95 : 0.85))
+                issues.push("Warm reachable route versus narrow muted route with dark edges");
             if ([halo, rim, core].some(command => command.cmdID !== Laya.DrawTextureCmd.ID ||
                 command.texture !== panel.expeditionNodes.mapRouteTexture.texture ||
                 !Number.isFinite(command.width) || command.width <= 0))
@@ -65,25 +66,25 @@ async function inspect(page, name, reachable) {
         Laya.timer.loop(50, panel, panel.searchTick);
     });
     const visible = await sharp(image).removeAlpha().raw().toBuffer();
-    let cyan = 0, light = 0, changed = 0;
+    let gold = 0, light = 0, changed = 0;
     for (let at = 0; at < visible.length; at += 3) {
         const [r, g, b] = visible.subarray(at, at + 3);
         const delta = Math.abs(r - hidden[at]) + Math.abs(g - hidden[at + 1]) + Math.abs(b - hidden[at + 2]);
         if (delta < 60) continue;
         changed++;
-        if (g > 140 && b > 140 && g - r > 22 && b - r > 22) cyan++;
-        if (r > 160 && g > 205 && b > 205) light++;
+        if (r > 140 && g > 130 && g - b > 20 && r - b > 22 && r >= g - 8) gold++;
+        if (r > 175 && g > 170 && b > 135 && r >= g - 5 && g - b > 8) light++;
     }
     assert.ok(changed > 100, `${name}: all routes remain visible against the grass`);
     if (reachable) {
         const junction = name.endsWith("-junction");
         const viewport = page.viewportSize(), area = viewport.width * viewport.height / (1280 * 720);
-        assert.ok(cyan > Math.max(1, (junction ? 40 : 2) * area) &&
+        assert.ok(gold > Math.max(1, (junction ? 40 : 2) * area) &&
             light > Math.max(1, (junction ? 20 : 4) * area),
-            `${name}: reachable connections have bright cyan edges and light cores (${cyan}/${light})`);
+            `${name}: reachable connections retain warm highlights and bright ivory cores (${gold}/${light})`);
     }
     else
-        assert.ok(cyan < 10 && light < 10, `${name}: blocked routes have no misleading bright cyan/white highlight (${cyan}/${light})`);
+        assert.ok(gold < 10 && light < 10, `${name}: blocked routes have no misleading gold/ivory highlight (${gold}/${light})`);
     assert.equal(await page.evaluate(key => localStorage.getItem(key), saveKey), before, "Rendering never writes a save");
     return state.count;
 }
