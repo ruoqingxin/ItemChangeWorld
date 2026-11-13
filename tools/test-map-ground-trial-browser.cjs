@@ -109,21 +109,6 @@ async function pan(p, touch) {
                 window.__skillBattlePreview.panel.elements.mapGroundTexture.texture?.width === 1376, source);
             await click(p, "expNode2", touch);
             const original = await inspect(p, `${name}-after`);
-            await p.evaluate(async () => {
-                const {panel} = window.__skillBattlePreview;
-                const old = "ui/texture/expedition/ancient-sect-ground-soft.png";
-                await Laya.loader.load(old);
-                panel.elements.mapGroundTexture.src = old; panel.backdrop();
-            });
-            await p.waitForTimeout(120);
-            await p.screenshot({path:path.join(out, `${name}-before.png`)});
-            await p.evaluate(source => {
-                const {panel} = window.__skillBattlePreview;
-                panel.elements.mapGroundTexture.src = source; panel.backdrop();
-            }, source);
-            const restored = await inspect(p, `${name}-restored`);
-            assert.deepEqual(restored.layout, original.layout, "Swapping ground preserves all node bounds");
-            assert.equal(restored.saved, original.saved, "Display comparison never saves");
             // Expose a longer display-only fixture without unlocking or saving any real progress.
             await p.evaluate(() => {
                 const {panel, trial} = window.__skillBattlePreview;

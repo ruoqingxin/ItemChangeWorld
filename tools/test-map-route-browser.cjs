@@ -32,11 +32,12 @@ async function inspect(page, name, reachable) {
         let active = 0;
         for (let index = 0; index < commands.length; index += 3) {
             const [halo, rim, core] = commands.slice(index, index + 3);
-            const highlighted = rim.height === 18;
+            const highlighted = rim.height === 22;
             if (highlighted) active++;
-            if (halo.height !== (highlighted ? 30 : 26) || core.height !== (highlighted ? 10 : 8) ||
-                rim.alpha !== 1 || core.alpha !== 1 || halo.alpha !== (highlighted ? 0.32 : 0.24))
-                issues.push("Visible cyan rim, white core and subtle halo");
+            if (halo.height !== (highlighted ? 34 : 14) || core.height !== (highlighted ? 12 : 4) ||
+                rim.alpha !== (highlighted ? 1 : 0.95) || core.alpha !== (highlighted ? 1 : 0.45) ||
+                halo.alpha !== (highlighted ? 0.45 : 0.8))
+                issues.push("Thick glowing reachable route versus thin muted route");
             if ([halo, rim, core].some(command => command.cmdID !== Laya.DrawTextureCmd.ID ||
                 command.texture !== panel.expeditionNodes.mapRouteTexture.texture ||
                 !Number.isFinite(command.width) || command.width <= 0))
@@ -49,22 +50,40 @@ async function inspect(page, name, reachable) {
     assert.deepEqual(state.issues, []);
     assert.ok(state.src.endsWith("/map-route-dash.png"));
     assert.equal(state.active > 0, reachable, "Only currently reachable connections are emphasized");
-    await page.evaluate(() => { window.__skillBattlePreview.panel.expeditionNodes.expLines.visible = false; });
+    await page.evaluate(() => {
+        const { panel } = window.__skillBattlePreview;
+        Laya.timer.clear(panel, panel.searchTick);
+        panel.expeditionNodes.expLines.visible = false;
+    });
     await page.waitForTimeout(50);
     const hidden = await sharp(await page.screenshot()).removeAlpha().raw().toBuffer();
     await page.evaluate(() => { window.__skillBattlePreview.panel.expeditionNodes.expLines.visible = true; });
     await page.waitForTimeout(50);
     const image = await page.screenshot({ path: path.join(output, name + ".png") });
+    await page.evaluate(() => {
+        const { panel } = window.__skillBattlePreview;
+        Laya.timer.loop(50, panel, panel.searchTick);
+    });
     const visible = await sharp(image).removeAlpha().raw().toBuffer();
-    let cyan = 0, light = 0;
+    let cyan = 0, light = 0, changed = 0;
     for (let at = 0; at < visible.length; at += 3) {
         const [r, g, b] = visible.subarray(at, at + 3);
         const delta = Math.abs(r - hidden[at]) + Math.abs(g - hidden[at + 1]) + Math.abs(b - hidden[at + 2]);
         if (delta < 60) continue;
-        if (g > 170 && b > 170 && g - r > 30 && b - r > 30) cyan++;
+        changed++;
+        if (g > 140 && b > 140 && g - r > 22 && b - r > 22) cyan++;
         if (r > 160 && g > 205 && b > 205) light++;
     }
-    assert.ok(cyan > 100 && light > 30, `${name}: real canvas has bright cyan edges and light cores (${cyan}/${light})`);
+    assert.ok(changed > 100, `${name}: all routes remain visible against the grass`);
+    if (reachable) {
+        const junction = name.endsWith("-junction");
+        const viewport = page.viewportSize(), area = viewport.width * viewport.height / (1280 * 720);
+        assert.ok(cyan > Math.max(1, (junction ? 40 : 2) * area) &&
+            light > Math.max(1, (junction ? 20 : 4) * area),
+            `${name}: reachable connections have bright cyan edges and light cores (${cyan}/${light})`);
+    }
+    else
+        assert.ok(cyan < 10 && light < 10, `${name}: blocked routes have no misleading bright cyan/white highlight (${cyan}/${light})`);
     assert.equal(await page.evaluate(key => localStorage.getItem(key), saveKey), before, "Rendering never writes a save");
     return state.count;
 }
@@ -93,6 +112,7 @@ async function main() {
             await page.waitForFunction(() => !!window.__skillBattlePreview.panel.expeditionNodes.mapRouteTexture.texture);
             await inspect(page, name + "-reachable", true);
             await click(page, "expNode2", touch);
+            await inspect(page, name + "-junction", true);
             await click(page, "expNode3", touch);
             assert.equal(await page.evaluate(() => window.__skillBattlePreview.trial.inventory.node), 3);
             const count = await inspect(page, name + "-enemy", false);
@@ -107,7 +127,7 @@ async function main() {
             assert.equal(await page.evaluate(key => localStorage.getItem(key), saveKey), saved);
             assert.deepEqual(errors, []);
             assert.deepEqual([...missing], [], "All referenced artwork loads");
-            console.log(`PASS routes ${name}: ${count} cyan dashes, real bright pixels, reachable/enemy states, scrolling, storage return, no display-only saves.`);
+            console.log(`PASS routes ${name}: ${count} dashes, distinct bright reachable/muted blocked pixels, scrolling, storage return, no display-only saves.`);
             await context.close();
         }
     } finally { await browser.close(); }

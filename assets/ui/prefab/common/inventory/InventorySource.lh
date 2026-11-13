@@ -2442,7 +2442,7 @@
           "autoSize": false,
           "mouseEnabled": false,
           "color": "#202923",
-          "src": "ui/atlas/module/expedition/search_active.png"
+          "src": "ui/image/expeditionNodes/node-search.png"
         },
         {
           "_$id": "exp_SkillBattleStartView_155",

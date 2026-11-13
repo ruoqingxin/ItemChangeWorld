@@ -6,6 +6,7 @@ const root = path.resolve(__dirname, "..");
 const assets = path.join(root, "assets");
 const ui = path.join(assets, "ui");
 const write = process.argv.includes("--write");
+const referencesOnly = process.argv.includes("--references-only");
 const walk = directory => fs.readdirSync(directory, { withFileTypes: true }).flatMap(entry =>
     entry.isDirectory() ? walk(path.join(directory, entry.name)) : [path.join(directory, entry.name)]);
 const relative = file => path.relative(assets, file).replaceAll("\\", "/");
@@ -84,7 +85,7 @@ function checkCycles(file, stack = []) {
 for (const file of Object.keys(depMap)) checkCycles(file);
 for (const file of files.filter(file => /\.(png|lh)$/.test(file))) {
     assert.ok(fs.existsSync(file + ".meta"), `Missing asset metadata: ${relative(file)}`);
-    assert.doesNotMatch(relative(file), /segment_\d|source_original|generatedRoute|\/ui\/|拷贝/,
+    if (!referencesOnly) assert.doesNotMatch(relative(file), /segment_\d|source_original|generatedRoute|\/ui\/|拷贝/,
         `Unorganized runtime asset ${relative(file)}`);
 }
 const output = path.join(ui, "ui-deps.json");

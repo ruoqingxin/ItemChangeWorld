@@ -64,6 +64,8 @@ for (const [file, type, content] of files) {
         if (type === 4) assert.ok(!nodes.has(name), `${file}: embedded popup control ${name}`);
     }
     if (nodes.has("inventoryRoot")) {
+        assert.equal(nodes.get("expUnknown").src, "ui/image/expeditionNodes/node-search.png",
+            `${file}: unknown search marker uses the retained node artwork`);
         assert.deepEqual(nodes.get("inventoryRoot").relations[0].data, [1, 0, 2, 0]);
         assert.deepEqual(nodes.get("bagArea").relations[0].data, [6, 0, 13, 0]);
         assert.deepEqual(nodes.get("sourceArea").relations[0].data, [9, 0, 13, 0]);
@@ -187,6 +189,16 @@ for (const [file, type, content] of files) {
             assert.deepEqual([nodes.get(`exp${key}`).x,nodes.get(`exp${key}`).width],[slot.x,slot.width],
                 "Current/max value is centered over the progress track");
         }
+        for(const suffix of ["Slot","Track","Fill"]) {
+            const stamina=nodes.get("mapStamina"+suffix),weight=nodes.get("mapWeight"+suffix);
+            assert.deepEqual([weight.width,weight.height],[stamina.width,stamina.height],
+                "Stamina and weight bars have the same authored dimensions");
+        }
+        const staminaArea=nodes.get("mapStaminaArea"),weightArea=nodes.get("mapWeightArea");
+        assert.equal(weightArea.width,staminaArea.width);
+        assert.deepEqual(weightArea.gears.find(gear=>gear.propPath==="width").values,
+            staminaArea.gears.find(gear=>gear.propPath==="width").values,
+            "Equal bar lengths are retained in the compact layout");
         for(const name of ["mapHeaderPanel","mapTimerFrame","mapKillsFrame","mapStaminaFrame","mapWeightFrame",
             "mapPlayerPanel","mapAvatarFrame","mapHpSlot","mapMpSlot","mapStaminaSlot","mapWeightSlot","expContextBackground",
             "expUseSkin","expAbandonSkin","expStorageSkin","expBuildSkin"]) {

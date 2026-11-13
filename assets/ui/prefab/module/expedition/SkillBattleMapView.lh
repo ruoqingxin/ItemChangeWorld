@@ -2870,9 +2870,9 @@
                       "_$id": "map_foundation_mapKillIcon0",
                       "_$type": "GImage",
                       "name": "mapKillIcon0",
-                      "y": 8,
-                      "width": 32,
-                      "height": 32,
+                      "y": -2,
+                      "width": 40,
+                      "height": 40,
                       "_mouseState": 1,
                       "gears": [
                         {
@@ -2883,7 +2883,7 @@
                           },
                           "propPath": "width",
                           "values": {
-                            "0": 32,
+                            "0": 40,
                             "1": 38,
                             "_$type": "Record"
                           }
@@ -2896,7 +2896,7 @@
                           },
                           "propPath": "height",
                           "values": {
-                            "0": 32,
+                            "0": 40,
                             "1": 38,
                             "_$type": "Record"
                           }
@@ -2921,7 +2921,7 @@
                       "_$id": "map_foundation_expKillCount0",
                       "_$type": "GTextField",
                       "name": "expKillCount0",
-                      "x": 36,
+                      "x": 44,
                       "width": 72,
                       "height": 48,
                       "_mouseState": 1,
@@ -2996,10 +2996,9 @@
                       "_$id": "map_foundation_mapKillIcon1",
                       "_$type": "GImage",
                       "name": "mapKillIcon1",
-                      "x": 112,
-                      "y": 8,
-                      "width": 32,
-                      "height": 32,
+                      "x": 120,
+                      "width": 40,
+                      "height": 40,
                       "_mouseState": 1,
                       "gears": [
                         {
@@ -3010,7 +3009,7 @@
                           },
                           "propPath": "width",
                           "values": {
-                            "0": 32,
+                            "0": 40,
                             "1": 38,
                             "_$type": "Record"
                           }
@@ -3023,7 +3022,7 @@
                           },
                           "propPath": "height",
                           "values": {
-                            "0": 32,
+                            "0": 40,
                             "1": 38,
                             "_$type": "Record"
                           }
@@ -3058,7 +3057,7 @@
                       "_$id": "map_foundation_expKillCount1",
                       "_$type": "GTextField",
                       "name": "expKillCount1",
-                      "x": 148,
+                      "x": 164,
                       "width": 72,
                       "height": 48,
                       "_mouseState": 1,
@@ -3133,10 +3132,9 @@
                       "_$id": "map_foundation_mapKillIcon2",
                       "_$type": "GImage",
                       "name": "mapKillIcon2",
-                      "x": 224,
-                      "y": 8,
-                      "width": 32,
-                      "height": 32,
+                      "x": 240,
+                      "width": 40,
+                      "height": 40,
                       "_mouseState": 1,
                       "gears": [
                         {
@@ -3147,7 +3145,7 @@
                           },
                           "propPath": "width",
                           "values": {
-                            "0": 32,
+                            "0": 40,
                             "1": 38,
                             "_$type": "Record"
                           }
@@ -3160,7 +3158,7 @@
                           },
                           "propPath": "height",
                           "values": {
-                            "0": 32,
+                            "0": 40,
                             "1": 38,
                             "_$type": "Record"
                           }
@@ -3195,7 +3193,7 @@
                       "_$id": "map_foundation_expKillCount2",
                       "_$type": "GTextField",
                       "name": "expKillCount2",
-                      "x": 260,
+                      "x": 284,
                       "width": 72,
                       "height": 48,
                       "_mouseState": 1,
@@ -3272,7 +3270,7 @@
                   "_$id": "map_foundation_mapStaminaArea",
                   "_$type": "GWidget",
                   "name": "mapStaminaArea",
-                  "x": 736,
+                  "x": 704,
                   "y": 8,
                   "width": 264,
                   "height": 48,
@@ -3581,9 +3579,9 @@
                   "_$id": "map_foundation_mapWeightArea",
                   "_$type": "GWidget",
                   "name": "mapWeightArea",
-                  "x": 1016,
+                  "x": 984,
                   "y": 8,
-                  "width": 232,
+                  "width": 264,
                   "height": 48,
                   "_mouseState": 2,
                   "mouseThrough": true,
@@ -3596,8 +3594,8 @@
                       },
                       "propPath": "width",
                       "values": {
-                        "0": 232,
-                        "1": 248,
+                        "0": 264,
+                        "1": 288,
                         "_$type": "Record"
                       }
                     }
@@ -3629,7 +3627,7 @@
                       "_$id": "map_foundation_mapWeightFrame",
                       "_$type": "GImage",
                       "name": "mapWeightFrame",
-                      "width": 232,
+                      "width": 264,
                       "height": 48,
                       "visible": false,
                       "_mouseState": 1,
@@ -3706,7 +3704,7 @@
                       "name": "mapWeightSlot",
                       "x": 60,
                       "y": 10,
-                      "width": 164,
+                      "width": 196,
                       "height": 28,
                       "_mouseState": 1,
                       "gears": [
@@ -3757,7 +3755,7 @@
                       "name": "mapWeightTrack",
                       "x": 64,
                       "y": 14,
-                      "width": 156,
+                      "width": 188,
                       "height": 20,
                       "_mouseState": 1,
                       "relations": [
@@ -3787,7 +3785,7 @@
                       "name": "mapWeightFill",
                       "x": 64,
                       "y": 14,
-                      "width": 156,
+                      "width": 188,
                       "height": 20,
                       "visible": false,
                       "_mouseState": 1,
@@ -3818,7 +3816,7 @@
                       "name": "expWeight",
                       "x": 60,
                       "y": 10,
-                      "width": 164,
+                      "width": 196,
                       "height": 28,
                       "_mouseState": 1,
                       "gears": [

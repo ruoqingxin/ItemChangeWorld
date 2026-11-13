@@ -82,6 +82,11 @@ async function inspect(p, name) {
                 issues.push([key,"full-bar text centering"]);
         }
         const header=view.getElement("mapHeaderArea"),player=view.getElement("mapPlayerArea");
+        for(const suffix of ["Slot","Track","Fill"]) {
+            const stamina=view.getElement("mapStamina"+suffix),weight=view.getElement("mapWeight"+suffix);
+            if(stamina.width!==weight.width||stamina.height!==weight.height)
+                issues.push([suffix,"equal stamina and weight bar dimensions"]);
+        }
         if(header.x!==8||header.y!==8||header.width!==panel.root.width-16||
             header.height!==(panel.compactMap?80:64))issues.push("header inset");
         const groups=["mapClockArea","mapKillsArea","mapStaminaArea","mapWeightArea"].map(n=>view.getElement(n));
@@ -167,13 +172,13 @@ async function inspect(p, name) {
         }
         const commands = panel.expeditionNodes.expLines.graphics.cmds;
         if (!commands.length || commands.some(c=>c.cmdID!==Laya.DrawTextureCmd.ID)) issues.push("textured routes");
-        if(commands.length%3||commands.some(c=>![8,10,16,18,26,30].includes(c.height)) ||
-            (!locked&&neighbors.length&&!commands.some(c=>c.height===18)) ||
-            (locked&&commands.some(c=>c.height===18)))issues.push("route emphasis");
+        if(commands.length%3||commands.some(c=>![4,10,12,14,22,34].includes(c.height)) ||
+            (!locked&&neighbors.length&&!commands.some(c=>c.height===22)) ||
+            (locked&&commands.some(c=>c.height===22)))issues.push("route emphasis");
         for(let i=0;i<commands.length;i+=3) {
-            const [halo,rim,core]=commands.slice(i,i+3),active=rim.height===18;
-            if(halo.height!==(active?30:26)||halo.alpha!==(active?0.32:0.24)||
-                core.height!==(active?10:8)||rim.alpha!==1||core.alpha!==1||
+            const [halo,rim,core]=commands.slice(i,i+3),active=rim.height===22;
+            if(halo.height!==(active?34:14)||halo.alpha!==(active?0.45:0.8)||
+                core.height!==(active?12:4)||rim.alpha!==(active?1:0.95)||core.alpha!==(active?1:0.45)||
                 halo.width!==rim.width||rim.width!==core.width||
                 halo.x!==rim.x||rim.x!==core.x)
                 issues.push("readable cyan route layers");

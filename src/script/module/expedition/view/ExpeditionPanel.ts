@@ -789,12 +789,12 @@ export class ExpeditionPanel extends InventoryPanel {
                     const endX=start.x+ux*(offset+step),endY=start.y+uy*(offset+step);
                     const span=Math.hypot(endX-x,endY-y);
                     const matrix=new Laya.Matrix(ux,uy,-uy,ux,x,y);
-                    // Reuse the painted capsule for a cyan rim and a light core, like the reference.
+                    // Reachable routes glow; other routes retain a narrow, muted stroke and dark edge.
                     const draw=(height:number,alpha:number,color:string) =>
                         graphics.drawTexture(texture,-span*0.14,-height/2,span*1.28,height,matrix,alpha,color);
-                    draw(active?30:26,active?0.32:0.24,"#08dce8");
-                    draw(active?18:16,1,active?"#44ffff":"#28eaf5");
-                    draw(active?10:8,1,active?"#ffffff":"#d7ffff");
+                    draw(active?34:14,active?0.45:0.8,active?"#08dce8":"#102c2a");
+                    draw(active?22:10,active?1:0.95,active?"#22f4ff":"#9cb5ad");
+                    draw(active?12:4,active?1:0.45,active?"#ffffff":"#b9c9bd");
                 }
                 offset+=step;
             }

@@ -12,7 +12,7 @@ const COLORS = {
 };
 
 const NODE_SIZE = 76;
-const NODE_SOURCE_ROOT = "ui/atlas/module/expedition/";
+const NODE_SOURCE_ROOT = "ui/image/expeditionNodes/";
 
 const TYPE_LABEL: { [key in ExpeditionMapNodeType]: string } = {
     start: "入境处",
@@ -27,15 +27,15 @@ const TYPE_LABEL: { [key in ExpeditionMapNodeType]: string } = {
 };
 
 const NODE_SOURCE: { [key in ExpeditionMapNodeType]: { active: string; inactive: string } } = {
-    start: { active: "exit.png", inactive: "exit.png" },
-    battle: { active: "battle_active.png", inactive: "battle_inactive.png" },
-    elite: { active: "elite_active.png", inactive: "elite_inactive.png" },
-    boss: { active: "boss_active.png", inactive: "boss_inactive.png" },
-    borrow: { active: "borrow.png", inactive: "borrow.png" },
-    enlightenment: { active: "enlightenment.png", inactive: "enlightenment.png" },
-    search: { active: "search_active.png", inactive: "search_inactive.png" },
-    recovery: { active: "recovery.png", inactive: "recovery.png" },
-    extract: { active: "exit.png", inactive: "exit.png" },
+    start: { active: "node-start.png", inactive: "node-start.png" },
+    battle: { active: "node-enemy-normal.png", inactive: "node-enemy-normal.png" },
+    elite: { active: "node-enemy-elite.png", inactive: "node-enemy-elite.png" },
+    boss: { active: "node-enemy-boss.png", inactive: "node-enemy-boss.png" },
+    borrow: { active: "node-borrow.png", inactive: "node-borrow.png" },
+    enlightenment: { active: "node-insight.png", inactive: "node-insight.png" },
+    search: { active: "node-search.png", inactive: "node-search.png" },
+    recovery: { active: "node-recovery.png", inactive: "node-recovery.png" },
+    extract: { active: "node-extract.png", inactive: "node-extract.png" },
 };
 
 export class SkillBattleMapPanel {
@@ -421,8 +421,8 @@ export class SkillBattleMapPanel {
         const width = button.width, height = button.height, cut = 8;
         button.graphics.drawPoly(0, 0, [cut, 0, width - cut, 0, width, cut, width, height - cut,
             width - cut, height, cut, height, 0, height - cut, 0, cut],
-        selected ? "#2b3d32" : enabled ? COLORS.panelSoft : "#1c2521",
-        selected ? COLORS.gold : enabled ? COLORS.border : "#333d37", selected ? 2 : 1);
+            selected ? "#2b3d32" : enabled ? COLORS.panelSoft : "#1c2521",
+            selected ? COLORS.gold : enabled ? COLORS.border : "#333d37", selected ? 2 : 1);
         button.graphics.drawLine(cut + 8, 2, width - cut - 8, 2,
             selected ? COLORS.cyan : enabled ? "#31483b" : "#253029", 1);
         button.alpha = enabled ? 1 : 0.46;
