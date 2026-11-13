@@ -15,6 +15,10 @@ function unpack(b){if(!Buffer.isBuffer(b))b=fs.readFileSync(b);let at=4;const ou
         const size=b.readInt32LE(at);at+=4;out[key]=b.subarray(at,at+size);at+=size;}assert.equal(at,b.length);return out;}
 const blocks=unpack(path.join(root,"assets/config/configbin.bin"));
 const cfg=Config.read(new Tables(n=>new ByteBuf(new Uint8Array(blocks[n])))),profile=B.profile(cfg.build);
+const budgetKeys=["normalMin","normalMax","eliteMin","eliteMax","insightMin","insightMax","borrowMin","borrowMax"];
+const legacyCfg=structuredClone(cfg);
+for(const key of budgetKeys)delete legacyCfg.rules[key];
+Object.assign(legacyCfg.rules,{searchMin:3,searchMax:5});legacyCfg.groundNodeLimit=44;
 let count=0;
 function test(name,fn){try{fn();count++;console.log("PASS expedition "+name);}catch(e){console.error("FAIL "+name);throw e;}}
 function fixture(c=cfg,seed=1){
@@ -29,8 +33,9 @@ function choose(f){while(f.s.flow.pending){const flow=f.s.flow,p=flow.pending;
 function enter(f){f.s.inventoryCommand({type:"enter"});choose(f);}
 function apply(s,command,c=cfg){return R.apply(c,B.profile(c.build),s,command,1100,1).state;}
 function ready(seed=1,c=cfg){const f=fixture(c,seed);enter(f);return f.s.inventory;}
-function generated(seed,version=3){
-    return R.apply(cfg,profile,R.start(cfg,profile,seed,"distribution",version),{type:"enter"},1000,seed).state;
+function generated(seed,version=4){
+    const c=version===4?cfg:legacyCfg;
+    return R.apply(c,profile,R.start(c,profile,seed,"distribution",version),{type:"enter"},1000,seed).state;
 }
 function ns(s,id){return s.map.edges.flatMap(([a,b])=>a===id?[b]:b===id?[a]:[]);}
 function pathTo(s,id,avoid=new Set()){const queue=[[s.node]],seen=new Set([s.node]);if(s.node===id)return[s.node];
@@ -57,15 +62,16 @@ if(!process.argv.includes("--rules-only"))test("43 tables, only three changed bl
     for(const [a,b]of [["assets/config/configbin.bin","../config/configbin.bin"],["src/script/config/schema.ts","../config/output_client/code/schema.ts"]])
         assert.deepEqual(fs.readFileSync(path.join(root,a)),fs.readFileSync(path.join(root,b)));
 });
-else console.log("SKIP historical export-vs-HEAD check (--rules-only); no configuration exports in this change.");
+else console.log("SKIP historical export-vs-HEAD check (--rules-only); current export parity verified separately.");
 test("512 random graphs: counts, connectivity, sequential borrows, eight-fight main route and boss gate",()=>{
     const graphs=new Set(),sizes=new Set(),rec=new Set(),exits=new Set();
     for(let seed=1;seed<=512;seed++){
         const s=generated(seed);
         const nodes=s.map.nodes,kind=k=>nodes.filter(n=>n.kind===k);
-        assert.ok(nodes.length>=36&&nodes.length<=44);sizes.add(nodes.length);
-        for(const [k,n]of [["normal",11],["elite",3],["boss",1],["borrow",3],["insight",1]])assert.equal(kind(k).length,n);
-        assert.ok(kind("transit").length>=10&&kind("transit").length<=14);assert.ok(kind("search").length>=3&&kind("search").length<=5);
+        assert.ok(nodes.length>=45&&nodes.length<=65);sizes.add(nodes.length);
+        assert.equal(kind("boss").length,1);
+        for(const [k,min,max]of [["normal",13,16],["elite",4,7],["borrow",3,5],["insight",2,4],["transit",10,14],["search",8,12]])
+            assert.ok(kind(k).length>=min&&kind(k).length<=max,`${seed}/${k}`);
         rec.add(kind("recovery").length);exits.add(kind("extract").length);
         assert.equal(new Set(nodes.map(n=>n.key)).size,nodes.length);
         assert.equal(new Set(s.map.edges.map(e=>[...e].sort((a,b)=>a-b).join(":"))).size,s.map.edges.length);
@@ -119,9 +125,9 @@ test("2048 free maps: variable reward positions, local loops, useful dead ends a
     const borrows=new Set(),recoveries=new Set(),exits=new Set(),widths=new Set(),loops=new Set(),sizes=new Set();
     let bypassable=0,sideForks=0,shortcuts=0;
     for(let seed=1;seed<=2048;seed++){
-        const s=generated(seed),nodes=s.map.nodes;
+        const s=generated(seed,3),nodes=s.map.nodes;
         assert.equal(s.map.generatorVersion,3);
-        if(seed<=64)assert.deepEqual(generated(seed).map,s.map);
+        if(seed<=64)assert.deepEqual(generated(seed,3).map,s.map);
         assert.ok(nodes.length>=36&&nodes.length<=44);sizes.add(nodes.length);
         for(const n of nodes){
             assert.ok(pathTo(s,n.id),`${seed}: connected ${n.id}`);
@@ -149,6 +155,65 @@ test("2048 free maps: variable reward positions, local loops, useful dead ends a
     assert.ok(bypassable>1500&&sideForks>1000&&shortcuts>1200,"Alternate walks, branching side paths and shortcuts occur");
     assert.ok(widths.size>=5&&loops.size>=5&&sizes.size>=7,"Graph shape and scale vary across runs");
 });
+test("2048 long-route maps: sustained 2/3/4 lanes, committed routes, progressive visibility and randomized junctions",()=>{
+    const layouts=new Set(),junctions=new Set(),routeLengths=new Set(),widthSpans={2:[],3:[],4:[]};
+    let fourLaneMaps=0;
+    for(let seed=1;seed<=2048;seed++){
+        const s=generated(seed),nodes=s.map.nodes,byId=id=>nodes[id-1];
+        assert.equal(s.map.generatorVersion,4);
+        if(seed<=64)assert.deepEqual(generated(seed).map,s.map);
+        const main=nodes.filter(n=>n.mainOrder>=0).sort((a,b)=>a.mainOrder-b.mainOrder);
+        const sides=nodes.filter(n=>n.mainOrder<0&&n.x<26),seen=new Set(),corridors=[];
+        for(const n of sides){
+            if(seen.has(n.id))continue;
+            const queue=[n.id],ends=new Set();seen.add(n.id);
+            for(const id of queue){
+                assert.equal(ns(s,id).length,2,"Side corridors never have an incidental lane-change edge");
+                for(const next of ns(s,id)){
+                    if(byId(next).mainOrder>=0){ends.add(next);continue;}
+                    if(!seen.has(next)){seen.add(next);queue.push(next);}
+                }
+            }
+            assert.equal(ends.size,2);assert.ok(queue.length>=3,"At least four moves between switch points");
+            const endpoints=[...ends].map(byId).sort((a,b)=>a.x-b.x);
+            assert.ok(endpoints[1].x-endpoints[0].x>=4,"Commitment extends beyond a short visible fork");
+            const revealed=main.filter(n=>n.mainOrder<=endpoints[0].mainOrder).map(n=>n.id);
+            for(const next of [...queue.map(byId).sort((a,b)=>a.x-b.x),endpoints[1]]){
+                assert.ok(R.displayNodes({...s,revealed},1280).includes(next.id),
+                    `Next route step must already be visible: ${seed}/${endpoints[0].id}->${next.id}/${revealed.length}`);
+                revealed.push(next.id);
+            }
+            corridors.push({ends:endpoints.map(n=>n.id),length:queue.length+1});
+            routeLengths.add(queue.length+1);
+        }
+        assert.ok(corridors.length===2||corridors.length===3);
+        const outerEnd=byId(Math.max(...corridors.flatMap(r=>r.ends)));
+        assert.ok(main.at(-1).mainOrder-outerEnd.mainOrder<=2,"Only a short final approach can collapse to one lane");
+        const xs=[...new Set(nodes.filter(n=>n.x>=main[1].x&&n.x<=outerEnd.x).map(n=>n.x))].sort((a,b)=>a-b);
+        const spans={2:0,3:0,4:0};
+        for(let i=1;i<xs.length;i++){
+            const x=(xs[i-1]+xs[i])/2,width=s.map.edges.filter(([a,b])=>
+                Math.min(byId(a).x,byId(b).x)<x&&Math.max(byId(a).x,byId(b).x)>x).length;
+            assert.ok(width>=2&&width<=4,`No single-line core stretch or fifth lane: ${seed}/${x}/${width}`);
+            spans[width]+=xs[i]-xs[i-1];
+        }
+        assert.ok(spans[2]>=2&&spans[3]>=2,"Two and three lanes persist for meaningful distances");
+        if(corridors.length===3){assert.ok(spans[4]>=3);fourLaneMaps++;}
+        else assert.equal(spans[4],0);
+        for(const width of [2,3,4])widthSpans[width].push(spans[width]);
+        const forks=main.filter(n=>ns(s,n.id).length>2);
+        assert.ok(forks.some(n=>n.kind!=="borrow"),"Junctions do not become fixed borrow gates");
+        layouts.add(JSON.stringify(s.map.edges));
+        junctions.add(forks.map(n=>[n.x,n.y,n.kind]).join(";"));
+        assert.ok(R.displayNodes(s).length<nodes.length,"Later branches stay hidden at the start");
+        assert.ok(R.displayNodes(s).some(id=>sides.some(n=>n.id===id)),"An opening alternative is visible");
+    }
+    console.log("Long route distribution",JSON.stringify({layouts:layouts.size,junctions:junctions.size,fourLaneMaps,
+        routeMoves:[...routeLengths].sort((a,b)=>a-b),
+        widthSpans:Object.fromEntries(Object.entries(widthSpans).map(([width,values])=>[width,
+            {min:Math.min(...values),max:Math.max(...values),mean:values.reduce((a,b)=>a+b,0)/values.length}]))}));
+    assert.ok(layouts.size>1800&&junctions.size>1800&&routeLengths.size>=4&&fourLaneMaps>700);
+});
 test("1024 broad-range seeds plus boundaries: connected, noncrossing edges, valid budgets and no blank dead ends",()=>{
     const before=JSON.stringify(cfg);
     for(const seed of [0,-1,0x100000000])assert.throws(()=>generated(seed),/随机种子/);
@@ -156,9 +221,9 @@ test("1024 broad-range seeds plus boundaries: connected, noncrossing edges, vali
         ...Array.from({length:1024},(_,i)=>Math.imul(i+1,0x9e3779b9)>>>0)];
     for(const seed of seeds){
         const s=generated(seed),nodes=s.map.nodes;
-        assert.ok(nodes.length>=36&&nodes.length<=44,`Node budget ${seed}`);
-        assert.equal(nodes.filter(n=>n.enemy).length,15);
-        assert.equal(nodes.filter(n=>n.kind==="borrow").length,3);
+        assert.ok(nodes.length>=45&&nodes.length<=65,`Node budget ${seed}`);
+        assert.ok(nodes.filter(n=>n.enemy).length>=18&&nodes.filter(n=>n.enemy).length<=24);
+        assert.ok(nodes.filter(n=>n.kind==="borrow").length>=3&&nodes.filter(n=>n.kind==="borrow").length<=5);
         for(const n of nodes){
             assert.ok(pathTo(s,n.id),`Connected ${seed}/${n.id}`);
             if(n.kind==="transit")assert.ok(ns(s,n.id).length>=2,`Useful transit ${seed}/${n.id}`);
@@ -173,20 +238,63 @@ test("1024 broad-range seeds plus boundaries: connected, noncrossing edges, vali
     }
     assert.equal(JSON.stringify(cfg),before,"Generation does not edit the configuration");
 });
+test("all 64 budget corners and shortest approaches retain visible next steps, including 45/65-node maps",()=>{
+    const ranges=[["normal",13,16],["elite",4,7],["search",8,12],["insight",2,4],["borrow",3,5],["transit",10,14]];
+    const sizes=new Set();
+    for(let mask=0;mask<64;mask++)for(let seed=1;seed<=16;seed++){
+        const c=structuredClone(cfg);
+        for(const [i,[kind,min,max]]of ranges.entries())
+            c.rules[`${kind}Min`]=c.rules[`${kind}Max`]=mask&(1<<i)?max:min;
+        const s=R.apply(c,profile,R.start(c,profile,seed,"corner"),{type:"enter"},1000,seed).state;
+        sizes.add(s.map.nodes.length);
+        for(const [i,[kind,min,max]]of ranges.entries())
+            assert.equal(s.map.nodes.filter(n=>n.kind===kind).length,mask&(1<<i)?max:min);
+        const queue=[1],distances=new Map([[1,0]]);
+        for(const id of queue)for(const next of ns(s,id))if(!distances.has(next)){
+            distances.set(next,distances.get(id)+1);queue.push(next);
+        }
+        for(const n of s.map.nodes){
+            const revealed=Array.from({length:distances.get(n.id)+1},(_,i)=>i+1);
+            const visible=R.displayNodes({...s,revealed},1280);
+            for(const next of ns(s,n.id))assert.ok(visible.includes(next),
+                `Earliest arrival visibility ${mask}/${seed}/${n.id}->${next}`);
+        }
+        if(s.map.nodes.length===65){
+            const last=s.map.nodes.at(-1);assert.equal(last.id,65);
+            s.node=s.map.nodes.find(n=>n.kind==="boss").id;R.makeSource(c,s,seed);I.validate(c,s);
+        }
+    }
+    assert.ok(sizes.has(45)&&sizes.has(65),"Both total-count extremes are generated and validated");
+    for(const key of budgetKeys){
+        const c=structuredClone(cfg);delete c.rules[key];
+        assert.throws(()=>R.validateConfig(c,profile),/预算/);
+    }
+});
 test("new generator replay, existing v4 graph preserved and unknown generator rejected",()=>{
     const fresh=fixture();enter(fresh);travel(fresh,2);
-    assert.equal(fresh.s.inventory.map.generatorVersion,3);
+    assert.equal(fresh.s.inventory.map.generatorVersion,4);
     assert.deepEqual(fresh.restore().inventory,fresh.s.inventory);
-    for(const version of [1,2]){
-        const legacy=fixture(),old=legacy.s.archive;
+    for(const version of [1,2,3]){
+        const legacy=fixture(legacyCfg),old=legacy.s.archive;
         old.state=R.start(old.config,old.profile,old.seed,old.runId,version);
         legacy.data.set(S.key,JSON.stringify(old));legacy.s=legacy.restore();enter(legacy);travel(legacy,2);
-        assert.equal(legacy.s.inventory.map.generatorVersion,version===1?undefined:2);
+        assert.equal(legacy.s.inventory.map.generatorVersion,version===1?undefined:version);
         const saved=legacy.data.get(S.key);
         assert.deepEqual(legacy.restore().inventory,legacy.s.inventory);
         assert.equal(legacy.data.get(S.key),saved,"Opening an existing v4 save never rewrites or rerolls it");
+        const current=new S(new M(),legacy.storage,()=>1000,cfg);
+        assert.equal(current.error,"");assert.deepEqual(current.archive,legacy.s.archive);
+        assert.equal(legacy.data.get(S.key),saved,"New budgets do not migrate or rewrite existing maps");
+        current.mapCommand({type:"debugEnemyBlocking",enabled:false});
+        assert.deepEqual(current.archive.config,legacyCfg);
+        const changed=structuredClone(cfg);changed.rules.moveCost++;
+        assert.match(new S(new M(),legacy.storage,()=>1000,changed).error,/配置已改变/);
+        current.mapCommand({type:"abandon"});current.prepare(cfg,profile,2);
+        current.inventoryCommand({type:"enter"});
+        assert.equal(current.inventory.map.generatorVersion,4);
+        assert.deepEqual(current.archive.config,cfg);
     }
-    const bad=fresh.s.archive;bad.state.map.generatorVersion=4;
+    const bad=fresh.s.archive;bad.state.map.generatorVersion=5;
     assert.throws(()=>S.validate(bad),/生成版本/);
     delete bad.state.map.generatorVersion;
     assert.throws(()=>S.validate(bad),/重放/);
@@ -207,6 +315,63 @@ test("adjacent only, arrival never starts combat, uncleared enemy locks all dire
     for(const id of ns(f.s.inventory,n.id))unchanged(f,()=>travel(f,id),/不可达/);
     assert.deepEqual(f.restore().inventory,f.s.inventory);win(f);
     assert.ok(R.reachable(cfg,f.s.inventory).has(path.at(-2)));assert.ok([...R.travelPaths(cfg,f.s.inventory).values()].every(p=>p.length<=2));
+});
+test("test switch bypasses every enemy kind without free combat rewards or free movement",()=>{
+    for(const kind of ["normal","elite","boss"]){
+        let s=ready();const n=s.map.nodes.find(n=>n.kind===kind);s.node=n.id;
+        const before=structuredClone(s),neighbors=ns(s,n.id);
+        assert.deepEqual([...R.reachable(cfg,s)],[n.id]);
+        s=apply(s,{type:"debugEnemyBlocking",enabled:false});
+        assert.deepEqual(s.map.cleared,before.map.cleared);assert.deepEqual(s.map.sources,before.map.sources);
+        assert.equal(s.stamina,before.stamina);assert.equal(s.hp,before.hp);
+        assert.deepEqual(new Set(R.reachable(cfg,s)),new Set([n.id,...neighbors]));
+        assert.ok([...R.travelPaths(cfg,s).values()].every(p=>p.length<=2));
+        const nonAdjacent=s.map.nodes.find(v=>v.id!==n.id&&!neighbors.includes(v.id));
+        assert.throws(()=>apply(s,{type:"travel",node:nonAdjacent.id}),/不可达/);
+        const fight=apply(s,{type:"fight"});
+        assert.equal(fight.flow.phase,"battle");
+        assert.equal(fight.stamina,s.stamina-cfg.rules[`${kind}Cost`]);
+        assert.throws(()=>apply(fight,{type:"debugEnemyBlocking",enabled:true}),/完成当前选择或战斗/);
+        const moved=apply(s,{type:"travel",node:neighbors[0]});
+        assert.equal(moved.stamina,s.stamina-cfg.rules.moveCost);
+        assert.ok(!moved.map.cleared.includes(n.id));
+        s=apply(s,{type:"debugEnemyBlocking",enabled:true});
+        assert.deepEqual([...R.reachable(cfg,s)],[n.id]);
+    }
+});
+test("test switch persists with full replay, unlocks current enemy immediately and resets for new runs",()=>{
+    const f=fixture();enter(f);const n=f.s.inventory.map.nodes.find(n=>n.enemy&&n.mainOrder>=0);
+    const path=pathTo(f.s.inventory,n.id);for(const id of path.slice(1))travel(f,id);
+    const before=f.s.inventory;f.s.mapCommand({type:"debugEnemyBlocking",enabled:false});
+    assert.equal(f.s.inventory.stamina,before.stamina);assert.deepEqual(f.restore().inventory,f.s.inventory);
+    travel(f,path.at(-2));travel(f,n.id);assert.deepEqual(f.restore().inventory,f.s.inventory);
+    f.s.mapCommand({type:"debugEnemyBlocking",enabled:true});
+    for(const id of ns(f.s.inventory,n.id))unchanged(f,()=>travel(f,id),/不可达/);
+    assert.deepEqual(f.restore().inventory,f.s.inventory);
+    f.s.mapCommand({type:"debugEnemyBlocking",enabled:false});
+    const last=f.s.inventory.map.nodes.find(v=>v.x===27);
+    for(const id of pathTo(f.s.inventory,last.id).slice(1))travel(f,id);
+    assert.ok(!f.s.inventory.map.cleared.length);
+    f.s.mapCommand({type:"extract"});assert.equal(f.s.inventory.result,"extract");
+    assert.deepEqual(f.restore().inventory,f.s.inventory);
+    f.s.prepare(cfg,profile,2);enter(f);assert.equal(f.s.inventory.map.debugEnemyBlocking,undefined);
+});
+test("test switch rejects malformed, stale, pending, failed-write and expired transactions",()=>{
+    const f=fixture();
+    unchanged(f,()=>f.s.mapCommand({type:"debugEnemyBlocking",enabled:false}),/完成当前选择或战斗/);
+    f.s.inventoryCommand({type:"enter"});
+    unchanged(f,()=>f.s.mapCommand({type:"debugEnemyBlocking",enabled:false}),/完成当前选择或战斗/);
+    choose(f);
+    for(const enabled of [null,0,"false",undefined])
+        unchanged(f,()=>f.s.mapCommand({type:"debugEnemyBlocking",enabled}),/开关无效/);
+    const old=f.s.token;f.s.mapCommand({type:"debugEnemyBlocking",enabled:false});
+    unchanged(f,()=>f.s.mapCommand({type:"debugEnemyBlocking",enabled:true},old),/修订已过期/);
+    f.setFail(true);unchanged(f,()=>f.s.mapCommand({type:"debugEnemyBlocking",enabled:true}),/disk/);f.setFail(false);
+    const tampered=f.s.archive;tampered.state.map.debugEnemyBlocking=true;
+    assert.throws(()=>S.validate(tampered),/完整重放不一致/);
+    f.setNow(f.s.inventory.deadlineAt);
+    assert.throws(()=>f.s.mapCommand({type:"debugEnemyBlocking",enabled:true}),/本局已结算/);
+    assert.equal(f.s.inventory.result,"timeout");assert.deepEqual(f.restore().inventory,f.s.inventory);
 });
 test("independent move/fight/search costs; battle actions are free",()=>{
     const f=fixture();enter(f);travel(f,2);assert.equal(f.s.inventory.stamina,980);
@@ -359,14 +524,19 @@ test("recovery once for HP/MP only, never stamina",()=>{
     s.hp-=1500;s.mp-=100;s.stamina=1;const hp=s.hp;s=apply(s,{type:"recover"});
     assert.equal(s.hp,hp+1200);assert.equal(s.mp,cfg.build.setup.player.maxMp);assert.equal(s.stamina,1);assert.throws(()=>apply(s,{type:"recover"}),/不可用/);
 });
-test("full session: fifteen fights, three borrows, unique boxes and exact replay",()=>{
+test("full session: expanded fights, three sequential borrows, unique boxes and exact replay",()=>{
     const c=structuredClone(cfg);c.build.setup.player.maxHp=1000000;c.staminaMax=c.rules.staminaMax=100000;
     const f=fixture(c);enter(f);
     for(const n of f.s.inventory.map.nodes.filter(n=>n.mainOrder>=0).sort((a,b)=>a.mainOrder-b.mainOrder)){
         if(n.id!==f.s.inventory.node)walk(f,n.id);if(n.kind==="borrow"){f.s.mapCommand({type:"borrow"});choose(f);}
     }
     for(const n of f.s.inventory.map.nodes.filter(n=>n.enemy&&!f.s.inventory.map.cleared.includes(n.id)))walk(f,n.id);
-    assert.equal(f.s.inventory.map.cleared.length,15);assert.equal(f.s.inventory.map.sources.filter(b=>R.node(c,b.node,f.s.inventory).enemy).length,15);
+    const fights=f.s.inventory.map.nodes.filter(n=>n.enemy).length;
+    assert.ok(fights>=18&&fights<=24);
+    assert.equal(f.s.inventory.map.cleared.length,fights);
+    assert.equal(f.s.inventory.map.sources.filter(b=>R.node(c,b.node,f.s.inventory).enemy).length,fights);
+    const rewarded=f.s.flow.sources.filter(x=>x.startsWith("battle:"));
+    assert.equal(rewarded.length,fights);assert.equal(new Set(rewarded).size,fights);
     assert.equal(f.s.flow.sources.filter(x=>x.startsWith("borrow:")).length,3);
     assert.equal(f.s.inventory.phase,"active");assert.deepEqual(f.restore().inventory,f.s.inventory);
 });

@@ -61,16 +61,25 @@ export class ExpeditionRules {
                 n.enemy && !c.build.encounters.some(e => e.id === `battle:${n.key}`))
                 throw new Error("地图类型或敌人绑定无效");
         }
+        const budgets = [c.rules.normalMin,c.rules.normalMax,c.rules.eliteMin,c.rules.eliteMax,
+            c.rules.insightMin,c.rules.insightMax,c.rules.borrowMin,c.rules.borrowMax];
+        const expanded = budgets.some(v=>v!==undefined);
+        if (expanded && (budgets.some(v=>!Number.isSafeInteger(v)||v!<=0) ||
+            c.rules.normalMin!<13 || c.rules.normalMax!>16 || c.rules.normalMin!>c.rules.normalMax! ||
+            c.rules.eliteMin!<4 || c.rules.eliteMax!>7 || c.rules.eliteMin!>c.rules.eliteMax! ||
+            c.rules.insightMin!<2 || c.rules.insightMax!>4 || c.rules.insightMin!>c.rules.insightMax! ||
+            c.rules.borrowMin!<3 || c.rules.borrowMax!>5 || c.rules.borrowMin!>c.rules.borrowMax! ||
+            c.groundNodeLimit!==65)) throw new Error("扩展地图节点预算无效");
         if(c.nodes.filter(n=>n.kind==="normal").length!==11 || c.nodes.filter(n=>n.kind==="elite").length!==3 ||
             c.nodes.filter(n=>n.kind==="boss").length!==1 || !c.weight || c.staminaMax!==c.rules.staminaMax ||
             !["start","transit","borrow","insight","extract","recovery"].every(kind=>c.nodes.some(n=>n.kind===kind)) ||
-            c.nodes.filter(n=>n.kind==="search").length<c.rules.searchMax ||
+            c.nodes.filter(n=>n.kind==="search").length<(expanded?1:c.rules.searchMax) ||
             ![c.rules.staminaMax,c.rules.moveCost,c.rules.normalCost,c.rules.eliteCost,c.rules.bossCost,c.rules.searchCost,
                 c.rules.moveHpPercent,c.rules.searchHpPercent,c.rules.transitMin,c.rules.transitMax,
                 c.rules.searchMin,c.rules.searchMax].every(v=>Number.isSafeInteger(v)&&v>0) ||
             c.rules.moveHpPercent>100 || c.rules.searchHpPercent>100 ||
             c.rules.transitMin<10 || c.rules.transitMax>14 || c.rules.transitMin>c.rules.transitMax ||
-            c.rules.searchMin<3 || c.rules.searchMax>5 || c.rules.searchMin>c.rules.searchMax)
+            c.rules.searchMin<(expanded?8:3) || c.rules.searchMax>(expanded?12:5) || c.rules.searchMin>c.rules.searchMax)
             throw new Error("随机图规模、体力或承重配置无效");
         for (const p of c.pools) {
             if (![p.categories,p.qualities].every(w => w.every(n => Number.isSafeInteger(n) && n >= 0) &&
@@ -91,8 +100,11 @@ export class ExpeditionRules {
                 !Number.isSafeInteger(r.weight) || r.weight <= 0)) throw new Error("掉落子项无效");
         }
     }
-    static start(c: ExpeditionConfig, p: NewBuildProfile, seed: number, runId: string, generatorVersion: 1|2|3 = 3): ExpeditionState {
+    static start(c: ExpeditionConfig, p: NewBuildProfile, seed: number, runId: string,
+        generatorVersion: 1|2|3|4 = c.rules.normalMin===undefined?3:4): ExpeditionState {
         this.validateConfig(c,p);
+        if ((c.rules.normalMin!==undefined)!==(generatorVersion===4))
+            throw new Error("地图生成版本与节点预算不匹配，无法重放");
         const base = Inventory.start(c,p,seed,runId);
         const state: ExpeditionState = { ...base, node: 1, stamina: c.rules.staminaMax,
             sourceLayouts: [], interactionSource: null, map: { version: c.mapVersion,
@@ -108,6 +120,86 @@ export class ExpeditionRules {
         }
         Inventory.validate(c,state);
         return state;
+    }
+    private static generateLongRouteMap(c: ExpeditionConfig, s: ExpeditionState, seed: number): void {
+        const random = new Random(seed,"long-route-map");
+        const range = (a:number,b:number) => a+random.below(b-a+1);
+        const pick = (kind:string) => Core.clone(c.nodes.find(n=>n.kind===kind)!);
+        const add = (row:ExpeditionNode,x:number,y:number,mainOrder=-1) => {
+            const id=s.map.nodes.length+1;
+            s.map.nodes.push({...row,id,key:`${row.key}@${id}`,x,y,mainOrder,
+                ...(row.enemy?{encounterKey:row.key}:{})});
+            return id;
+        };
+        const sample = (kind:string,count:number) => {
+            const templates=random.shuffle(c.nodes.filter(n=>n.kind===kind));
+            return random.shuffle(Array.from({length:count},(_,i)=>templates[i%templates.length]));
+        };
+        const normals=sample("normal",range(c.rules.normalMin!,c.rules.normalMax!));
+        const elites=sample("elite",range(c.rules.eliteMin!,c.rules.eliteMax!));
+        const transitCount=range(c.rules.transitMin,c.rules.transitMax);
+        const searchCount=range(c.rules.searchMin,c.rules.searchMax);
+        const searches=sample("search",searchCount);
+        const insightCount=range(c.rules.insightMin!,c.rules.insightMax!);
+        const borrowCount=range(c.rules.borrowMin!,c.rules.borrowMax!);
+        const recoveryCount=range(1,2), exitCount=range(1,2);
+        const mainSearch=range(1,2);
+        const total=3+normals.length+elites.length+searchCount+insightCount+borrowCount+transitCount+recoveryCount+exitCount;
+        const mainTransit=Math.min(total-35-mainSearch,Math.max(range(7,9),9-mainSearch));
+        const main=[
+            pick("transit"),normals.pop()!,
+            ...random.shuffle([...normals.splice(0,5),...elites.splice(0,2),
+                ...searches.splice(0,mainSearch),...Array.from({length:mainTransit-1},()=>pick("transit"))])
+        ];
+        const fights=main.flatMap((n,i)=>n.enemy?[i]:[]);
+        const first=range(fights[1]+1,fights[2]);
+        const later=random.shuffle(Array.from({length:main.length-first},(_,i)=>first+i+1)).slice(0,2);
+        for (const index of [first,...later].sort((a,b)=>b-a)) main.splice(index,0,pick("borrow"));
+        const columns=[1,...random.shuffle(Array.from({length:23},(_,i)=>i+2))
+            .slice(0,main.length-1).sort((a,b)=>a-b)];
+        const mirror=random.below(2)?1:-1, mainLane=0.4*mirror;
+        add(pick("start"),0,0,0);
+        main.forEach((row,i)=>add(row,columns[i],mainLane,i+1));
+        const reference=s.map.nodes.slice(), last=reference.length-1;
+        for (let id=2;id<=reference.length;id++) s.map.edges.push([id-1,id]);
+        const extra=random.shuffle([
+            ...normals,...elites,...searches,
+            ...Array.from({length:insightCount},()=>pick("insight")),
+            ...Array.from({length:borrowCount-3},()=>pick("borrow")),
+            ...Array.from({length:transitCount-mainTransit},()=>pick("transit")),
+            ...Array.from({length:recoveryCount},()=>pick("recovery")),
+            ...Array.from({length:exitCount},()=>pick("extract"))
+        ]);
+        const innerStart=range(3,4), innerEnd=range(last-6,last-5);
+        const outerEnd=range(last-1,last);
+        const routes=[
+            {from:1,to:outerEnd,y:-1.1*mirror,phase:0,count:10},
+            {from:innerStart,to:innerEnd,y:-0.35*mirror,phase:0.5,count:6},
+            {from:range(innerStart+3,innerStart+4),to:range(last-3,last-2),
+                y:1.15*mirror,phase:0.5,count:5}
+        ];
+        const slots = (r:typeof routes[number]) => Array.from({length:24},(_,i)=>i+r.phase)
+            .filter(x=>x>reference[r.from].x&&x<reference[r.to].x);
+        // Each corridor has enough arrivals to open its next step, even on the earliest approach.
+        for (let remaining=extra.length-routes.reduce((n,r)=>n+r.count,0);remaining>0;remaining--) {
+            const available=routes.filter(r=>r.count<slots(r).length);
+            if(!available.length)throw new Error("长分流节点位置不足");
+            available[random.below(available.length)].count++;
+        }
+        for (const r of routes) {
+            const available=slots(r);
+            const xs=Array.from({length:r.count},(_,i)=>available[Math.round(i*(available.length-1)/(r.count-1))]);
+            let previous=reference[r.from].id;
+            for (const x of xs) {
+                const id=add(extra.pop()!,x,r.y);
+                s.map.edges.push([previous,id]);previous=id;
+            }
+            s.map.edges.push([previous,reference[r.to].id]);
+        }
+        if (extra.length) throw new Error("长分流节点预算未分配完毕");
+        const boss=add(pick("boss"),26,0), terminal=add(pick("extract"),27,0);
+        s.map.edges.push([reference[last].id,boss],[boss,terminal]);
+        s.map.present=s.map.nodes.map(n=>n.id); s.map.visible=[1]; s.revealed=[1];
     }
     private static generateFreeMap(c: ExpeditionConfig, s: ExpeditionState, seed: number): void {
         const random = new Random(seed,"free-map");
@@ -237,6 +329,10 @@ export class ExpeditionRules {
         s.map.present=s.map.nodes.map(n=>n.id); s.map.visible=[1]; s.revealed=[1];
     }
     private static generateMap(c: ExpeditionConfig, s: ExpeditionState, seed: number): void {
+        if (s.map.generatorVersion===4) {
+            if(c.rules.normalMin===undefined)throw new Error("长分流地图缺少扩展节点预算");
+            this.generateLongRouteMap(c,s,seed); return;
+        }
         if (s.map.generatorVersion===3) { this.generateFreeMap(c,s,seed); return; }
         const random = new Random(seed,"map");
         const pick = (kind: string) => Core.clone(c.nodes.find(n=>n.kind===kind)!);
@@ -352,7 +448,7 @@ export class ExpeditionRules {
     }
     static travelPaths(c: ExpeditionConfig, s: ExpeditionState): Map<number,number[]> {
         const paths=new Map([[s.node,[s.node]]]);
-        if(this.node(c,s.node,s).enemy&&!s.map.cleared.includes(s.node))return paths;
+        if(s.map.debugEnemyBlocking!==false&&this.node(c,s.node,s).enemy&&!s.map.cleared.includes(s.node))return paths;
         for(const [a,b]of s.map.edges) {
             const next=a===s.node?b:b===s.node?a:null;
             if(next!==null)paths.set(next,[s.node,next]);
@@ -401,6 +497,14 @@ export class ExpeditionRules {
         s.flow!.phase="ended";s.flow!.endReason="defeat";s.flow!.pending=null;
         Inventory.settle(s,"defeat");return false;
     }
+    private static battleConfig(c: ExpeditionConfig,s: ExpeditionState) {
+        if(s.map.generatorVersion!==4)return c.build;
+        return {...c.build,encounters:s.map.nodes.filter(n=>n.enemy).map(n=>{
+            const template=c.build.encounters.find(e=>e.id===`battle:${n.encounterKey}`);
+            if(!template)throw new Error("地图敌人模板不存在");
+            return {...template,id:`battle:${n.key}`};
+        })};
+    }
     static apply(c: ExpeditionConfig, p: NewBuildProfile, snapshot: ExpeditionState,
         command: ExpeditionCommand, at: number, seed: number): { state: ExpeditionState; battle?: NewBattleResult } {
         let s = Core.clone(snapshot), battle: NewBattleResult | undefined;
@@ -422,6 +526,11 @@ export class ExpeditionRules {
             Inventory.settle(s,reason);
         };
         switch (command.type) {
+            case "debugEnemyBlocking":
+                ready();
+                if (typeof command.enabled !== "boolean") throw new Error("怪物拦路开关无效");
+                s.map.debugEnemyBlocking = command.enabled;
+                break;
             case "enter":
                 if (s.phase !== "preparation") throw new Error("不能重复入境");
                 s.flow = Build.start(c.build,p,seed,s.runId);
@@ -447,7 +556,8 @@ export class ExpeditionRules {
                 const cost=n.kind==="boss"?c.rules.bossCost:n.kind==="elite"?c.rules.eliteCost:c.rules.normalCost;
                 if(s.stamina!<cost)throw new Error(`体力不足，开战需要 ${cost}，当前 ${s.stamina}`);
                 s.stamina!-=cost;
-                s.flow=Build.apply(c.build,p,s.flow!,{type:"battle"},at,Inventory.carry(c,s),`battle:${n.encounterKey}`).state;
+                s.flow=Build.apply(this.battleConfig(c,s),p,s.flow!,{type:"battle"},at,Inventory.carry(c,s),
+                    `battle:${s.map.generatorVersion===4?n.key:n.encounterKey}`).state;
                 break;
             }
             case "borrow": case "insight":
@@ -508,8 +618,9 @@ export class ExpeditionRules {
             case "build": {
                 if (s.phase !== "active" || !s.flow || !["choose","forgo","upgrade","action"].includes(command.command.type))
                     throw new Error("图上战斗及奖励须由对应节点发起");
-                const result = Build.apply(c.build,p,s.flow,command.command,at,Inventory.carry(c,s),
-                    `battle:${this.node(c,s.node,s).encounterKey}`);
+                const n=this.node(c,s.node,s);
+                const result = Build.apply(this.battleConfig(c,s),p,s.flow,command.command,at,Inventory.carry(c,s),
+                    `battle:${s.map.generatorVersion===4?n.key:n.encounterKey}`);
                 s.flow = result.state; battle = result.battle;
                 if (battle?.ok) {
                     s.hp = battle.state.player.hp; s.mp = battle.state.player.mp;

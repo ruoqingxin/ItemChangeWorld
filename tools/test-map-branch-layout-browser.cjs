@@ -29,12 +29,29 @@ for (let i = 0; i < bytes.readInt32LE(0); i++) {
 assert.equal(at, bytes.length);
 const config = Config.read(new Tables(name => new ByteBuf(new Uint8Array(blocks[name]))));
 const profile = Build.profile(config.build);
+const legacyConfig = structuredClone(config);
+for (const key of ["normalMin","normalMax","eliteMin","eliteMax","insightMin","insightMax","borrowMin","borrowMax"])
+    delete legacyConfig.rules[key];
+Object.assign(legacyConfig.rules,{searchMin:3,searchMax:5});legacyConfig.groundNodeLimit=44;
 function layouts(count, version) { return Array.from({ length: count }, (_, i) => {
-    const seed = i+1, initial = Rules.start(config, profile, seed, `layout-${seed}`, version);
-    const map = Rules.apply(config, profile, initial, { type: "enter" }, 1000, seed).state.map;
+    const c=version===4?config:legacyConfig;
+    const seed = i+1, initial = Rules.start(c, profile, seed, `layout-${seed}`, version);
+    const map = Rules.apply(c, profile, initial, { type: "enter" }, 1000, seed).state.map;
     return { seed, map };
 }); }
-const fixtures = layouts(512, 3), legacy = [...layouts(32, 2),...layouts(32, 1)];
+const fixtures = layouts(512, 4), legacy = [...layouts(32, 3),...layouts(32, 2),...layouts(32, 1)];
+const extremes=[];
+for(const upper of [false,true]){
+    const c=structuredClone(config);
+    for(const kind of ["normal","elite","search","insight","borrow","transit"])
+        c.rules[`${kind}Min`]=c.rules[`${kind}Max`]=c.rules[`${kind}${upper?"Max":"Min"}`];
+    for(let seed=1;seed<=64;seed++){
+        const initial=Rules.start(c,profile,seed,`extreme-${seed}`);
+        const map=Rules.apply(c,profile,initial,{type:"enter"},1000,seed).state.map;
+        if(map.nodes.length===(upper?65:45)){extremes.push({seed,map});break;}
+    }
+}
+assert.equal(extremes.length,2,"Render both 45/65-node extremes");
 const proof = fixtures.find(({ map }) =>
     map.nodes[1].kind === "transit" && map.nodes[1].x <= 2 &&
     map.edges.filter(e => e.includes(2)).length >= 3 &&
@@ -103,13 +120,22 @@ async function click(page, key, touch) {
                         for (const b of values.slice(i+1))
                             if (Math.abs(a.x-b.x)<116 && Math.abs(a.y-b.y)<116)issues.push([seed,"overlap",a.id,b.id]);
                     }
+                    if (map.generatorVersion === 4) {
+                        const cross = (a,b,p) => (b.x-a.x)*(p.y-a.y)-(b.y-a.y)*(p.x-a.x);
+                        for (const [i,e] of map.edges.entries()) for (const f of map.edges.slice(i+1)) {
+                            if (e.some(id=>f.includes(id))) continue;
+                            const [a,b] = e.map(id=>positions.get(id)), [u,v] = f.map(id=>positions.get(id));
+                            if (cross(a,b,u)*cross(a,b,v)<0 && cross(u,v,a)*cross(u,v,b)<0)
+                                issues.push([seed,"unmarked visual crossing",e,f]);
+                        }
+                    }
                 }
                 return {issues,untouched:original===JSON.stringify(trial.inventory)};
-            }, [...fixtures,...legacy]);
-            assert.deepEqual(geometry.issues, [], `${name}: 512 new and 64 existing-v4 maps fit without overlapping hit areas`);
+            }, [...fixtures,...legacy,...extremes]);
+            assert.deepEqual(geometry.issues, [], `${name}: new/legacy/extreme maps fit without overlapping hit areas`);
             assert.ok(geometry.untouched, "Layout never changes the authoritative state");
             let captured = false;
-            for (const fixture of [...fixtures.slice(0,64),...legacy.slice(0,16)]) {
+            for (const fixture of [...fixtures.slice(0,64),...legacy.slice(0,16),...extremes]) {
                 const result = await page.evaluate(fixture => {
                     const { panel, trial } = window.__skillBattlePreview;
                     window.__branchOriginal ||= structuredClone(trial.data.save.state);
@@ -155,7 +181,7 @@ async function click(page, key, touch) {
                     });
                     panel.refresh();
                     const stable = positions.every(p => panel.buttons[`expNode${p.id}`].y+52===p.y);
-                    panel.scroller.posX = 112+3*242-panel.scroller.viewWidth/2;
+                    panel.scroller.posX = 112+11*242-panel.scroller.viewWidth/2;
                     return { missing, bentDashes, clips: clips.map(n => n.id),overlaps,laneVariation,stable,
                         height:panel.expeditionNodes.expViewport.height,
                         untouched:JSON.stringify(trial.data.save.state)===stateBefore,
@@ -170,16 +196,16 @@ async function click(page, key, touch) {
                     `${name}/seed${fixture.seed}: individual node heights vary (${result.laneVariation}, height ${result.height})`);
                 assert.ok(result.stable && result.untouched, "Refresh keeps heights stable without altering saved map data");
                 assert.ok(result.visible && result.passive);
-                if (!captured && fixture.map.generatorVersion === 3) {
+                if (!captured && fixture.map.generatorVersion === 4) {
                     assert.ok(result.spread>300, "Node positions use the expanded vertical area");
                     await page.waitForTimeout(160);
-                    const image = await page.screenshot({ path: path.join(output, `${name}-free-map.png`) });
+                    const image = await page.screenshot({ path: path.join(output, `${name}-long-route-map.png`) });
                     const stats = await sharp(image).stats();
                     assert.ok(stats.channels.slice(0,3).every(c => c.stdev > 15));
                     captured = true;
                 }
             }
-            assert.ok(captured, "Render a free-form generated map");
+            assert.ok(captured, "Render a long multi-route generated map");
             await page.evaluate(() => {
                 const { trial, panel } = window.__skillBattlePreview;
                 trial.data.save.state = window.__branchOriginal; delete window.__branchOriginal; panel.refresh();
@@ -201,7 +227,7 @@ async function click(page, key, touch) {
             assert.deepEqual(await page.evaluate(snapshot), savedLayout, "Reload restores the same node heights without rewriting the map");
             assert.deepEqual(errors, []);
             await context.close();
-            console.log(`PASS branch layout ${name}: real fork input, 576 geometry/80 render fixtures including both earlier generators, stable heights across refresh/inventory/reload, expanded vertical area, every edge drawn, no clipping/overlapping hit areas or save mutation.`);
+            console.log(`PASS branch layout ${name}: real fork input, 610 geometry/82 render fixtures including 45/65 nodes and all earlier generators, stable heights across refresh/inventory/reload, expanded vertical area, every edge drawn, no clipping/overlapping hit areas or save mutation.`);
         }
     } finally { await browser.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });

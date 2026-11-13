@@ -85,7 +85,7 @@ export class ExpeditionPanel extends InventoryPanel {
         this.elements.screenBackground.filters = null;
         const content = this.expeditionNodes.expMapContent;
         const template = this.buttons.expNode1;
-        for (let id = 33; id <= 44; id++) {
+        for (let id = 33; id <= 65; id++) {
             const node = new Laya.GWidget(); node.name = `expNode${id}`; node.mouseEnabled = true;
             for (let index = 0; index < 3; index++) {
                 const source = template.getChildAt(index) as Laya.GWidget;
@@ -97,7 +97,7 @@ export class ExpeditionPanel extends InventoryPanel {
             content.addChild(node); this.expeditionNodes[node.name] = node; this.buttons[node.name] = node;
             node.on(Laya.Event.CLICK, this, () => this.command(node.name));
         }
-        for (let id = 1; id <= 44; id++) {
+        for (let id = 1; id <= 65; id++) {
             const node = this.buttons[`expNode${id}`];
             if (!node) continue;
             const done = new Laya.GImage(); done.name = "expDone"; done.mouseEnabled = false;
@@ -105,6 +105,15 @@ export class ExpeditionPanel extends InventoryPanel {
             done.size(30, 30); done.visible = false;
             node.addChild(done);
         }
+        const blocking = new Laya.GButton(); blocking.name = "expEnemyBlocking";
+        blocking.mode = Laya.ButtonMode.Check; blocking.changeStateOnClick = false;
+        const blockingLabel = new Laya.GTextField(); blockingLabel.name = "title";
+        blockingLabel.text = "测试·怪物拦路"; blockingLabel.font = "Microsoft YaHei";
+        blockingLabel.mouseEnabled = false; blockingLabel.valign = "middle";
+        blocking.addChild(blockingLabel);
+        this.mapAreas.mapActionsArea.addChild(blocking);
+        this.buttons[blocking.name] = blocking; this.expeditionNodes[blocking.name] = blocking;
+        blocking.on(Laya.Event.CLICK, this, () => this.command(blocking.name));
     }
     openHubScreen(): void {
         super.openHubScreen(); Laya.timer.loop(50, this, this.searchTick);
@@ -180,7 +189,7 @@ export class ExpeditionPanel extends InventoryPanel {
     }
     protected command(key: string): void {
         if (this.modalOpen) return;
-        if (this.movement && /^(?:exp(?:Node|Use|Storage|Build)|invToggle|invPrimary)/.test(key)) return;
+        if (this.movement && /^(?:exp(?:Node|Use|Storage|Build|EnemyBlocking)|invToggle|invPrimary)/.test(key)) return;
         if (this.held && /^expLootPage/.test(key)) return;
         if (/^inv(?:List\d+|Item\d+|Use|Drop|Extract|Abandon)$/.test(key))
             this.run(() => this.expedition.pauseSearch(), false);
@@ -202,6 +211,10 @@ export class ExpeditionPanel extends InventoryPanel {
             this.run(() => {
                 const s = this.expedition.inventory;
                 if (!s) return;
+                if (key === "expEnemyBlocking") {
+                    this.expedition.mapCommand({ type: "debugEnemyBlocking", enabled: s.map.debugEnemyBlocking === false });
+                    return;
+                }
                 const page = /^expLootPage([1-7])$/.exec(key);
                 if (page) {
                     this.expedition.pauseSearch(); this.inventoryPage = +page[1] - 1; return;
@@ -441,6 +454,21 @@ export class ExpeditionPanel extends InventoryPanel {
             this.mapLabel(`exp${key}Value`, `${key === "Hp" ? "生命" : "灵力"}  ${Core.format(value)} / ${Core.format(max)}`);
             this.labels[`exp${key}Value`].color = key === "Hp" && value <= max * 0.3 ? "#ffe0c3" : "#fff9e7";
         }
+        const blocking = this.buttons.expEnemyBlocking as Laya.GButton, build = this.buttons.expBuild;
+        blocking.visible = true;
+        blocking.selected = s.map.debugEnemyBlocking !== false;
+        blocking.size(this.compactMap ? 264 : 234, 44);
+        blocking.pos(build.x + build.width + 20, build.y + build.height - blocking.height);
+        const label = blocking.getChildAt(0) as Laya.GTextField;
+        label.pos(38, 0); label.size(blocking.width - 38, blocking.height);
+        label.fontSize = this.compactMap ? 22 : 20;
+        label.color = blocking.selected ? "#fff2d2" : "#ffe1b1";
+        blocking.graphics.clear();
+        blocking.graphics.drawRect(4, 10, 24, 24, "#202a23", "#e3c98c", 2);
+        if (blocking.selected) {
+            blocking.graphics.drawLine(9, 22, 15, 28, "#ffe1a0", 3);
+            blocking.graphics.drawLine(15, 28, 24, 16, "#ffe1a0", 3);
+        }
     }
     private mapMeter(key: string, value: number, max: number): void {
         const fill = this.expeditionNodes[`map${key}Fill`];
@@ -495,7 +523,8 @@ export class ExpeditionPanel extends InventoryPanel {
             const x = 112 + n.x * 242, underHud = x < hud.width + 70;
             return {
                 id: n.id, x: 112 + n.x * 242, lane: n.y, above, below,
-                desired: height / 2 - 4 + n.y * 158 + (hash % 89) - 44,
+                desired: height / 2 - 4 + n.y * 158 +
+                    (s.map.generatorVersion === 4 ? (hash % 33) - 16 : (hash % 89) - 44),
                 min: Math.max(this.mapBandTop - 22 + topSpace, underHud ? hud.y + hud.height + topSpace + 8 : 0),
                 max: height - 104, y: 0
             };
@@ -604,6 +633,7 @@ export class ExpeditionPanel extends InventoryPanel {
         this.expeditionNodes.mapNoticeSkin.visible = !!this.labels.expNotice.text;
         this.mapAction("expStorage", "行囊", !this.movement);
         this.mapAction("expBuild", "构筑", !this.movement);
+        this.buttons.expEnemyBlocking.mouseEnabled = !this.movement;
         if (!this.movement && this.selectedNode !== null && current.kind !== "transit") {
             const n = current, used = s.map.used.includes(n.id);
             const source = s.map.sources.find(box => box.node === n.id);

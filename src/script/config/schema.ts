@@ -2404,6 +2404,14 @@ export class Inew_expedition_ruleConfig {
         this.transit_max = _buf_.ReadInt()
         this.search_min = _buf_.ReadInt()
         this.search_max = _buf_.ReadInt()
+        this.normal_min = _buf_.ReadInt()
+        this.normal_max = _buf_.ReadInt()
+        this.elite_min = _buf_.ReadInt()
+        this.elite_max = _buf_.ReadInt()
+        this.insight_min = _buf_.ReadInt()
+        this.insight_max = _buf_.ReadInt()
+        this.borrow_min = _buf_.ReadInt()
+        this.borrow_max = _buf_.ReadInt()
     }
 
     /**
@@ -2522,9 +2530,49 @@ export class Inew_expedition_ruleConfig {
      * 独立搜索上限
      */
     readonly search_max: number
+    /**
+     * 普通敌人下限
+     */
+    readonly normal_min: number
+    /**
+     * 普通敌人上限
+     */
+    readonly normal_max: number
+    /**
+     * 精英敌人下限
+     */
+    readonly elite_min: number
+    /**
+     * 精英敌人上限
+     */
+    readonly elite_max: number
+    /**
+     * 悟道点下限
+     */
+    readonly insight_min: number
+    /**
+     * 悟道点上限
+     */
+    readonly insight_max: number
+    /**
+     * 借法台下限
+     */
+    readonly borrow_min: number
+    /**
+     * 借法台上限
+     */
+    readonly borrow_max: number
 
 /*
     resolve(tables:Tables) {
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         

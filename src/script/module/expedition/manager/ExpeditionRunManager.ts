@@ -22,7 +22,8 @@ export class ExpeditionRunManager {
             if (this.data.savedText !== null) {
                 const candidate = JSON.parse(this.data.savedText);
                 ExpeditionRunManager.validate(candidate);
-                if (currentConfig && !Inventory.same(currentConfig,candidate.config)) throw new Error("配置已改变，请明确重建本阶段档");
+                if (currentConfig && !ExpeditionRunManager.matchesCurrent(currentConfig,candidate))
+                    throw new Error("配置已改变，请明确重建本阶段档");
                 this.data.save = candidate; this.restoreManager();
             }
         } catch (e) { this.data.error = `地图档无法读取，原文保留：${(e as Error).message}`; }
@@ -181,6 +182,19 @@ export class ExpeditionRunManager {
         if (r && this.inventory?.phase === "active") this.manager.restoreNewRules(r.setup,r.state);
         else this.manager.reset();
     }
+    private static matchesCurrent(current: ExpeditionConfig, saved: ExpeditionSave): boolean {
+        if (Inventory.same(current,saved.config)) return true;
+        if (saved.state.map.generatorVersion===4 || current.rules.normalMin===undefined) return false;
+        const original=Core.clone(current);
+        for (const key of ["normalMin","normalMax","eliteMin","eliteMax",
+            "insightMin","insightMax","borrowMin","borrowMax"] as const) {
+            if(saved.config.rules[key]!==undefined)return false;
+            delete original.rules[key];
+        }
+        // Existing maps keep their own budgets and exact replay; only new maps use the expanded table.
+        original.rules.searchMin=3; original.rules.searchMax=5; original.groundNodeLimit=44;
+        return Inventory.same(original,saved.config);
+    }
     private persist(next: ExpeditionSave, deadline = true) {
         if (this.data.writing) throw new Error("地图事务正在提交");
         this.data.writing = true;
@@ -199,7 +213,7 @@ export class ExpeditionRunManager {
             save.runId !== `expedition_${save.createdAt}_${save.seed}` || !Array.isArray(save.commands) || save.commands.length > 8192)
             throw new Error("地图档版本或标识无效");
         const generator = save.state?.map?.generatorVersion;
-        if(generator!==undefined && generator!==2 && generator!==3)
+        if(generator!==undefined && generator!==2 && generator!==3 && generator!==4)
             throw new Error("地图生成版本无效");
         let state = Rules.start(save.config,save.profile,save.seed,save.runId,
             generator ?? 1), last = save.createdAt;

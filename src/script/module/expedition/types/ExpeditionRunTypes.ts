@@ -17,16 +17,20 @@ export interface ExpeditionConfig extends InventoryConfig {
     rules: { limitMs: number; searchMs: number; checkpointMs: number; recoveryPercent: number;
         supply: number[]; books: number[]; weaponId: number; containerId: number; hpId: number; mpId: number; repairId: number;
         staminaMax: number; moveCost: number; normalCost: number; eliteCost: number; bossCost: number; searchCost: number;
-        moveHpPercent: number; searchHpPercent: number; transitMin: number; transitMax: number; searchMin: number; searchMax: number };
+        moveHpPercent: number; searchHpPercent: number; transitMin: number; transitMax: number; searchMin: number; searchMax: number;
+        normalMin?: number; normalMax?: number; eliteMin?: number; eliteMax?: number;
+        insightMin?: number; insightMax?: number; borrowMin?: number; borrowMax?: number };
 }
 export interface ExpeditionSource {
     node: number; entries: InventoryItem[]; opened: boolean; revealed: number; progressMs: number;
 }
 export interface ExpeditionState extends InventoryState {
-    map: { version: string; generatorVersion?: 2 | 3; nodes: ExpeditionNode[]; edges: Array<[number,number]>; present: number[]; visible: number[];
-        cleared: number[]; used: number[]; sources: ExpeditionSource[]; warnings: number[]; warning: number | null };
+    map: { version: string; generatorVersion?: 2 | 3 | 4; nodes: ExpeditionNode[]; edges: Array<[number,number]>; present: number[]; visible: number[];
+        cleared: number[]; used: number[]; sources: ExpeditionSource[]; warnings: number[]; warning: number | null;
+        debugEnemyBlocking?: boolean };
 }
 export type ExpeditionCommand = InventoryCommand |
+    { type: "debugEnemyBlocking"; enabled: boolean } |
     { type: "travel"; node: number } | { type: "borrow" | "insight" | "recover" } |
     { type: "search"; deltaMs: number } | { type: "warnings" | "openSource" | "interactSource" | "fight" };
 export interface ExpeditionSave {
