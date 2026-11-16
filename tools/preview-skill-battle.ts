@@ -3,6 +3,7 @@ import { UIManager } from "../src/script/games/ui/UIManager";
 import { GameplayManager } from "../src/script/module/gameplay/manager/GameplayManager";
 import { closeSkillBattleScreens, currentSkillBattleView, openSkillBattleScreen } from "../src/script/module/gameplay/utils/GameplayNavigation";
 import { SkillBattleManager } from "../src/script/module/skillBattle/manager/SkillBattleManager";
+import { ManualTestView } from "../src/script/module/manualTest/view/ManualTestView";
 
 async function main(): Promise<void> {
     Laya.PlayerConfig.UI = { alwaysIncludeDefaultSkin: false } as any;
@@ -27,6 +28,11 @@ async function main(): Promise<void> {
     // Use the same UIManager/GRoot path as the actual game. The preview must
     // not place a second hand-built panel directly on the stage.
     UIManager.ins().init();
+    if (new URLSearchParams(window.location.search).get("manualTest") === "1") {
+        const view = UIManager.ins().openForm(ManualTestView);
+        (window as any).__manualTestPreview = { view, get panel() { return view.panel; }, session: view.session };
+        return;
+    }
     GameplayManager.previewSingleTrial = new URLSearchParams(window.location.search).get("stage") === "1";
     GameplayManager.previewBuildTrial = new URLSearchParams(window.location.search).get("stage") === "2";
     GameplayManager.previewInventoryTrial = new URLSearchParams(window.location.search).get("stage") === "3";

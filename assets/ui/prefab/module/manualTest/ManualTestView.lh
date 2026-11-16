@@ -1,0 +1,27 @@
+{
+  "_$ver": 1,
+  "_$id": "manual_test_root",
+  "_$type": "GWidget",
+  "name": "ManualTestView",
+  "width": 1280,
+  "height": 720,
+  "_$child": [
+    {
+      "_$id": "manual_test_adapter",
+      "_$type": "GWidget",
+      "name": "adapter",
+      "width": 1280,
+      "height": 720,
+      "mouseThrough": true
+    }
+  ],
+  "_$comp": [
+    {
+      "_$type": "3593fc26-337e-42e3-92dc-1b9c2bb8f988",
+      "scriptPath": "../src/script/games/ui/components/ElementMapper.ts",
+      "adapter": { "_$ref": "manual_test_adapter" },
+      "elements": [{ "_$ref": "manual_test_adapter" }],
+      "mapperType": 4
+    }
+  ]
+}

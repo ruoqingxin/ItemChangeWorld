@@ -7,15 +7,13 @@
   ],
   "ui/prefab/common/inventory/InventoryBag.lh": [
     "ui/atlas/module/inventory/cell.png",
-    "ui/texture/inventory/backpack-body.png",
     "ui/texture/inventory/topbar.png"
   ],
   "ui/prefab/common/inventory/InventoryCarry.lh": [
     "ui/atlas/module/inventory/cell.png",
     "ui/atlas/module/inventory/gold-sword.png",
     "ui/atlas/module/inventory/item-frame.png",
-    "ui/atlas/module/inventory/lock.png",
-    "ui/texture/inventory/warehouse-body.png"
+    "ui/atlas/module/inventory/lock.png"
   ],
   "ui/prefab/common/inventory/InventoryItem.lh": [
     "ui/atlas/module/inventory/herb-sprig.png",
@@ -35,8 +33,7 @@
     "ui/atlas/module/inventory/cell.png",
     "ui/image/expeditionNodes/node-search.png",
     "ui/prefab/common/inventory/InventoryItem.lh",
-    "ui/texture/inventory/tooltip.png",
-    "ui/texture/inventory/warehouse-body.png"
+    "ui/texture/inventory/tooltip.png"
   ],
   "ui/prefab/module/expedition/SkillBattleMapView.lh": [
     "ui/atlas/module/expedition/back.png",
@@ -146,6 +143,7 @@
     "ui/image/expeditionNodes/node-transit.png",
     "ui/texture/expedition/ancient-sect-ground-final.png"
   ],
+  "ui/prefab/module/manualTest/ManualTestView.lh": [],
   "ui/prefab/module/skillBattle/SkillBattleBattleView.lh": [
     "ui/atlas/module/inventory/arrow.png",
     "ui/atlas/module/inventory/blue-flask.png",
