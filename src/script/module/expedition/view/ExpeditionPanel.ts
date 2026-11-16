@@ -588,7 +588,7 @@ export class ExpeditionPanel extends InventoryPanel {
             base.grayed = explored; base.alpha = 1; base.color = TRANSIT_STONE_COLOR;
             l.visible = false;
             const image = b.getChildAt(2) as Laya.GImage;
-            const art = n.kind === "search" ? (n.pool.startsWith("supply") ? "supply" : "search") :
+            const art = n.kind === "search" ? (n.icon || (n.pool.startsWith("supply") ? "supply" : "search")) :
                 ({
                     normal: "enemy-normal", elite: "enemy-elite", boss: "enemy-boss", borrow: "borrow", insight: "insight",
                     extract: "extract", recovery: "recovery", start: "start", transit: "transit"

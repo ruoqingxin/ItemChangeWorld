@@ -12,6 +12,8 @@ export class ExpeditionRunConfigUtils {
         const nodes = tables.new_expedition_node.getDataList().map(n => ({
             id: n.id, key: n.key, kind: n.kind, name: n.name, enemy: n.enemy, pool: n.pool,
             mainOrder: n.main_order, x: n.x, y: n.y,
+            ...(n.kind === "search" ? { icon: n.icon, searchMin: n.search_min,
+                searchMax: n.search_max, searchWeight: n.search_weight } : {}),
         }));
         const enemies = tables.new_expedition_enemy.getDataList();
         base.build.encounters = nodes.filter(n => n.enemy).map(n => {

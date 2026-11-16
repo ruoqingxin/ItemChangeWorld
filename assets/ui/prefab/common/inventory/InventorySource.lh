@@ -1,9 +1,8 @@
 {
+  "_$ver": 1,
   "_$id": "region_11",
   "_$type": "GWidget",
   "name": "sourceArea",
-  "x": 0,
-  "y": 0,
   "width": 480,
   "height": 524,
   "mouseThrough": true,
@@ -12,13 +11,11 @@
       "_$id": "invstart_5",
       "_$type": "GImage",
       "name": "invRightPanel",
-      "x": 0,
-      "y": 0,
       "width": 480,
       "height": 524,
-      "src": "ui/texture/inventory/warehouse-body.png",
-      "autoSize": false,
-      "mouseEnabled": false
+      "_mouseState": 1,
+      "src": "res://0ae1f005-3df5-4c72-8cbc-421e980e522e",
+      "autoSize": false
     },
     {
       "_$id": "invstart_13",
@@ -28,11 +25,12 @@
       "y": 16,
       "width": 440,
       "height": 30,
+      "_mouseState": 1,
       "text": "仓库",
       "fontSize": 20,
       "color": "#ecefe7",
-      "mouseEnabled": false,
-      "overflow": "shrink"
+      "overflow": "shrink",
+      "letterSpacing": 0
     },
     {
       "_$id": "invstart_881",
@@ -42,19 +40,17 @@
       "y": 480,
       "width": 144,
       "height": 38,
-      "mouseEnabled": true,
+      "_mouseState": 2,
       "_$child": [
         {
           "_$id": "invstart_879",
           "_$type": "GImage",
           "name": "invRevealBg",
-          "x": 0,
-          "y": 0,
           "width": 144,
           "height": 38,
+          "_mouseState": 1,
           "src": "ui/texture/inventory/tooltip.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_880",
@@ -64,11 +60,12 @@
           "y": 4,
           "width": 128,
           "height": 30,
+          "_mouseState": 1,
           "text": "",
           "fontSize": 18,
           "color": "#ecefe7",
-          "mouseEnabled": false,
-          "overflow": "shrink"
+          "overflow": "shrink",
+          "letterSpacing": 0
         }
       ]
     },
@@ -86,23 +83,19 @@
           "_$id": "invstart_842",
           "_$type": "GWidget",
           "name": "invAll",
-          "x": 0,
-          "y": 0,
           "width": 100,
           "height": 28,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_840",
               "_$type": "GImage",
               "name": "invAllBg",
-              "x": 0,
-              "y": 0,
               "width": 100,
               "height": 28,
+              "_mouseState": 1,
               "src": "ui/texture/inventory/tooltip.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_841",
@@ -112,11 +105,12 @@
               "y": 4,
               "width": 84,
               "height": 20,
+              "_mouseState": 1,
               "text": "全部",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -125,22 +119,19 @@
           "_$type": "GWidget",
           "name": "invMedicine",
           "x": 104,
-          "y": 0,
           "width": 100,
           "height": 28,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_843",
               "_$type": "GImage",
               "name": "invMedicineBg",
-              "x": 0,
-              "y": 0,
               "width": 100,
               "height": 28,
+              "_mouseState": 1,
               "src": "ui/texture/inventory/tooltip.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_844",
@@ -150,11 +141,12 @@
               "y": 4,
               "width": 84,
               "height": 20,
+              "_mouseState": 1,
               "text": "药与修补",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -163,22 +155,19 @@
           "_$type": "GWidget",
           "name": "invMaterials",
           "x": 208,
-          "y": 0,
           "width": 100,
           "height": 28,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_846",
               "_$type": "GImage",
               "name": "invMaterialsBg",
-              "x": 0,
-              "y": 0,
               "width": 100,
               "height": 28,
+              "_mouseState": 1,
               "src": "ui/texture/inventory/tooltip.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_847",
@@ -188,11 +177,12 @@
               "y": 4,
               "width": 84,
               "height": 20,
+              "_mouseState": 1,
               "text": "书与材料",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -201,22 +191,19 @@
           "_$type": "GWidget",
           "name": "invEquipment",
           "x": 312,
-          "y": 0,
           "width": 124,
           "height": 28,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_849",
               "_$type": "GImage",
               "name": "invEquipmentBg",
-              "x": 0,
-              "y": 0,
               "width": 124,
               "height": 28,
+              "_mouseState": 1,
               "src": "ui/texture/inventory/tooltip.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_850",
@@ -226,11 +213,12 @@
               "y": 4,
               "width": 108,
               "height": 20,
+              "_mouseState": 1,
               "text": "装备",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         }
@@ -250,109 +238,99 @@
           "_$id": "invstart_504",
           "_$type": "GImage",
           "name": "invSourceCell0",
-          "x": 0,
-          "y": 0,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_505",
           "_$type": "GImage",
           "name": "invSourceCell1",
           "x": 56,
-          "y": 0,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_506",
           "_$type": "GImage",
           "name": "invSourceCell2",
           "x": 112,
-          "y": 0,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_507",
           "_$type": "GImage",
           "name": "invSourceCell3",
           "x": 168,
-          "y": 0,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_508",
           "_$type": "GImage",
           "name": "invSourceCell4",
           "x": 224,
-          "y": 0,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_509",
           "_$type": "GImage",
           "name": "invSourceCell5",
           "x": 280,
-          "y": 0,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_510",
           "_$type": "GImage",
           "name": "invSourceCell6",
           "x": 336,
-          "y": 0,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_511",
           "_$type": "GImage",
           "name": "invSourceCell7",
           "x": 392,
-          "y": 0,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_512",
           "_$type": "GImage",
           "name": "invSourceCell8",
-          "x": 0,
           "y": 56,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_513",
@@ -362,9 +340,9 @@
           "y": 56,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_514",
@@ -374,9 +352,9 @@
           "y": 56,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_515",
@@ -386,9 +364,9 @@
           "y": 56,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_516",
@@ -398,9 +376,9 @@
           "y": 56,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_517",
@@ -410,9 +388,9 @@
           "y": 56,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_518",
@@ -422,9 +400,9 @@
           "y": 56,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_519",
@@ -434,21 +412,20 @@
           "y": 56,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_520",
           "_$type": "GImage",
           "name": "invSourceCell16",
-          "x": 0,
           "y": 112,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_521",
@@ -458,9 +435,9 @@
           "y": 112,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_522",
@@ -470,9 +447,9 @@
           "y": 112,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_523",
@@ -482,9 +459,9 @@
           "y": 112,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_524",
@@ -494,9 +471,9 @@
           "y": 112,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_525",
@@ -506,9 +483,9 @@
           "y": 112,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_526",
@@ -518,9 +495,9 @@
           "y": 112,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_527",
@@ -530,21 +507,20 @@
           "y": 112,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_528",
           "_$type": "GImage",
           "name": "invSourceCell24",
-          "x": 0,
           "y": 168,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_529",
@@ -554,9 +530,9 @@
           "y": 168,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_530",
@@ -566,9 +542,9 @@
           "y": 168,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_531",
@@ -578,9 +554,9 @@
           "y": 168,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_532",
@@ -590,9 +566,9 @@
           "y": 168,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_533",
@@ -602,9 +578,9 @@
           "y": 168,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_534",
@@ -614,9 +590,9 @@
           "y": 168,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_535",
@@ -626,21 +602,20 @@
           "y": 168,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_536",
           "_$type": "GImage",
           "name": "invSourceCell32",
-          "x": 0,
           "y": 224,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_537",
@@ -650,9 +625,9 @@
           "y": 224,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_538",
@@ -662,9 +637,9 @@
           "y": 224,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_539",
@@ -674,9 +649,9 @@
           "y": 224,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_540",
@@ -686,9 +661,9 @@
           "y": 224,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_541",
@@ -698,9 +673,9 @@
           "y": 224,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_542",
@@ -710,9 +685,9 @@
           "y": 224,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_543",
@@ -722,21 +697,20 @@
           "y": 224,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_544",
           "_$type": "GImage",
           "name": "invSourceCell40",
-          "x": 0,
           "y": 280,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_545",
@@ -746,9 +720,9 @@
           "y": 280,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_546",
@@ -758,9 +732,9 @@
           "y": 280,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_547",
@@ -770,9 +744,9 @@
           "y": 280,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_548",
@@ -782,9 +756,9 @@
           "y": 280,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_549",
@@ -794,9 +768,9 @@
           "y": 280,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_550",
@@ -806,9 +780,9 @@
           "y": 280,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_551",
@@ -818,21 +792,20 @@
           "y": 280,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_552",
           "_$type": "GImage",
           "name": "invSourceCell48",
-          "x": 0,
           "y": 336,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_553",
@@ -842,9 +815,9 @@
           "y": 336,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_554",
@@ -854,9 +827,9 @@
           "y": 336,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_555",
@@ -866,9 +839,9 @@
           "y": 336,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_556",
@@ -878,9 +851,9 @@
           "y": 336,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_557",
@@ -890,9 +863,9 @@
           "y": 336,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_558",
@@ -902,9 +875,9 @@
           "y": 336,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_559",
@@ -914,14 +887,18 @@
           "y": 336,
           "width": 54,
           "height": 54,
+          "_mouseState": 1,
           "src": "ui/atlas/module/inventory/cell.png",
-          "autoSize": false,
-          "mouseEnabled": false
+          "autoSize": false
         },
         {
           "_$id": "invstart_562",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList0",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -949,6 +926,10 @@
           "_$id": "invstart_567",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList1",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -976,6 +957,10 @@
           "_$id": "invstart_572",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList2",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -1003,6 +988,10 @@
           "_$id": "invstart_577",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList3",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -1030,6 +1019,10 @@
           "_$id": "invstart_582",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList4",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -1057,6 +1050,10 @@
           "_$id": "invstart_587",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList5",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -1084,6 +1081,10 @@
           "_$id": "invstart_592",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList6",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -1111,6 +1112,10 @@
           "_$id": "invstart_597",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList7",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -1138,6 +1143,10 @@
           "_$id": "invstart_602",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList8",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -1165,6 +1174,10 @@
           "_$id": "invstart_607",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList9",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -1192,6 +1205,10 @@
           "_$id": "invstart_612",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList10",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -1219,6 +1236,10 @@
           "_$id": "invstart_617",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList11",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -1246,6 +1267,10 @@
           "_$id": "invstart_622",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList12",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -1273,6 +1298,10 @@
           "_$id": "invstart_627",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList13",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -1300,6 +1329,10 @@
           "_$id": "invstart_632",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList14",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -1327,6 +1360,10 @@
           "_$id": "invstart_637",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList15",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -1354,6 +1391,10 @@
           "_$id": "invstart_642",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList16",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -1381,6 +1422,10 @@
           "_$id": "invstart_647",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList17",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -1408,6 +1453,10 @@
           "_$id": "invstart_652",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList18",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -1435,6 +1484,10 @@
           "_$id": "invstart_657",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList19",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -1462,6 +1515,10 @@
           "_$id": "invstart_662",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList20",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -1489,6 +1546,10 @@
           "_$id": "invstart_667",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList21",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -1516,6 +1577,10 @@
           "_$id": "invstart_672",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList22",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -1543,6 +1608,10 @@
           "_$id": "invstart_677",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList23",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -1570,6 +1639,10 @@
           "_$id": "invstart_682",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList24",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -1597,6 +1670,10 @@
           "_$id": "invstart_687",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList25",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -1624,6 +1701,10 @@
           "_$id": "invstart_692",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList26",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -1651,6 +1732,10 @@
           "_$id": "invstart_697",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList27",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -1678,6 +1763,10 @@
           "_$id": "invstart_702",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList28",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -1705,6 +1794,10 @@
           "_$id": "invstart_707",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList29",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -1732,6 +1825,10 @@
           "_$id": "invstart_712",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList30",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -1759,6 +1856,10 @@
           "_$id": "invstart_717",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList31",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -1786,6 +1887,10 @@
           "_$id": "invstart_722",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList32",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -1813,6 +1918,10 @@
           "_$id": "invstart_727",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList33",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -1840,6 +1949,10 @@
           "_$id": "invstart_732",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList34",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -1867,6 +1980,10 @@
           "_$id": "invstart_737",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList35",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -1894,6 +2011,10 @@
           "_$id": "invstart_742",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList36",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -1921,6 +2042,10 @@
           "_$id": "invstart_747",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList37",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -1948,6 +2073,10 @@
           "_$id": "invstart_752",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList38",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -1975,6 +2104,10 @@
           "_$id": "invstart_757",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList39",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -2002,6 +2135,10 @@
           "_$id": "invstart_762",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList40",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -2029,6 +2166,10 @@
           "_$id": "invstart_767",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList41",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -2056,6 +2197,10 @@
           "_$id": "invstart_772",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList42",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -2083,6 +2228,10 @@
           "_$id": "invstart_777",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList43",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -2110,6 +2259,10 @@
           "_$id": "invstart_782",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList44",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -2137,6 +2290,10 @@
           "_$id": "invstart_787",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList45",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -2164,6 +2321,10 @@
           "_$id": "invstart_792",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList46",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -2191,6 +2352,10 @@
           "_$id": "invstart_797",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList47",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -2218,6 +2383,10 @@
           "_$id": "invstart_802",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList48",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -2245,6 +2414,10 @@
           "_$id": "invstart_807",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList49",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -2272,6 +2445,10 @@
           "_$id": "invstart_812",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList50",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -2299,6 +2476,10 @@
           "_$id": "invstart_817",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList51",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -2326,6 +2507,10 @@
           "_$id": "invstart_822",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList52",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -2353,6 +2538,10 @@
           "_$id": "invstart_827",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList53",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -2380,6 +2569,10 @@
           "_$id": "invstart_832",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList54",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -2407,6 +2600,10 @@
           "_$id": "invstart_837",
           "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
           "name": "invList55",
+          "active": true,
+          "x": 0,
+          "y": 0,
+          "visible": false,
           "_$child": [
             {
               "_$override": "item_background",
@@ -2434,26 +2631,22 @@
           "_$id": "exp_SkillBattleStartView_154",
           "_$type": "GImage",
           "name": "expUnknown",
-          "x": 0,
-          "y": 0,
           "width": 28,
           "height": 28,
           "visible": false,
+          "_mouseState": 1,
+          "src": "ui/image/expeditionNodes/node-search.png",
           "autoSize": false,
-          "mouseEnabled": false,
-          "color": "#202923",
-          "src": "ui/image/expeditionNodes/node-search.png"
+          "color": "#202923"
         },
         {
           "_$id": "exp_SkillBattleStartView_155",
           "_$type": "GWidget",
           "name": "expSearchSpinner",
-          "x": 0,
-          "y": 0,
           "width": 44,
           "height": 44,
           "visible": false,
-          "mouseEnabled": false,
+          "_mouseState": 1,
           "_$child": [
             {
               "_$id": "map_art_expSearchSpinnerArt",
@@ -2463,11 +2656,11 @@
               "y": 22,
               "width": 44,
               "height": 44,
-              "mouseEnabled": false,
-              "autoSize": false,
-              "src": "ui/atlas/module/expedition/handpainted/inventory-search-spinner.png",
               "anchorX": 0.5,
-              "anchorY": 0.5
+              "anchorY": 0.5,
+              "_mouseState": 1,
+              "src": "ui/atlas/module/expedition/handpainted/inventory-search-spinner.png",
+              "autoSize": false
             }
           ]
         }
@@ -2491,33 +2684,31 @@
           "y": 2,
           "width": 148,
           "height": 32,
+          "_mouseState": 1,
           "text": "1/1",
           "fontSize": 17,
           "color": "#ecefe7",
-          "mouseEnabled": false,
-          "overflow": "shrink"
+          "overflow": "shrink",
+          "letterSpacing": 0
         },
         {
           "_$id": "invstart_854",
           "_$type": "GWidget",
           "name": "invPrev",
           "x": 4,
-          "y": 0,
           "width": 64,
           "height": 38,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_852",
               "_$type": "GImage",
               "name": "invPrevBg",
-              "x": 0,
-              "y": 0,
               "width": 64,
               "height": 38,
+              "_mouseState": 1,
               "src": "ui/texture/inventory/tooltip.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_853",
@@ -2527,11 +2718,12 @@
               "y": 4,
               "width": 48,
               "height": 30,
+              "_mouseState": 1,
               "text": "<",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -2540,22 +2732,19 @@
           "_$type": "GWidget",
           "name": "invNext",
           "x": 376,
-          "y": 0,
           "width": 64,
           "height": 38,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_855",
               "_$type": "GImage",
               "name": "invNextBg",
-              "x": 0,
-              "y": 0,
               "width": 64,
               "height": 38,
+              "_mouseState": 1,
               "src": "ui/texture/inventory/tooltip.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_856",
@@ -2565,11 +2754,12 @@
               "y": 4,
               "width": 48,
               "height": 30,
+              "_mouseState": 1,
               "text": ">",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -2577,23 +2767,19 @@
           "_$id": "exp_SkillBattleStartView_158",
           "_$type": "GWidget",
           "name": "expLootPage1",
-          "x": 0,
-          "y": 0,
           "width": 58,
           "height": 38,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "exp_SkillBattleStartView_156",
               "_$type": "GImage",
               "name": "expLootPage1Skin",
-              "x": 0,
-              "y": 0,
               "width": 58,
               "height": 38,
+              "_mouseState": 1,
               "src": "ui/texture/inventory/tooltip.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "exp_SkillBattleStartView_157",
@@ -2603,11 +2789,12 @@
               "y": 4,
               "width": 50,
               "height": 30,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#e8edf0",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -2616,22 +2803,19 @@
           "_$type": "GWidget",
           "name": "expLootPage2",
           "x": 64,
-          "y": 0,
           "width": 58,
           "height": 38,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "exp_SkillBattleStartView_159",
               "_$type": "GImage",
               "name": "expLootPage2Skin",
-              "x": 0,
-              "y": 0,
               "width": 58,
               "height": 38,
+              "_mouseState": 1,
               "src": "ui/texture/inventory/tooltip.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "exp_SkillBattleStartView_160",
@@ -2641,11 +2825,12 @@
               "y": 4,
               "width": 50,
               "height": 30,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#e8edf0",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -2654,22 +2839,19 @@
           "_$type": "GWidget",
           "name": "expLootPage3",
           "x": 128,
-          "y": 0,
           "width": 58,
           "height": 38,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "exp_SkillBattleStartView_162",
               "_$type": "GImage",
               "name": "expLootPage3Skin",
-              "x": 0,
-              "y": 0,
               "width": 58,
               "height": 38,
+              "_mouseState": 1,
               "src": "ui/texture/inventory/tooltip.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "exp_SkillBattleStartView_163",
@@ -2679,11 +2861,12 @@
               "y": 4,
               "width": 50,
               "height": 30,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#e8edf0",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -2692,22 +2875,19 @@
           "_$type": "GWidget",
           "name": "expLootPage4",
           "x": 192,
-          "y": 0,
           "width": 58,
           "height": 38,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "exp_SkillBattleStartView_165",
               "_$type": "GImage",
               "name": "expLootPage4Skin",
-              "x": 0,
-              "y": 0,
               "width": 58,
               "height": 38,
+              "_mouseState": 1,
               "src": "ui/texture/inventory/tooltip.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "exp_SkillBattleStartView_166",
@@ -2717,11 +2897,12 @@
               "y": 4,
               "width": 50,
               "height": 30,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#e8edf0",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -2730,22 +2911,19 @@
           "_$type": "GWidget",
           "name": "expLootPage5",
           "x": 256,
-          "y": 0,
           "width": 58,
           "height": 38,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "exp_SkillBattleStartView_168",
               "_$type": "GImage",
               "name": "expLootPage5Skin",
-              "x": 0,
-              "y": 0,
               "width": 58,
               "height": 38,
+              "_mouseState": 1,
               "src": "ui/texture/inventory/tooltip.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "exp_SkillBattleStartView_169",
@@ -2755,11 +2933,12 @@
               "y": 4,
               "width": 50,
               "height": 30,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#e8edf0",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -2768,22 +2947,19 @@
           "_$type": "GWidget",
           "name": "expLootPage6",
           "x": 320,
-          "y": 0,
           "width": 58,
           "height": 38,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "exp_SkillBattleStartView_171",
               "_$type": "GImage",
               "name": "expLootPage6Skin",
-              "x": 0,
-              "y": 0,
               "width": 58,
               "height": 38,
+              "_mouseState": 1,
               "src": "ui/texture/inventory/tooltip.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "exp_SkillBattleStartView_172",
@@ -2793,11 +2969,12 @@
               "y": 4,
               "width": 50,
               "height": 30,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#e8edf0",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -2806,22 +2983,19 @@
           "_$type": "GWidget",
           "name": "expLootPage7",
           "x": 384,
-          "y": 0,
           "width": 58,
           "height": 38,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "exp_SkillBattleStartView_174",
               "_$type": "GImage",
               "name": "expLootPage7Skin",
-              "x": 0,
-              "y": 0,
               "width": 58,
               "height": 38,
+              "_mouseState": 1,
               "src": "ui/texture/inventory/tooltip.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "exp_SkillBattleStartView_175",
@@ -2831,16 +3005,16 @@
               "y": 4,
               "width": 50,
               "height": 30,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#e8edf0",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         }
       ]
     }
-  ],
-  "_$ver": 1
+  ]
 }

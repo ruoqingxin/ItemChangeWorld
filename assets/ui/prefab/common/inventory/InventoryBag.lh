@@ -1,9 +1,8 @@
 {
+  "_$ver": 1,
   "_$id": "region_7",
   "_$type": "GWidget",
   "name": "bagArea",
-  "x": 0,
-  "y": 0,
   "width": 460,
   "height": 520,
   "mouseThrough": true,
@@ -12,25 +11,22 @@
       "_$id": "invstart_3",
       "_$type": "GImage",
       "name": "invBagPanel",
-      "x": 0,
       "y": 36,
       "width": 460,
       "height": 350,
-      "src": "ui/texture/inventory/backpack-body.png",
-      "autoSize": false,
-      "mouseEnabled": false
+      "_mouseState": 1,
+      "src": "res://0ae1f005-3df5-4c72-8cbc-421e980e522e",
+      "autoSize": false
     },
     {
       "_$id": "invstart_4",
       "_$type": "GImage",
       "name": "invBagTopbar",
-      "x": 0,
-      "y": 0,
       "width": 460,
       "height": 36,
+      "_mouseState": 1,
       "src": "ui/texture/inventory/topbar.png",
-      "autoSize": false,
-      "mouseEnabled": false
+      "autoSize": false
     },
     {
       "_$id": "invstart_12",
@@ -40,11 +36,12 @@
       "y": 4,
       "width": 444,
       "height": 30,
+      "_mouseState": 1,
       "text": "纳虚器",
       "fontSize": 20,
       "color": "#ecefe7",
-      "mouseEnabled": false,
-      "overflow": "shrink"
+      "overflow": "shrink",
+      "letterSpacing": 0
     },
     {
       "_$id": "invstart_14",
@@ -54,11 +51,12 @@
       "y": 398,
       "width": 444,
       "height": 112,
+      "_mouseState": 1,
       "text": "",
       "fontSize": 18,
       "color": "#ecefe7",
-      "mouseEnabled": false,
-      "overflow": "shrink"
+      "overflow": "shrink",
+      "letterSpacing": 0
     },
     {
       "_$id": "region_6",
@@ -78,33 +76,30 @@
           "y": 72,
           "width": 414,
           "height": 120,
+          "_mouseState": 1,
           "text": "",
           "fontSize": 22,
           "color": "#ecefe7",
-          "mouseEnabled": false,
-          "overflow": "shrink"
+          "overflow": "shrink",
+          "letterSpacing": 0
         },
         {
           "_$id": "invstart_61",
           "_$type": "GWidget",
           "name": "invCell_bag_0",
-          "x": 0,
-          "y": 0,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_59",
               "_$type": "GImage",
               "name": "invCell_bag_0Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_60",
@@ -114,11 +109,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -127,22 +123,19 @@
           "_$type": "GWidget",
           "name": "invCell_bag_1",
           "x": 56,
-          "y": 0,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_62",
               "_$type": "GImage",
               "name": "invCell_bag_1Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_63",
@@ -152,11 +145,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -165,22 +159,19 @@
           "_$type": "GWidget",
           "name": "invCell_bag_2",
           "x": 112,
-          "y": 0,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_65",
               "_$type": "GImage",
               "name": "invCell_bag_2Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_66",
@@ -190,11 +181,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -203,22 +195,19 @@
           "_$type": "GWidget",
           "name": "invCell_bag_3",
           "x": 168,
-          "y": 0,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_68",
               "_$type": "GImage",
               "name": "invCell_bag_3Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_69",
@@ -228,11 +217,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -241,22 +231,19 @@
           "_$type": "GWidget",
           "name": "invCell_bag_4",
           "x": 224,
-          "y": 0,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_71",
               "_$type": "GImage",
               "name": "invCell_bag_4Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_72",
@@ -266,11 +253,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -279,22 +267,19 @@
           "_$type": "GWidget",
           "name": "invCell_bag_5",
           "x": 280,
-          "y": 0,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_74",
               "_$type": "GImage",
               "name": "invCell_bag_5Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_75",
@@ -304,11 +289,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -317,22 +303,19 @@
           "_$type": "GWidget",
           "name": "invCell_bag_6",
           "x": 336,
-          "y": 0,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_77",
               "_$type": "GImage",
               "name": "invCell_bag_6Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_78",
@@ -342,11 +325,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -355,22 +339,19 @@
           "_$type": "GWidget",
           "name": "invCell_bag_7",
           "x": 392,
-          "y": 0,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_80",
               "_$type": "GImage",
               "name": "invCell_bag_7Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_81",
@@ -380,11 +361,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -392,23 +374,20 @@
           "_$id": "invstart_85",
           "_$type": "GWidget",
           "name": "invCell_bag_8",
-          "x": 0,
           "y": 56,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_83",
               "_$type": "GImage",
               "name": "invCell_bag_8Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_84",
@@ -418,11 +397,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -434,19 +414,17 @@
           "y": 56,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_86",
               "_$type": "GImage",
               "name": "invCell_bag_9Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_87",
@@ -456,11 +434,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -472,19 +451,17 @@
           "y": 56,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_89",
               "_$type": "GImage",
               "name": "invCell_bag_10Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_90",
@@ -494,11 +471,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -510,19 +488,17 @@
           "y": 56,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_92",
               "_$type": "GImage",
               "name": "invCell_bag_11Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_93",
@@ -532,11 +508,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -548,19 +525,17 @@
           "y": 56,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_95",
               "_$type": "GImage",
               "name": "invCell_bag_12Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_96",
@@ -570,11 +545,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -586,19 +562,17 @@
           "y": 56,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_98",
               "_$type": "GImage",
               "name": "invCell_bag_13Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_99",
@@ -608,11 +582,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -624,19 +599,17 @@
           "y": 56,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_101",
               "_$type": "GImage",
               "name": "invCell_bag_14Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_102",
@@ -646,11 +619,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -662,19 +636,17 @@
           "y": 56,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_104",
               "_$type": "GImage",
               "name": "invCell_bag_15Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_105",
@@ -684,11 +656,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -696,23 +669,20 @@
           "_$id": "invstart_109",
           "_$type": "GWidget",
           "name": "invCell_bag_16",
-          "x": 0,
           "y": 112,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_107",
               "_$type": "GImage",
               "name": "invCell_bag_16Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_108",
@@ -722,11 +692,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -738,19 +709,17 @@
           "y": 112,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_110",
               "_$type": "GImage",
               "name": "invCell_bag_17Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_111",
@@ -760,11 +729,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -776,19 +746,17 @@
           "y": 112,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_113",
               "_$type": "GImage",
               "name": "invCell_bag_18Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_114",
@@ -798,11 +766,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -814,19 +783,17 @@
           "y": 112,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_116",
               "_$type": "GImage",
               "name": "invCell_bag_19Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_117",
@@ -836,11 +803,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -852,19 +820,17 @@
           "y": 112,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_119",
               "_$type": "GImage",
               "name": "invCell_bag_20Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_120",
@@ -874,11 +840,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -890,19 +857,17 @@
           "y": 112,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_122",
               "_$type": "GImage",
               "name": "invCell_bag_21Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_123",
@@ -912,11 +877,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -928,19 +894,17 @@
           "y": 112,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_125",
               "_$type": "GImage",
               "name": "invCell_bag_22Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_126",
@@ -950,11 +914,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -966,19 +931,17 @@
           "y": 112,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_128",
               "_$type": "GImage",
               "name": "invCell_bag_23Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_129",
@@ -988,11 +951,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -1000,23 +964,20 @@
           "_$id": "invstart_133",
           "_$type": "GWidget",
           "name": "invCell_bag_24",
-          "x": 0,
           "y": 168,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_131",
               "_$type": "GImage",
               "name": "invCell_bag_24Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_132",
@@ -1026,11 +987,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -1042,19 +1004,17 @@
           "y": 168,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_134",
               "_$type": "GImage",
               "name": "invCell_bag_25Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_135",
@@ -1064,11 +1024,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -1080,19 +1041,17 @@
           "y": 168,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_137",
               "_$type": "GImage",
               "name": "invCell_bag_26Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_138",
@@ -1102,11 +1061,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -1118,19 +1078,17 @@
           "y": 168,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_140",
               "_$type": "GImage",
               "name": "invCell_bag_27Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_141",
@@ -1140,11 +1098,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -1156,19 +1115,17 @@
           "y": 168,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_143",
               "_$type": "GImage",
               "name": "invCell_bag_28Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_144",
@@ -1178,11 +1135,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -1194,19 +1152,17 @@
           "y": 168,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_146",
               "_$type": "GImage",
               "name": "invCell_bag_29Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_147",
@@ -1216,11 +1172,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -1232,19 +1189,17 @@
           "y": 168,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_149",
               "_$type": "GImage",
               "name": "invCell_bag_30Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_150",
@@ -1254,11 +1209,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -1270,19 +1226,17 @@
           "y": 168,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_152",
               "_$type": "GImage",
               "name": "invCell_bag_31Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_153",
@@ -1292,11 +1246,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -1304,23 +1259,20 @@
           "_$id": "invstart_157",
           "_$type": "GWidget",
           "name": "invCell_bag_32",
-          "x": 0,
           "y": 224,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_155",
               "_$type": "GImage",
               "name": "invCell_bag_32Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_156",
@@ -1330,11 +1282,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -1346,19 +1299,17 @@
           "y": 224,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_158",
               "_$type": "GImage",
               "name": "invCell_bag_33Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_159",
@@ -1368,11 +1319,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -1384,19 +1336,17 @@
           "y": 224,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_161",
               "_$type": "GImage",
               "name": "invCell_bag_34Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_162",
@@ -1406,11 +1356,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -1422,19 +1373,17 @@
           "y": 224,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_164",
               "_$type": "GImage",
               "name": "invCell_bag_35Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_165",
@@ -1444,11 +1393,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -1460,19 +1410,17 @@
           "y": 224,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_167",
               "_$type": "GImage",
               "name": "invCell_bag_36Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_168",
@@ -1482,11 +1430,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -1498,19 +1447,17 @@
           "y": 224,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_170",
               "_$type": "GImage",
               "name": "invCell_bag_37Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_171",
@@ -1520,11 +1467,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -1536,19 +1484,17 @@
           "y": 224,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_173",
               "_$type": "GImage",
               "name": "invCell_bag_38Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_174",
@@ -1558,11 +1504,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -1574,19 +1521,17 @@
           "y": 224,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_176",
               "_$type": "GImage",
               "name": "invCell_bag_39Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_177",
@@ -1596,11 +1541,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -1608,23 +1554,20 @@
           "_$id": "invstart_181",
           "_$type": "GWidget",
           "name": "invCell_bag_40",
-          "x": 0,
           "y": 280,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_179",
               "_$type": "GImage",
               "name": "invCell_bag_40Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_180",
@@ -1634,11 +1577,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -1650,19 +1594,17 @@
           "y": 280,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_182",
               "_$type": "GImage",
               "name": "invCell_bag_41Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_183",
@@ -1672,11 +1614,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -1688,19 +1631,17 @@
           "y": 280,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_185",
               "_$type": "GImage",
               "name": "invCell_bag_42Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_186",
@@ -1710,11 +1651,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -1726,19 +1668,17 @@
           "y": 280,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_188",
               "_$type": "GImage",
               "name": "invCell_bag_43Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_189",
@@ -1748,11 +1688,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -1764,19 +1705,17 @@
           "y": 280,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_191",
               "_$type": "GImage",
               "name": "invCell_bag_44Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_192",
@@ -1786,11 +1725,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -1802,19 +1742,17 @@
           "y": 280,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_194",
               "_$type": "GImage",
               "name": "invCell_bag_45Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_195",
@@ -1824,11 +1762,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -1840,19 +1779,17 @@
           "y": 280,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_197",
               "_$type": "GImage",
               "name": "invCell_bag_46Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_198",
@@ -1862,11 +1799,12 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         },
@@ -1878,19 +1816,17 @@
           "y": 280,
           "width": 54,
           "height": 54,
-          "mouseEnabled": true,
+          "_mouseState": 2,
           "_$child": [
             {
               "_$id": "invstart_200",
               "_$type": "GImage",
               "name": "invCell_bag_47Bg",
-              "x": 0,
-              "y": 0,
               "width": 54,
               "height": 54,
+              "_mouseState": 1,
               "src": "ui/atlas/module/inventory/cell.png",
-              "autoSize": false,
-              "mouseEnabled": false
+              "autoSize": false
             },
             {
               "_$id": "invstart_201",
@@ -1900,16 +1836,16 @@
               "y": 4,
               "width": 38,
               "height": 46,
+              "_mouseState": 1,
               "text": "",
               "fontSize": 18,
               "color": "#ecefe7",
-              "mouseEnabled": false,
-              "overflow": "shrink"
+              "overflow": "shrink",
+              "letterSpacing": 0
             }
           ]
         }
       ]
     }
-  ],
-  "_$ver": 1
+  ]
 }

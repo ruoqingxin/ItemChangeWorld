@@ -5,6 +5,8 @@ export interface ExpeditionNode {
     id: number; key: string; kind: string; name: string; enemy: string; pool: string;
     mainOrder: number; x: number; y: number;
     encounterKey?: string;
+    icon?: string;
+    searchMin?: number; searchMax?: number; searchWeight?: number;
 }
 export interface ExpeditionPool {
     id: string; min: number; max: number; minWeight: number; durability: [number,number];

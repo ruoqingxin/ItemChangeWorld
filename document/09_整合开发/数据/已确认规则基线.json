@@ -155,6 +155,9 @@
       "undefeatedEnemiesBlockChosenPath": true,
       "oneChestPerEnemyDefeated": true,
       "chestContentsFixedAtEnemyDeath": true,
+      "independentSearchNodeCategories": ["herb", "ore", "chestCommon", "chestRefined", "chestTreasure", "cave", "alchemy", "forge", "beast"],
+      "searchSiteTierEqualsItemQuality": false,
+      "searchBuildingsEnableCraftingOrTaming": false,
       "searchInterruptibleAndProgressSaved": true,
       "firstSourceSearchOpenStartsAutomatically": true,
       "searchDurationIncreasesWithQuality": true,
@@ -205,6 +208,21 @@
     }
   },
   "acceptedAdjustableTestStartingPoints": {
+    "searchSites20261114": {
+      "source": "06_地图搜索撤离与计时.md；用户要求九类搜索点及合理划分并指定九张图标",
+      "mapVersion": "stage4-20261114-search-sites",
+      "generatorVersion": 4,
+      "searchNodeRange": [8, 12],
+      "minimumPerRun": { "herb": 1, "ore": 1, "chestCommon": 1, "alchemy": 1 },
+      "maximumPerRun": { "herb": 3, "ore": 3, "chestCommon": 3, "chestRefined": 2, "chestTreasure": 1, "cave": 1, "alchemy": 2, "forge": 2, "beast": 2 },
+      "remainingSlotWeights": { "herb": 18, "ore": 16, "chestCommon": 18, "chestRefined": 12, "chestTreasure": 5, "cave": 8, "alchemy": 12, "forge": 7, "beast": 4 },
+      "earlyReferenceRouteAlchemy": true,
+      "alchemyGuaranteedHpAndMp": true,
+      "alchemyThirdItemWeights": { "hp": 45, "mp": 40, "herb": 15 },
+      "allNineCategoriesRequiredPerRun": false,
+      "enemyLootChanged": false,
+      "existingMismatchedSave": "preserve-raw-and-request-explicit-rebuild"
+    },
     "longRoutes20261113": {
       "source": "06_地图搜索撤离与计时.md；用户明确增加长距离2/3/4线并批准点位扩容",
       "generatorVersionForNewRuns": 4,

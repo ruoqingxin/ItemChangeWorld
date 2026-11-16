@@ -2126,6 +2126,10 @@ export class Inew_expedition_nodeConfig {
         this.main_order = _buf_.ReadInt()
         this.x = _buf_.ReadFloat()
         this.y = _buf_.ReadFloat()
+        this.icon = _buf_.ReadString()
+        this.search_min = _buf_.ReadInt()
+        this.search_max = _buf_.ReadInt()
+        this.search_weight = _buf_.ReadInt()
     }
 
     /**
@@ -2164,9 +2168,29 @@ export class Inew_expedition_nodeConfig {
      * 纵坐标
      */
     readonly y: number
+    /**
+     * icon
+     */
+    readonly icon: string
+    /**
+     * search_min
+     */
+    readonly search_min: number
+    /**
+     * search_max
+     */
+    readonly search_max: number
+    /**
+     * search_weight
+     */
+    readonly search_weight: number
 
 /*
     resolve(tables:Tables) {
+        
+        
+        
+        
         
         
         
@@ -2531,35 +2555,35 @@ export class Inew_expedition_ruleConfig {
      */
     readonly search_max: number
     /**
-     * 普通敌人下限
+     * normal_min
      */
     readonly normal_min: number
     /**
-     * 普通敌人上限
+     * normal_max
      */
     readonly normal_max: number
     /**
-     * 精英敌人下限
+     * elite_min
      */
     readonly elite_min: number
     /**
-     * 精英敌人上限
+     * elite_max
      */
     readonly elite_max: number
     /**
-     * 悟道点下限
+     * insight_min
      */
     readonly insight_min: number
     /**
-     * 悟道点上限
+     * insight_max
      */
     readonly insight_max: number
     /**
-     * 借法台下限
+     * borrow_min
      */
     readonly borrow_min: number
     /**
-     * 借法台上限
+     * borrow_max
      */
     readonly borrow_max: number
 

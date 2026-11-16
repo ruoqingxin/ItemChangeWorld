@@ -50,16 +50,28 @@ export class ExpeditionRules {
             Number.isSafeInteger(v) && v >= 0) && values.reduce((a,b) => a+b,0) === 100;
         if (!weights(c.rules.supply) || !weights(c.rules.books) || c.rules.supply.length !== 3 || c.rules.books.length !== 3 ||
             !Number.isSafeInteger(c.rules.recoveryPercent) || c.rules.recoveryPercent < 1 || c.rules.recoveryPercent > 100 ||
-            c.pools.length !== 5 || new Set(c.pools.map(p => p.id)).size !== 5 ||
+            c.pools.length < 5 || new Set(c.pools.map(p => p.id)).size !== c.pools.length ||
             !["normal","elite","boss","search","risk"].every(id => c.pools.some(p => p.id === id)))
             throw new Error("恢复、补给或掉落条件权重无效");
         for (const n of c.nodes) {
-            if (!Number.isInteger(n.id) || n.id < 1 || n.id > 32 ||
+            if (!Number.isInteger(n.id) || n.id < 1 || n.id > 36 ||
                 !["start","normal","elite","boss","search","borrow","insight","transit","extract","recovery"].includes(n.kind) ||
                 !Number.isFinite(n.x) || !Number.isFinite(n.y) ||
                 !!n.enemy !== ["normal","elite","boss"].includes(n.kind) ||
                 n.enemy && !c.build.encounters.some(e => e.id === `battle:${n.key}`))
                 throw new Error("地图类型或敌人绑定无效");
+        }
+        const searches = c.nodes.filter(n => n.kind === "search");
+        if (searches.some(n => n.searchWeight !== undefined)) {
+            if (searches.some(n => !Number.isSafeInteger(n.searchMin) || n.searchMin! < 0 ||
+                !Number.isSafeInteger(n.searchMax) || n.searchMax! < n.searchMin! ||
+                !Number.isSafeInteger(n.searchWeight) || n.searchWeight! <= 0 ||
+                !/^[a-z]+(?:-[a-z]+)*$/.test(n.icon || "") || !c.pools.some(p => p.id === n.pool)) ||
+                searches.reduce((sum,n) => sum+n.searchWeight!,0) !== 100 ||
+                c.rules.normalMin !== undefined && (
+                    searches.reduce((sum,n) => sum+n.searchMin!,0) > c.rules.searchMin ||
+                    searches.reduce((sum,n) => sum+n.searchMax!,0) < c.rules.searchMax))
+                throw new Error("搜索节点分类或数量预算无效");
         }
         const budgets = [c.rules.normalMin,c.rules.normalMax,c.rules.eliteMin,c.rules.eliteMax,
             c.rules.insightMin,c.rules.insightMax,c.rules.borrowMin,c.rules.borrowMax];
@@ -139,7 +151,18 @@ export class ExpeditionRules {
         const elites=sample("elite",range(c.rules.eliteMin!,c.rules.eliteMax!));
         const transitCount=range(c.rules.transitMin,c.rules.transitMax);
         const searchCount=range(c.rules.searchMin,c.rules.searchMax);
-        const searches=sample("search",searchCount);
+        const searchTemplates=c.nodes.filter(n=>n.kind==="search");
+        let searches: ExpeditionNode[];
+        if (searchTemplates.some(n=>n.searchWeight!==undefined)) {
+            const counts=searchTemplates.map(n=>n.searchMin!);
+            for(let left=searchCount-counts.reduce((sum,n)=>sum+n,0);left>0;left--) {
+                const weights=searchTemplates.map((n,i)=>counts[i]<n.searchMax!?n.searchWeight!:0);
+                counts[random.weighted(weights)]++;
+            }
+            searches=random.shuffle(searchTemplates.flatMap((n,i)=>Array.from({length:counts[i]},()=>n)));
+            const supply=searches.findIndex(n=>n.pool==="alchemy");
+            if(supply>=0)searches.unshift(...searches.splice(supply,1));
+        } else searches=sample("search",searchCount);
         const insightCount=range(c.rules.insightMin!,c.rules.insightMax!);
         const borrowCount=range(c.rules.borrowMin!,c.rules.borrowMax!);
         const recoveryCount=range(1,2), exitCount=range(1,2);
@@ -151,6 +174,11 @@ export class ExpeditionRules {
             ...random.shuffle([...normals.splice(0,5),...elites.splice(0,2),
                 ...searches.splice(0,mainSearch),...Array.from({length:mainTransit-1},()=>pick("transit"))])
         ];
+        const supplyIndex=main.findIndex(n=>n.pool==="alchemy");
+        if(supplyIndex>=0) {
+            const early=2+random.below(5);
+            [main[early],main[supplyIndex]]=[main[supplyIndex],main[early]];
+        }
         const fights=main.flatMap((n,i)=>n.enemy?[i]:[]);
         const first=range(fights[1]+1,fights[2]);
         const later=random.shuffle(Array.from({length:main.length-first},(_,i)=>first+i+1)).slice(0,2);
@@ -474,7 +502,7 @@ export class ExpeditionRules {
         const count = supply ? 3 : random.below(100) < pool!.minWeight ? pool!.min : pool!.max;
         const entries: ExpeditionSource["entries"] = [];
         for (let i = 0; i < count; i++) {
-            let family = supply ? i === 0 ? "hp" : i === 1 ? "mp" :
+            let family = node.pool === "alchemy" && i < 2 ? ["hp","mp"][i] : supply ? i === 0 ? "hp" : i === 1 ? "mp" :
                 ["hp","mp","repair"][random.weighted(c.rules.supply)] :
                 ["hp","mp","repair","herb","ore","small","book","container","weapon"][random.weighted(pool!.categories)];
             if (family === "book") family = ["bookSword","bookEarth","bookCommon"][random.weighted(c.rules.books)];
