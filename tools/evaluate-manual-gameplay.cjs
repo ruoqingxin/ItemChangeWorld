@@ -4,7 +4,7 @@ const path = require("node:path");
 const base = path.resolve(__dirname, "../bin/manual-test/script/module/manualTest");
 const { ManualTestRules: R } = require(path.join(base, "utils/ManualTestRules.js"));
 const { ManualTestConfig: C } = require(path.join(base, "utils/ManualTestConfig.js"));
-const out = path.resolve(process.env.MANUAL_GAMEPLAY_OUTPUT || path.resolve(__dirname, "../bin/manual-gameplay"));
+const out = path.resolve(process.env.MANUAL_GAMEPLAY_OUTPUT || path.resolve(__dirname, "../bin/manual-gameplay-v3"));
 const policies = ["rush", "adaptive", "arrays", "responses", "body", "cycles"];
 const stars = Array.from({ length: 31 }, (_, i) => i ?
     { star: Math.ceil(i / 6), rank: (i - 1) % 6 + 1 } : { star: 0, rank: 0 });
@@ -65,18 +65,13 @@ function candidates(s) {
             for (const g of s.sky) if (g.members.length === 1) rows.push({ ...a, form: g.id });
         }
     }
-    const triad = s.sky.some(g => R.array(g) === "三才") || R.bodyArray(s) === "三才";
-    if (triad) for (const a of rows.slice()) {
-        if (!["edge", "wind", "guide"].includes(a.move) ||
-            ["urge", "recall", "reverse", "release", "pluck"].includes(a.branch)) continue;
-        for (const g of s.sky) for (const x of g.members) rows.push({ ...a, echo: x.id });
-    }
     return rows;
 }
 
 function potential(s, policy) {
     if (s.outcome !== "active") return 0;
-    let n = s.marks * (policy === "rush" ? 0 : 12) + s.energy * 15;
+    let n = s.marks * (policy === "rush" ? 0 : 12) + s.energy * 15 +
+        (!s.finisherUsed ? s.orbit * (policy === "cycles" ? 18 : 6) : 0);
     const bodyWeight = policy === "body" ? 260 : 150;
     n += s.body.reduce((v, x) => v + bodyWeight * (x.kind === "edge" ? 1 : 0.65), 0);
     n += s.cache.reduce((v, g) => v + g.members.length * 15, 0);
@@ -84,7 +79,7 @@ function potential(s, policy) {
         for (const x of g.members) {
             const remaining = Math.max(0, R.ageCap(s, g) - x.age);
             n += Math.min(remaining, 2) * (x.kind === "edge" ? 13 : x.kind === "guide" ? 8 : 9);
-            n += x.age * 7 + x.cycles * (policy === "cycles" ? 18 : 6);
+            n += x.age * 7;
             if (policy === "body" && s.body.length < R.bodyCapacity(s)) n += x.age * 14;
         }
         if (g.members.length === 3) n += policy === "arrays" ? 75 : 15;
@@ -126,6 +121,18 @@ function choose(s, policy) {
     }
     if (policy === "rush") return find(a => a.move === "edge" && a.branch === "urge") ||
         find(a => a.move === "edge" && !a.branch) || find(a => a.move === "basic");
+    if (policy === "harvest") {
+        const ripe = s.sky.find(g => g.members.some(x => R.mature(s, g, x)));
+        const pluck = ripe && find(a => a.branch === "pluck" && a.target === ripe.id);
+        if (pluck) return pluck;
+        if (!s.firstRoot) {
+            const urge = find(a => a.branch === "urge");
+            if (urge) return urge;
+        }
+        if (s.marks < 4) return find(a => a.move === "guide" && !a.branch) || find(a => a.move === "basic");
+        return find(a => a.branch === "urge") || find(a => a.move === "edge" && !a.branch) ||
+            find(a => a.move === "basic");
+    }
     if (policy === "cycles" && has(s, 5, 1)) {
         const finish = find(a => a.branch === "finish");
         if (finish) return finish;
@@ -167,7 +174,7 @@ function run(level, style, policy, scenario, options = {}) {
     if (options.mp) setup.player.mp = setup.enemy.mp = options.mp;
     let s = R.start(setup), attempts = 0;
     const maxRounds = options.rounds || (scenario === "horizon" ? 10 : 12);
-    const trace = [], events = {}, peaks = { arrays: 0, body: 0, cycles: 0, energy: 0, cache: 0 };
+    const trace = [], events = {}, peaks = { arrays: 0, body: 0, orbit: 0, energy: 0, cache: 0 };
     const usage = {}, checkpoints = {};
     let spent = 0, medicines = 0, shieldWasted = 0;
     while (s.outcome === "active" && s.round <= maxRounds) {
@@ -191,20 +198,20 @@ function run(level, style, policy, scenario, options = {}) {
         for (const [key, regex] of Object.entries({
             array: /成阵/, response: /应剑$/m, cut: /截招削弱/m,
             body: /纳入身剑/, release: /引剑出体/, cache: /归冥/,
-            return: /回升/, finisher: /万剑归冥：/, pinpoint: /点破/,
+            return: /回升/, finisher: /万剑归冥：/, pinpoint: /点破/, liberation: /本命解放/,
+            interrupt: /截断本次蓄力/,
         })) if (regex.test(log) && events[key] === undefined) events[key] = prev.round;
         peaks.arrays = Math.max(peaks.arrays, s.sky.filter(g => g.members.length === 3).length);
         peaks.body = Math.max(peaks.body, s.body.length);
-        peaks.cycles = Math.max(peaks.cycles, 0, ...s.sky.flatMap(g => g.members.map(x => x.cycles)));
+        peaks.orbit = Math.max(peaks.orbit, s.orbit);
         peaks.energy = Math.max(peaks.energy, s.energy);
         peaks.cache = Math.max(peaks.cache, R.used(s.cache));
         if (s.body.length === 3 && !events.threeBody) events.threeBody = prev.round;
-        if (peaks.cycles >= 3 && !events.threeCycles) events.threeCycles = prev.round;
         if (a.move === "wind" && prev.player.shield >= 3 * R.h(prev)) shieldWasted++;
         trace.push({ round: prev.round, ap: prev.ap, action: a, damage: s.totals.damage,
             taken: s.totals.taken, hp: s.player.hp, mp: s.player.mp, marks: s.marks,
             sky: s.sky.map(g => ({ id: g.id, kinds: g.members.map(x => x.kind),
-                ages: g.members.map(x => x.age), cycles: g.members.map(x => x.cycles) })),
+                ages: g.members.map(x => x.age) })),
             body: s.body.map(x => x.kind), energy: s.energy, orbit: s.orbit,
             finisherUsed: s.finisherUsed, logs: s.logs });
         if (s.round > prev.round) checkpoints[prev.round] = { damage: s.totals.damage,
@@ -267,6 +274,10 @@ for (const level of stars.filter(x => x.rank === 6)) {
 for (const policy of ["arrays", "guardArray", "guideArray", "triad"])
     extra.push(run({ star: 3, rank: 6 }, "defensive", policy, "armor",
         { playerHp: 1000000, enemyHp: 1000000, enemyDefense: 200, rounds: 10 }));
+for (let rank = 1; rank <= 6; rank++) for (const style of ["assault", "burst"])
+    extra.push(run({ star: 1, rank }, style, "harvest", "horizon"));
+for (const enemyHp of [1500, 3000]) for (const style of ["assault", "burst"])
+    extra.push(run({ star: 1, rank: 6 }, style, "harvest", "encounter", { enemyHp }));
 const probes = { responseLoose: responseProbe(false), responseArray: responseProbe(true), nonAttack: nonAttackProbe() };
 const compact = r => { const { trace, ...rest } = r; return rest; };
 fs.writeFileSync(path.join(out, "results.json"), JSON.stringify({ policies, all: all.map(compact), extra: extra.map(compact), probes }, null, 2));
@@ -274,7 +285,7 @@ const representatives = all.filter(x => (!x.star || x.rank === 6) && x.style ===
 fs.writeFileSync(path.join(out, "traces.json"), JSON.stringify([...representatives, ...extra], null, 2));
 console.table(representatives.map(compact).map(x => ({ level: `${x.star}/${x.rank}`, test: x.scenario,
     policy: x.policy, outcome: x.outcome, round: x.rounds, damage: x.damage, taken: x.taken,
-    mp: x.mp, arrays: x.peaks.arrays, body: x.peaks.body, cycle: x.peaks.cycles,
+    mp: x.mp, arrays: x.peaks.arrays, body: x.peaks.body, orbit: x.peaks.orbit,
     firstBody: x.events.body, finisher: x.events.finisher })));
 console.log("Response comparison:", JSON.stringify(probes, null, 2));
 console.log(`Saved ${all.length + extra.length} gameplay simulations to ${out}`);

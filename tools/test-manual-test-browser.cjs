@@ -143,6 +143,27 @@ async function main() {
             await click(p, "confirm");
             assert.equal((await state(p)).sky.length, 1);
             await capture(p, name + "-body-return");
+            // Cross-round charge interruption through native setup/action controls.
+            await click(p, "starDown"); await click(p, "starDown");
+            await choose(p, "enemyStyle", "蓄力爆发"); await click(p, "restart");
+            await act(p, "guide"); await act(p, "wind"); await act(p, "wind");
+            s = await state(p);
+            assert.equal(s.enemy.charged, false); assert.equal(s.intentions[2].percent, 220);
+            assert.ok(s.logs.some(l => l.includes("截断本次蓄力")));
+            await capture(p, name + "-interrupt-next-round");
+            // First-star natural cultivation and root harvest, without injected shadows.
+            await click(p, "starDown"); await click(p, "starDown");
+            await choose(p, "enemyStyle", "木桩"); await click(p, "restart");
+            await act(p, "edge"); await act(p, "edge"); await act(p, "guide");
+            for (let i = 0; i < 2; i++) { await act(p, "edge"); await act(p, "wind"); await act(p, "guide"); }
+            s = await state(p); assert.equal(s.sky[0].members[0].age, 6);
+            await click(p, "move_guide"); await choose(p, "branch", "引落");
+            await click(p, "target"); await click(p, "option_0"); await click(p, "confirm");
+            s = await state(p);
+            assert.ok(s.logs.some(l => l.includes("本命解放")));
+            assert.ok(s.logs.some(l => l.includes("成熟引落：续留锋影")));
+            assert.ok(!s.sky.some(g => g.members.some(x => x.id === 1)));
+            await capture(p, name + "-root-harvest");
             await p.evaluate(() => {
                 const v = window.__manualTestPreview.view; v.close();
                 window.__manualTestPreview.ui = Laya.GRoot.inst;

@@ -13,8 +13,7 @@ export interface SwordShadow {
     id: number;
     kind: ShadowKind;
     age: number;
-    cycles: number;
-    cycledRound: number;
+    returnedRound: number;
 }
 export interface SwordGroup { id: number; members: SwordShadow[]; responded: boolean; }
 export interface EnemyIntent {
@@ -31,7 +30,6 @@ export interface ManualTestAction extends FallPlan {
     other?: number;
     member?: number;
     form?: number;
-    echo?: number;
     kind?: ShadowKind;
     slot?: number;
     enemyAction?: number;

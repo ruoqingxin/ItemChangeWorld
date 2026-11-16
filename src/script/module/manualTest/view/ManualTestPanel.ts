@@ -119,7 +119,7 @@ export class ManualTestPanel {
     private setup(): void {
         const d = this.session.draft;
         this.text("manualName", "青冥剑典", 20, 76, 226, 38, 26, color.gold);
-        this.text("manualState", "手中出剑 · 天上留影", 20, 114, 226, 28, 16, color.muted);
+        this.text("manualState", C.starThemes[d.star], 20, 114, 226, 28, 16, color.muted);
         for (const [i, key] of (["star", "rank"] as const).entries()) {
             const y = 154 + i * 40;
             this.text(key + "Label", key === "star" ? "星级" : "等阶", 20, y, 50, 30);
@@ -165,13 +165,13 @@ export class ManualTestPanel {
         groups.forEach((g, i) => {
             const title = g.members.map(m => C.kinds[m.kind]).join("") +
                 `${area === "sky" && i === 0 && R.has(s, 1, 6) ? " · 本命" : ""}\n` +
-                g.members.map(m => `${m.age}势/${m.cycles}转`).join(" ") +
+                g.members.map(m => `${m.age}势`).join(" ") +
                 (g.members.every(m => area === "sky" && R.mature(s, g, m)) ? "\n已成锋" : "");
             const b = this.button(`${area}_${g.id}`, title, x + i * step, y + 30, step - 6, h - 32, () => {
                 if (this.selected) { this.selected.target = g.id; this.render(); }
             }, this.selected?.target === g.id);
             b.tooltips = `${R.groupName(g)} · ${R.slots(g)}悬\n` + g.members.map(m =>
-                `#${m.id} ${C.kinds[m.kind]}影 ${m.age}势 ${m.cycles}转`).join("\n");
+                `#${m.id} ${C.kinds[m.kind]}影 ${m.age}势`).join("\n");
             this.labels[`${area}_${g.id}Text`].fontSize = 14;
         });
     }
@@ -199,7 +199,7 @@ export class ManualTestPanel {
             x, 344, w, 28, 17, color.gold);
         this.text("bodyState", s.body.length ? s.body.map(m => `${C.kinds[m.kind]}剑 #${m.id}`).join("   /   ") +
             (R.bodyArray(s) ? `    ${R.bodyArray(s)}身阵` : "") : "—", x, 374, w, 28, 17, color.muted);
-        const orbit = R.has(s, 5, 6) ? s.finisherUsed ? "    万剑归冥已施展" :
+        const orbit = R.has(s, 5, 4) ? s.finisherUsed ? "    万剑归冥已施展" :
             `    归冥势 ${s.orbit}/${C.orbitNeed}${R.finisherReady(s) ? " · 可施终式" : ""}` : "";
         this.board(x, 412, w, `冥渊  ${R.used(s.cache)}/6悬${orbit}`, s.cache, "cache", 88);
         const appointments = [s.delayed ? `悬落·敌${s.delayed.at}` : "",
@@ -254,15 +254,11 @@ export class ManualTestPanel {
             optional.push({ key: `slot:${i}`, name: `回升至第${i + 1}组位置` });
         if (["edge", "wind", "guide"].includes(a.move) && R.has(s, 2, 6)) s.sky.forEach(g =>
             optional.push({ key: `form:${g.id}`, name: `以#${g.id}为首成阵` }));
-        if (s.sky.some(g => R.array(g) === "三才") || R.bodyArray(s) === "三才")
-            s.sky.flatMap(g => g.members).forEach(m =>
-                optional.push({ key: `echo:${m.id}`, name: `三才余响 ${C.kinds[m.kind]}影#${m.id}` }));
         const title = [a.keep ? "留本命" : "", a.absorb !== undefined ? `纳#${a.absorb}` : "",
             a.form !== undefined ? `成阵#${a.form}` : "", a.member !== undefined ? `出鞘#${a.member}` : "",
-            a.slot !== undefined ? `第${a.slot + 1}位` : "",
-            a.echo !== undefined ? `余响#${a.echo}` : ""].filter(Boolean).join(" ");
+            a.slot !== undefined ? `第${a.slot + 1}位` : ""].filter(Boolean).join(" ");
         this.menu("optional", title || "附加选择", optional, x + Math.max(470, w - 185), y, 185, key => {
-            if (key === "none") { a.keep = false; delete a.absorb; delete a.form; delete a.member; delete a.echo; delete a.slot; }
+            if (key === "none") { a.keep = false; delete a.absorb; delete a.form; delete a.member; delete a.slot; }
             else if (key === "keep") a.keep = !a.keep;
             else { const [prop, value] = key.split(":"); a[prop] = Number(value); }
         }, optional.length > 1);
@@ -294,12 +290,14 @@ export class ManualTestPanel {
         } else {
             value = "青锋斩 · 5法力\n100%攻击，留锋影\n\n回风式 · 5法力\n150%防御护体，留守影\n\n引星刺 · 6法力\n50%攻击，叠2痕，留引影\n\n落青冥 · 8法力\n按剑序坠落，不留影\n\n" +
                 "锋影：悬停20%攻击\n守影：悬停20%基础护体\n引影：悬停叠1痕\n\n落影：锋60%攻击、守60%基础护体、引30%攻击并叠1痕；每势加10个百分点。\n\n" +
-                "普通三势成熟；本命六势成熟。成熟后停止免费悬停与自动应剑。\n成熟影主动落剑额外30个百分点；成熟引落续留引影。\n\n" +
+                "普通三势成熟；本命六势成熟。成熟后停止免费悬停与自动应剑。\n首次催锋加一势。成熟影主动落剑额外30个百分点；成熟本命主动收取翻倍，成熟引落续留同类新影。\n\n" +
+                "成阵立即阵鸣。万锋青锋穿盾50%；玄壁回风护体增50%；星罗引星叠3痕；三才随留影类型自动余响，与催锋／移剑共享额度。\n\n" +
+                "自应：守影在攻击前卸力20%，锋影在攻击后反击，引影截断蓄力、减半架盾／调息；不回应待机。\n\n" +
                 "每痕提升衍生伤害10%；余响取悬停数值的一半。\n\n" +
-                "身剑：两势可纳入。锋入体60%攻击，首次攻击追加35%；守入体基础护体、回合开始50%护体；引入体叠2痕，每把保底2痕。\n\n" +
+                "身剑：两势纳入。锋强化每轮首次攻击（含普攻）；守入体护体、回合开始温养、回风每把追加35%护体；引保底2痕，首次引星每把使剑首加一势。\n\n" +
                 `出体：至少${C.releaseEnergy}剑元，耗尽剑元；每身剑65%攻击，每剑元40%攻击。\n\n` +
                 `逆引：额外${C.reverseEnergy}剑元，每回合一次。\n\n` +
-                `周天：每道影每轮首次回升积1归冥势。${C.orbitNeed}势且至少三道天影／归影可施终式，每战一次。\n\n` +
+                `轮转：每道影每轮首次回升积1归冥势，并按组回元，与落剑／纳剑共用每轮两次。${C.orbitNeed}势且至少三道天影／归影可施终式，每战一次。\n\n` +
                 "防御提供护体，不另减伤；测试药每回合共用一次。";
         }
         const text = this.text("detailText", value, 4, 0, w - 10, 100, 16, color.muted, panel);

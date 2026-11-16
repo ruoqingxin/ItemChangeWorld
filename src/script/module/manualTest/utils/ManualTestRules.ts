@@ -15,7 +15,7 @@ export class ManualTestRules {
     static used(groups: SwordGroup[]): number { return groups.reduce((n, g) => n + this.slots(g), 0); }
     static bodyCapacity(s: ManualTestState): number { return this.has(s, 4, 6) ? 3 : this.has(s, 4, 1) ? 1 : 0; }
     static canAbsorb(s: ManualTestState, x: SwordShadow): boolean {
-        return this.has(s, 4, 1) && (x.age >= 2 || this.has(s, 5, 6) && x.cycles >= 3);
+        return this.has(s, 4, 1) && x.age >= 2;
     }
     static finisherReady(s: ManualTestState): boolean {
         return this.has(s, 5, 6) && s.outcome === "active" && !s.finisherUsed &&
@@ -111,10 +111,10 @@ export class ManualTestRules {
     }
     private static shadow(s: ManualTestState, kind: ShadowKind): SwordGroup {
         const id = s.nextId++;
-        return { id, responded: false, members: [{ id, kind, age: 0, cycles: 0, cycledRound: 0 }] };
+        return { id, responded: false, members: [{ id, kind, age: 0, returnedRound: 0 }] };
     }
     private static boost(s: ManualTestState, g: SwordGroup, x: SwordShadow, hover: boolean): number {
-        let n = 100 + (this.has(s, 5, 4) ? x.cycles * 10 : 0);
+        let n = 100;
         if (hover && this.has(s, 1, 2) && s.sky[0]?.id === g.id) n += 50;
         if (hover && this.has(s, 4, 2) && s.body.some(b => b.kind === x.kind)) n += 20;
         if (hover && this.array(g) && this.array(g) !== "三才" && this.array(g) === this.bodyArray(s)) n += 20;
@@ -132,14 +132,14 @@ export class ManualTestRules {
         }
         return n;
     }
-    private static echo(s: ManualTestState, g: SwordGroup, mode: "hover" | "echo",
+    private static echo(s: ManualTestState, g: SwordGroup, mode: "hover" | "echo" | "formation",
         allowMature = true, extra = 100, member?: number): void {
         for (const x of g.members.slice()) {
             if (s.outcome !== "active") break;
             if (member !== undefined && x.id !== member) continue;
             if (!allowMature && this.mature(s, g, x)) continue;
             const factor = (this.boost(s, g, x, true) + extra - 100) / 100 * (mode === "echo" ? 0.5 : 1);
-            const source = `${C.kinds[x.kind]}影#${x.id}${mode === "hover" ? "悬停" : "余响"}`;
+            const source = `${C.kinds[x.kind]}影#${x.id}${mode === "hover" ? "悬停" : mode === "formation" ? "阵鸣" : "余响"}`;
             if (x.kind === "edge") this.damage(s, s.player.attack * 0.2 * factor * (1 + s.marks * 0.1),
                 source, this.array(g) === "万锋" ? 0.5 : 0);
             if (x.kind === "guard") this.shield(s, this.h(s) * 0.2 * factor, source);
@@ -148,7 +148,7 @@ export class ManualTestRules {
     }
     private static replay(s: ManualTestState, g: SwordGroup,
         mode: "fall" | "overflow" | "reverse" | "finish" | "body", extra = 100,
-        batch?: SwordShadow[], matureIds?: Set<number>): void {
+        batch?: SwordShadow[], matureIds?: Set<number>, rootIds?: Set<number>): void {
         for (let i = 0; i < g.members.length && s.outcome === "active"; i++) {
             const x = g.members[i];
             let percent = mode === "reverse" ? (x.kind === "guide" ? 50 : 100) :
@@ -157,14 +157,20 @@ export class ManualTestRules {
             if ((mode === "fall" || mode === "finish") && this.has(s, 1, 4) &&
                 (matureIds ? matureIds.has(x.id) : this.mature(s, g, x))) percent += 30;
             let factor = this.boost(s, g, x, false) / 100 * extra / 100;
+            const liberated = mode === "fall" && rootIds?.has(x.id) && matureIds?.has(x.id);
+            if (liberated) {
+                factor *= 2;
+                this.log(s, `${C.kinds[x.kind]}影#${x.id} 本命解放`);
+            }
             if (mode === "overflow") factor *= 0.5;
             const sequence = batch || g.members, position = sequence.indexOf(x);
             if (this.has(s, 2, 4) && (sequence[position - 1]?.kind === x.kind ||
                 sequence[position + 1]?.kind === x.kind)) factor *= 1.1;
             const source = `${C.kinds[x.kind]}影#${x.id}${mode === "overflow" ? "挤落" : "落剑"}`;
             if (x.kind === "guard") this.shield(s, this.h(s) * percent / 100 * factor, source);
-            else this.damage(s, s.player.attack * percent / 100 * factor * (1 + s.marks * 0.1), source);
-            if (x.kind === "guide") this.marks(s, 1);
+            else this.damage(s, s.player.attack * percent / 100 * factor * (1 + s.marks * 0.1), source,
+                this.array(g) === "万锋" ? 0.5 : 0);
+            if (x.kind === "guide") this.marks(s, liberated ? 2 : 1);
         }
     }
     private static store(s: ManualTestState, g: SwordGroup): void {
@@ -174,11 +180,11 @@ export class ManualTestRules {
         this.log(s, `${this.groupName(g)} 归冥`);
         while (this.used(s.cache) > 6) this.log(s, `${this.groupName(s.cache.shift()!)} 冥渊满位消散`);
     }
-    private static gainEnergy(s: ManualTestState): void {
+    private static gainEnergy(s: ManualTestState, source = "坠落回元"): void {
         if (this.has(s, 4, 4) && s.activeEnergy < 2 && s.outcome === "active") {
             s.energy = Math.min(this.has(s, 4, 6) ? 9 : 6, s.energy + 1);
             s.activeEnergy++;
-            this.log(s, `坠落回元 ${s.energy}`);
+            this.log(s, `${source} ${s.energy}`);
         }
     }
     private static fallGroups(s: ManualTestState, groups: SwordGroup[], mode: "fall" | "overflow",
@@ -188,11 +194,12 @@ export class ManualTestRules {
         const real = s.sky.filter(g => g.members.some(x => declared.has(x.id)));
         const sequence = real.flatMap(g => g.members), matureIds = new Set(real.flatMap(g =>
             g.members.filter(x => this.mature(s, g, x)).map(x => x.id)));
+        const rootIds = new Set(this.has(s, 1, 6) ? s.sky[0]?.members.map(x => x.id) : []);
         let dropped = false;
         // Keep the original queue for boost/maturity lookups until each group has replayed.
         for (const g of real) {
             if (!s.sky.includes(g) || s.outcome !== "active") continue;
-            this.replay(s, g, mode, 100, sequence, matureIds); dropped = true;
+            this.replay(s, g, mode, 100, sequence, matureIds, rootIds); dropped = true;
             s.sky = s.sky.filter(row => row !== g);
             if (this.has(s, 5, 1) && (mode === "fall" || this.has(s, 5, 6))) this.store(s, g);
         }
@@ -221,6 +228,7 @@ export class ManualTestRules {
         if (!this.array(members)) throw new Error("阵型须三同类或锋守引各一");
         const g = { id: rows[0].id, members, responded: rows.some(g => g.responded) };
         s.sky.splice(i, 3, g); this.log(s, `${this.groupName(g)} 成阵`);
+        this.echo(s, g, "formation");
     }
     private static find(groups: SwordGroup[], id?: number): SwordGroup {
         const g = groups.find(g => g.id === id);
@@ -231,7 +239,7 @@ export class ManualTestRules {
         if (!this.has(s, 4, 1)) throw new Error("尚未解锁纳剑");
         const g = s.sky.find(g => g.members.some(x => x.id === id)), x = g?.members.find(x => x.id === id);
         if (!g || !x || !this.canAbsorb(s, x))
-            throw new Error("纳剑须选择两势剑影，周天后也可选择三转剑影");
+            throw new Error("纳剑须选择至少两势的剑影");
         const i = s.sky.indexOf(g);
         s.sky.splice(i, 1, ...g.members.filter(y => y !== x).map(y => ({
             id: y.id, members: [y], responded: g.responded,
@@ -259,17 +267,18 @@ export class ManualTestRules {
         }
         if (s.outcome !== "active") return;
         s.cache = s.cache.filter(row => row !== g);
+        let returned = false;
         for (const x of g.members) {
             x.age = this.has(s, 5, 6) ? Math.floor(x.age / 2) : 0;
-            if (this.has(s, 5, 4) && x.cycledRound !== s.round) {
-                x.cycles = Math.min(this.has(s, 5, 6) ? 5 : 3, x.cycles + 1);
-                x.cycledRound = s.round;
-                if (this.has(s, 5, 6) && !s.finisherUsed) s.orbit = Math.min(C.orbitNeed, s.orbit + 1);
+            if (this.has(s, 5, 4) && x.returnedRound !== s.round) {
+                x.returnedRound = s.round; returned = true;
+                if (!s.finisherUsed) s.orbit = Math.min(C.orbitNeed, s.orbit + 1);
             }
         }
         g.responded = false;
         s.sky.splice(Math.min(a?.slot ?? s.sky.length, s.sky.length), 0, g);
         this.log(s, `${this.groupName(g)} 回升`);
+        if (returned) this.gainEnergy(s, "归影回元");
     }
     private static bodyStrike(s: ManualTestState, source: string, spend: boolean): void {
         const participating = this.has(s, 4, 6) ? s.body.length : Math.min(1, s.body.length);
@@ -295,7 +304,7 @@ export class ManualTestRules {
         this.damage(s, s.player.attack * 2, "万剑归冥·剑鸣");
         for (const g of groups) this.replay(s, g, "finish", 100, sequence, matureIds);
         if (s.body.length && s.outcome === "active") this.bodyStrike(s, "万剑归冥·身剑合击", false);
-        this.log(s, "万剑归冥：天冥共鸣，原影归位，不增转、不回元");
+        this.log(s, "万剑归冥：天冥共鸣，原影归位，不积势、不回元");
     }
     static resolve(original: ManualTestState, a: ManualTestAction): ManualTestResult {
         const s = this.clone(original);
@@ -322,22 +331,28 @@ export class ManualTestRules {
             if (["ambush", "pinpoint", "delay"].includes(branch) &&
                 a.enemyAction !== undefined && ![1, 2, 3].includes(a.enemyAction))
                 throw new Error("预约时机须为敌第1／2／3行动");
+            if (branch === "pinpoint") {
+                const g = this.find(s.sky, a.target);
+                if (!g.members.some(x => x.kind === "guide" && !this.mature(s, g, x)))
+                    throw new Error("点破须选择含未成熟引影的剑组");
+            }
             const oldHead = s.sky[0];
             let echoed = false, newGroup: SwordGroup | undefined;
             s.player.mp -= C.cost(a.move); s.ap--; s.revision++;
             this.log(s, `${C.moves[a.move]}${branch !== "normal" ? `·${C.branches(s.setup, a.move).find(b => b.key === branch)!.name}` : ""}，余${s.ap}行动`);
             if (a.keep && !this.has(s, 2, 1)) throw new Error("尚未解锁留锋");
-            if (a.move === "basic") this.damage(s, s.player.attack, "普攻");
+            if (a.move === "basic") { this.damage(s, s.player.attack, "普攻"); this.bodyAttack(s); }
             if (a.move === "guard") this.shield(s, this.h(s), "防御");
             if (a.move === "edge") {
-                this.damage(s, s.player.attack, "青锋斩");
+                this.damage(s, s.player.attack, "青锋斩", this.permission(s, "万锋") ? 0.5 : 0);
                 if (s.outcome === "active") {
                     this.bodyAttack(s);
                     if (s.outcome !== "active") return { ok: true, state: s };
                     if (branch === "urge" && oldHead) {
                         this.echo(s, oldHead, "echo"); echoed = true;
-                        if (this.has(s, 1, 6) && !s.firstRoot) {
-                            oldHead.members.forEach(x => x.age = Math.min(6, x.age + 1)); s.firstRoot = true;
+                        if (!s.firstRoot) {
+                            oldHead.members.forEach(x => x.age = Math.min(this.ageCap(s, oldHead), x.age + 1));
+                            s.firstRoot = true; this.log(s, "催锋养剑：剑首加一势");
                         }
                     }
                     let kind: ShadowKind = "edge";
@@ -366,7 +381,9 @@ export class ManualTestRules {
                 }
             }
             if (a.move === "wind" && s.outcome === "active") {
-                this.shield(s, this.h(s), "回风式");
+                this.shield(s, this.h(s) * (this.permission(s, "玄壁") ? 1.5 : 1), "回风式");
+                const guards = s.body.filter(x => x.kind === "guard").length;
+                if (guards) this.shield(s, this.h(s) * 0.35 * guards, "守身剑·回澜");
                 if (branch === "recall") {
                     const g = this.find(s.cache, a.target); this.returnGroup(s, g, a);
                     if (this.has(s, 5, 2)) { this.echo(s, g, "echo"); echoed = true; }
@@ -409,16 +426,20 @@ export class ManualTestRules {
                 else {
                     this.damage(s, s.player.attack * 0.5, "引星刺");
                     if (s.outcome !== "active") return { ok: true, state: s };
-                    this.marks(s, 2); this.bodyAttack(s);
+                    this.marks(s, this.permission(s, "星罗") ? 3 : 2); this.bodyAttack(s);
                     if (s.outcome !== "active") return { ok: true, state: s };
-                    if (!s.guideBodyUsed && s.body.some(x => x.kind === "guide")) { this.marks(s, 1); s.guideBodyUsed = true; }
+                    if (!s.guideBodyUsed && s.body.some(x => x.kind === "guide") && oldHead) {
+                        const n = s.body.filter(x => x.kind === "guide").length;
+                        oldHead.members.forEach(x => x.age = Math.min(this.ageCap(s, oldHead), x.age + n));
+                        s.guideBodyUsed = true; this.log(s, `引身剑·养锋：剑首加${n}势`);
+                    }
                     if (branch === "pluck") {
                         const g = this.find(s.sky, a.target);
-                        const ripe = g.members.some(x => this.mature(s, g, x));
+                        const ripe = g.members.find(x => this.mature(s, g, x));
                         this.fallGroups(s, [g], "fall", false);
                         if (ripe && s.outcome === "active") {
-                            newGroup = this.shadow(s, "guide");
-                            this.log(s, "成熟引落：续留引影");
+                            newGroup = this.shadow(s, ripe.kind);
+                            this.log(s, `成熟引落：续留${C.kinds[ripe.kind]}影`);
                         }
                     }
                     else if (branch === "reverse") {
@@ -438,8 +459,6 @@ export class ManualTestRules {
                         newGroup = this.shadow(s, "guide");
                         if (branch === "pinpoint") {
                             const g = this.find(s.sky, a.target);
-                            if (!g.members.some(x => x.kind === "guide" && !this.mature(s, g, x)))
-                                throw new Error("点破须选择含未成熟引影的剑组");
                             s.pinpoint = g.id;
                             s.pinpointAt = a.enemyAction ?? 1;
                             this.log(s, `点破预约敌第${s.pinpointAt}行动`);
@@ -472,16 +491,19 @@ export class ManualTestRules {
             }
             if (s.outcome === "active" && newGroup) s.sky.push(newGroup);
             if (s.outcome === "active") {
-                if (echoed && a.echo !== undefined) throw new Error("本次额外余响已由催锋或回升使用，请取消三才余响选择");
                 if (a.form !== undefined && (!newGroup && a.move !== "wind")) throw new Error("本次行动不允许成阵");
                 this.form(s, a.form);
                 this.overflow(s);
-                if (!echoed && newGroup && s.sky.some(g => g.members.includes(newGroup!.members[0])) && a.echo !== undefined) {
-                    const triad = s.sky.some(g => this.array(g) === "三才") || this.bodyArray(s) === "三才";
-                    if (!triad) throw new Error("尚无三才余响权限");
-                    const g = s.sky.find(g => g.members.some(x => x.id === a.echo));
-                    if (!g) throw new Error("余响目标无效");
-                    this.echo(s, g, "echo", true, this.array(g) === "三才" && this.bodyArray(s) === "三才" ? 120 : 100, a.echo);
+                if (!echoed && newGroup && s.sky.some(g => g.members.includes(newGroup!.members[0])) &&
+                    this.permission(s, "三才")) {
+                    const kind = newGroup.members[0].kind;
+                    const triad = s.sky.find(g => this.array(g) === "三才");
+                    const g = triad || s.sky.find(g => g.members.some(x => x.kind === kind));
+                    const x = g?.members.find(x => x.kind === kind);
+                    if (g && x) {
+                        this.echo(s, g, "echo", true, triad && this.bodyArray(s) === "三才" ? 120 : 100, x.id);
+                        this.log(s, "三才随式余响");
+                    }
                 }
                 s.marks = Math.min(this.markCap(s), Math.max(s.marks, s.body.filter(x => x.kind === "guide").length * 2));
                 if (a.move === "end") s.ap = 0;
@@ -545,6 +567,13 @@ export class ManualTestRules {
         for (let i = 1; i <= 3 && s.outcome === "active"; i++) {
             const intent = s.intentions[i - 1], attacking = intent.kind === "attack";
             let response = 0, reduction = s.cutAt === i ? 25 : 0;
+            let responseKinds: ShadowKind[] = [], interrupted = false;
+            const answer = (g: SwordGroup, manual: boolean): number => {
+                const kinds = g.members.filter(x => manual || !this.mature(s, g, x)).map(x => x.kind);
+                const weight = this.respond(s, g, manual);
+                if (weight) responseKinds = kinds;
+                return weight;
+            };
             const reserved = (g: SwordGroup) =>
                 s.ambush === g.id && i < s.ambushAt || s.pinpoint === g.id && i < s.pinpointAt;
             let post: SwordGroup | undefined;
@@ -566,20 +595,37 @@ export class ManualTestRules {
             }
             if (!response && s.pinpoint !== null && s.pinpointAt === i) {
                 const g = s.sky.find(g => g.id === s.pinpoint);
-                if (g && (response = this.respond(s, g, true))) {
+                if (g && (response = answer(g, true))) {
                     s.pinpoint = null; reduction = Math.max(reduction, this.has(s, 3, 6) ? 30 : 20);
                     this.log(s, `点破：敌第${i}行动削弱${reduction}%`);
                 }
             }
             if (!response && attacking && s.ambush !== null && s.ambushAt === i) {
                 const g = s.sky.find(g => g.id === s.ambush);
-                if (g && (response = this.respond(s, g, true))) s.ambush = null;
+                if (g && (response = answer(g, true))) s.ambush = null;
             }
-            if (!response && this.has(s, 3, 6)) {
-                const g = s.sky.find(g => !reserved(g) && !g.responded && g.members.some(x => !this.mature(s, g, x)));
+            if (!response && this.has(s, 3, 6) && intent.kind !== "wait") {
+                const g = s.sky.find(g => {
+                    const members = g.members.filter(x => !this.mature(s, g, x));
+                    return !reserved(g) && !g.responded && members.length &&
+                        (attacking ? members.some(x => x.kind === "guard") ||
+                            g.members.every(x => x.kind === "edge") : members.some(x => x.kind === "guide"));
+                });
                 if (g) {
                     if (attacking && g.members.every(x => x.kind === "edge")) post = g;
-                    else response = this.respond(s, g, false);
+                    else response = answer(g, false);
+                }
+            }
+            if (responseKinds.length && this.has(s, 3, 6)) {
+                if (attacking && responseKinds.includes("guard")) {
+                    reduction = Math.max(reduction, 20); this.log(s, "守影卸力：当前攻击削弱20%");
+                }
+                if (!attacking && responseKinds.includes("guide")) {
+                    if (intent.kind === "charge") {
+                        interrupted = true; this.log(s, "引影断法：截断本次蓄力");
+                    } else if (intent.kind === "guard" || intent.kind === "heal") {
+                        reduction = Math.max(reduction, 50); this.log(s, "引影断法：架盾／调息削弱50%");
+                    }
                 }
             }
             if (response) this.responseDone(s, i, response);
@@ -604,7 +650,7 @@ export class ManualTestRules {
                 const n = Math.min(s.enemy.maxHp - s.enemy.hp, Math.round(s.enemy.attack * intent.percent / 100 * factor));
                 s.enemy.hp += n; this.log(s, `敌恢复${n}`);
             }
-            if (intent.kind === "charge") s.enemy.charged = true;
+            if (intent.kind === "charge") s.enemy.charged = !interrupted;
             if (!response && s.outcome === "active" && attacking) {
                 const g = post || (this.has(s, 3, 2) ? s.sky.find(g => !reserved(g) && !g.responded &&
                     g.members.every(x => x.kind === "edge") && g.members.some(x => !this.mature(s, g, x))) : undefined);
@@ -649,5 +695,8 @@ export class ManualTestRules {
             s.ap < 0 || s.ap > 3 || s.energy < 0 || s.energy > (this.has(s, 4, 6) ? 9 : 6) ||
             !Number.isInteger(s.orbit) || s.orbit < 0 || s.orbit > C.orbitNeed)
             throw new Error("战斗资源异常");
+        if (shadows.some(x => !Number.isInteger(x.age) || x.age < 0 || x.age > 6 ||
+            !Number.isInteger(x.returnedRound) || x.returnedRound < 0 || x.returnedRound > s.round))
+            throw new Error("剑影养势或回升轮次异常");
     }
 }

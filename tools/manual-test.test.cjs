@@ -19,7 +19,7 @@ function act(s, move, options = {}) {
 function put(s, kinds, age = 0, where = "sky") {
     const members = [...kinds].map(k => ({
         id: s.nextId++, kind: ({ e: "edge", g: "guard", i: "guide" })[k],
-        age, cycles: 0, cycledRound: 0,
+        age, returnedRound: 0,
     }));
     const g = { id: members[0].id, members, responded: false };
     s[where].push(g); return g;
@@ -97,8 +97,8 @@ test("second response prepares reduction for third enemy action, not second", ()
     s = act(s, "end");
     assert.ok(s.logs.some(l => /敌行动3.*截招/.test(l)));
     assert.ok(!s.logs.some(l => /敌行动2.*截招/.test(l)));
-    assert.equal(s.logs.filter(l => /应剑$/.test(l)).length, 3);
-    assert.equal(s.totals.taken, 80 + 80 + 105);
+    assert.equal(s.logs.filter(l => /应剑$/.test(l)).length, 2);
+    assert.equal(s.totals.taken, 64 + 64 + 105);
 });
 test("mature groups do not auto respond; paid ambush can use mature group", () => {
     let s = start(3, 6, "assault"); put(s, "g", 6); put(s, "e", 3); put(s, "i", 3);
@@ -132,44 +132,44 @@ test("absorption pays entry effect and yuan, not a cache copy; release spends po
 });
 function putBody(s, kinds) {
     const members = [...kinds].map(k => ({
-        id: s.nextId++, kind: ({ e: "edge", g: "guard", i: "guide" })[k], age: 3, cycles: 0, cycledRound: 0,
+        id: s.nextId++, kind: ({ e: "edge", g: "guard", i: "guide" })[k], age: 3, returnedRound: 0,
     })); return members;
 }
-test("full sky does not auto-return/overflow; cached identity survives; one cycle per round", () => {
+test("full sky does not auto-return/overflow; cached identity survives; one progress per round", () => {
     let s = start(5, 6); for (let i = 0; i < 6; i++) put(s, "e", 3);
     const cached = put(s, "g", 3, "cache");
     s = act(s, "end"); assert.ok(s.cache.some(g => g.id === cached.id)); assert.equal(R.used(s.sky), 6);
     s = act(s, "guide", { branch: "pluck", target: s.sky[1].id });
     const replacement = s.sky[1].id;
     s = act(s, "wind", { branch: "recall", target: cached.id, other: replacement });
-    const returned = s.sky.find(g => g.id === cached.id); assert.equal(returned.members[0].cycles, 1); assert.equal(returned.members[0].age, 1);
+    const returned = s.sky.find(g => g.id === cached.id); assert.equal(returned.members[0].returnedRound, s.round); assert.equal(returned.members[0].age, 1);
     s = act(s, "guide", { branch: "pluck", target: cached.id });
     // A new round was begun by the third AP, so repeat within a separately controlled round.
     s.ap = 3;
     if (s.cache.some(g => g.id === cached.id)) {
-        const cycle = s.cache.find(g => g.id === cached.id).members[0].cycles;
+        const orbit = s.orbit;
         s = act(s, "wind", { branch: "recall", target: cached.id, other: s.sky[1]?.id });
-        assert.ok(s.sky.find(g => g.id === cached.id).members[0].cycles <= cycle + 1);
+        assert.ok(s.orbit <= orbit + 1);
     }
     R.validateState(s);
 });
-test("finisher is optional, once per battle; no clones, yuan or cycles generated", () => {
-    let s = start(5, 6); for (let i = 0; i < 6; i++) { const g = put(s, "e", 3); g.members[0].cycles = 3; }
+test("finisher is optional, once per battle; no clones, yuan or return progress generated", () => {
+    let s = start(5, 6); for (let i = 0; i < 6; i++) put(s, "e", 3);
     s.energy = 6; s.orbit = C.orbitNeed; const ids = s.sky.map(g => g.id), next = s.nextId;
     s = act(s, "fall", { branch: "finish" });
     assert.deepEqual(s.sky.map(g => g.id), ids); assert.equal(s.energy, 6); assert.equal(s.nextId, next);
-    assert.equal(s.finisherUsed, true); assert.equal(s.sky[0].members[0].cycles, 3);
+    assert.equal(s.finisherUsed, true); assert.equal(s.sky[0].members[0].returnedRound, 0);
     assert.equal(R.resolve(s, { move: "fall", branch: "finish", keep: false }).ok, false);
 });
-test("same-round re-return cannot duplicate cycles; reverse replay is not a second fall", () => {
+test("same-round re-return cannot duplicate progress; reverse replay is not a second fall", () => {
     let s = start(5, 6); const g = put(s, "e", 3, "cache");
     s = act(s, "wind", { branch: "recall", target: g.id });
-    assert.equal(s.sky.find(x => x.id === g.id).members[0].cycles, 1);
+    assert.equal(s.sky.find(x => x.id === g.id).members[0].returnedRound, s.round);
     s = act(s, "guide", { branch: "pluck", target: g.id });
-    assert.equal(s.cache.find(x => x.id === g.id).members[0].cycles, 1);
+    assert.equal(s.cache.find(x => x.id === g.id).members[0].returnedRound, s.round);
     s.ap = 3; s.energy = C.reverseEnergy;
     s = act(s, "guide", { branch: "reverse", target: g.id });
-    assert.equal(s.sky.find(x => x.id === g.id).members[0].cycles, 1);
+    assert.equal(s.sky.find(x => x.id === g.id).members[0].returnedRound, s.round);
     assert.equal(s.sky.filter(x => x.id === g.id).length, 1);
     assert.equal(s.orbit, 1, "same-round return cannot farm finisher charge");
 });
@@ -177,8 +177,8 @@ test("batch maturity and qi-luo are snapshot values, not affected by falling hea
     let s = start(2, 4); put(s, "e", 6); put(s, "e", 3);
     const before = s.totals.damage;
     s = act(s, "fall");
-    // root 60+60+30, side 60+30+30; one +10% connected-type bonus.
-    assert.equal(s.totals.damage - before, 165 + 132);
+    // Mature root liberation doubles only the root; batch adjacency applies once.
+    assert.equal(s.totals.damage - before, 330 + 132);
 });
 test("point-break requires an immature guide member; it wins priority over ambush", () => {
     let s = start(3, 6, "assault"); const g = put(s, "egi", 3); g.members[0].age = 0;
@@ -242,10 +242,10 @@ test("first reorder echoes immediately once; later reorder cannot duplicate its 
     s = act(s, "wind", { branch: "reorder", target: root.id });
     assert.equal(s.logs.filter(l => l.includes("移剑余响")).length, 1);
 });
-test("mature pluck renews a guide shadow; young pluck does not", () => {
+test("mature pluck renews the harvested type; young pluck does not", () => {
     let s = start(1, 5); const ripe = put(s, "e", 3), young = put(s, "e", 1);
     s = act(s, "guide", { branch: "pluck", target: ripe.id });
-    assert.equal(s.sky.at(-1).members[0].kind, "guide");
+    assert.equal(s.sky.at(-1).members[0].kind, "edge");
     assert.equal(s.sky.at(-1).members[0].age, 0);
     const next = s.nextId; s = act(s, "guide", { branch: "pluck", target: young.id });
     assert.equal(s.nextId, next);
@@ -289,7 +289,7 @@ test("reverse spends four shared yuan, is once per turn, and failures are atomic
     let r = R.resolve(s, { move: "guide", branch: "reverse", target: g.id, keep: false });
     assert.equal(r.ok, false); assert.deepEqual(r.state, s);
     s.energy = 9; s = act(s, "guide", { branch: "reverse", target: g.id });
-    assert.equal(s.energy, 5); assert.equal(s.reverseUsed, true); assert.equal(s.orbit, 3);
+    assert.equal(s.energy, 6); assert.equal(s.reverseUsed, true); assert.equal(s.orbit, 3);
     s = act(s, "guide", { branch: "pluck", target: g.id });
     const before = R.clone(s);
     r = R.resolve(s, { move: "guide", branch: "reverse", target: g.id, keep: false });
@@ -324,14 +324,14 @@ test("one array response advances cut by two, without duplicating echo or respon
     assert.equal(s.totals.taken, 80 + 60 + 140);
     assert.equal(s.energy, 1);
 });
-test("finisher uses normal accumulated charge and cache without full sky or three cycles", () => {
+test("finisher uses normal accumulated charge and cache without full sky", () => {
     let s = start(5, 6); const g = put(s, "eee", 0, "cache");
     s.orbit = C.orbitNeed; const before = R.clone(s.cache);
     assert.equal(R.finisherReady(s), true);
     s = act(s, "fall", { branch: "finish" });
     assert.equal(s.totals.damage, 662); assert.deepEqual(s.cache, before);
     assert.equal(s.sky.length, 0); assert.equal(s.orbit, 0); assert.equal(s.energy, 0);
-    assert.equal(s.finisherUsed, true); assert.equal(g.members[0].cycles, 0);
+    assert.equal(s.finisherUsed, true); assert.equal(g.members[0].returnedRound, 0);
 });
 test("finisher rejects insufficient charge or participants without spending AP or mana", () => {
     let s = start(5, 6); put(s, "eee", 0, "cache"); s.orbit = 11;
@@ -341,7 +341,7 @@ test("finisher rejects insufficient charge or participants without spending AP o
     r = R.resolve(s, { move: "fall", branch: "finish", keep: false });
     assert.equal(r.ok, false); assert.deepEqual(r.state, s);
 });
-test("natural two-return loop unlocks finisher without injected shadow, age, cycle or charge", () => {
+test("natural two-return loop unlocks finisher without injected shadow, age or charge", () => {
     let s = start(5, 6);
     for (let i = 0; i < 6; i++) s = act(s, "edge");
     assert.equal(s.round, 3); assert.equal(s.orbit, 0);
@@ -349,16 +349,18 @@ test("natural two-return loop unlocks finisher without injected shadow, age, cyc
         s = act(s, "basic"); s = act(s, "basic"); s = act(s, "fall");
     }
     assert.equal(s.round, 5); assert.equal(s.orbit, C.orbitNeed);
-    assert.ok(s.sky.every(g => g.members.every(x => x.cycles === 2)));
+    assert.ok(s.sky.every(g => g.members.every(x => x.returnedRound === 5)));
     assert.equal(R.finisherReady(s), true);
     s = act(s, "fall", { branch: "finish" });
     assert.equal(s.finisherUsed, true); R.validateState(s);
 });
-test("reorder, swap and triad share an echo budget and reject conflicts atomically", () => {
-    const s = start(3, 6); put(s, "egi"); const edge = put(s, "e");
-    const r = R.resolve(s, { move: "wind", branch: "reorder", target: edge.id,
-        echo: edge.members[0].id, keep: false });
-    assert.equal(r.ok, false); assert.deepEqual(r.state, s);
+test("automatic triad echo shares paid-action budget with first reorder and urge", () => {
+    let s = start(3, 6); put(s, "egi"); const edge = put(s, "e");
+    s = act(s, "wind", { branch: "reorder", target: edge.id });
+    assert.equal(s.logs.filter(l => l.includes("移剑余响")).length, 1);
+    assert.equal(s.logs.filter(l => l.includes("三才随式余响")).length, 0);
+    s = act(s, "edge", { branch: "urge" });
+    assert.equal(s.logs.filter(l => l.includes("三才随式余响")).length, 0);
 });
 test("killing hits cannot resurrect or overspend resources in later derived operations", () => {
     let s = start(5, 6); const g = put(s, "eee", 0, "cache"); s.energy = 4; s.enemy.hp = 1;
@@ -376,6 +378,123 @@ test("changing draft never hot-changes active setup; invalid drafts retain previ
     m.draft.star = 5; m.draft.rank = 6; m.draft.player.attack = 999;
     assert.deepEqual(m.state, before);
     m.draft.player.hp = NaN; assert.equal(m.start(), false); assert.deepEqual(m.state, before);
+});
+test("first-star urge advances age once, providing an early multi-round harvest loop", () => {
+    let s = start(1, 1); const root = put(s, "e");
+    s = act(s, "edge", { branch: "urge" });
+    assert.equal(s.sky[0].members[0].age, 1);
+    s = act(s, "edge", { branch: "urge" });
+    assert.equal(s.sky[0].members[0].age, 1);
+    s = act(s, "end");
+    assert.equal(s.sky.find(g => g.id === root.id).members[0].age, 2);
+    s = act(s, "edge", { branch: "urge" });
+    assert.equal(s.logs.filter(l => l.includes("催锋养剑")).length, 2);
+    assert.ok(s.logs.some(l => l.includes(`#${root.id}挤落`)), "no root protection before rank six");
+});
+test("mature root harvest doubles only the actual root, not young roots or side shadows", () => {
+    let s = start(1, 6); put(s, "e", 6); put(s, "e", 3);
+    s = act(s, "fall"); assert.equal(s.totals.damage, 300 + 120);
+    assert.equal(s.logs.filter(l => l.includes("本命解放")).length, 1);
+    s = start(1, 6); put(s, "e", 5); s = act(s, "fall");
+    assert.equal(s.totals.damage, 110);
+    s = start(1, 6); put(s, "g", 6); s = act(s, "fall");
+    assert.equal(s.player.shield, 3 * R.h(s));
+    s = start(1, 6); put(s, "i", 6); s = act(s, "fall");
+    assert.equal(s.totals.damage, 240); assert.ok(s.logs.some(l => l.includes("剑痕 2层")));
+});
+test("mature harvest renews every type without copying the original identity or age", () => {
+    for (const [kind, type] of [["e", "edge"], ["g", "guard"], ["i", "guide"]]) {
+        let s = start(1, 5); const g = put(s, kind, 3);
+        s = act(s, "guide", { branch: "pluck", target: g.id });
+        assert.equal(s.sky.length, 1); assert.notEqual(s.sky[0].id, g.id);
+        assert.equal(s.sky[0].members[0].kind, type); assert.equal(s.sky[0].members[0].age, 0);
+    }
+});
+test("formation pays immediate resonance and each pure array changes its own active", () => {
+    let s = start(2, 6); const first = put(s, "e"); put(s, "e");
+    s = act(s, "edge", { form: first.id });
+    assert.equal(s.logs.filter(l => l.includes("阵鸣")).length, 3);
+    assert.ok(s.totals.damage > 100);
+    s.enemy.shield = 1000; const before = s.totals.damage;
+    s = act(s, "edge"); assert.equal(s.totals.damage - before, 50);
+    s = start(2, 6); put(s, "ggg"); s = act(s, "wind");
+    assert.equal(s.player.shield, Math.round(1.5 * R.h(s)));
+    s = start(2, 6); put(s, "iii"); s = act(s, "guide");
+    assert.equal(s.marks, 3); assert.equal(R.markCap(s), 8);
+});
+test("triad follows the new shadow type automatically with no extra target choice", () => {
+    let s = start(2, 6); put(s, "egi");
+    s = act(s, "edge");
+    assert.equal(s.totals.damage, 115);
+    assert.equal(s.logs.filter(l => l.includes("三才随式余响")).length, 1);
+    s = act(s, "wind");
+    assert.equal(s.logs.filter(l => l.includes("三才随式余响")).length, 2);
+});
+test("guide reads charge and cancels next-round charged heavy; wrong edge does not", () => {
+    let s = start(3, 6, "burst"); put(s, "i");
+    s = act(s, "end");
+    assert.equal(s.enemy.charged, false); assert.equal(s.intentions[2].percent, 220);
+    assert.ok(s.logs.some(l => l.includes("截断本次蓄力")));
+    s = start(3, 6, "burst"); put(s, "e");
+    s = act(s, "end");
+    assert.equal(s.enemy.charged, true); assert.equal(s.intentions[2].percent, 330);
+});
+test("automatic responses do not farm wait actions; guide halves shield and healing", () => {
+    let s = start(3, 6); put(s, "egi"); s = act(s, "end");
+    assert.equal(s.logs.filter(l => /应剑$/.test(l)).length, 0);
+    s = start(3, 6, "defensive"); s.player.defense = 0; s.enemy.hp -= 1000;
+    put(s, "i"); put(s, "i"); s = act(s, "end");
+    assert.equal(s.enemy.shield, 20);
+    assert.equal(s.logs.filter(l => l.includes("架盾／调息削弱50%")).length, 2);
+    assert.ok(s.logs.some(l => l.includes("敌恢复30")));
+});
+test("body types change sustainable basic, wind defense and guide cultivation", () => {
+    let s = start(4, 1); s.body = putBody(s, "e");
+    s = act(s, "basic");
+    assert.equal(s.totals.damage, 135); assert.equal(s.player.mp, 100000);
+    s = start(4, 1); s.body = putBody(s, "g");
+    s = act(s, "wind"); assert.equal(s.player.shield, R.h(s) + Math.round(0.35 * R.h(s)));
+    s = start(4, 1); s.body = putBody(s, "i"); put(s, "e");
+    s = act(s, "guide"); assert.equal(s.sky[0].members[0].age, 1);
+    s = act(s, "guide"); assert.equal(s.sky[0].members[0].age, 1);
+});
+test("fifth-star rank four shares one return progress and bounded yuan pool", () => {
+    let s = start(5, 4); const group = put(s, "eee", 3, "cache");
+    s = act(s, "wind", { branch: "recall", target: group.id });
+    assert.equal(s.orbit, 3); assert.equal(s.energy, 1);
+    assert.ok(s.sky[0].members.every(x => x.returnedRound === s.round && !("cycles" in x)));
+    s = act(s, "guide", { branch: "pluck", target: group.id });
+    assert.equal(s.energy, 2);
+    s.ap = 3;
+    s = act(s, "wind", { branch: "recall", target: group.id });
+    assert.equal(s.orbit, 3); assert.equal(s.energy, 2);
+    s = act(s, "end");
+    s = act(s, "guide", { branch: "pluck", target: group.id });
+    s = act(s, "wind", { branch: "recall", target: group.id });
+    assert.equal(s.orbit, 6); assert.ok(s.energy <= 4);
+});
+test("formation kill stops later effects and future return timestamps are rejected", () => {
+    let s = start(2, 6); const g = put(s, "e"); put(s, "e"); s.enemy.hp = 105;
+    s = act(s, "edge", { form: g.id });
+    assert.equal(s.outcome, "victory"); assert.equal(s.sky.length, 0); assert.equal(s.energy, 0);
+    s = start(5, 6); put(s, "e").members[0].returnedRound = 2;
+    assert.throws(() => R.validateState(s), /回升轮次/);
+});
+test("mature array members cannot grant free response roles through younger members", () => {
+    let s = start(3, 6, "burst"); put(s, "e", 6); const g = put(s, "egi", 3);
+    g.members[0].age = 0;
+    s = act(s, "end");
+    assert.equal(s.enemy.charged, true);
+    assert.ok(!s.logs.some(l => l.includes("引影断法")));
+    assert.ok(!s.logs.some(l => l.includes("守影卸力")));
+});
+test("paid pinpoint remains valid when guide body matures its target during the cast", () => {
+    let s = start(4, 6, "burst"); put(s, "i", 5); s.body = putBody(s, "i");
+    s = act(s, "guide", { branch: "pinpoint", target: s.sky[0].id, enemyAction: 1 });
+    assert.equal(s.sky[0].members[0].age, 6);
+    s = act(s, "end");
+    assert.equal(s.enemy.charged, false);
+    assert.ok(s.logs.some(l => l.includes("截断本次蓄力")));
 });
 test("victory/defeat clear combat-only resources and block new actions", () => {
     let s = start(5, 6); s.enemy.hp = 1; put(s, "e"); s = act(s, "edge");
