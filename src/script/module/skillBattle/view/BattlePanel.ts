@@ -73,7 +73,9 @@ export class BattlePanel {
         if(screen==="battle")for(const key of ["qFall","qEnd","qIntent1","qIntent2","qIntent3"]) {
             const button=new Laya.GWidget();button.name=key;button.mouseEnabled=true;
             const label=new Laya.GTextField();label.font="Microsoft YaHei";label.mouseEnabled=false;
-            button.addChild(label);this.root.addChild(button);
+            button.addChild(label);
+            const parent=key.startsWith("qIntent")?this.elements.intent.parent:this.buttons.skill1.parent;
+            parent.addChild(button);
             this.buttons[key]=this.elements[key]=button;
             button.on(Laya.Event.CLICK,this,()=>this.command(key));
         }

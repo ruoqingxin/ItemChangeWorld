@@ -26,8 +26,8 @@ async function shot(p,name){
         for(const [key,n]of Object.entries({...panel.labels,...panel.nodes,...panel.expeditionNodes,...panel.buttons})){
             let visible=n.visible;for(let a=n.parent;a;a=a.parent)visible=visible&&a.visible;
             if(!visible)continue;
-            const child=n.numChildren?n.getChildAt(0):null;
-            const t=n instanceof Laya.GTextField?n:child instanceof Laya.GTextField?child:null;
+            let t=n instanceof Laya.GTextField?n:null;
+            for(let i=0;!t&&i<n.numChildren;i++)if(n.getChildAt(i) instanceof Laya.GTextField)t=n.getChildAt(i);
             if(!t?.text)continue;t.textIns.typeset(true);
             if(t.textIns.textWidth>t.width+3||t.textIns.textHeight>t.height+3)
                 issues.push([key,t.text,t.width,t.height,t.textIns.textWidth,t.textIns.textHeight]);
@@ -107,15 +107,24 @@ async function fight(p,limit=100){
             assert.equal(await p.evaluate(()=>!!window.__skillBattlePreview.panel.expeditionNodes?.expeditionRoot?.visible),true);
             // Continue the actual map route, using only its real rewards and carried supplies.
             const target=name==="desktop"?12:3;
+            let sideRoute=false;
             while((await state(p)).phase==="active"&&(await state(p)).flow.battles.length<target){
                 const s=await state(p),main=s.map.nodes.filter(n=>n.mainOrder>=0).sort((a,b)=>a.mainOrder-b.mainOrder);
-                const next=main.find(n=>n.mainOrder>s.map.nodes.find(v=>v.id===s.node).mainOrder);
+                let next=main.find(n=>n.mainOrder>s.map.nodes.find(v=>v.id===s.node).mainOrder);
+                if(!next||sideRoute){
+                    sideRoute=true;
+                    const queue=[s.node],distance=new Map([[s.node,0]]);
+                    for(const last of queue)for(const [a,b]of s.map.edges){
+                        const n=a===last?b:b===last?a:null;if(n&&!distance.has(n)){distance.set(n,distance.get(last)+1);queue.push(n);}}
+                    next=s.map.nodes.filter(n=>n.enemy&&!s.map.cleared.includes(n.id)&&n.kind!=="boss")
+                        .sort((a,b)=>distance.get(a.id)-distance.get(b.id))[0];
+                }
                 if(!next)break;
                 const arrived=await walk(p,next.id),fresh=await state(p);
                 if(fresh.phase!=="active")break;
                 const n=fresh.map.nodes.find(n=>n.id===arrived);
                 if(n.enemy&&!fresh.map.cleared.includes(n.id)){
-                    if(fresh.stamina<(n.kind==="boss"?60:n.kind==="elite"?40:30))break;
+                    if(fresh.stamina<(n.kind==="boss"?60:n.kind==="elite"?30:10))break;
                     await click(p,"expUse");await fight(p);
                     if((await state(p)).phase==="active")await claim(p);
                 }else if(["borrow","insight","recovery"].includes(n.kind)&&!fresh.map.used.includes(n.id)){
