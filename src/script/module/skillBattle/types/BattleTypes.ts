@@ -1,3 +1,9 @@
+import type { RogueEnemyId, RogueLoadout, RogueMove, RogueState } from "./QingmingTypes";
+
+export interface QingmingBattleSetup {
+    enemyId: RogueEnemyId; enemyMp: number; enemyAttack: number; enemyDefense: number; seed: number;
+    loadout: RogueLoadout;
+}
 export type NewBattlePhase = "player_input" | "victory" | "defeat";
 export type NewSwordSkill = "dianxing" | "liejia" | "huilan" | "liuhen" | "ningfeng";
 export type NewSwordPassive = "chuzhao" | "xifeng" | "difeng" | "bengjia" | "lianmang" | "guanxi";
@@ -7,6 +13,7 @@ export type NewPassiveKind = NewSwordPassive | "houlei" | "lifeng" | "yingxian" 
 export type NewBattleAction =
     | { type: "basic" | "guard" }
     | { type: "skill"; skillId: number }
+    | { type: "qingming"; move: RogueMove; enemyAction?: number }
     | { type: "potion"; itemUid: string };
 export interface NewBattleToken { battleId: string; revision: number; }
 export interface NewBattleItem { itemUid: string; itemId: number; }
@@ -21,6 +28,7 @@ export interface NewBattleSkill {
 export interface NewBattlePassive { id: number; name: string; kind: NewPassiveKind; value: number; school?: string; }
 export interface NewBattleIntent { id: number; name: string; damage: number; block: number; charging: boolean; }
 export interface NewBattleSetup {
+    qingming?: QingmingBattleSetup;
     rulesId: string;
     earthRules?: { powerPercent: number; lowHpPercent: number };
     player: { maxHp: number; maxMp: number; baseAttack: number; baseDefense: number };
@@ -35,6 +43,7 @@ export interface NewBattleCarry {
     hp: number; mp: number; weapon: NewBattleWeapon | null; pouch: Array<NewBattleItem | null>;
 }
 export interface NewBattleState {
+    qingming?: RogueState;
     version: 1;
     battleId: string;
     phase: NewBattlePhase;

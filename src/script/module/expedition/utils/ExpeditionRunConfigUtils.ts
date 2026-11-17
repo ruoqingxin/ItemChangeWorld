@@ -3,12 +3,26 @@ import { InventoryConfigUtils } from "../../inventory/utils/InventoryConfigUtils
 import { BuildConfigUtils } from "../../build/utils/BuildConfigUtils";
 import { ExpeditionRules } from "./ExpeditionRules";
 import type { ExpeditionConfig } from "../types/ExpeditionRunTypes";
+import type { RogueEnemyId } from "../../skillBattle/types/QingmingTypes";
 
 export class ExpeditionRunConfigUtils {
     static read(tables: Tables): ExpeditionConfig {
         const base = InventoryConfigUtils.read(tables), r = tables.new_expedition_rule.get(1);
         if (!r) throw new Error("正式地图规则表缺失");
         base.build.setup.rulesId = r.map_version;
+        const value = (id: string): number => {
+            const row = tables.new_qingming_rule.get(id);
+            if (!row || !Number.isSafeInteger(row.value) || row.value < 0) throw new Error(`整数战斗规则缺失：${id}`);
+            return row.value;
+        };
+        if (value("version") !== 1) throw new Error("整数战斗版本不受支持");
+        base.build.setup.player = { maxHp:value("player_hp"), maxMp:value("player_mp"),
+            baseAttack:value("base_attack"), baseDefense:value("base_defense") };
+        if (base.build.setup.weapon) Object.assign(base.build.setup.weapon,
+            {attack:value("weapon_attack"),defense:value("weapon_defense")});
+        base.build.setup.potions.forEach(p => p.amount = value(p.resource === "hp" ? "hp_potion" : "mp_potion"));
+        base.build.qingming = {version:r.map_version,battleRewards:value("battle_rewards"),
+            enemy:{hp:value("enemy_hp"),mp:value("enemy_mp"),attack:value("enemy_attack"),defense:value("enemy_defense")}};
         const nodes = tables.new_expedition_node.getDataList().map(n => ({
             id: n.id, key: n.key, kind: n.kind, name: n.name, enemy: n.enemy, pool: n.pool,
             mainOrder: n.main_order, x: n.x, y: n.y,
@@ -19,7 +33,8 @@ export class ExpeditionRunConfigUtils {
         base.build.encounters = nodes.filter(n => n.enemy).map(n => {
             const e = enemies.find(e => e.id === n.enemy);
             if (!e) throw new Error("节点敌人配置缺失");
-            return { id: `battle:${n.key}`, elite: n.kind !== "normal", borrow: false, daoyun: e.daoyun,
+            const qingmingEnemy: RogueEnemyId = n.kind === "boss" ? "tortoise" : n.kind === "elite" ? "gatekeeper" : "patrol";
+            return { id: `battle:${n.key}`, elite: n.kind !== "normal", borrow: false, daoyun: 0, qingmingEnemy,
                 enemy: { id: enemies.indexOf(e)+1, name: e.name, maxHp: e.hp*100,
                     intents: tables.new_expedition_intent.getDataList().filter(i => i.enemy === e.id)
                         .sort((a,b) => a.order-b.order).map(i => ({

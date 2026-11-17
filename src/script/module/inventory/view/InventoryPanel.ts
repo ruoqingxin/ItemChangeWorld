@@ -493,7 +493,7 @@ export class InventoryPanel extends BuildPanel {
         this.control("invNext",">",this.inventoryPage + 1 < pages);
         this.label("invPage",`${list.length} 件 · ${this.inventoryPage + 1}/${pages}`,17,"#b9c9cf");
         const selected = actual!.items.find(i => i.uid === this.uid);
-        let detail = selected ? this.describeItem(selected) : `生命 ${Core.format(state.hp)} / ${Core.format(save.config.build.setup.player.maxHp)}\n灵力 ${Core.format(state.mp)} / ${Core.format(save.config.build.setup.player.maxMp)}`;
+        let detail = selected ? this.describeItem(selected) : `生命 ${this.format(state.hp)} / ${this.format(save.config.build.setup.player.maxHp)}\n灵力 ${this.format(state.mp)} / ${this.format(save.config.build.setup.player.maxMp)}`;
         if(!selected && state.stamina!==undefined)detail+=`\n体力 ${state.stamina} / ${save.config.staminaMax}`;
         if (this.draft?.type === "extract") detail = "确认撤离\n仅带回当前携带物，来源仓库内物品不带出。";
         else if (this.draft?.type === "abandon") detail = "确认放弃\n只保留归真匣，所有携带装备及其他内容损失。";

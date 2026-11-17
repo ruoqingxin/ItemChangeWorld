@@ -4,6 +4,8 @@ import { InventoryRules as Inventory } from "../../inventory/utils/InventoryRule
 import type { NewBattleResult } from "../../skillBattle/types/BattleTypes";
 import type { NewBuildProfile } from "../../build/types/BuildTypes";
 import type { ExpeditionCommand, ExpeditionConfig, ExpeditionNode, ExpeditionSource, ExpeditionState } from "../types/ExpeditionRunTypes";
+import { GuzongEnemyRules } from "../../skillBattle/utils/GuzongEnemyRules";
+import type { RogueEnemyId } from "../../skillBattle/types/QingmingTypes";
 
 /** Source-keyed streams keep map placement, construction and each box independent. */
 class Random {
@@ -523,14 +525,17 @@ export class ExpeditionRules {
         s.hp=Math.max(0,s.hp-Math.round(c.build.setup.player.maxHp*hpPercent/100));
         if(s.hp>0)return true;
         s.flow!.phase="ended";s.flow!.endReason="defeat";s.flow!.pending=null;
+        if(c.build.qingming) {
+            delete s.flow!.qingming;s.flow!.build={schools:[],actives:[],passiveIds:[]};
+        }
         Inventory.settle(s,"defeat");return false;
     }
     private static battleConfig(c: ExpeditionConfig,s: ExpeditionState) {
-        if(s.map.generatorVersion!==4)return c.build;
+        if(s.map.generatorVersion!==4 && !c.build.qingming)return c.build;
         return {...c.build,encounters:s.map.nodes.filter(n=>n.enemy).map(n=>{
             const template=c.build.encounters.find(e=>e.id===`battle:${n.encounterKey}`);
             if(!template)throw new Error("地图敌人模板不存在");
-            return {...template,id:`battle:${n.key}`};
+            return {...template,id:`battle:${n.key}`,...(c.build.qingming?{qingmingEnemy:n.qingmingEnemy}:{})};
         })};
     }
     static apply(c: ExpeditionConfig, p: NewBuildProfile, snapshot: ExpeditionState,
@@ -564,6 +569,15 @@ export class ExpeditionRules {
                 s.flow = Build.start(c.build,p,seed,s.runId);
                 s.phase = "active"; s.enteredAt = at; s.deadlineAt = at + c.rules.limitMs;
                 this.generateMap(c,s,seed);
+                if(c.build.qingming) {
+                    const ids=Object.keys(GuzongEnemyRules.enemies) as RogueEnemyId[];
+                    for(const n of s.map.nodes.filter(n=>n.enemy)) {
+                        const tier=n.kind==="boss"?"首领":n.kind==="elite"?"精英":"普通";
+                        const pool=ids.filter(k=>GuzongEnemyRules.enemies[k].tier===tier);
+                        n.qingmingEnemy=pool[new Random(seed,`qingming-enemy:${n.key}`).below(pool.length)];
+                        n.name=GuzongEnemyRules.enemies[n.qingmingEnemy].name;
+                    }
+                }
                 break;
             case "travel": {
                 ready();

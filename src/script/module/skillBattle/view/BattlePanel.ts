@@ -11,12 +11,15 @@ import { SkillBattleReportView } from "./SkillBattleReportView";
 import { SkillBattleBuildInfoView } from "../../build/view/SkillBattleBuildInfoView";
 import { placeInDesign, visitRegion } from "../../gameplay/utils/GameplayLayout";
 import type { SkillBattlePage } from "../../gameplay/utils/GameplayLayout";
+import { QingmingConfig as QC } from "../utils/QingmingConfig";
+import { QingmingRules as QR } from "../utils/QingmingRules";
+import { GuzongEnemyRules as QE } from "../utils/GuzongEnemyRules";
+import type { RogueMove } from "../types/QingmingTypes";
 
 type Screen = "start" | "battle" | "settlement";
 export type NewBattlePanelSession = Pick<BattleTrialManager, "error" | "outcome" | "state" | "record" |
     "remainingMs" | "expire" | "preview" | "confirm" | "resetConfirmed"> &
-    { readonly snapshot: unknown; readonly records: NewTrialRecord[] };
-const f = (n: number) => BattleRules.format(n);
+    { readonly snapshot: unknown; readonly records: NewTrialRecord[]; readonly integerResources?: boolean };
 const colors = { text: "#ecefe7", muted: "#bac3b6", gold: "#e3c98c", jade: "#a1d7ba",
     red: "#efa797", blue: "#9ec9ec", fill: "#1c2924", line: "#7a8876" };
 
@@ -39,6 +42,9 @@ export class BattlePanel {
     protected elements: { [key: string]: Laya.GWidget } = {};
     protected modalOpen = false;
     private popup: UIBaseView;
+    private guideTarget = 1;
+    private readonly qMoves: RogueMove[] = ["basic","guard","edge","wind","guide","fall","end"];
+    private readonly qKeys = ["skill1","skill2","skill3","skill4","upgrade0","qFall","qEnd"];
     constructor(view: UIBaseView, readonly session: NewBattlePanelSession, readonly options: NewTrialOptions,
         protected readonly navigate: (screen: SkillBattlePage) => void, readonly screen: Screen,
         readonly pageRole: SkillBattlePage = screen) {
@@ -63,6 +69,13 @@ export class BattlePanel {
             const button = view.getElement<Laya.GWidget>(key, false);
             if (!button) throw new Error(`预制按钮未绑定：${key}`);
             button.on(Laya.Event.CLICK, this, () => this.command(key));
+        }
+        if(screen==="battle")for(const key of ["qFall","qEnd","qIntent1","qIntent2","qIntent3"]) {
+            const button=new Laya.GWidget();button.name=key;button.mouseEnabled=true;
+            const label=new Laya.GTextField();label.font="Microsoft YaHei";label.mouseEnabled=false;
+            button.addChild(label);this.root.addChild(button);
+            this.buttons[key]=this.elements[key]=button;
+            button.on(Laya.Event.CLICK,this,()=>this.command(key));
         }
         const resizeBackdrop = () => {
             if (this.elements.result?.visible) this.backdrop();
@@ -122,6 +135,9 @@ export class BattlePanel {
         }
         if (this.opened && refresh) this.refresh();
     }
+    protected format(n: number): string {
+        return this.session.integerResources || this.session.record?.setup.qingming ? String(n) : BattleRules.format(n);
+    }
     protected command(key: string): void {
         if (this.modalOpen) return;
         this.run(() => {
@@ -143,6 +159,17 @@ export class BattlePanel {
             if (this.screen !== "battle") return;
             if (key === "cancel") { this.selected = null; this.selection = null; this.notice = ""; return; }
             if (key === "confirm") { this.confirm(); return; }
+            if(this.session.record?.setup.qingming) {
+                if(/^qIntent[1-3]$/.test(key)) {
+                    this.guideTarget=Number(key.slice(-1));
+                    this.select({type:"qingming",move:"guide",enemyAction:this.guideTarget});return;
+                }
+                const i=this.qKeys.indexOf(key);
+                if(i>=0) {
+                    const move=this.qMoves[i];
+                    this.select({type:"qingming",move,...(move==="guide"?{enemyAction:this.guideTarget}:{})});return;
+                }
+            }
             const keys = ["skill1", "skill2", "skill3", "skill4", "upgrade0"];
             const index = keys.indexOf(key);
             if (index >= 0) {
@@ -203,6 +230,7 @@ export class BattlePanel {
         this.refresh(); this.playNext();
     }
     private playNext(): void {
+        const f=(n:number)=>this.format(n);
         if (!this.opened) return;
         const event = this.queue.shift();
         if (!event) {
@@ -246,10 +274,18 @@ export class BattlePanel {
         button.graphics.clear();
         button.graphics.drawRect(0, 0, w, h, selected ? "#314e3e" : colors.fill,
             selected ? colors.gold : colors.line, selected ? 2 : 1);
-        const label = button.getChildAt(0) as Laya.GTextField;
+        const label = this.buttonLabel(key);
         label.pos(6, 4); label.size(w - 12, h - 8); label.text = value; label.fontSize = 18;
         label.color = selected ? colors.gold : colors.text;
         label.textIns.color = label.color; label.textIns.wordWrap = true;
+    }
+    private buttonLabel(key: string): Laya.GTextField {
+        const button=this.buttons[key];
+        for(let i=0;i<button.numChildren;i++) {
+            const child=button.getChildAt(i);
+            if(child instanceof Laya.GTextField)return child;
+        }
+        throw new Error(`按钮缺少文本：${key}`);
     }
     protected backdrop(): void {
         const result = this.elements.result;
@@ -307,6 +343,8 @@ export class BattlePanel {
     protected renderBattle(): void {
         const record = this.session.record;
         if (!record) { this.navigate("start"); return; }
+        if(record.setup.qingming) { this.renderQingmingBattle();return; }
+        const f=(n:number)=>this.format(n);
         const s = record.state, setup = record.setup, a = BattleRules.attributes(setup, s);
         this.text("brand", setup.earthRules ? "末法寻仙 · 双道试炼" : "末法寻仙 · 剑道试炼", 24, 12, 380, 52, 26, colors.gold);
         this.text("round", `第 ${s.round} 回合`, 420, 16, 250, 46, 24);
@@ -374,7 +412,88 @@ export class BattlePanel {
         this.button("build", "构筑", 1034, 88, 176);
         this.button("loot", "返回据点", 1034, 152, 176);
     }
+    private renderQingmingBattle(): void {
+        const record=this.session.record,s=record.state,q=s.qingming,a=BattleRules.attributes(record.setup,s);
+        const enabled=!this.busy&&this.session.outcome==="active"&&q.phase==="fighting";
+        this.text("brand","末法寻仙 · 青冥剑典",24,12,380,48,26,colors.gold);
+        this.text("round",`第 ${q.round} 回合 · 行动 ${q.ap}/3`,420,16,350,44,23);
+        this.text("upgrades",this.timeText(),800,16,200,44,20,colors.muted);
+        this.text("playerName","散修",30,110,320,40,26);
+        this.text("playerHp",`生命 ${s.player.hp} / ${s.player.maxHp}`,30,158,340,36,22,colors.jade);
+        this.bar("playerHpBar",s.player.hp/s.player.maxHp,30,198,340,colors.jade);
+        this.text("playerBlock",`灵力 ${s.player.mp} / ${s.player.maxMp}`,30,214,340,36,22,colors.blue);
+        this.text("durability",`攻 ${a.attack} · 防 ${a.defense}\n${s.weapon?
+            `${s.weapon.name} ${s.weapon.durability}/${s.weapon.maxDurability}`:"无武器"}`,30,258,250,66,17,colors.muted);
+        this.text("enemyName",record.setup.enemy.name,850,110,176,40,24);
+        this.text("enemyHp",`${s.enemy.hp} / ${s.enemy.maxHp}`,880,158,330,36,22,colors.red);
+        this.bar("enemyHpBar",s.enemy.hp/s.enemy.maxHp,880,198,330,colors.red);
+        this.text("enemyBlock",`护盾 ${q.enemy.shield} · 灵力 ${q.enemy.mp}`,880,216,330,34,18,colors.gold);
+        q.intentions.forEach((intent,i)=>{
+            const percent=QE.percent(q,intent),ratio=1-q.suppression[i]/100;
+            const fallback=intent.maxHpHeal&&q.enemy.hp===q.enemy.maxHp;
+            const amount=intent.kind==="attack"?Math.round(q.enemy.attack*percent/100*ratio):
+                intent.kind==="guard"||fallback?Math.round(q.enemy.defense*(fallback?1:percent/100)*ratio):
+                intent.kind==="heal"?Math.min(q.enemy.maxHp-q.enemy.hp,Math.floor(q.enemy.maxHp*percent/100*ratio)):null;
+            this.button(`qIntent${i+1}`,`${i+1} · ${fallback?"架盾":intent.label}\n${amount===null?"":amount+" · "}压制${q.suppression[i]}%`,
+                410+i*150,116,140,72,enabled&&!QR.has(q,"rupture"),
+                this.selected?.type==="qingming"&&this.selected.move==="guide"&&this.guideTarget===i+1);
+            this.buttons[`qIntent${i+1}`].tooltips=QE.enemies[q.foe.id].hint;
+        });
+        this.text("intent",QE.summary(q),410,208,440,80,17,colors.red);
+        this.text("interrupt",`飞剑 ${q.flying}/${QR.has(q,"swordUnity")?5:3} · 剑伤 ${q.wounds}/6 · 势 ${q.momentum}/3`,
+            410,292,440,34,18,colors.blue);
+        this.drawActors(record.setup.enemy.id);
+        placeInDesign(this.elements.enemy,this.root,1100,350);
+        this.text("event",this.notice||(this.busy?"结算中":""),410,345,440,42,17,colors.gold);
+        const mechanics=[`护盾 ${q.player.shield} · 药品${q.potionUsed?"已用":"可用"}`,
+            `核心 ${q.core?QC.items[q.core].name:"无"}`,
+            q.pendingSword?`悬剑 ${q.pendingSword}`:"",
+            q.forms.length?`归一 ${q.forms.map(k=>QC.moves[k]).join("、")}`:"",
+            q.lastActive?`上式 ${QC.moves[q.lastActive]}`:""].filter(Boolean);
+        this.text("qi",mechanics.join("\n"),30,420,370,158,18,colors.gold);
+        const result=this.selection?.ok?this.selection:null,p=result?.preview,next=result?.state.qingming;
+        this.text("previewTitle",p?p.name:"青冥剑典",440,396,560,30,20,colors.jade);
+        const detail=!p?this.notice:p.potion?
+            `恢复${p.resource==="hp"?"生命":"灵力"} ${p.recovery}\n不消耗行动点`:
+            `敌生命 -${p.enemyHpLoss} · 自身承伤 ${p.playerHpLoss}\n`+
+            `灵力 ${s.player.mp} → ${next.player.mp} · 耐久 -${p.durabilityCost}\n`+
+            `第${next.round}回合 · 行动${next.ap}/3 · 护盾${next.player.shield}\n`+
+            `飞剑${next.flying} · 剑伤${next.wounds} · 势${next.momentum}`;
+        this.text("preview",detail,440,432,560,100,17);
+        this.qMoves.forEach((move,i)=>{
+            const key=this.qKeys[i],active=i>=2&&i<=5;
+            const action:NewBattleAction={type:"qingming",move,...(move==="guide"?{enemyAction:this.guideTarget}:{})};
+            const mutation=active&&q.mutations[move];
+            this.button(key,`${mutation?QC.items[mutation].name:QC.moves[move]}${active?`\n灵力 ${QC.cost(move,q)}`:""}`,
+                i===6?1034:30+i*162,614,i===6?176:152,76,enabled,
+                this.selected?.type==="qingming"&&this.selected.move===move);
+            this.buttons[key].tooltips=mutation?QC.items[mutation].description:
+                ({basic:"100%攻击；未致胜回复3灵力",guard:"获得150%防御护盾",edge:"110%攻击",
+                    wind:"获得250%防御护盾",guide:"75%攻击；指定敌行动数值压制35%",fall:"170%攻击；每回合限一次",
+                    end:"放弃剩余行动，进入敌方回合"})[move];
+            if(enabled&&!BattleRules.resolve(record.setup,s,action).ok)this.buttons[key].alpha=0.55;
+            if(active) {
+                let icon=this.buttons[key].getChildByName("qSkillIcon") as Laya.GImage;
+                if(!icon) {icon=new Laya.GImage();icon.name="qSkillIcon";icon.autoSize=false;icon.mouseEnabled=false;
+                    icon.src=`ui/atlas/module/skillBattle/skill-${i-1}.png`;this.buttons[key].addChild(icon);}
+                icon.visible=true;icon.pos(5,8).size(26,26);
+                const label=this.buttonLabel(key);
+                label.pos(34,4).size(112,68);label.fontSize=16;
+            }
+        });
+        for(let i=0;i<5;i++) {
+            const item=s.pouch[i],potion=item&&record.setup.potions.find(p=>p.itemId===item.itemId);
+            this.button(`pouch${i}`,potion?`${potion.resource==="hp"?"血药":"蓝药"} +${potion.amount}`:"空",
+                440+i*112,540,102,62,enabled&&!!item&&!s.potionUsed,
+                this.selected?.type==="potion"&&this.selected.itemUid===item?.itemUid);
+        }
+        this.button("confirm",p?.potion?"确认用药":"确认行动",1034,540,176,62,enabled&&!!p,true);
+        this.button("cancel","取消",1034,474,176,54,enabled&&!!this.selected);
+        this.button("battleReport","战斗记录",1034,24,176);
+        this.button("build","构筑",1034,88,176);
+    }
     protected renderSettlement(): void {
+        const f=(n:number)=>this.format(n);
         this.backdrop();
         const record = this.session.record, s = record?.state;
         this.text("overlayBrand", "末法寻仙", 32, 20, 420, 44, 26, colors.gold);
@@ -411,11 +530,15 @@ export class BattlePanel {
         this.renderOverlay();
     }
     protected renderOverlay(): void {
+        const f=(n:number)=>this.format(n);
         if (this.modalOpen || !this.opened) return;
         const build = this.overlay === "build";
         const records = (build ? [this.session.record].filter(Boolean) : this.session.records).map((record,index) => {
             let lines: string[] = [];
-            if (build) {
+            if(record.setup.qingming) {
+                lines=build?["青冥剑典 · 基础四招",...QR.build(record.setup.qingming.loadout).map(k=>
+                    `${QC.items[k].name} · ${QC.items[k].description}`)]:record.state.qingming.logs.slice();
+            } else if (build) {
                 lines = [record.setup.build.schools.map(s => s === "earth" ? "土道 · 承岳" : "剑道 · 养锋").join(" / "),
                     ...record.setup.build.actives.map(a => `${record.setup.skills.find(s => s.id === a.skillId)!.name} +${a.level}`),
                     ...record.setup.build.passiveIds.map(id => record.setup.passives.find(row => row.id === id)!.name)];
@@ -441,6 +564,7 @@ export class BattlePanel {
         });
     }
     private eventText(event: NewBattleEvent): string {
+        const f=(n:number)=>this.format(n);
         if (event.type === "damage") return `${{ body: "本体", keen: "锋意", difeng: "递锋", guanxi: "贯隙",
             mark: "剑痕", enemy: "敌方", xianji: "先机", lifeng: "砾锋", zhongyue: "重岳", jieshan: "借山", counter: "返震" }[event.part]}  ${f(event.amount)}    抵盾 ${f(event.absorbed)}    扣血 ${f(event.hpLoss)}`;
         if (event.type === "passive") return event.name;

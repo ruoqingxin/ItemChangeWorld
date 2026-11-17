@@ -2902,6 +2902,40 @@ export class Inew_inventory_ruleConfig {
 
 
 
+export class Inew_qingming_ruleConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.id = _buf_.ReadString()
+        this.value = _buf_.ReadInt()
+        this.description = _buf_.ReadString()
+    }
+
+    /**
+     * 规则键
+     */
+    readonly id: string
+    /**
+     * 整数值
+     */
+    readonly value: number
+    /**
+     * 可调整测试起点
+     */
+    readonly description: string
+
+/*
+    resolve(tables:Tables) {
+        
+        
+        
+    }
+    */
+}
+
+
+
+
+
 export class Inew_sword_passiveConfig {
 
     constructor(_buf_: ByteBuf) {
@@ -6621,6 +6655,60 @@ export class new_expedition_rule {
 
 
 
+export class new_qingming_rule {
+    private _dataMap: Map<string, Inew_qingming_ruleConfig>
+	//private _dataObj: {[index:number]:Inew_qingming_ruleConfig}
+    private _dataList: Inew_qingming_ruleConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<string, Inew_qingming_ruleConfig>()
+        this._dataList = []
+		//this._dataObj = {}
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Inew_qingming_ruleConfig
+            _v = new Inew_qingming_ruleConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+			//this._dataObj[_v.id] = _v
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<string, Inew_qingming_ruleConfig> {this.load(); return this._dataMap; }
+	
+	//getDataObj(): { [index: number]: Inew_qingming_ruleConfig } {this.load(); return this._dataObj; }
+	
+    getDataList(): Inew_qingming_ruleConfig[] { this.load();return this._dataList; }
+
+    get(key: string): Inew_qingming_ruleConfig | undefined {
+		this.load();
+        return this._dataMap.get(key); 
+    }
+    
+/**
+    resolve(tables:Tables) {
+        
+    }
+ */    
+
+}
+
+
+
+
 type ByteBufLoader = (file: string) => ByteBuf
 
 export class Tables {
@@ -6710,6 +6798,8 @@ export class Tables {
     get new_expedition_variant(): new_expedition_variant  { return this._new_expedition_variant;}
     private _new_expedition_rule: new_expedition_rule
     get new_expedition_rule(): new_expedition_rule  { return this._new_expedition_rule;}
+    private _new_qingming_rule: new_qingming_rule
+    get new_qingming_rule(): new_qingming_rule  { return this._new_qingming_rule;}
 
     static getTableNames(): string[] {
         let names: string[] = [];
@@ -6756,6 +6846,7 @@ export class Tables {
         names.push('new_expedition_placement');
         names.push('new_expedition_variant');
         names.push('new_expedition_rule');
+        names.push('new_qingming_rule');
         return names;
     }
 
@@ -6803,6 +6894,7 @@ export class Tables {
         this._new_expedition_placement = new new_expedition_placement(loader('new_expedition_placement'))
         this._new_expedition_variant = new new_expedition_variant(loader('new_expedition_variant'))
         this._new_expedition_rule = new new_expedition_rule(loader('new_expedition_rule'))
+        this._new_qingming_rule = new new_qingming_rule(loader('new_qingming_rule'))
 
         /*
         this._item.resolve(this)
@@ -6848,6 +6940,7 @@ export class Tables {
         this._new_expedition_placement.resolve(this)
         this._new_expedition_variant.resolve(this)
         this._new_expedition_rule.resolve(this)
+        this._new_qingming_rule.resolve(this)
         */
     }
 }

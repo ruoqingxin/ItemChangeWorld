@@ -14,6 +14,7 @@ export class ExpeditionRunManager {
     static readonly key = "nowchange.stage4-expedition.v1";
     private readonly data = new ExpeditionRunData();
     get error(): string { return this.data.error; }
+    get integerResources(): boolean { return !!(this.data.save?.config || this.currentConfig)?.build.qingming; }
     constructor(readonly manager: SkillBattleManager, private readonly storage: GameStorage,
         private readonly clock: () => number = () => Date.now(), private readonly currentConfig?: ExpeditionConfig,
         private readonly monotonic: () => number = () => performance.now()) {

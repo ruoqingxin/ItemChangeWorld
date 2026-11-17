@@ -36,7 +36,8 @@ export class ExpeditionPanel extends InventoryPanel {
     constructor(view: UIBaseView, readonly expedition: ExpeditionRunManager,
         navigate: (s: SkillBattlePage) => void, screen: "start" | "battle" | "settlement",
         page: SkillBattlePage = screen) {
-        super(view, expedition, s => navigate(s === "settlement" && expedition.inventory?.phase === "active" ? "start" : s), screen, page);
+        super(view, expedition, s => navigate(s === "settlement" && expedition.inventory?.phase === "active" ?
+            expedition.flow?.pending?"build":"map" : s), screen, page);
         for (let i = 1; i <= 7; i++) {
             const n = this.nodes[`expLootPage${i}`];
             if (!n) continue;
@@ -182,7 +183,7 @@ export class ExpeditionPanel extends InventoryPanel {
                 if (this.screen === "settlement") this.navigate("start");
             } else if (s.phase === "preparation") {
                 this.expedition.inventoryCommand({ type: "enter" }); this.mapOpen = false;
-                this.navigate("build");
+                this.navigate(this.expedition.flow?.pending?"build":"map");
             } else if (s.flow?.phase === "battle") this.navigate("battle");
             else this.navigate(s.flow?.pending ? "build" : "map");
         });
@@ -243,7 +244,7 @@ export class ExpeditionPanel extends InventoryPanel {
                     } else if (n.kind === "recovery") {
                         this.expedition.mapCommand({ type: "recover" });
                         const after = this.expedition.inventory!;
-                        this.notice = `生命 +${Core.format(after.hp - s.hp)} · 灵力 +${Core.format(after.mp - s.mp)}`;
+                        this.notice = `生命 +${this.format(after.hp - s.hp)} · 灵力 +${this.format(after.mp - s.mp)}`;
                     }
                     else if (Rules.source(this.expedition.inventory!)) this.openGround(true);
                     return;
@@ -358,7 +359,7 @@ export class ExpeditionPanel extends InventoryPanel {
     protected renderBattle(): void {
         super.renderBattle();
         this.buttons.loot.visible = false;
-        this.labels.brand.text = "末法寻仙 · 秘境斗法";
+        this.labels.brand.text = this.expedition.record?.setup.qingming?"末法寻仙 · 青冥剑典":"末法寻仙 · 秘境斗法";
     }
     protected renderReset(): void {
         this.requestConfirmation("重建当前探索档？", "仅重建阶段 4 当前档，不删除其他应用数据。",
@@ -451,7 +452,7 @@ export class ExpeditionPanel extends InventoryPanel {
             ["Mp", s.mp, c.build.setup.player.maxMp],
         ] as const) {
             this.mapMeter(key, value, max);
-            this.mapLabel(`exp${key}Value`, `${key === "Hp" ? "生命" : "灵力"}  ${Core.format(value)} / ${Core.format(max)}`);
+            this.mapLabel(`exp${key}Value`, `${key === "Hp" ? "生命" : "灵力"}  ${this.format(value)} / ${this.format(max)}`);
             this.labels[`exp${key}Value`].color = key === "Hp" && value <= max * 0.3 ? "#ffe0c3" : "#fff9e7";
         }
         const blocking = this.buttons.expEnemyBlocking as Laya.GButton, build = this.buttons.expBuild;
@@ -660,7 +661,7 @@ export class ExpeditionPanel extends InventoryPanel {
             this.mapLabel("expContextStatus", enemy ? tired ? `体力不足 · 需${fightCost}` : `阻路 · 开战需${fightCost}体力` :
                 source ? searched ? uncollected ? "已搜完 · 有物品" : "已搜索完毕" : source.opened ? "搜索已暂停" : "尚未搜索" :
                     used ? "已使用" : n.kind === "recovery" ? recovered.hp || recovered.mp ?
-                        `生命+${Core.format(recovered.hp)}  灵力+${Core.format(recovered.mp)}` : "生命灵力已满" :
+                        `生命+${this.format(recovered.hp)}  灵力+${this.format(recovered.mp)}` : "生命灵力已满" :
                         n.kind === "extract" ? "携带物品可带出" : n.kind === "start" ? "入境处" : "尚未使用");
             this.labels.expContextStatus.color = tired ? "#efb7a5" : used || searched ? "#b8dbc6" :
                 n.kind === "extract" ? "#b7ded9" : "#e3e5d7";

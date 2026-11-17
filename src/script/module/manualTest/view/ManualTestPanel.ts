@@ -1,13 +1,13 @@
 import type { ManualTestView } from "./ManualTestView";
 import { ManualTestConfig as C } from "../utils/ManualTestConfig";
 import { ManualTestRules as R } from "../utils/ManualTestRules";
-import type { ManualMove, ManualTestAction, SwordGroup, ShadowKind } from "../types/ManualTestTypes";
+import type { ManualMove, ManualTestAction } from "../types/ManualTestTypes";
 
 const color = { bg: "#141d1a", pane: "#1c2824", line: "#46534d", text: "#edf0e8",
     muted: "#a8b8ac", jade: "#9cdbbc", red: "#efb0a2", gold: "#e4ce8e", blue: "#a2cdec" };
 const art = "ui/atlas/module/skillBattle/";
 
-/** Native UIBaseView content. The view projects state; it never calculates combat results. */
+/** Native sandbox UI; results and previews are exclusively resolved by the session. */
 export class ManualTestPanel {
     readonly session;
     readonly buttons: Record<string, Laya.GWidget> = {};
@@ -17,7 +17,7 @@ export class ManualTestPanel {
     opened = false;
     private onBack: () => void;
     private selected: ManualTestAction | null = null;
-    private tab: "log" | "growth" | "move" = "log";
+    private tab: "log" | "growth" | "move" | "report" = "log";
     private notice = "";
     private popup: Laya.GWidget | null = null;
     private revision = -1;
@@ -25,20 +25,17 @@ export class ManualTestPanel {
     private width = 1280;
     private height = 720;
     constructor(private readonly view: ManualTestView) {
-        this.session = view.session;
-        this.root = view.getElement<Laya.GWidget>("adapter");
+        this.session = view.session; this.root = view.getElement<Laya.GWidget>("adapter");
         view.view.on(Laya.Event.RESIZE, this, this.resize);
     }
     open(onBack: () => void): void {
-        this.onBack = onBack; this.opened = true; this.selected = null; this.notice = "";
-        this.resize();
+        this.onBack = onBack; this.opened = true; this.selected = null; this.notice = ""; this.resize();
     }
     suspend(): void { this.opened = false; this.closeMenu(); Laya.timer.clearAll(this); }
     private resize(): void {
         if (!this.opened) return;
         this.width = this.view.view.width; this.height = this.view.view.height;
-        this.root.pos(0, 0).size(this.width, this.height);
-        this.render();
+        this.root.pos(0, 0).size(this.width, this.height); this.render();
     }
     private clear(): void {
         this.closeMenu(); this.root.destroyChildren();
@@ -47,8 +44,8 @@ export class ManualTestPanel {
     private text(name: string, value: string, x: number, y: number, w: number, h: number,
         fontSize = 18, tint = color.text, parent = this.root): Laya.GTextField {
         const t = new Laya.GTextField(); t.name = name; t.text = value; t.font = "Microsoft YaHei";
-        t.fontSize = fontSize; t.color = tint; t.mouseEnabled = false;
-        t.wordWrap = true; t.overflow = "shrink"; t.valign = "middle"; t.leading = 4;
+        t.fontSize = fontSize; t.color = tint; t.mouseEnabled = false; t.wordWrap = true;
+        t.overflow = "shrink"; t.valign = "middle"; t.leading = 4;
         t.pos(x, y).size(w, h); parent.addChild(t); this.labels[name] = t; return t;
     }
     private button(name: string, title: string, x: number, y: number, w: number, h: number,
@@ -56,25 +53,19 @@ export class ManualTestPanel {
         const b = new Laya.GWidget(); b.name = name; b.pos(x, y).size(w, h);
         b.mouseEnabled = enabled; b.alpha = enabled ? 1 : 0.4;
         b.graphics.drawRect(0, 0, w, h, selected ? "#354f42" : "#26372f", selected ? color.jade : color.line, 1);
-        const t = this.text(`${name}Text`, title, 5, 2, w - 10, h - 4, 17, selected ? color.jade : color.text, b);
-        t.align = "center"; parent.addChild(b); this.buttons[name] = b;
-        b.on(Laya.Event.CLICK, this, () => { if (this.opened) click(); });
-        return b;
+        this.text(name + "Text", title, 5, 2, w - 10, h - 4, 17, selected ? color.jade : color.text, b).align = "center";
+        parent.addChild(b); this.buttons[name] = b;
+        b.on(Laya.Event.CLICK, this, () => { if (this.opened) click(); }); return b;
     }
-    private line(x: number, y: number, w: number): void {
-        this.root.graphics.drawLine(x, y, x + w, y, color.line, 1);
-    }
-    private input(actor: "player" | "enemy", key: string, x: number, y: number): void {
-        const id = `${actor}_${key}`, input = new Laya.GTextInput();
-        input.name = id; input.pos(x, y).size(78, 28);
-        input.text = String(this.session.draft[actor][key]);
+    private line(x: number, y: number, w: number): void { this.root.graphics.drawLine(x, y, x + w, y, color.line, 1); }
+    private input(id: string, value: number, x: number, y: number, w: number, apply: (n: number) => void): void {
+        const input = new Laya.GTextInput(); input.name = id; input.pos(x, y).size(w, 28); input.text = String(value);
         input.font = "Microsoft YaHei"; input.fontSize = 16; input.color = color.text;
         input.align = "right"; input.valign = "middle"; input.padding = [2, 8, 2, 4];
-        input.restrict = "0-9"; input.maxChars = 7;
-        input.graphics.drawRect(0, 0, 78, 28, "#101b16", color.line, 1);
+        input.restrict = "0-9"; input.maxChars = 10;
+        input.graphics.drawRect(0, 0, w, 28, "#101b16", color.line, 1);
         input.on(Laya.Event.INPUT, this, () => {
-            this.session.draft[actor][key] = input.text.trim() === "" ? NaN : Number(input.text);
-            this.labels.draftStatus.text = "参数待应用";
+            apply(input.text.trim() === "" ? NaN : Number(input.text)); this.labels.draftStatus.text = "参数待应用";
         });
         this.root.addChild(input); this.inputs[id] = input;
     }
@@ -83,16 +74,13 @@ export class ManualTestPanel {
         this.button(name, title + "  v", x, y, w, 30, () => {
             this.closeMenu();
             const veil = new Laya.GWidget(); veil.name = "optionMenu"; veil.size(this.width, this.height);
-            veil.mouseEnabled = true; veil.zOrder = 100;
-            veil.on(Laya.Event.CLICK, this, () => this.closeMenu());
+            veil.mouseEnabled = true; veil.zOrder = 100; veil.on(Laya.Event.CLICK, this, () => this.closeMenu());
             this.root.addChild(veil); this.popup = veil;
             const mh = Math.min(rows.length * 30 + 8, this.height - 40);
-            const top = Math.max(12, Math.min(y + 32, this.height - mh - 12));
-            const list = new Laya.GPanel(); list.pos(x, top).size(w, mh);
+            const list = new Laya.GPanel(); list.pos(x, Math.max(12, Math.min(y + 32, this.height - mh - 12))).size(w, mh);
             const scroll = new Laya.Scroller(); scroll.direction = Laya.ScrollDirection.Vertical;
             scroll.barDisplay = Laya.ScrollBarDisplay.Hidden; scroll.touchEffect = Laya.ScrollTouchEffect.On;
-            scroll.bouncebackEffect = Laya.ScrollBounceBackEffect.Off; list.scroller = scroll;
-            veil.addChild(list);
+            scroll.bouncebackEffect = Laya.ScrollBounceBackEffect.Off; list.scroller = scroll; veil.addChild(list);
             rows.forEach((row, i) => {
                 const b = this.button(`option_${i}`, row.name, 0, 4 + i * 30, w, 30,
                     () => { apply(row.key); this.closeMenu(); this.render(); }, false, true, list);
@@ -101,231 +89,229 @@ export class ManualTestPanel {
         }, false, enabled);
     }
     private closeMenu(): void {
-        if (this.popup) {
-            for (const key of Object.keys(this.buttons).filter(k => k.startsWith("option_"))) {
-                delete this.buttons[key]; delete this.labels[key + "Text"];
-            }
-            this.popup.destroy(); this.popup = null;
+        if (!this.popup) return;
+        for (const key of Object.keys(this.buttons).filter(k => k.startsWith("option_"))) {
+            delete this.buttons[key]; delete this.labels[key + "Text"];
         }
+        this.popup.destroy(); this.popup = null;
     }
     private changeGrowth(key: "star" | "rank", direction: number): void {
         const d = this.session.draft;
         if (key === "star") {
-            d.star = Math.max(0, Math.min(5, d.star + direction));
-            d.rank = d.star === 0 ? 0 : Math.max(1, d.rank);
+            d.star = Math.max(0, Math.min(5, d.star + direction)); d.rank = d.star === 0 ? 0 : Math.max(1, d.rank);
         } else if (d.star) d.rank = Math.max(1, Math.min(6, d.rank + direction));
         this.render();
     }
     private setup(): void {
-        const d = this.session.draft;
-        this.text("manualName", "青冥剑典", 20, 76, 226, 38, 26, color.gold);
-        this.text("manualState", C.starThemes[d.star], 20, 114, 226, 28, 16, color.muted);
+        const d = this.session.draft, s = this.session.state;
+        this.text("manualName", "青冥剑典", 20, 76, 220, 34, 26, color.gold);
+        this.text("manualState", C.starThemes[d.star], 20, 112, 220, 26, 16, color.muted);
         for (const [i, key] of (["star", "rank"] as const).entries()) {
-            const y = 154 + i * 40;
+            const y = 144 + i * 36;
             this.text(key + "Label", key === "star" ? "星级" : "等阶", 20, y, 50, 30);
             this.button(key + "Down", "-", 80, y, 32, 30, () => this.changeGrowth(key, -1));
             this.text(key + "Value", String(d[key]), 120, y, 60, 30, 20, color.jade).align = "center";
             this.button(key + "Up", "+", 190, y, 32, 30, () => this.changeGrowth(key, 1), false, key === "star" || d.star > 0);
         }
+        this.menu("battleCount", d.battles === 1 ? "单场" : `${d.battles}场连战`,
+            [1, 10, 12, 15].map(key => ({ key, name: key === 1 ? "单场" : `${key}场连战` })),
+            20, 218, 102, key => { d.battles = key; });
         this.menu("enemyStyle", C.styles[d.style], Object.entries(C.styles).map(([key, name]) => ({ key, name })),
-            20, 244, 214, value => { d.style = value; });
-        this.text("selfHead", "己方", 85, 286, 70, 26, 17, color.jade);
-        this.text("enemyHead", "敌方", 176, 286, 70, 26, 17, color.red);
+            132, 218, 102, value => { d.style = value; });
+        this.text("selfHead", "己方", 76, 258, 72, 28, 17, color.jade);
+        this.text("enemyHead", "敌方基准", 158, 258, 78, 28, 16, color.red);
         ["hp", "mp", "attack", "defense"].forEach((key, i) => {
-            const y = 322 + i * 38;
+            const y = 294 + i * 34;
             this.text(key + "Label", ({ hp: "生命", mp: "法力", attack: "攻击", defense: "防御" })[key], 20, y, 46, 28, 16, color.muted);
-            this.input("player", key, 70, y); this.inputs["player_" + key].size(78, 28);
-            this.input("enemy", key, 156, y); this.inputs["enemy_" + key].size(78, 28);
+            for (const [actor, x] of [["player", 70], ["enemy", 156]] as const)
+                this.input(`${actor}_${key}`, d[actor][key], x, y, 78, n => { d[actor][key] = n; });
         });
-        this.text("draftStatus", !this.session.state ? "未开始" :
-            JSON.stringify(d) === JSON.stringify(this.session.state.setup) ? "参数已应用" : "参数待应用",
-            20, 484, 214, 30, 16, color.muted);
-        this.button("restart", this.session.state ? "应用并重开" : "开始演练", 20, 522, 214, 42, () => {
+        this.text("seedLabel", "种子", 20, 432, 45, 28, 16, color.muted);
+        this.input("seed", d.seed, 70, 432, 164, n => { d.seed = n; });
+        this.text("supplyLabel", "血/蓝药", 20, 468, 50, 28, 14, color.muted);
+        this.input("healPotions", d.healPotions, 70, 468, 78, n => { d.healPotions = n; });
+        this.input("manaPotions", d.manaPotions, 156, 468, 78, n => { d.manaPotions = n; });
+        this.menu("opening", d.openingKind === "auto" ? "起手随剑路" : `本命起手 · ${C.kinds[d.openingKind]}`,
+            [{ key: "auto", name: "起手随剑路" }, ...Object.keys(C.kinds).map(key => ({ key, name: `本命起手 · ${C.kinds[key]}` }))],
+            20, 504, 214, v => { d.openingKind = v; }, C.has(d, 1, 6));
+        this.button("restart", s ? "应用并重开" : "开始演练", 20, 544, 214, 38, () => {
             if (this.session.start()) { this.selected = null; this.logPage = 0; this.notice = ""; }
             else this.notice = this.session.error;
             this.render();
         });
-        this.button("heal", "回春丹", 20, 576, 102, 34, () => this.select("heal"), false, this.active());
-        this.button("mana", "回灵丹", 132, 576, 102, 34, () => this.select("mana"), false, this.active());
-        this.buttons.heal.tooltips = this.buttons.mana.tooltips = "每回合共用一次，恢复30%，不耗行动；演练补给无限";
+        const canMed = !!s && ["fighting", "reward", "between"].includes(s.phase);
+        this.button("heal", `回春丹 ${s?.potions.heal ?? d.healPotions}`, 20, 592, 102, 30,
+            () => this.select("heal"), false, canMed);
+        this.button("mana", `回灵丹 ${s?.potions.mana ?? d.manaPotions}`, 132, 592, 102, 30,
+            () => this.select("mana"), false, canMed);
+        this.buttons.heal.tooltips = this.buttons.mana.tooltips = "有限库存，血蓝药每回合共用一次；恢复30%，不耗行动";
+        this.text("draftStatus", !s ? "未开始" : JSON.stringify(d) === JSON.stringify(s.setup) ? "参数已应用" : "参数待应用",
+            20, 636, 214, 28, 16, color.muted);
+        this.text("tuning", "独立原型 · 可调整测试值", 20, 674, 214, 26, 14, color.gold);
     }
-    private active(): boolean { return this.session.state?.outcome === "active"; }
-    private select(move: ManualMove): void {
-        this.selected = { move, branch: "normal", keep: false };
-        this.revision = this.session.state?.revision ?? -1; this.notice = "";
-        if (move === "edge" && C.has(this.session.state.setup, 1, 1)) this.selected.branch = "urge";
-        this.render();
-    }
-    private board(x: number, y: number, w: number, name: string, groups: SwordGroup[],
-        area: "sky" | "cache", h = 92): void {
-        const s = this.session.state;
-        this.text(name + "Head", name, x, y, w, 26, 17, area === "sky" ? color.jade : color.blue);
-        if (!groups.length) this.text(name + "Empty", "—", x + 8, y + 34, w - 16, h - 36, 20, color.muted);
-        const step = Math.min(114, (w - 10) / Math.max(1, groups.length));
-        groups.forEach((g, i) => {
-            const title = g.members.map(m => C.kinds[m.kind]).join("") +
-                `${area === "sky" && i === 0 && R.has(s, 1, 6) ? " · 本命" : ""}\n` +
-                g.members.map(m => `${m.age}势`).join(" ") +
-                (g.members.every(m => area === "sky" && R.mature(s, g, m)) ? "\n已成锋" : "");
-            const b = this.button(`${area}_${g.id}`, title, x + i * step, y + 30, step - 6, h - 32, () => {
-                if (this.selected) { this.selected.target = g.id; this.render(); }
-            }, this.selected?.target === g.id);
-            b.tooltips = `${R.groupName(g)} · ${R.slots(g)}悬\n` + g.members.map(m =>
-                `#${m.id} ${C.kinds[m.kind]}影 ${m.age}势`).join("\n");
-            this.labels[`${area}_${g.id}Text`].fontSize = 14;
-        });
+    private active(): boolean { return this.session.state?.phase === "fighting"; }
+    private select(move: ManualMove, extra: Partial<ManualTestAction> = {}): void {
+        this.selected = { move, branch: "normal", ...extra };
+        if (move === "fall") this.selected.shadowIds = this.session.state.shadows.filter(x => !this.session.state.delayed?.ids.includes(x.id)).map(x => x.id);
+        this.revision = this.session.state?.revision ?? -1; this.notice = ""; this.render();
     }
     private arena(x: number, w: number): void {
         const s = this.session.state;
         if (!s) {
-            this.text("emptyArena", "青冥", x, 180, w, 96, 46, color.gold).align = "center";
-            this.text("emptyState", `${this.session.draft.star}星${this.session.draft.rank}阶`,
-                x, 280, w, 38, 22, color.muted).align = "center";
+            this.text("emptyArena", "青冥", x, 190, w, 96, 46, color.gold).align = "center";
+            this.text("emptyState", `${this.session.draft.star}星${this.session.draft.rank}阶`, x, 290, w, 38, 22, color.muted).align = "center";
             return;
         }
         const half = (w - 24) / 2;
         this.text("playerState", `己方  ${s.player.hp}/${s.player.maxHp}\n法力 ${s.player.mp}/${s.player.maxMp}    护体 ${s.player.shield}`,
             x, 76, half, 66, 18, color.jade);
-        this.text("enemyState", `${C.styles[s.setup.style]}  ${s.enemy.hp}/${s.enemy.maxHp}\n法力 ${s.enemy.mp}/${s.enemy.maxMp}    护体 ${s.enemy.shield}\n剑痕 ${s.marks}/${R.markCap(s)}`,
+        this.text("enemyState", `${s.enemy.tier} · ${C.styles[s.enemy.style]}  ${s.enemy.hp}/${s.enemy.maxHp}${s.enemy.exposed ? " · 破绽" : ""}\n法力 ${s.enemy.mp}/${s.enemy.maxMp}    护体 ${s.enemy.shield}`,
             x + half + 24, 76, half, 66, 18, color.red);
         this.bar(x, 148, half, s.player.hp / s.player.maxHp, color.jade);
         this.bar(x + half + 24, 148, half, s.enemy.hp / s.enemy.maxHp, color.red);
-        this.text("enemyIntents", s.intentions.map((i, n) => `${n + 1} ${i.label}${i.percent ? ` ${i.percent}%` : ""}${i.mpCost ? `/${i.mpCost}蓝` : ""}`).join("   →   "),
+        this.text("enemyIntents", s.intentions.length ? s.intentions.map((i, n) =>
+            `${n + 1} ${i.label}${i.percent ? ` ${i.percent}%` : ""}${s.suppression[n] ? ` ↓${s.suppression[n]}%` : ""}`).join("  /  ") :
+            s.phase === "complete" ? "本局连战完成" : s.phase === "defeat" ? "本局失败" : s.phase === "retreated" ? "已撤离" : "战间休整",
             x, 164, w, 36, 17, color.red);
         this.line(x, 204, w);
-        this.board(x, 214, w, `青冥  ${R.used(s.sky)}/${R.capacity(s)}悬`, s.sky, "sky", 110);
-        this.line(x, 336, w);
-        this.text("bodyHead", `身剑  ${s.body.length}/${R.bodyCapacity(s)}    剑元 ${s.energy}/${R.has(s, 4, 6) ? 9 : R.has(s, 4, 4) ? 6 : 0}`,
+        this.text("shadowHead", `剑影 ${s.shadows.length}/3    ${R.array(s) ? R.array(s) + "阵" : ""}`, x, 210, w, 28, 18, color.jade);
+        const gap = 10, step = (w - gap * 2) / 3;
+        for (let i = 0; i < 3; i++) {
+            const shadow = s.shadows[i], a = this.selected, reserved = s.delayed?.ids.includes(shadow?.id);
+            const title = shadow ? `${C.kinds[shadow.kind]}影 #${shadow.id}\n${shadow.warm ? "已温养" : "新影"}${reserved ? "\n应剑已预约" :
+                s.path === "guard" && shadow.kind === "guard" ? "\n格挡可反击" : ""}` : "空";
+            this.button(`shadow_${i}`, title, x + i * (step + gap), 246, step, 80, () => {
+                if (a?.move === "fall") {
+                    if (a.branch === "absorb") a.shadowIds = [shadow.id];
+                    else {
+                        const ids = a.shadowIds || [];
+                        a.shadowIds = ids.includes(shadow.id) ? ids.filter(id => id !== shadow.id) : [...ids, shadow.id];
+                    }
+                } else if (a && ["edge", "wind", "guide"].includes(a.move)) a.replacementId = shadow.id;
+                this.render();
+            }, !!shadow && (a?.move === "fall" ? a.shadowIds?.includes(shadow.id) : a?.replacementId === shadow.id),
+            !!shadow && !reserved && !!a && ["edge", "wind", "guide", "fall"].includes(a.move) && this.active());
+        }
+        this.text("bodyState", `身剑：${s.body ? C.kinds[s.body] + "剑" : "未纳入"}    ` +
+            (s.finisherUsed ? "终式已用" : R.finisherReady(s) ? "终式可用" : this.session.state.setup.star === 5 && R.has(s, 5, 6) ? "终式：第3回合起" : ""),
             x, 344, w, 28, 17, color.gold);
-        this.text("bodyState", s.body.length ? s.body.map(m => `${C.kinds[m.kind]}剑 #${m.id}`).join("   /   ") +
-            (R.bodyArray(s) ? `    ${R.bodyArray(s)}身阵` : "") : "—", x, 374, w, 28, 17, color.muted);
-        const orbit = R.has(s, 5, 4) ? s.finisherUsed ? "    万剑归冥已施展" :
-            `    归冥势 ${s.orbit}/${C.orbitNeed}${R.finisherReady(s) ? " · 可施终式" : ""}` : "";
-        this.board(x, 412, w, `冥渊  ${R.used(s.cache)}/6悬${orbit}`, s.cache, "cache", 88);
-        const appointments = [s.delayed ? `悬落·敌${s.delayed.at}` : "",
-            s.ambush !== null ? `伏剑·敌${s.ambushAt}` : "",
-            s.pinpoint !== null ? `点破·敌${s.pinpointAt}` : ""].filter(Boolean);
-        if (appointments.length) this.text("scheduled", appointments.join("   "), x, 500, w, 24, 16, color.gold);
-        this.text("totals", `累计伤害 ${s.totals.damage}    承伤 ${s.totals.taken}    获得护体 ${s.totals.shield}`,
-            x, this.height - 194, w, 24, 16, color.muted);
+        this.text("scheduled", s.delayed ? `应剑：敌第${s.delayed.at}行动前收取 #${s.delayed.ids.join("、#")}` :
+            s.enemy.exposed ? "破绽待击：下次本体攻击追加75%攻击穿盾伤害，本回合有效" :
+            s.body ? ({ edge: "锋身剑：每回合首次本体攻击追击", guard: "守身剑：温养护体，增强回风", guide: "引身剑：新引影直接温养" })[s.body] : "",
+            x, 378, w, 28, 16, color.muted);
+        this.line(x, 414, w);
+        this.text("pathState", s.path === "none" ? "剑路未定" : C.paths[s.path] +
+            (s.upgrades.length ? " · " + s.upgrades.map(k => C.upgrades[k].name).join(" / ") : ""),
+            x, 420, w, 30, 17, color.blue);
+        if (s.phase === "reward") {
+            const route = s.path === "none", sw = (w - 8 * (s.offers.length - 1)) / s.offers.length;
+            s.offers.forEach((key, i) => {
+                const b = this.button("reward_" + key, route ? C.paths[key] : C.upgrades[key].name,
+                    x + i * (sw + 8), 460, sw, 44,
+                    () => this.select(route ? "route" : "upgrade", { choice: key }), this.selected?.choice === key);
+                b.tooltips = route ? `${C.pathDescriptions[key]}\n后续起手为${C.kinds[key]}影` : C.upgrades[key].description;
+            });
+        } else if (s.phase === "between") {
+            this.button("nextBattle", "下一战  >", x, 460, 148, 38, () => this.select("next"));
+        } else this.text("checkpoints", s.phase === "fighting" && s.path !== "none" ? C.pathDescriptions[s.path] :
+            "剑路 1战后 / 强化 3、6战后", x, 460, w, 38, 16, color.muted);
+        if (["between", "reward"].includes(s.phase)) this.button("retreat", "撤离", x + w - 86, 512, 86, 30, () => this.select("retreat"));
+        this.text("totals", `总伤害 ${s.totals.damage}   承伤 ${s.totals.taken}   耗蓝 ${s.totals.mpSpent}`,
+            x, 514, w - 96, 28, 16, color.muted);
     }
     private bar(x: number, y: number, w: number, ratio: number, tint: string): void {
         this.root.graphics.drawRect(x, y, w, 5, "#344239");
-        if (ratio > 0) this.root.graphics.drawRect(x, y, Math.max(0, w * ratio), 5, tint);
+        if (ratio > 0) this.root.graphics.drawRect(x, y, w * ratio, 5, tint);
     }
-    private actionOptions(x: number, y: number, w: number): void {
+    private actionOptions(x: number, y: number): void {
         const a = this.selected, s = this.session.state;
         if (!a || !s) return;
-        const list = C.branches(s.setup, a.move);
-        const branchLabel = list.find(b => b.key === a.branch)?.name || "基础";
-        this.menu("branch", branchLabel, list.map(b => ({ key: b.key, name: b.name })), x, y, 130,
-            branch => { a.branch = branch; a.target = undefined; a.other = undefined; a.enemyAction = undefined; });
-        const cache = a.branch === "recall" || a.branch === "reverse";
-        const groups = cache ? s.cache : s.sky;
-        const requiresTarget = ["copy", "reorder", "swap", "split", "ambush", "pluck", "pinpoint", "recall", "reverse"].includes(a.branch);
-        if (requiresTarget && a.branch !== "copy") {
-            const options = groups.map(g => ({ key: g.id, name: R.groupName(g) }));
-            if (a.branch === "reorder") options.unshift({ key: 0, name: "本次新守影" });
-            const g = groups.find(g => g.id === a.target);
-            this.menu("target", a.target === 0 ? "新守影" : g ? R.groupName(g) : "目标剑组", options,
-                x + 140, y, 160, value => { a.target = value; }, options.length > 0);
+        if (a.move === "fall") {
+            const rows = C.branches(s.setup, a.move);
+            this.menu("branch", rows.find(b => b.key === (a.branch || "normal"))?.name || "基础", rows, x, y, 148, key => {
+                a.branch = key;
+                a.shadowIds = s.shadows.filter(v => !s.delayed?.ids.includes(v.id)).map(v => v.id);
+                if (key === "absorb") a.shadowIds = a.shadowIds.slice(0, 1);
+            });
+            this.menu("delayAt", `敌第${a.enemyAction || 1}行动`,
+                [1, 2, 3].map(key => ({ key, name: `第${key}行动前` })), x + 158, y, 148, key => { a.enemyAction = key; });
+            this.text("selection", `已选 ${(a.shadowIds || []).length} 道`, x + 318, y, 144, 30, 16, color.gold);
+        } else if (["edge", "wind", "guide"].includes(a.move) && s.shadows.length === 3) {
+            this.menu("replace", a.replacementId ? `替换 #${a.replacementId}` : "选择替换旧影",
+                s.shadows.filter(v => !s.delayed?.ids.includes(v.id)).map(v => ({ key: v.id, name: `#${v.id} ${C.kinds[v.kind]}影` })),
+                x, y, 200, id => { a.replacementId = id; });
         }
-        if (["swap", "recall", "reverse"].includes(a.branch)) {
-            this.menu("other", a.other ? `替换／交换 #${a.other}` : "替换／交换", s.sky.map(g => ({ key: g.id, name: R.groupName(g) })),
-                x + 310, y, 150, value => { a.other = value; }, s.sky.length > 0);
-        }
-        if (a.branch === "copy") this.menu("copyKind", C.kinds[a.kind] || "摹写类型",
-            (["edge", "guard", "guide"] as ShadowKind[]).map(key => ({ key, name: C.kinds[key] + "影" })),
-            x + 140, y, 160, value => { a.kind = value; });
-        const appointment = ["delay", "ambush", "pinpoint"].includes(a.branch);
-        if (appointment) this.menu("delayAt", `敌第${a.enemyAction || 1}行动`,
-            [1, 2, 3].map(key => ({ key, name: `第${key}行动前` })), x + (a.branch === "delay" ? 140 : 310), y, 150,
-            value => { a.enemyAction = value; });
-        if (appointment && !a.enemyAction) a.enemyAction = 1;
-        // Optional operations belong to the selected action, never separate free commands.
-        const optional: { key: string; name: string; }[] = [{ key: "none", name: "无附加选择" }];
-        if (a.move === "fall" && a.branch !== "finish" && R.has(s, 2, 1)) optional.push({ key: "keep", name: a.keep ? "取消保留本命" : "保留本命" });
-        if (a.move === "fall" && a.branch !== "finish" && R.has(s, 4, 1))
-            s.sky.flatMap(g => g.members).filter(m => R.canAbsorb(s, m)).forEach(m =>
-                optional.push({ key: `absorb:${m.id}`, name: `纳入 ${C.kinds[m.kind]}影#${m.id}` }));
-        if (a.move === "edge" && R.has(s, 4, 3)) s.body.forEach(m =>
-            optional.push({ key: `member:${m.id}`, name: `出鞘 ${C.kinds[m.kind]}剑#${m.id}` }));
-        if (cache) for (let i = 0; i <= s.sky.length; i++)
-            optional.push({ key: `slot:${i}`, name: `回升至第${i + 1}组位置` });
-        if (["edge", "wind", "guide"].includes(a.move) && R.has(s, 2, 6)) s.sky.forEach(g =>
-            optional.push({ key: `form:${g.id}`, name: `以#${g.id}为首成阵` }));
-        const title = [a.keep ? "留本命" : "", a.absorb !== undefined ? `纳#${a.absorb}` : "",
-            a.form !== undefined ? `成阵#${a.form}` : "", a.member !== undefined ? `出鞘#${a.member}` : "",
-            a.slot !== undefined ? `第${a.slot + 1}位` : ""].filter(Boolean).join(" ");
-        this.menu("optional", title || "附加选择", optional, x + Math.max(470, w - 185), y, 185, key => {
-            if (key === "none") { a.keep = false; delete a.absorb; delete a.form; delete a.member; delete a.slot; }
-            else if (key === "keep") a.keep = !a.keep;
-            else { const [prop, value] = key.split(":"); a[prop] = Number(value); }
-        }, optional.length > 1);
+        if (a.move === "guide" && s.path === "guide") this.menu("delayAt", `截脉 · 敌第${a.enemyAction || 1}行动`,
+            [1, 2, 3].map(key => ({ key, name: `第${key}行动前` })), x + (s.shadows.length === 3 ? 210 : 0), y, 180,
+            key => { a.enemyAction = key; });
     }
     private side(x: number, w: number): void {
-        const s = this.session.state, y = 76;
-        (["log", "growth", "move"] as const).forEach((key, i) =>
-            this.button(`tab_${key}`, ({ log: "日志", growth: "成长", move: "招式" })[key],
-                x + i * w / 3, y, w / 3 - 4, 32, () => { this.tab = key; this.render(); }, this.tab === key));
-        const bodyY = y + 46, bodyH = this.height - bodyY - 160;
+        const s = this.session.state;
+        (["log", "report", "growth", "move"] as const).forEach((key, i) =>
+            this.button(`tab_${key}`, ({ log: "日志", report: "逐战", growth: "成长", move: "招式" })[key],
+                x + i * w / 4, 76, w / 4 - 3, 32, () => { this.tab = key; this.render(); }, this.tab === key));
+        const bodyY = 122, bodyH = this.height - bodyY - 160;
         const panel = new Laya.GPanel(); panel.name = "detailScroll"; panel.pos(x, bodyY).size(w, bodyH);
         const scroll = new Laya.Scroller(); scroll.direction = Laya.ScrollDirection.Vertical;
         scroll.barDisplay = Laya.ScrollBarDisplay.Hidden; scroll.touchEffect = Laya.ScrollTouchEffect.On;
         scroll.bouncebackEffect = Laya.ScrollBounceBackEffect.Off; panel.scroller = scroll; this.root.addChild(panel);
         let value = "";
         if (this.tab === "log") {
-            const logs = s?.logs || [], maxPage = Math.max(0, Math.ceil(logs.length / 18) - 1);
-            this.logPage = Math.min(this.logPage, maxPage);
+            const logs = s?.logs || [], max = Math.max(0, Math.ceil(logs.length / 18) - 1);
+            this.logPage = Math.min(max, this.logPage);
             const end = logs.length - this.logPage * 18;
-            value = logs.slice(Math.max(0, end - 18), end).join("\n\n") || "尚无结算";
-            this.button("older", "<", x, this.height - 148, 32, 28, () => { this.logPage++; this.render(); }, false, this.logPage < maxPage).tooltips = "更早日志";
-            this.text("logPage", `${this.logPage + 1}/${maxPage + 1}`, x + 38, this.height - 148, w - 76, 28, 15, color.muted).align = "center";
+            value = logs.slice(Math.max(0, end - 18), end).reverse().join("\n\n") || "尚无结算";
+            this.button("older", "<", x, this.height - 148, 32, 28, () => { this.logPage++; this.render(); }, false, this.logPage < max).tooltips = "更早日志";
+            this.text("logPage", `${this.logPage + 1}/${max + 1}`, x + 38, this.height - 148, w - 76, 28, 15, color.muted).align = "center";
             this.button("newer", ">", x + w - 32, this.height - 148, 32, 28, () => { this.logPage--; this.render(); }, false, this.logPage > 0).tooltips = "更新日志";
         } else if (this.tab === "growth") {
             const d = this.session.draft;
-            value = `待测 ${d.star}星${d.rank}阶\n四个基础主动已开放\n\n` +
-                C.growth.flatMap((rows, i) => rows.map((name, j) =>
-                    `${C.has(d, i + 1, j + 1) ? "已得" : "未得"} ${i + 1}星${j + 1}阶 · ${name}\n${C.descriptions[i][j]}`)).join("\n\n");
+            value = `待测 ${d.star}星${d.rank}阶\n\n` + C.growth.flatMap((rows, i) => rows.map((name, j) =>
+                `${C.has(d, i + 1, j + 1) ? "已得" : "未得"} ${i + 1}星${j + 1}阶 · ${name}\n${C.descriptions[i][j]}`)).join("\n\n");
+        } else if (this.tab === "report") {
+            value = s?.reports.slice().reverse().map(r => `第${r.battle}战 ${r.tier} · ${r.won ? "胜" : "败"}\n` +
+                `${r.rounds}回合 / ${r.actions}行动\n生命 ${r.startHp} → ${r.endHp}\n法力 ${r.startMp} → ${r.endMp}\n` +
+                `承伤${r.taken} / 耗蓝${r.mpSpent}\n血药${r.healUsed} / 蓝药${r.manaUsed}\n` +
+                Object.entries(r.skills).map(([k, n]) => `${C.moves[k]}${n}`).join(" ") + "\n" +
+                Object.entries(r.specials).map(([k, n]) => `${C.specialNames[k] || k}${n}`).join(" ")).join("\n\n") || "尚无完整战报";
         } else {
-            value = "青锋斩 · 5法力\n100%攻击，留锋影\n\n回风式 · 5法力\n150%防御护体，留守影\n\n引星刺 · 6法力\n50%攻击，叠2痕，留引影\n\n落青冥 · 8法力\n按剑序坠落，不留影\n\n" +
-                "锋影：悬停20%攻击\n守影：悬停20%基础护体\n引影：悬停叠1痕\n\n落影：锋60%攻击、守60%基础护体、引30%攻击并叠1痕；每势加10个百分点。\n\n" +
-                "普通三势成熟；本命六势成熟。成熟后停止免费悬停与自动应剑。\n首次催锋加一势。成熟影主动落剑额外30个百分点；成熟本命主动收取翻倍，成熟引落续留同类新影。\n\n" +
-                "成阵立即阵鸣。万锋青锋穿盾50%；玄壁回风护体增50%；星罗引星叠3痕；三才随留影类型自动余响，与催锋／移剑共享额度。\n\n" +
-                "自应：守影在攻击前卸力20%，锋影在攻击后反击，引影截断蓄力、减半架盾／调息；不回应待机。\n\n" +
-                "每痕提升衍生伤害10%；余响取悬停数值的一半。\n\n" +
-                "身剑：两势纳入。锋强化每轮首次攻击（含普攻）；守入体护体、回合开始温养、回风每把追加35%护体；引保底2痕，首次引星每把使剑首加一势。\n\n" +
-                `出体：至少${C.releaseEnergy}剑元，耗尽剑元；每身剑65%攻击，每剑元40%攻击。\n\n` +
-                `逆引：额外${C.reverseEnergy}剑元，每回合一次。\n\n` +
-                `轮转：每道影每轮首次回升积1归冥势，并按组回元，与落剑／纳剑共用每轮两次。${C.orbitNeed}势且至少三道天影／归影可施终式，每战一次。\n\n` +
-                "防御提供护体，不另减伤；测试药每回合共用一次。";
+            value = [
+                "青锋斩 · 5法力\n90%A伤害，留锋影", "回风式 · 5法力\nH护体，留守影",
+                "引星刺 · 6法力\n50%A伤害，留引影", "落青冥 · 8法力\n收取选定的1至3影",
+                "锋影收剑：新70%A，温养120%A。\n守影收剑：新70%H，温养120%H。\n引影收剑：30%A；所选敌行动削弱20%/35%，温养影可断蓄力。",
+                "破招：有效削弱架盾、治疗、重击，或截断蓄力后，敌露出破绽；下回合首次本体攻击追击75%A穿盾，不叠层、不跨战。",
+                "锋路首次青锋催熟旧锋影。守路实际格挡时消耗一道未预约守影，反击50%A+实际格挡量，温养额外35%A。引路引星直接压制所选敌行动。",
+                "A为攻击，H为150%防御。护体上限3H，下回合到期。",
+                "存留到下一己方回合即温养；满位替换不触发收剑。",
+                "万锋：青锋穿盾50%。玄壁：回风+50%H。星罗：引影削弱+10点。三才：收剑伤害/护体+25%。",
+                `纳剑即得：锋${C.bodyEntry.edge * 100}%A，守H，引${C.bodyEntry.guide * 100}%A并以温养强度压制所选意图。\n` +
+                "锋身剑每回合首次本体攻击+35%A；守每回合开始25%H，回风+35%H；引使新引影直接温养。",
+                "本局生命、法力、丹药、剑路和强化跨战保留。",
+            ].join("\n\n");
         }
         const text = this.text("detailText", value, 4, 0, w - 10, 100, 16, color.muted, panel);
-        text.overflow = "visible"; text.valign = "top";
-        text.textIns.typeset(); text.height = Math.max(bodyH, text.textIns.textHeight + 12);
-        panel.mouseThrough = false;
+        text.overflow = "visible"; text.valign = "top"; text.textIns.typeset();
+        text.height = Math.max(bodyH, text.textIns.textHeight + 12); panel.mouseThrough = false;
     }
     render(): void {
         if (!this.opened) return;
-        this.clear(); this.root.graphics.clear();
-        this.root.graphics.drawRect(0, 0, this.width, this.height, color.bg);
+        this.clear(); this.root.graphics.clear(); this.root.graphics.drawRect(0, 0, this.width, this.height, color.bg);
         this.root.graphics.drawRect(0, 0, 254, this.height, color.pane);
         const right = this.width - 266, center = 276, centerW = right - center - 22;
         this.root.graphics.drawLine(254, 64, 254, this.height, color.line, 1);
         this.root.graphics.drawLine(right - 14, 64, right - 14, this.height - 110, color.line, 1);
         this.text("pageTitle", "功法测试界面", 20, 12, 240, 42, 25, color.gold);
         const s = this.session.state;
-        this.text("roundState", s ? `${s.setup.star}星${s.setup.rank}阶    第${s.round}回合    ` +
-            (s.outcome === "active" ? `行动 ${s.ap}/3` : s.outcome === "victory" ? "演练胜利" : "演练失败") : "青冥剑典 · 演练",
-            center, 14, centerW, 38, 21, s?.outcome === "defeat" ? color.red : color.jade);
+        this.text("roundState", s ? `${s.setup.star}星${s.setup.rank}阶  战${s.battle}/${s.setup.battles}  回${s.round}  ` +
+            (s.phase === "fighting" ? `行动${s.ap}/3` : ({ reward: "待选奖励", between: "战间", complete: "完成", defeat: "失败", retreated: "撤离" })[s.phase]) :
+            "青冥剑典 · 连战演练", center, 14, centerW, 38, 21, s?.phase === "defeat" ? color.red : color.jade);
         this.button("back", "<", this.width - 62, 16, 42, 32, () => { this.view.close(); this.onBack(); }).tooltips = "返回";
+        this.button("rogueMode", "肉鸽构筑", this.width - 248, 16, 126, 32, () => this.view.switchMode("rogue"));
         this.button("cancel", "x", this.width - 110, 16, 40, 32, () => {
             this.selected = null; this.notice = ""; this.render();
-        }, false, !!this.selected).tooltips = "取消本次出招选择";
-        this.line(0, 64, this.width);
-        this.setup(); this.arena(center, centerW); this.side(right, 246);
-        const footerY = this.height - 104;
-        this.line(center, footerY - 8, this.width - center - 20);
+        }, false, !!this.selected).tooltips = "取消本次选择";
+        this.line(0, 64, this.width); this.setup(); this.arena(center, centerW); this.side(right, 246);
+        const footerY = this.height - 104; this.line(center, footerY - 8, this.width - center - 20);
         const actions: ManualMove[] = ["basic", "guard", "edge", "wind", "guide", "fall"];
         const step = Math.min(123, (this.width - center - 226) / 6);
         actions.forEach((move, i) => {
@@ -334,29 +320,25 @@ export class ManualTestPanel {
             if (i >= 2) {
                 const image = new Laya.GImage(); image.autoSize = false; image.src = art + `skill-${i - 1}.png`;
                 image.pos(5, 7).size(30, 30); image.mouseEnabled = false; b.addChild(image);
-                const label = this.labels["move_" + move + "Text"]; label.pos(34, 2).size(step - 46, 42);
+                this.labels["move_" + move + "Text"].pos(34, 2).size(step - 46, 42);
             }
             b.tooltips = `${C.moves[move]} · 1行动${C.cost(move) ? ` · ${C.cost(move)}法力` : ""}`;
         });
         this.button("endTurn", "结束回合", this.width - 222, footerY + 4, 100, 46, () => this.select("end"), false, this.active());
-        this.button("confirm", "出招", this.width - 112, footerY + 4, 92, 46, () => this.confirm(), true,
-            this.active() && !!this.selected && this.session.preview(this.selected).ok);
+        const preview = this.selected && s ? this.session.preview(this.selected) : null;
+        this.button("confirm", "确认", this.width - 112, footerY + 4, 92, 46, () => this.confirm(), true, !!preview?.ok);
         if (this.selected && s) {
-            this.actionOptions(center, footerY - 48, centerW);
-            const preview = this.session.preview(this.selected);
-            const delta = preview.ok ? `伤害 +${preview.state.totals.damage - s.totals.damage}   护体 +${preview.state.totals.shield - s.totals.shield}` +
-                (this.selected.branch === "reverse" ? `   消耗${C.reverseEnergy}剑元` : "") +
-                (this.selected.branch === "release" ? `   消耗${s.energy}剑元` : "") +
-                (preview.state.round > s.round ? `   敌方承接回合，承伤 +${preview.state.totals.taken - s.totals.taken}` : "") : preview.reason;
-            this.text("preview", this.notice || delta, center, footerY + 58, this.width - center - 20, 36, 16, preview.ok ? color.muted : color.red);
-            this.buttons.confirm.mouseEnabled = this.active() && preview.ok;
-            this.buttons.confirm.alpha = this.buttons.confirm.mouseEnabled ? 1 : 0.4;
-        } else this.text("preview", this.notice || "", center, footerY + 58, this.width - center - 20, 36, 16, color.red);
+            this.actionOptions(center, footerY - 48);
+            this.text("preview", this.notice || (preview.ok ?
+                `${C.moves[this.selected.move]}${this.selected.choice ? " · " + (C.paths[this.selected.choice] || C.upgrades[this.selected.choice]?.name) : ""}  ` +
+                `伤害+${preview.state.totals.damage - s.totals.damage}  护体+${preview.state.totals.shield - s.totals.shield}` +
+                `  承伤+${preview.state.totals.taken - s.totals.taken}  法力${preview.state.player.mp - s.player.mp >= 0 ? "+" : ""}${preview.state.player.mp - s.player.mp}` :
+                preview.reason), center, footerY + 58, this.width - center - 20, 36, 16, preview.ok ? color.muted : color.red);
+        } else this.text("preview", this.notice, center, footerY + 58, this.width - center - 20, 36, 16, color.red);
     }
     private confirm(): void {
         if (!this.selected) return;
-        const result = this.session.commit(this.selected, this.revision);
-        this.notice = result.reason || "";
+        const result = this.session.commit(this.selected, this.revision); this.notice = result.reason || "";
         if (result.ok) { this.selected = null; this.logPage = 0; }
         this.render();
     }

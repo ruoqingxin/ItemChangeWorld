@@ -1,12 +1,21 @@
 import { BattleRules as Core } from "../../skillBattle/utils/BattleRules";
 import type { NewBuildCommand, NewBuildConfig, NewBuildEligibility, NewBuildProfile, NewBuildState } from "../types/BuildTypes";
 import type { NewBattleCarry, NewBattleResult, NewBattleSetup } from "../../skillBattle/types/BattleTypes";
+import { QingmingBuildRules as Qingming } from "./QingmingBuildRules";
+import { QingmingRules } from "../../skillBattle/utils/QingmingRules";
+import { GuzongEnemyRules } from "../../skillBattle/utils/GuzongEnemyRules";
 
 /** Deterministic construction/reward reducer. Randomness belongs to the saved run, never the view. */
 export class BuildRules {
     static validateConfig(config: NewBuildConfig, profile: NewBuildProfile): void {
         Core.validateSetup(config.setup);
         const integer = (n: number, min = 0) => Number.isSafeInteger(n) && n >= min && n <= 100000000;
+        if(config.qingming && (!config.qingming.version || !integer(config.qingming.battleRewards) ||
+            config.qingming.battleRewards>27 ||
+            ![config.qingming.enemy.hp,config.qingming.enemy.mp,config.qingming.enemy.attack,config.qingming.enemy.defense]
+                .every(n=>integer(n)&&n<=1000000) || config.qingming.enemy.hp<1 ||
+            config.encounters.some(e=>!GuzongEnemyRules.enemies[e.qingmingEnemy])))
+            throw new Error("青冥构筑规则或敌人配置无效");
         for (const [rows, content] of [[config.skills, config.setup.skills], [config.passives, config.setup.passives]] as const) {
             if (!Array.isArray(rows) || rows.length !== content.length || new Set(rows.map(r => r.id)).size !== rows.length ||
                 rows.some(r => !content.some(c => c.id === r.id) || !integer(r.realm, 1) ||
@@ -38,6 +47,7 @@ export class BuildRules {
     static start(config: NewBuildConfig, profile: NewBuildProfile, seed: number, runId: string): NewBuildState {
         this.validateConfig(config, profile);
         if (!Number.isInteger(seed) || seed < 1 || seed > 0xffffffff || !runId) throw new Error("随机种子或局标识无效");
+        if(config.qingming)return Qingming.start(seed,runId);
         const state: NewBuildState = { runId, revision: 0, phase: "starting", endReason: null,
             build: { schools: ["sword", "earth"], actives: [], passiveIds: [] }, points: 0, daoyun: 0,
             paidChoices: 0, randomState: seed, pending: null, activeQueue: [], sources: [], battles: [] };
@@ -48,10 +58,12 @@ export class BuildRules {
     }
 
     static activePool(config: NewBuildConfig, profile: NewBuildProfile, state: NewBuildState): number[] {
+        if(config.qingming)return state.qingming?Qingming.items.flatMap((k,i)=>QingmingRules.eligible(state.qingming,k)?[i+1]:[]):[];
         return this.eligible(config.skills, profile.learnedSkills, profile, state).filter(id =>
             !state.build.actives.some(a => a.skillId === id));
     }
     static passivePool(config: NewBuildConfig, profile: NewBuildProfile, state: NewBuildState): number[] {
+        if(config.qingming)return this.activePool(config,profile,state);
         return this.eligible(config.passives, profile.learnedPassives, profile, state)
             .filter(id => !state.build.passiveIds.includes(id));
     }
@@ -120,6 +132,7 @@ export class BuildRules {
 
     static offer(config: NewBuildConfig, profile: NewBuildProfile, snapshot: NewBuildState,
         source: string, kind: "active" | "passive"): NewBuildState {
+        if(config.qingming)return Qingming.offer(snapshot,source);
         const state = Core.clone(snapshot);
         if (!source || state.phase !== "ready" || state.pending || state.sources.includes(source) ||
             state.activeQueue.includes(source)) throw new Error("奖励来源不可用或已领取");
@@ -136,6 +149,7 @@ export class BuildRules {
 
     static apply(config: NewBuildConfig, profile: NewBuildProfile, snapshot: NewBuildState,
         command: NewBuildCommand, at: number, carry?: NewBattleCarry, encounterId?: string): { state: NewBuildState; battle?: NewBattleResult } {
+        if(config.qingming)return Qingming.apply(config,snapshot,command,at,carry,encounterId);
         const state = Core.clone(snapshot);
         if (!command || state.phase === "ended") throw new Error("当前试炼已结束");
         let battle: NewBattleResult | undefined;

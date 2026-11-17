@@ -1,10 +1,12 @@
 import type { InventoryCommand, InventoryConfig, InventoryItem, InventoryState } from "../../inventory/types/InventoryTypes";
 import type { NewBuildProfile } from "../../build/types/BuildTypes";
+import type { RogueEnemyId } from "../../skillBattle/types/QingmingTypes";
 
 export interface ExpeditionNode {
     id: number; key: string; kind: string; name: string; enemy: string; pool: string;
     mainOrder: number; x: number; y: number;
     encounterKey?: string;
+    qingmingEnemy?: RogueEnemyId;
     icon?: string;
     searchMin?: number; searchMax?: number; searchWeight?: number;
 }

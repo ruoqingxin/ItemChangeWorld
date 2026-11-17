@@ -11,6 +11,7 @@ export class ManualTestManager {
     start(): boolean {
         try {
             const state = R.start(this.data.draft);
+            state.revision = (this.state?.revision ?? -1) + 1;
             this.data.state = state; this.data.error = ""; return true;
         } catch (e) { this.data.error = (e as Error).message; return false; }
     }

@@ -1,18 +1,22 @@
 import type { NewBattleAction, NewBattleSetup } from "../../skillBattle/types/BattleTypes";
 import type { NewTrialRecord } from "../../skillBattle/types/BattleTrialTypes";
+import type { RogueEnemyId, RogueLoadout, TestAttributes } from "../../skillBattle/types/QingmingTypes";
 
 export interface NewBuildEligibility { id: number; school: string; defaultEligible: boolean; realm: number; }
 export interface NewBuildConfig {
+    qingming?: { version: string; enemy: TestAttributes; battleRewards: number };
     setup: NewBattleSetup;
     skills: NewBuildEligibility[];
     passives: NewBuildEligibility[];
     rules: { commonMixPercent: number; firstCost: number; laterCost: number; normalDaoyun: number;
         eliteDaoyun: number; forgoPoints: number };
-    encounters: Array<{ id: string; enemy: NewBattleSetup["enemy"]; elite: boolean; borrow: boolean; daoyun?: number }>;
+    encounters: Array<{ id: string; enemy: NewBattleSetup["enemy"]; elite: boolean; borrow: boolean; daoyun?: number;
+        qingmingEnemy?: RogueEnemyId }>;
 }
 export interface NewBuildProfile { realm: number; learnedSkills: number[]; learnedPassives: number[]; fixture: boolean; }
-export interface NewBuildPending { kind: "start" | "active" | "passive"; source: string; candidates: number[]; }
+export interface NewBuildPending { kind: "start" | "active" | "passive" | "qingming"; source: string; candidates: number[]; }
 export interface NewBuildState {
+    qingming?: RogueLoadout;
     runId: string; revision: number; phase: "starting" | "ready" | "battle" | "ended";
     endReason: "complete" | "defeat" | "timeout" | "abandon" | null;
     build: NewBattleSetup["build"];

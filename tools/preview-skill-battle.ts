@@ -30,7 +30,7 @@ async function main(): Promise<void> {
     UIManager.ins().init();
     if (new URLSearchParams(window.location.search).get("manualTest") === "1") {
         const view = UIManager.ins().openForm(ManualTestView);
-        (window as any).__manualTestPreview = { view, get panel() { return view.panel; }, session: view.session };
+        (window as any).__manualTestPreview = { view, get panel() { return view.panel; }, get session() { return view.panel.session; } };
         return;
     }
     GameplayManager.previewSingleTrial = new URLSearchParams(window.location.search).get("stage") === "1";

@@ -5,518 +5,399 @@ const { ManualTestRules: R } = require(path.join(base, "utils/ManualTestRules.js
 const { ManualTestConfig: C } = require(path.join(base, "utils/ManualTestConfig.js"));
 const { ManualTestManager: Manager } = require(path.join(base, "manager/ManualTestManager.js"));
 let passed = 0;
-function test(name, fn) { fn(); passed++; console.log(`PASS ${name}`); }
-function start(star = 0, rank = 0, style = "dummy") {
-    const setup = C.defaults(); Object.assign(setup, { star, rank, style });
-    setup.player.hp = 100000; setup.player.mp = 100000; setup.enemy.hp = 1000000;
-    return R.start(setup);
+function test(name, fn) { fn(); passed++; console.log("PASS " + name); }
+function start(level = 0, style = "dummy", extra = {}) {
+    const d = C.defaults();
+    Object.assign(d, level ? { star: Math.ceil(level / 6), rank: (level - 1) % 6 + 1 } : {}, { style }, extra);
+    d.enemy.hp = 100000; return R.start(d);
 }
-function act(s, move, options = {}) {
-    const r = R.resolve(s, { move, keep: false, ...options });
-    assert.equal(r.ok, true, `${move}/${options.branch || ""}: ${r.reason}`);
-    return r.state;
+function act(s, move, extra = {}) {
+    const r = R.resolve(s, { move, ...extra }); assert.ok(r.ok, `${move}: ${r.reason}`); return r.state;
 }
-function put(s, kinds, age = 0, where = "sky") {
-    const members = [...kinds].map(k => ({
-        id: s.nextId++, kind: ({ e: "edge", g: "guard", i: "guide" })[k],
-        age, returnedRound: 0,
-    }));
-    const g = { id: members[0].id, members, responded: false };
-    s[where].push(g); return g;
+function reject(s, a) {
+    const before = JSON.stringify(s), r = R.resolve(s, a);
+    assert.equal(r.ok, false); assert.equal(JSON.stringify(s), before); assert.deepEqual(r.state, s);
 }
-test("31 valid progression states; cumulative branches and 30 growth nodes", () => {
-    assert.equal(C.growth.flat().length, 30);
-    for (let level = 0; level <= 30; level++) {
-        const s = level ? start(Math.ceil(level / 6), (level - 1) % 6 + 1) : start();
-        assert.equal(C.level(s.setup), level);
-        assert.equal(R.capacity(s), level >= 30 ? 6 : level >= 18 ? 5 : level >= 6 ? 4 : 3);
-        for (let j = 1; j <= 30; j++) assert.equal(C.has(s.setup, Math.ceil(j / 6), (j - 1) % 6 + 1), level >= j);
+function put(s, kinds, warm = false) {
+    s.shadows = [...kinds].map(k => ({ id: s.nextId++, kind: { e: "edge", g: "guard", i: "guide" }[k], warm }));
+    return s.shadows.map(x => x.id);
+}
+function win(s) { s.enemy.hp = 1; return act(s, "basic"); }
+function reward(s, path = "edge") {
+    return s.phase !== "reward" ? s : act(s, s.path === "none" ? "route" : "upgrade",
+        { choice: s.path === "none" ? path : s.offers[0] });
+}
+test("31 states and all 30 cumulative gates", () => {
+    assert.equal(C.growth.flat().length, 30); assert.equal(C.descriptions.flat().length, 30);
+    for (let i = 0; i <= 30; i++) {
+        const s = start(i); assert.equal(C.level(s.setup), i);
+        for (let j = 1; j <= 30; j++) assert.equal(R.has(s, Math.ceil(j / 6), (j - 1) % 6 + 1), i >= j);
     }
-    for (const [star, rank] of [[0, 1], [1, 0], [6, 1], [1, 7], [-1, 0]]) {
+    for (const [star, rank] of [[0, 1], [1, 0], [6, 1], [1, 7]])
         assert.throws(() => R.start({ ...C.defaults(), star, rank }));
-    }
 });
-test("one action costs one point; enemy follows third action; no extra transition charge", () => {
-    let s = start(); s = act(s, "edge"); assert.equal(s.ap, 2); assert.equal(s.round, 1);
-    s = act(s, "wind"); assert.equal(s.ap, 1);
-    s = act(s, "guide"); assert.equal(s.ap, 3); assert.equal(s.round, 2);
-    assert.deepEqual(s.sky.map(g => g.members[0].age), [1, 1, 1]);
-    assert.equal(s.player.mp, 100000 - 16);
-    assert.equal(s.logs.filter(l => /敌行动/.test(l)).length, 3);
-});
-test("three maturity ticks stop passive income; no recursive replay or overflow", () => {
-    let s = start(); put(s, "e"); put(s, "g"); put(s, "i");
-    for (let i = 0; i < 3; i++) s = act(s, "end");
-    assert.deepEqual(s.sky.map(g => g.members[0].age), [3, 3, 3]);
-    const damage = s.totals.damage;
-    s = act(s, "end"); assert.equal(s.totals.damage, damage);
-    s = act(s, "edge"); assert.equal(s.sky.length, 3);
-    assert.equal(s.nextId, 5, "only the manual action generated one shadow");
-});
-test("preview is pure; invalid branches, targets, low mana and full-hp medicine reject atomically", () => {
-    let s = start(); const before = R.clone(s);
-    assert.equal(R.resolve(s, { move: "edge", keep: false }).ok, true); assert.deepEqual(s, before);
-    for (const a of [{ move: "edge", branch: "copy" }, { move: "wind", branch: "ambush", target: 123 }, { move: "heal" }]) {
-        const result = R.resolve(s, { keep: false, ...a }); assert.equal(result.ok, false); assert.deepEqual(result.state, before);
-    }
-    s.player.mp = 0; assert.equal(R.resolve(s, { move: "edge", keep: false }).ok, false);
-});
-test("medicine shares one per-turn chance, costs no AP; stale double confirm rejected", () => {
-    const m = new Manager(); assert.equal(m.start(), true);
-    m.data.state.player.hp -= 100; m.data.state.player.mp -= 100;
-    let r = m.commit({ move: "heal", keep: false }, 0); assert.equal(r.ok, true); assert.equal(m.state.ap, 3);
-    assert.equal(m.commit({ move: "mana", keep: false }, 1).ok, false);
-    r = m.commit({ move: "edge", keep: false }, 1); assert.equal(r.ok, true);
-    const state = R.clone(m.state); assert.equal(m.commit({ move: "edge", keep: false }, 1).ok, false);
-    assert.deepEqual(m.state, state);
-});
-test("root protected overflow; reorder retains identity and age; old root can become mature", () => {
-    let s = start(1, 6);
-    const root = put(s, "e", 6); put(s, "g"); put(s, "i"); put(s, "e");
-    s = act(s, "edge");
-    assert.equal(s.sky[0].id, root.id); assert.equal(s.sky[0].members[0].age, 6);
-    s = act(s, "guide", { branch: "pluck", target: s.sky[3].id });
-    s = act(s, "wind", { branch: "reorder", target: s.sky[1].id });
-    const old = s.sky.find(g => g.id === root.id); assert.equal(old.members[0].age, 6); assert.ok(R.mature(s, old, old.members[0]));
-});
-test("formation compresses before overflow and copies no ages; can assemble third shadow on cast", () => {
-    let s = start(2, 6); put(s, "e", 3); put(s, "e", 1); const id = s.sky[0].id;
-    s = act(s, "edge", { form: id });
-    assert.equal(s.sky.length, 1); assert.equal(R.used(s.sky), 2);
-    assert.deepEqual(s.sky[0].members.map(x => x.age), [3, 1, 0]);
-    assert.equal(R.array(s.sky[0]), "万锋");
-});
-test("six slots hold eight distinct shadows; cache counts slots not member count", () => {
-    const s = start(5, 6); put(s, "eee"); put(s, "ggi"); s.sky[1].members[2].kind = "guard";
-    put(s, "e"); put(s, "i");
-    assert.equal(R.used(s.sky), 6); assert.equal(s.sky.flatMap(g => g.members).length, 8);
-    R.validateState(s);
-});
-test("second response prepares reduction for third enemy action, not second", () => {
-    let s = start(3, 6, "assault"); put(s, "g"); put(s, "g"); put(s, "i"); s.player.defense = 0;
-    s = act(s, "end");
-    assert.ok(s.logs.some(l => /敌行动3.*截招/.test(l)));
-    assert.ok(!s.logs.some(l => /敌行动2.*截招/.test(l)));
-    assert.equal(s.logs.filter(l => /应剑$/.test(l)).length, 2);
-    assert.equal(s.totals.taken, 64 + 64 + 105);
-});
-test("mature groups do not auto respond; paid ambush can use mature group", () => {
-    let s = start(3, 6, "assault"); put(s, "g", 6); put(s, "e", 3); put(s, "i", 3);
-    const before = act(s, "end"); assert.equal(before.logs.filter(l => /应剑$/.test(l)).length, 0);
-    s = act(s, "wind", { branch: "ambush", target: s.sky[0].id }); s = act(s, "end");
-    assert.ok(s.logs.some(l => /玄壁|守影.*应剑/.test(l)));
-});
-test("delayed batch counts one response and honors chosen action", () => {
-    let s = start(3, 6, "assault"); put(s, "e"); put(s, "g"); put(s, "i");
-    s = act(s, "fall", { branch: "delay", enemyAction: 2 });
-    assert.ok(s.delayed); s = act(s, "end"); assert.equal(s.delayed, null);
-    const action2 = s.logs.findIndex(l => /敌行动2/.test(l)), fall = s.logs.findIndex(l => /落剑 伤害/.test(l));
-    assert.ok(fall > action2);
-    assert.equal(s.sky.length, 0);
-});
-test("absorb from formation transfers one identity and remaining members fall", () => {
-    let s = start(4, 6); const g = put(s, "egi", 3), id = g.members[0].id;
-    s = act(s, "fall", { absorb: id });
-    assert.equal(s.body.length, 1); assert.equal(s.body[0].id, id); assert.equal(s.sky.length, 0);
-    assert.equal(s.energy, 2, "absorption and actual fall share the two-yuan active cap");
-    R.validateState(s);
-});
-test("absorption pays entry effect and yuan, not a cache copy; release spends pool once", () => {
-    let s = start(5, 6); const g = put(s, "e", 3);
-    s = act(s, "fall", { absorb: g.members[0].id });
-    assert.equal(s.body.length, 1); assert.equal(s.energy, 1); assert.equal(s.cache.length, 0);
-    assert.equal(s.totals.damage, 60);
-    s.body.push(...putBody(s, "gi")); s.energy = 9;
-    const before = s.totals.damage; s = act(s, "guide", { branch: "release" });
-    assert.equal(s.energy, 0); assert.equal(s.body.length, 3); assert.equal(s.totals.damage - before, 555);
-});
-function putBody(s, kinds) {
-    const members = [...kinds].map(k => ({
-        id: s.nextId++, kind: ({ e: "edge", g: "guard", i: "guide" })[k], age: 3, returnedRound: 0,
-    })); return members;
-}
-test("full sky does not auto-return/overflow; cached identity survives; one progress per round", () => {
-    let s = start(5, 6); for (let i = 0; i < 6; i++) put(s, "e", 3);
-    const cached = put(s, "g", 3, "cache");
-    s = act(s, "end"); assert.ok(s.cache.some(g => g.id === cached.id)); assert.equal(R.used(s.sky), 6);
-    s = act(s, "guide", { branch: "pluck", target: s.sky[1].id });
-    const replacement = s.sky[1].id;
-    s = act(s, "wind", { branch: "recall", target: cached.id, other: replacement });
-    const returned = s.sky.find(g => g.id === cached.id); assert.equal(returned.members[0].returnedRound, s.round); assert.equal(returned.members[0].age, 1);
-    s = act(s, "guide", { branch: "pluck", target: cached.id });
-    // A new round was begun by the third AP, so repeat within a separately controlled round.
-    s.ap = 3;
-    if (s.cache.some(g => g.id === cached.id)) {
-        const orbit = s.orbit;
-        s = act(s, "wind", { branch: "recall", target: cached.id, other: s.sky[1]?.id });
-        assert.ok(s.orbit <= orbit + 1);
-    }
-    R.validateState(s);
-});
-test("finisher is optional, once per battle; no clones, yuan or return progress generated", () => {
-    let s = start(5, 6); for (let i = 0; i < 6; i++) put(s, "e", 3);
-    s.energy = 6; s.orbit = C.orbitNeed; const ids = s.sky.map(g => g.id), next = s.nextId;
-    s = act(s, "fall", { branch: "finish" });
-    assert.deepEqual(s.sky.map(g => g.id), ids); assert.equal(s.energy, 6); assert.equal(s.nextId, next);
-    assert.equal(s.finisherUsed, true); assert.equal(s.sky[0].members[0].returnedRound, 0);
-    assert.equal(R.resolve(s, { move: "fall", branch: "finish", keep: false }).ok, false);
-});
-test("same-round re-return cannot duplicate progress; reverse replay is not a second fall", () => {
-    let s = start(5, 6); const g = put(s, "e", 3, "cache");
-    s = act(s, "wind", { branch: "recall", target: g.id });
-    assert.equal(s.sky.find(x => x.id === g.id).members[0].returnedRound, s.round);
-    s = act(s, "guide", { branch: "pluck", target: g.id });
-    assert.equal(s.cache.find(x => x.id === g.id).members[0].returnedRound, s.round);
-    s.ap = 3; s.energy = C.reverseEnergy;
-    s = act(s, "guide", { branch: "reverse", target: g.id });
-    assert.equal(s.sky.find(x => x.id === g.id).members[0].returnedRound, s.round);
-    assert.equal(s.sky.filter(x => x.id === g.id).length, 1);
-    assert.equal(s.orbit, 1, "same-round return cannot farm finisher charge");
-});
-test("batch maturity and qi-luo are snapshot values, not affected by falling head", () => {
-    let s = start(2, 4); put(s, "e", 6); put(s, "e", 3);
-    const before = s.totals.damage;
-    s = act(s, "fall");
-    // Mature root liberation doubles only the root; batch adjacency applies once.
-    assert.equal(s.totals.damage - before, 330 + 132);
-});
-test("point-break requires an immature guide member; it wins priority over ambush", () => {
-    let s = start(3, 6, "assault"); const g = put(s, "egi", 3); g.members[0].age = 0;
-    // The head is a six-age root, so move it out of root position before checking maturity.
-    s.sky.unshift({ id: s.nextId, responded: false, members: putBody(s, "e") });
-    assert.equal(R.resolve(s, { move: "guide", branch: "pinpoint", target: g.id, keep: false }).ok, false);
-    g.members[2].age = 0;
-    s = act(s, "guide", { branch: "pinpoint", target: g.id });
-    s = act(s, "wind", { branch: "ambush", target: s.sky[0].id }); s = act(s, "end");
-    const responseLog = s.logs.find(l => /应剑$/.test(l));
-    assert.ok(responseLog.includes("三才"));
-});
-test("shield cap/expiry and xuan-bi retention; body guard appears after expiry", () => {
-    let s = start(4, 6); put(s, "ggg");
-    s.player.shield = R.h(s) * 3; s.body = putBody(s, "g");
-    s = act(s, "end");
-    assert.equal(s.player.shield, R.h(s) + Math.round(R.h(s) * 0.5 * (1 + s.energy * 0.05)));
-    s = start(0, 0); s.player.shield = 180; s = act(s, "end"); assert.equal(s.player.shield, 0);
-});
-test("cache eviction is disappearance, not recursive damage; return rejection rolls back", () => {
-    let s = start(5, 6);
-    for (let i = 0; i < 6; i++) put(s, "e", 3, "cache");
-    const oldest = s.cache[0].id, g = put(s, "e", 3);
-    s = act(s, "guide", { branch: "pluck", target: g.id });
-    assert.equal(s.cache.length, 6); assert.ok(!s.cache.some(x => x.id === oldest));
-    for (let i = 0; i < 6; i++) put(s, "g");
-    const result = R.resolve(s, { move: "wind", branch: "recall", target: s.cache[0].id,
-        other: s.sky[0].id, keep: false });
-    assert.equal(result.ok, false); assert.deepEqual(result.state, s);
-});
-test("enemy mana settings change its visible plan without hidden failed casts", () => {
-    const setup = C.defaults(); setup.style = "defensive"; setup.enemy.mp = 0;
-    let s = R.start(setup);
-    assert.equal(s.intentions[0].kind, "wait"); assert.equal(s.intentions[2].kind, "wait");
-    s = act(s, "end"); assert.equal(s.enemy.mp, 0);
-});
-test("burst charge survives the probing round; next-round heavy amount is visible", () => {
-    let s = start(0, 0, "burst");
-    s = act(s, "end");
-    assert.equal(s.enemy.charged, true); assert.equal(s.intentions[2].percent, 330);
-    const before = s.totals.taken; s = act(s, "end");
-    assert.equal(s.totals.taken - before, 100 + 120 + 330);
-    assert.equal(s.enemy.charged, false);
-});
-test("delayed absorption preserves the identities of remaining array members", () => {
-    let s = start(4, 6), g = put(s, "egi", 3), id = g.members[0].id;
-    s = act(s, "fall", { branch: "delay", enemyAction: 2, absorb: id });
-    assert.equal(s.body[0].id, id); assert.equal(s.delayed.ids.length, 2);
-    s = act(s, "end");
-    assert.equal(s.sky.length, 0); assert.equal(s.body[0].id, id); assert.equal(s.delayed, null);
-});
-test("one identity cannot be kept as root and absorbed by the same declaration", () => {
-    const s = start(4, 6), g = put(s, "e", 3); put(s, "g", 3);
-    const r = R.resolve(s, { move: "fall", keep: true, absorb: g.id });
-    assert.equal(r.ok, false); assert.deepEqual(r.state, s);
-});
-test("first reorder echoes immediately once; later reorder cannot duplicate its reward", () => {
-    let s = start(1, 3); const root = put(s, "g"), edge = put(s, "e");
-    s = act(s, "wind", { branch: "reorder", target: edge.id });
-    assert.equal(s.totals.damage, 15); assert.equal(s.firstReorder, true);
-    s = act(s, "wind", { branch: "reorder", target: root.id });
-    assert.equal(s.logs.filter(l => l.includes("移剑余响")).length, 1);
-});
-test("mature pluck renews the harvested type; young pluck does not", () => {
-    let s = start(1, 5); const ripe = put(s, "e", 3), young = put(s, "e", 1);
-    s = act(s, "guide", { branch: "pluck", target: ripe.id });
-    assert.equal(s.sky.at(-1).members[0].kind, "edge");
-    assert.equal(s.sky.at(-1).members[0].age, 0);
-    const next = s.nextId; s = act(s, "guide", { branch: "pluck", target: young.id });
-    assert.equal(s.nextId, next);
-});
-test("copy inherits up to two ages without copying identity; keep ages root only once", () => {
-    let s = start(2, 3); const root = put(s, "e", 1); put(s, "g", 3);
-    s = act(s, "edge", { branch: "copy", kind: "guard" });
-    assert.equal(s.sky.at(-1).members[0].age, 2);
-    assert.equal(s.sky.at(-1).members[0].kind, "guard");
-    s = act(s, "fall", { keep: true });
-    assert.equal(s.sky[0].id, root.id); assert.equal(s.sky[0].members[0].age, 2);
-    put(s, "g");
-    s = act(s, "fall", { keep: true });
-    assert.ok(s.logs.filter(l => l.includes("留锋养势")).length === 1);
-    R.validateState(s);
-});
-test("two-age body entry has immediate distinct effects; one-age entry rejects atomically", () => {
-    for (const [kind, type] of [["e", "edge"], ["g", "guard"], ["i", "guide"]]) {
-        let s = start(4, 1); const g = put(s, kind, 2);
-        s = act(s, "fall", { absorb: g.id });
-        assert.equal(s.body[0].kind, type); assert.equal(s.ap, 2);
-        if (type === "edge") assert.equal(s.totals.damage, 60);
-        if (type === "guard") assert.equal(s.player.shield, R.h(s));
-        if (type === "guide") assert.equal(s.marks, 2);
-    }
-    const s = start(4, 1), young = put(s, "e", 1);
-    const r = R.resolve(s, { move: "fall", absorb: young.id, keep: false });
-    assert.equal(r.ok, false); assert.deepEqual(r.state, s);
-});
-test("body release requires three yuan and cannot become a free repeated base strike", () => {
-    let s = start(4, 5); s.body = putBody(s, "e"); s.energy = 2;
-    let r = R.resolve(s, { move: "guide", branch: "release", keep: false });
-    assert.equal(r.ok, false); assert.deepEqual(r.state, s);
-    s.energy = 3; s = act(s, "guide", { branch: "release" });
-    assert.equal(s.totals.damage, 185); assert.equal(s.energy, 0);
-    r = R.resolve(s, { move: "guide", branch: "release", keep: false });
-    assert.equal(r.ok, false); assert.deepEqual(r.state, s);
-});
-test("reverse spends four shared yuan, is once per turn, and failures are atomic", () => {
-    let s = start(5, 6); const g = put(s, "eee", 0, "cache"); s.energy = 3;
-    let r = R.resolve(s, { move: "guide", branch: "reverse", target: g.id, keep: false });
-    assert.equal(r.ok, false); assert.deepEqual(r.state, s);
-    s.energy = 9; s = act(s, "guide", { branch: "reverse", target: g.id });
-    assert.equal(s.energy, 6); assert.equal(s.reverseUsed, true); assert.equal(s.orbit, 3);
-    s = act(s, "guide", { branch: "pluck", target: g.id });
-    const before = R.clone(s);
-    r = R.resolve(s, { move: "guide", branch: "reverse", target: g.id, keep: false });
-    assert.equal(r.ok, false); assert.deepEqual(r.state, before);
-    s = act(s, "end"); assert.equal(s.reverseUsed, false);
-});
-test("point-break reserved for action three survives earlier automatic responses", () => {
-    let s = start(3, 6, "burst"); const guide = put(s, "i", 1);
-    s.round = 2; s.enemy.charged = true; s.intentions = R.intents(s); s.player.defense = 0;
-    s = act(s, "guide", { branch: "pinpoint", target: guide.id, enemyAction: 3 });
-    s = act(s, "end");
-    const index = s.logs.findIndex(l => l.includes("引影 #1 应剑"));
-    const action3 = s.logs.findIndex(l => /敌行动3/.test(l));
-    assert.ok(index > action3);
-    assert.ok(s.logs.some(l => /点破：敌第3行动削弱30%/.test(l)));
-    assert.equal(s.totals.taken, 100 + 120 + 231);
-});
-test("mature ambush waits for the selected action; invalid appointment rolls back", () => {
-    let s = start(3, 6, "assault"); const g = put(s, "e", 6);
-    let r = R.resolve(s, { move: "wind", branch: "ambush", target: g.id, enemyAction: 4, keep: false });
-    assert.equal(r.ok, false); assert.deepEqual(r.state, s);
-    s = act(s, "wind", { branch: "ambush", target: g.id, enemyAction: 3 });
-    s = act(s, "end");
-    assert.ok(s.logs.findIndex(l => l.includes("锋影 #1 应剑")) >
-        s.logs.findIndex(l => /敌行动3/.test(l)));
-});
-test("one array response advances cut by two, without duplicating echo or response yuan", () => {
-    let s = start(4, 6, "assault"); put(s, "eee", 0); s.player.defense = 0;
-    s = act(s, "end");
-    assert.equal(s.logs.filter(l => /应剑$/.test(l)).length, 1);
-    assert.ok(s.logs.some(l => /敌行动2.*截招/.test(l)));
-    assert.equal(s.totals.taken, 80 + 60 + 140);
-    assert.equal(s.energy, 1);
-});
-test("finisher uses normal accumulated charge and cache without full sky", () => {
-    let s = start(5, 6); const g = put(s, "eee", 0, "cache");
-    s.orbit = C.orbitNeed; const before = R.clone(s.cache);
-    assert.equal(R.finisherReady(s), true);
-    s = act(s, "fall", { branch: "finish" });
-    assert.equal(s.totals.damage, 662); assert.deepEqual(s.cache, before);
-    assert.equal(s.sky.length, 0); assert.equal(s.orbit, 0); assert.equal(s.energy, 0);
-    assert.equal(s.finisherUsed, true); assert.equal(g.members[0].returnedRound, 0);
-});
-test("finisher rejects insufficient charge or participants without spending AP or mana", () => {
-    let s = start(5, 6); put(s, "eee", 0, "cache"); s.orbit = 11;
-    let r = R.resolve(s, { move: "fall", branch: "finish", keep: false });
-    assert.equal(r.ok, false); assert.deepEqual(r.state, s);
-    s.orbit = 12; s.cache = [];
-    r = R.resolve(s, { move: "fall", branch: "finish", keep: false });
-    assert.equal(r.ok, false); assert.deepEqual(r.state, s);
-});
-test("natural two-return loop unlocks finisher without injected shadow, age or charge", () => {
-    let s = start(5, 6);
-    for (let i = 0; i < 6; i++) s = act(s, "edge");
-    assert.equal(s.round, 3); assert.equal(s.orbit, 0);
-    for (let i = 0; i < 2; i++) {
-        s = act(s, "basic"); s = act(s, "basic"); s = act(s, "fall");
-    }
-    assert.equal(s.round, 5); assert.equal(s.orbit, C.orbitNeed);
-    assert.ok(s.sky.every(g => g.members.every(x => x.returnedRound === 5)));
-    assert.equal(R.finisherReady(s), true);
-    s = act(s, "fall", { branch: "finish" });
-    assert.equal(s.finisherUsed, true); R.validateState(s);
-});
-test("automatic triad echo shares paid-action budget with first reorder and urge", () => {
-    let s = start(3, 6); put(s, "egi"); const edge = put(s, "e");
-    s = act(s, "wind", { branch: "reorder", target: edge.id });
-    assert.equal(s.logs.filter(l => l.includes("移剑余响")).length, 1);
-    assert.equal(s.logs.filter(l => l.includes("三才随式余响")).length, 0);
-    s = act(s, "edge", { branch: "urge" });
-    assert.equal(s.logs.filter(l => l.includes("三才随式余响")).length, 0);
-});
-test("killing hits cannot resurrect or overspend resources in later derived operations", () => {
-    let s = start(5, 6); const g = put(s, "eee", 0, "cache"); s.energy = 4; s.enemy.hp = 1;
-    s = act(s, "guide", { branch: "reverse", target: g.id });
-    assert.equal(s.outcome, "victory"); assert.equal(s.energy, 0); assert.equal(s.orbit, 0);
-    s = start(5, 6, "assault"); put(s, "e", 0); s.enemy.hp = 40;
-    s = act(s, "end");
-    assert.equal(s.outcome, "victory"); assert.equal(s.energy, 0);
-    s = start(4, 6); put(s, "e", 0); s.body = putBody(s, "e"); s.enemy.hp = 120;
-    s = act(s, "edge", { branch: "copy" });
-    assert.equal(s.outcome, "victory"); assert.equal(s.sky.length, 0); assert.equal(s.body.length, 0);
-});
-test("changing draft never hot-changes active setup; invalid drafts retain previous fight", () => {
-    const m = new Manager(); m.start(); const before = R.clone(m.state);
-    m.draft.star = 5; m.draft.rank = 6; m.draft.player.attack = 999;
-    assert.deepEqual(m.state, before);
+test("invalid setup atomic; integer bounds and seed/supply validation", () => {
+    for (const change of [{ battles: 0 }, { battles: 21 }, { seed: 0 }, { seed: 1.5 }, { manaPotions: -1 },
+        { healPotions: 100 }, { openingKind: "bad" }, { style: "bad" }]) assert.throws(() => R.start({ ...C.defaults(), ...change }));
+    const m = new Manager(); assert.ok(m.start()); const before = R.clone(m.state);
     m.draft.player.hp = NaN; assert.equal(m.start(), false); assert.deepEqual(m.state, before);
 });
-test("first-star urge advances age once, providing an early multi-round harvest loop", () => {
-    let s = start(1, 1); const root = put(s, "e");
-    s = act(s, "edge", { branch: "urge" });
-    assert.equal(s.sky[0].members[0].age, 1);
-    s = act(s, "edge", { branch: "urge" });
-    assert.equal(s.sky[0].members[0].age, 1);
-    s = act(s, "end");
-    assert.equal(s.sky.find(g => g.id === root.id).members[0].age, 2);
-    s = act(s, "edge", { branch: "urge" });
-    assert.equal(s.logs.filter(l => l.includes("催锋养剑")).length, 2);
-    assert.ok(s.logs.some(l => l.includes(`#${root.id}挤落`)), "no root protection before rank six");
+test("four skills immediately available and exactly three AP", () => {
+    let s = start(); s = act(s, "edge"); assert.equal(s.ap, 2);
+    s = act(s, "wind"); assert.equal(s.ap, 1); s = act(s, "fall");
+    assert.equal(s.ap, 3); assert.equal(s.round, 2); assert.equal(s.fight.actions, 3);
+    assert.equal(s.fight.mpSpent, 18); assert.equal(s.logs.filter(l => /敌行动/.test(l)).length, 3);
+    assert.ok(R.resolve(start(), { move: "guide" }).ok);
 });
-test("mature root harvest doubles only the actual root, not young roots or side shadows", () => {
-    let s = start(1, 6); put(s, "e", 6); put(s, "e", 3);
-    s = act(s, "fall"); assert.equal(s.totals.damage, 300 + 120);
-    assert.equal(s.logs.filter(l => l.includes("本命解放")).length, 1);
-    s = start(1, 6); put(s, "e", 5); s = act(s, "fall");
-    assert.equal(s.totals.damage, 110);
-    s = start(1, 6); put(s, "g", 6); s = act(s, "fall");
-    assert.equal(s.player.shield, 3 * R.h(s));
-    s = start(1, 6); put(s, "i", 6); s = act(s, "fall");
-    assert.equal(s.totals.damage, 240); assert.ok(s.logs.some(l => l.includes("剑痕 2层")));
+test("warm only on next own turn; no age meter or free damage", () => {
+    let s = start(); assert.equal(s.shadows[0].warm, false);
+    s = act(s, "edge"); assert.ok(s.shadows.every(x => !x.warm));
+    const damage = s.totals.damage; s = act(s, "end");
+    assert.ok(s.shadows.every(x => x.warm)); assert.equal(s.totals.damage, damage);
+    s = act(s, "end"); assert.equal(s.totals.damage, damage);
 });
-test("mature harvest renews every type without copying the original identity or age", () => {
-    for (const [kind, type] of [["e", "edge"], ["g", "guard"], ["i", "guide"]]) {
-        let s = start(1, 5); const g = put(s, kind, 3);
-        s = act(s, "guide", { branch: "pluck", target: g.id });
-        assert.equal(s.sky.length, 1); assert.notEqual(s.sky[0].id, g.id);
-        assert.equal(s.sky[0].members[0].kind, type); assert.equal(s.sky[0].members[0].age, 0);
+test("full board explicit replacement; replacement never harvests", () => {
+    const s = start(); const ids = put(s, "eee", true);
+    reject(s, { move: "edge" });
+    const n = act(s, "edge", { replacementId: ids[1] });
+    assert.equal(n.totals.damage, 90); assert.equal(n.shadows.length, 3);
+    assert.ok(!n.shadows.some(x => x.id === ids[1])); assert.equal(n.totals.warmHarvested, 0);
+});
+test("selective harvest, duplicate/empty/missing IDs atomic", () => {
+    const s = start(), ids = put(s, "egi");
+    for (const shadowIds of [[], [ids[0], ids[0]], [999]]) reject(s, { move: "fall", shadowIds });
+    const n = act(s, "fall", { shadowIds: [ids[0]] });
+    assert.equal(n.shadows.length, 2); assert.equal(n.totals.damage, 70); assert.equal(n.ap, 2);
+});
+test("new shadows useful immediately; warming upgrades actual harvest", () => {
+    let s = start(); put(s, "e"); assert.equal(act(s, "fall").totals.damage, 70);
+    s.shadows[0].warm = true; assert.equal(act(s, "fall").totals.damage, 120);
+    put(s, "g"); assert.equal(act(s, "fall").player.shield, 42);
+});
+test("medicine finite, no AP, shared limit, no overdraft", () => {
+    let s = start(0, "dummy", { healPotions: 1, manaPotions: 1 }); s.player.hp = 600; s.player.mp = 100;
+    s = act(s, "heal"); assert.equal(s.ap, 3); assert.equal(s.player.hp, 960); assert.equal(s.potions.heal, 0);
+    reject(s, { move: "mana" }); s = act(s, "end"); s = act(s, "mana"); assert.equal(s.player.mp, 190);
+    s = act(s, "end"); reject(s, { move: "heal" });
+    reject(start(), { move: "heal" });
+});
+test("first star active and passive effects", () => {
+    assert.equal(act(start(1), "edge").totals.damage, 105);
+    const s = start(2); put(s, "e", true); assert.equal(act(s, "fall").totals.damage, 140);
+    assert.equal(act(start(3), "wind").player.shield, 72);
+    const t = start(4); put(t, "e"); assert.equal(act(t, "fall").totals.damage, 85);
+    assert.equal(act(start(5), "guide").totals.damage, 65);
+    assert.equal(start(6, "dummy", { openingKind: "guard" }).shadows[0].kind, "guard");
+    assert.equal(start(5, "dummy", { openingKind: "guard" }).shadows[0].kind, "edge");
+});
+test("second star new-shadow/guard improvements and armor penetration", () => {
+    let s = start(7); put(s, "e"); assert.equal(act(s, "fall").totals.damage, 95);
+    s = start(8); put(s, "g"); assert.equal(act(s, "fall").player.shield, 60);
+    s = start(9); s.enemy.shield = 100;
+    assert.equal(act(s, "edge").totals.damage, 26);
+});
+test("guard retention and guide suppression growth", () => {
+    let s = start(10); put(s, "g"); s = act(s, "guard"); s = act(s, "guard"); s = act(s, "end");
+    assert.equal(s.player.shield, R.h(s));
+    s = start(11); put(s, "i"); assert.equal(act(s, "fall", { enemyAction: 3 }).suppression[2], 30);
+});
+test("automatic arrays recognize three-same and triad, never arbitrary pair", () => {
+    const s = start(12);
+    for (const [kinds, name] of [["eee", "万锋"], ["ggg", "玄壁"], ["iii", "星罗"], ["egi", "三才"], ["eeg", ""]]) {
+        put(s, kinds); assert.equal(R.array(s), name);
     }
+    const low = start(11); put(low, "eee"); assert.equal(R.array(low), "");
 });
-test("formation pays immediate resonance and each pure array changes its own active", () => {
-    let s = start(2, 6); const first = put(s, "e"); put(s, "e");
-    s = act(s, "edge", { form: first.id });
-    assert.equal(s.logs.filter(l => l.includes("阵鸣")).length, 3);
-    assert.ok(s.totals.damage > 100);
-    s.enemy.shield = 1000; const before = s.totals.damage;
-    s = act(s, "edge"); assert.equal(s.totals.damage - before, 50);
-    s = start(2, 6); put(s, "ggg"); s = act(s, "wind");
-    assert.equal(s.player.shield, Math.round(1.5 * R.h(s)));
-    s = start(2, 6); put(s, "iii"); s = act(s, "guide");
-    assert.equal(s.marks, 3); assert.equal(R.markCap(s), 8);
+test("all four arrays have actual effects", () => {
+    let s = start(12); let ids = put(s, "eee"); s.enemy.shield = 100;
+    assert.equal(act(s, "edge", { replacementId: ids[0] }).totals.damage, 52);
+    s = start(12); ids = put(s, "ggg");
+    assert.equal(act(s, "wind", { replacementId: ids[0] }).player.shield, 102);
+    s = start(12); put(s, "iii"); assert.equal(act(s, "fall").suppression[0], 40);
+    s = start(12); put(s, "egi"); assert.equal(act(s, "fall").totals.damage, 157);
 });
-test("triad follows the new shadow type automatically with no extra target choice", () => {
-    let s = start(2, 6); put(s, "egi");
-    s = act(s, "edge");
-    assert.equal(s.totals.damage, 115);
-    assert.equal(s.logs.filter(l => l.includes("三才随式余响")).length, 1);
-    s = act(s, "wind");
-    assert.equal(s.logs.filter(l => l.includes("三才随式余响")).length, 2);
+test("third star active improvements and warm refund", () => {
+    let s = start(13); s.enemy.charged = true; assert.equal(act(s, "edge").totals.damage, 130);
+    s = start(14); put(s, "i"); assert.equal(act(s, "fall").totals.damage, 60);
+    s = start(15); s.intentions[2] = { kind: "attack", percent: 330, label: "重击" };
+    assert.equal(act(s, "wind").player.shield, 87);
+    s = start(16); put(s, "eee", true); assert.equal(act(s, "fall").player.mp, 294);
+    s = start(17); put(s, "i"); assert.equal(act(s, "fall").totals.damage, 100);
 });
-test("guide reads charge and cancels next-round charged heavy; wrong edge does not", () => {
-    let s = start(3, 6, "burst"); put(s, "i");
+test("delayed harvest locked identities and correct enemy action", () => {
+    let s = start(18, "assault"); const ids = put(s, "eig", true);
+    s = act(s, "fall", { branch: "delay", shadowIds: [ids[1]], enemyAction: 3 });
+    reject(s, { move: "fall", shadowIds: [ids[1]] });
+    reject(s, { move: "edge", replacementId: ids[1] });
+    reject(s, { move: "fall", branch: "delay", shadowIds: [ids[0]] });
     s = act(s, "end");
+    const enemy3 = s.logs.findIndex(l => l.includes("敌行动3"));
+    assert.ok(s.logs.findIndex(l => l.includes("引影收剑")) > enemy3);
+    assert.ok(s.logs.some(l => l.includes("削弱45%"))); assert.equal(s.delayed, null);
+    reject(start(17), { move: "fall", branch: "delay" });
+});
+test("warm guide interruption affects next turn's advertised heavy attack", () => {
+    let s = start(0, "burst"); put(s, "i", true); s = act(s, "fall"); s = act(s, "end");
     assert.equal(s.enemy.charged, false); assert.equal(s.intentions[2].percent, 220);
-    assert.ok(s.logs.some(l => l.includes("截断本次蓄力")));
-    s = start(3, 6, "burst"); put(s, "e");
-    s = act(s, "end");
+    s = start(0, "burst"); put(s, "i"); s = act(s, "fall"); s = act(s, "end");
     assert.equal(s.enemy.charged, true); assert.equal(s.intentions[2].percent, 330);
 });
-test("automatic responses do not farm wait actions; guide halves shield and healing", () => {
-    let s = start(3, 6); put(s, "egi"); s = act(s, "end");
-    assert.equal(s.logs.filter(l => /应剑$/.test(l)).length, 0);
-    s = start(3, 6, "defensive"); s.player.defense = 0; s.enemy.hp -= 1000;
-    put(s, "i"); put(s, "i"); s = act(s, "end");
-    assert.equal(s.enemy.shield, 20);
-    assert.equal(s.logs.filter(l => l.includes("架盾／调息削弱50%")).length, 2);
-    assert.ok(s.logs.some(l => l.includes("敌恢复30")));
+test("suppression max not multiplication, timing and cap", () => {
+    let s = start(30, "assault"); s.path = "guide"; s.upgrades = ["pressure"];
+    put(s, "iii", true); s = act(s, "fall", { enemyAction: 3 });
+    assert.equal(s.suppression[2], 65); assert.equal(s.suppression[0], 0);
+    s = act(s, "end"); assert.equal(s.suppression[2], 0);
 });
-test("body types change sustainable basic, wind defense and guide cultivation", () => {
-    let s = start(4, 1); s.body = putBody(s, "e");
-    s = act(s, "basic");
-    assert.equal(s.totals.damage, 135); assert.equal(s.player.mp, 100000);
-    s = start(4, 1); s.body = putBody(s, "g");
-    s = act(s, "wind"); assert.equal(s.player.shield, R.h(s) + Math.round(0.35 * R.h(s)));
-    s = start(4, 1); s.body = putBody(s, "i"); put(s, "e");
-    s = act(s, "guide"); assert.equal(s.sky[0].members[0].age, 1);
-    s = act(s, "guide"); assert.equal(s.sky[0].members[0].age, 1);
+test("fourth star active improvements and diversity refund", () => {
+    let s = start(19); s.suppression[0] = 20; assert.equal(act(s, "edge").totals.damage, 125);
+    s = start(20); put(s, "g", true); assert.equal(act(s, "fall").player.shield, 108);
+    s = start(21); assert.equal(act(s, "guide").totals.damage, 90);
+    s = start(22); put(s, "egi", true); assert.equal(act(s, "fall").player.mp, 297);
+    s = start(23); assert.equal(act(s, "wind").player.shield, 90);
 });
-test("fifth-star rank four shares one return progress and bounded yuan pool", () => {
-    let s = start(5, 4); const group = put(s, "eee", 3, "cache");
-    s = act(s, "wind", { branch: "recall", target: group.id });
-    assert.equal(s.orbit, 3); assert.equal(s.energy, 1);
-    assert.ok(s.sky[0].members.every(x => x.returnedRound === s.round && !("cycles" in x)));
-    s = act(s, "guide", { branch: "pluck", target: group.id });
-    assert.equal(s.energy, 2);
-    s.ap = 3;
-    s = act(s, "wind", { branch: "recall", target: group.id });
-    assert.equal(s.orbit, 3); assert.equal(s.energy, 2);
-    s = act(s, "end");
-    s = act(s, "guide", { branch: "pluck", target: group.id });
-    s = act(s, "wind", { branch: "recall", target: group.id });
-    assert.equal(s.orbit, 6); assert.ok(s.energy <= 4);
+test("one warmed body per battle; no extra meter; rejects low gates", () => {
+    let s = start(24), ids = put(s, "eg", true);
+    s = act(s, "fall", { branch: "absorb", shadowIds: [ids[0]] });
+    assert.equal(s.body, "edge"); assert.equal(s.shadows.length, 1); assert.equal(s.player.mp, 292);
+    reject(s, { move: "fall", branch: "absorb", shadowIds: [ids[1]] });
+    const t = start(24); put(t, "e"); reject(t, { move: "fall", branch: "absorb" });
+    reject(start(23), { move: "fall", branch: "absorb" });
 });
-test("formation kill stops later effects and future return timestamps are rejected", () => {
-    let s = start(2, 6); const g = put(s, "e"); put(s, "e"); s.enemy.hp = 105;
-    s = act(s, "edge", { form: g.id });
-    assert.equal(s.outcome, "victory"); assert.equal(s.sky.length, 0); assert.equal(s.energy, 0);
-    s = start(5, 6); put(s, "e").members[0].returnedRound = 2;
-    assert.throws(() => R.validateState(s), /回升轮次/);
+test("three body identities alter base moves across multiple rounds", () => {
+    let s = start(24); let ids = put(s, "e", true);
+    s = act(s, "fall", { branch: "absorb", shadowIds: ids });
+    s = act(s, "basic"); assert.equal(s.totals.damage, 295);
+    s = act(s, "basic"); assert.equal(s.totals.damage, 395);
+    s = act(s, "basic"); assert.equal(s.totals.damage, 530);
+    s = start(24); ids = put(s, "g", true); s = act(s, "fall", { branch: "absorb", shadowIds: ids });
+    s = act(s, "wind"); assert.equal(s.player.shield, 153);
+    s = act(s, "end"); assert.equal(s.player.shield, 75);
+    s = start(24); ids = put(s, "i", true); s = act(s, "fall", { branch: "absorb", shadowIds: ids });
+    assert.equal(act(s, "guide").shadows[0].warm, true);
 });
-test("mature array members cannot grant free response roles through younger members", () => {
-    let s = start(3, 6, "burst"); put(s, "e", 6); const g = put(s, "egi", 3);
-    g.members[0].age = 0;
-    s = act(s, "end");
-    assert.equal(s.enemy.charged, true);
-    assert.ok(!s.logs.some(l => l.includes("引影断法")));
-    assert.ok(!s.logs.some(l => l.includes("守影卸力")));
+test("fifth star active/passive improvements", () => {
+    let s = start(25), ids = put(s, "eee");
+    assert.equal(act(s, "edge", { replacementId: ids[0] }).totals.damage, 130);
+    s = start(26); put(s, "e", true); s = act(s, "fall"); assert.equal(s.shadows[0].kind, "edge");
+    assert.equal(s.shadows[0].warm, false); s = act(s, "fall"); assert.equal(s.shadows.length, 0);
+    s = start(27); put(s, "e", true); assert.equal(act(s, "wind").shadows[1].warm, true);
+    s = start(28); put(s, "e"); assert.equal(act(s, "fall").player.mp, 295);
+    s = start(29); s = act(s, "guide"); assert.equal(s.shadows[1].warm, true);
+    s = act(s, "guide"); assert.equal(s.shadows[2].warm, false);
 });
-test("paid pinpoint remains valid when guide body matures its target during the cast", () => {
-    let s = start(4, 6, "burst"); put(s, "i", 5); s.body = putBody(s, "i");
-    s = act(s, "guide", { branch: "pinpoint", target: s.sky[0].id, enemyAction: 1 });
-    assert.equal(s.sky[0].members[0].age, 6);
-    s = act(s, "end");
-    assert.equal(s.enemy.charged, false);
-    assert.ok(s.logs.some(l => l.includes("截断本次蓄力")));
+test("finisher round gate, double snapshot, once per fight, no recursion", () => {
+    let s = start(30); put(s, "e", true); reject(s, { move: "fall", branch: "finish" });
+    s = act(s, "end"); s = act(s, "end");
+    const reserved = act(s, "fall", { branch: "delay" });
+    assert.equal(R.finisherReady(reserved), false);
+    s = act(s, "fall", { branch: "finish" }); assert.equal(s.finisherUsed, true);
+    assert.equal(s.totals.damage, 390); assert.equal(s.shadows.length, 1);
+    reject(s, { move: "fall", branch: "finish" });
+    reject(start(29), { move: "fall", branch: "finish" });
 });
-test("victory/defeat clear combat-only resources and block new actions", () => {
-    let s = start(5, 6); s.enemy.hp = 1; put(s, "e"); s = act(s, "edge");
-    assert.equal(s.outcome, "victory"); assert.equal(s.sky.length, 0);
-    assert.equal(R.resolve(s, { move: "basic", keep: false }).ok, false);
-    s = start(0, 0, "assault"); s.player.hp = 1; s = act(s, "end"); assert.equal(s.outcome, "defeat");
-});
-test("long fights across 31 growth states × 4 enemy styles retain identities and finite logs", () => {
-    let seed = 173, steps = 0;
-    const rand = n => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed % n; };
-    for (let level = 0; level <= 30; level++) for (const style of Object.keys(C.styles)) {
-        let s = level ? start(Math.ceil(level / 6), (level - 1) % 6 + 1, style) : start(0, 0, style);
-        for (let j = 0; j < 120 && s.outcome === "active"; j++) {
-            const move = ["basic", "guard", "edge", "wind", "guide", "fall", "end"][rand(7)];
-            const branches = C.branches(s.setup, move), branch = branches[rand(branches.length)].key;
-            const targetRows = ["recall", "reverse"].includes(branch) ? s.cache : s.sky;
-            const a = { move, branch, keep: false, target: targetRows[0]?.id, other: s.sky[1]?.id, enemyAction: 1 + rand(3) };
-            const r = R.resolve(s, a);
-            if (r.ok) s = r.state; else assert.deepEqual(r.state, s);
-            R.validateState(s); assert.ok(s.logs.length <= 600); steps++;
+test("path selection, reward checkpoints, upgrades and HP/MP persist for 12 battles", () => {
+    let s = start(30); s.player.hp = 800; s.player.mp = 180;
+    for (let battle = 1; battle <= 12; battle++) {
+        assert.equal(s.battle, battle); assert.equal(s.shadows.length, 1); assert.equal(s.shadows[0].warm, false);
+        const oldRev = s.revision, hp = s.player.hp, mp = s.player.mp, bag = R.clone(s.potions);
+        s = win(s); assert.equal(s.reports.length, battle); assert.equal(s.shadows.length, 0);
+        assert.equal(s.body, null); assert.equal(s.player.shield, 0);
+        if (battle < 12) {
+            if ([1, 3, 6].includes(battle)) {
+                assert.equal(s.phase, "reward"); reject(s, { move: "next" });
+                assert.equal(s.offers.length, battle === 1 ? 3 : 2);
+                s = reward(s, "guard");
+            }
+            s = act(s, "next"); assert.ok(s.revision > oldRev);
+            assert.equal(s.player.hp, hp); assert.equal(s.player.mp, mp); assert.deepEqual(s.potions, bag);
+            assert.equal(s.shadows[0].kind, "guard");
         }
     }
-    console.log(`  ${steps} multi-turn resolution attempts`);
+    assert.equal(s.phase, "complete"); assert.equal(s.upgrades.length, 2);
+    assert.equal(new Set(s.upgrades).size, 2); reject(s, { move: "next" });
 });
-console.log(`Manual test: ${passed} groups passed.`);
+test("seeded offers stable, variable, no reroll or duplicate rewards", () => {
+    function offers(seed) {
+        let s = start(0, "dummy", { seed });
+        for (let i = 0; i < 3; i++) { s = win(s); if (i < 2) s = act(reward(s), "next"); }
+        return s;
+    }
+    const a = offers(17), b = offers(17); assert.deepEqual(a, b);
+    const variations = new Set(Array.from({ length: 8 }, (_, i) => offers(i + 1).offers.join(",")));
+    assert.ok(variations.size > 1);
+    reject(a, { move: "route", choice: "guard" });
+    const n = act(a, "upgrade", { choice: a.offers[0] });
+    reject(n, { move: "upgrade", choice: a.offers[0] });
+});
+test("all nine upgrades modify actual results", () => {
+    let s = start(); s.path = "edge"; s.upgrades = ["quickEdge"];
+    assert.equal(act(s, "edge").shadows[1].warm, true);
+    s = start(); s.path = "edge"; s.upgrades = ["cleave"]; put(s, "e", true); s.enemy.shield = 200;
+    assert.equal(act(s, "fall").totals.damage, 60);
+    s = start(); s.path = "edge"; s.upgrades = ["afterEdge"]; put(s, "e", true);
+    assert.equal(act(s, "fall").totals.damage, 160);
+    s = start(); s.path = "guard"; s.upgrades = ["retainShield"]; s.player.shield = 180;
+    assert.equal(act(s, "end").player.shield, 60);
+    s = start(); s.path = "guard"; s.upgrades = ["riposte"]; put(s, "g");
+    assert.equal(act(s, "fall").totals.damage, 42);
+    s.player.shield = 180; assert.equal(act(s, "fall").totals.damage, 0);
+    s = start(0, "assault"); s.path = "guard"; s.upgrades = ["shelter"]; put(s, "g");
+    assert.equal(act(s, "fall").suppression[0], 20);
+    s = start(0, "burst"); s.path = "guide"; s.upgrades = ["cutFlow"]; put(s, "i");
+    s = act(s, "fall"); assert.equal(act(s, "end").enemy.charged, false);
+    s = start(); s.path = "guide"; s.upgrades = ["followCut"]; put(s, "i");
+    assert.equal(act(s, "fall").shadows[0].kind, "edge");
+    s = start(); s.path = "guide"; s.upgrades = ["pressure"]; put(s, "i");
+    assert.equal(act(s, "fall").suppression[0], 35);
+});
+test("victory during any subeffect cleans up and seals exactly one report", () => {
+    for (const kind of ["e", "g", "i"]) {
+        const s = start(30); put(s, kind, true); s.enemy.hp = 1;
+        if (kind === "g") { s.path = "guard"; s.upgrades = ["riposte", "shelter"]; }
+        const n = act(s, "fall"); assert.equal(n.reports.length, 1); R.validateState(n);
+    }
+});
+test("preview/rng/report purity, stale commits including restart/rewards/next", () => {
+    const m = new Manager(); m.start(); const before = R.clone(m.state), rev = before.revision;
+    assert.deepEqual(m.preview({ move: "edge" }), m.preview({ move: "edge" })); assert.deepEqual(m.state, before);
+    assert.ok(m.commit({ move: "edge" }, rev).ok); assert.equal(m.commit({ move: "basic" }, rev).ok, false);
+    const old = m.state.revision; m.start(); assert.equal(m.commit({ move: "edge" }, old).ok, false);
+    m.data.state.enemy.hp = 1; const r = m.state.revision;
+    m.preview({ move: "basic" }); assert.equal(m.state.reports.length, 0);
+    m.commit({ move: "basic" }, r); const rewardRev = m.state.revision;
+    m.commit({ move: "route", choice: "edge" }, rewardRev);
+    assert.equal(m.commit({ move: "route", choice: "guard" }, rewardRev).ok, false);
+    const nextRev = m.state.revision; m.commit({ move: "next" }, nextRev);
+    assert.equal(m.commit({ move: "next" }, nextRev).ok, false);
+});
+test("single mode, defeat and retreat are terminal; no revival or free next", () => {
+    let s = win(start(0, "dummy", { battles: 1 })); assert.equal(s.phase, "complete");
+    assert.equal(s.offers.length, 0);
+    s = start(0, "assault"); s.player.hp = 1; s = act(s, "end");
+    assert.equal(s.phase, "defeat"); reject(s, { move: "next" }); reject(s, { move: "heal" });
+    s = act(win(start()), "retreat"); assert.equal(s.phase, "retreated"); reject(s, { move: "next" });
+    reject(start(), { move: "retreat" });
+});
+test("reports capture turns/actions/resources and freeze after combat", () => {
+    let s = start(); s = act(s, "edge"); s = act(s, "end"); s = win(s);
+    assert.equal(s.reports[0].rounds, 2); assert.equal(s.reports[0].actions, 3);
+    assert.equal(s.reports[0].mpSpent, 5); assert.equal(s.reports[0].endMp, 295);
+    const report = R.clone(s.reports[0]); s.player.hp = 500; s = act(s, "heal");
+    assert.deepEqual(s.reports[0], report); assert.equal(s.totals.healUsed, 1);
+});
+test("edge path cultivates one old free edge, once per own turn", () => {
+    let s = start(); s.path = "edge";
+    s = act(s, "edge"); assert.equal(s.shadows[0].warm, true);
+    assert.equal(s.shadows[1].warm, false); assert.equal(s.totals.specials.cultivate, 1);
+    s = act(s, "edge"); assert.equal(s.shadows[1].warm, false);
+    const low = start(); assert.equal(act(low, "edge").shadows[0].warm, false);
+});
+test("cultivation never modifies reserved shadows or mutates rejected replacement", () => {
+    let s = start(18); s.path = "edge"; const ids = put(s, "eee");
+    reject(s, { move: "edge" }); assert.ok(s.shadows.every(x => !x.warm));
+    s = act(s, "fall", { branch: "delay", shadowIds: [ids[0]], enemyAction: 3 });
+    s = act(s, "edge", { replacementId: ids[2] });
+    assert.equal(s.shadows.find(x => x.id === ids[0]).warm, false);
+    assert.equal(s.shadows.find(x => x.id === ids[1]).warm, true);
+});
+test("guard counter spends one guard per actual block, respects reservation", () => {
+    let s = start(0, "assault"); s.path = "guard"; put(s, "gg");
+    s.player.shield = 60; s = act(s, "end");
+    assert.equal(s.totals.specials.counter, 2); assert.equal(s.shadows.length, 0);
+    assert.equal(s.totals.damage, 160); // 36+50, then remaining 24+50.
+    s = start(18, "assault"); s.path = "guard"; const ids = put(s, "g");
+    s.player.shield = 180; s = act(s, "fall", { branch: "delay", shadowIds: ids, enemyAction: 3 });
+    s = act(s, "end"); assert.equal(s.totals.specials.counter || 0, 0);
+});
+test("warm counter stronger; no shield/no living player means no counter", () => {
+    let s = start(0, "assault"); s.path = "guard"; put(s, "g", true); s.player.shield = 36;
+    s = act(s, "end"); assert.equal(s.totals.damage, 121); assert.equal(s.totals.specials.counter, 1);
+    s = start(0, "assault"); s.path = "guard"; put(s, "g");
+    s = act(s, "end"); assert.equal(s.totals.damage, 0); assert.equal(s.shadows.length, 1);
+    s = start(0, "assault"); s.path = "guard"; put(s, "g"); s.player.shield = 1; s.player.hp = 1;
+    s = act(s, "end"); assert.equal(s.phase, "defeat"); assert.equal(s.totals.specials.counter || 0, 0);
+});
+test("counter lethal stops remaining enemy actions and seals once", () => {
+    let s = start(0, "assault"); s.path = "guard"; put(s, "gg");
+    s.player.shield = 180; s.enemy.hp = 1; s = act(s, "end");
+    assert.equal(s.outcome, "victory"); assert.equal(s.reports.length, 1);
+    assert.equal(s.logs.filter(l => /敌行动/.test(l)).length, 1); assert.equal(s.player.hp, 1200);
+    R.validateState(s);
+});
+test("guide path directly targets one intent, still pays one action and finite mana", () => {
+    let s = start(0, "assault"); s.path = "guide";
+    s = act(s, "guide", { enemyAction: 3 });
+    assert.deepEqual(s.suppression, [0, 0, 20]); assert.equal(s.ap, 2); assert.equal(s.player.mp, 294);
+    assert.equal(s.shadows.length, 2); assert.equal(s.totals.damage, 50);
+    reject(s, { move: "guide", enemyAction: 4 });
+    assert.deepEqual(act(start(), "guide").suppression, [0, 0, 0]);
+});
+test("key-intent break offers one next-turn manual strike, no free action", () => {
+    let s = start(0, "assault"); s.path = "guide";
+    s = act(s, "guide", { enemyAction: 3 }); s = act(s, "end");
+    assert.equal(s.enemy.exposed, true); assert.equal(s.totals.specials.break, 1);
+    const damage = s.totals.damage; s = act(s, "edge");
+    assert.equal(s.totals.damage - damage, 165); assert.equal(s.ap, 2);
+    assert.equal(s.enemy.exposed, false); assert.equal(s.totals.specials.opening, 1);
+    const second = s.totals.damage; s = act(s, "basic"); assert.equal(s.totals.damage - second, 100);
+});
+test("opening ignores shield, is not consumed by harvest and expires without stockpiling", () => {
+    let s = start(); s.enemy.exposed = true; s.enemy.shield = 100;
+    const n = act(s, "basic"); assert.equal(n.totals.damage, 75);
+    s = start(); s.enemy.exposed = true; put(s, "e");
+    s = act(s, "fall"); assert.equal(s.enemy.exposed, true);
+    s = act(s, "end"); assert.equal(s.enemy.exposed, false);
+});
+test("break only for effective key intents; ordinary attacks/waits/full heal do not pay", () => {
+    let s = start(0, "assault"); s.path = "guide";
+    s = act(s, "guide", { enemyAction: 1 }); s = act(s, "end"); assert.equal(s.enemy.exposed, false);
+    s = start(0, "dummy"); s.path = "guide"; s = act(s, "guide"); s = act(s, "end");
+    assert.equal(s.enemy.exposed, false);
+    s = start(0, "defensive"); s.path = "guide"; s.suppression[2] = 30;
+    s = act(s, "end"); assert.equal(s.enemy.exposed, false);
+    s = start(0, "defensive"); s.enemy.defense = 0; s.suppression[0] = 30;
+    s = act(s, "end"); assert.equal(s.enemy.exposed, false);
+});
+test("charge needs true interruption; preview and opening bonus never recurse", () => {
+    let s = start(0, "burst"); s.path = "guide";
+    s = act(s, "guide"); s = act(s, "end"); assert.equal(s.enemy.exposed, false);
+    s = start(0, "burst"); s.path = "guide"; s.upgrades = ["cutFlow"];
+    s = act(s, "guide"); const before = R.clone(s), p = R.resolve(s, { move: "end" });
+    assert.deepEqual(s, before); assert.equal(p.state.enemy.exposed, true);
+    s = p.state; s.enemy.hp = 1; s = act(s, "basic");
+    assert.equal(s.reports.length, 1); assert.equal(s.enemy.exposed, false);
+});
+test("body entry has immediate typed payoff without extra AP, shadow, refund or harvest", () => {
+    for (const [kind, damage, shield] of [["e", 160, 0], ["g", 0, 60], ["i", 80, 0]]) {
+        let s = start(24); put(s, kind, true);
+        s = act(s, "fall", { branch: "absorb", enemyAction: 3 });
+        assert.equal(s.totals.damage, damage); assert.equal(s.player.shield, shield);
+        assert.equal(s.shadows.length, 0); assert.equal(s.ap, 2); assert.equal(s.player.mp, 292);
+        assert.equal(s.totals.warmHarvested, 0); assert.equal(s.totals.specials.absorb, 1);
+        if (kind === "i") assert.equal(s.suppression[2], 45);
+    }
+});
+test("enemy styles change rhythm across turns without hidden random rerolls", () => {
+    for (const style of ["assault", "defensive"]) {
+        const s = start(0, style), before = R.clone(s.intentions), n = act(s, "end");
+        assert.notDeepEqual(n.intentions, before); assert.deepEqual(n.intentions, R.intents(n));
+        assert.equal(act(n, "end").intentions[0].label, before[0].label);
+    }
+});
+test("seeded command fuzz across 31 states and four styles validates every result", () => {
+    let rng = 27, attempts = 0;
+    const random = n => { rng = rng * 16807 % 2147483647; return rng % n; };
+    for (let level = 0; level <= 30; level++) for (const style of ["dummy", "assault", "defensive", "burst"]) {
+        let s = start(level, style);
+        for (let i = 0; i < 120; i++) {
+            const before = R.clone(s), source = s, moves = ["edge", "wind", "guide", "fall", "end", "basic", "heal", "mana"];
+            const r = R.resolve(s, { move: moves[random(moves.length)],
+                replacementId: s.shadows[random(Math.max(1, s.shadows.length))]?.id, enemyAction: 1 + random(3) });
+            if (r.ok) s = r.state; else assert.deepEqual(r.state, before);
+            R.validateState(s); assert.deepEqual(source, before); attempts++;
+            if (s.phase !== "fighting") break;
+        }
+    }
+    console.log("Fuzz attempts: " + attempts);
+});
+console.log(`Manual run rules: ${passed} groups passed.`);

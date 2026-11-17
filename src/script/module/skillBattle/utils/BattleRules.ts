@@ -2,6 +2,7 @@ import type {
     NewBattleAction, NewBattleCarry, NewBattleEvent, NewBattlePreview, NewBattleResult,
     NewBattleSetup, NewBattleState, NewDamagePart, NewPassiveKind,
 } from "../types/BattleTypes";
+import { QingmingBattleAdapter } from "./QingmingBattleAdapter";
 
 /** Resource values use integer hundredths. This module never touches scenes, clocks or storage. */
 export class BattleRules {
@@ -39,6 +40,13 @@ export class BattleRules {
     static start(setup: NewBattleSetup, battleId: string, carry?: NewBattleCarry): NewBattleState {
         this.validateSetup(setup);
         if (!battleId) throw new Error("战斗标识无效");
+        if (setup.qingming) {
+            const weapon = carry ? carry.weapon : setup.weapon, ratio = !weapon ? 0 : weapon.durability > 0 ? 100 : 50;
+            return QingmingBattleAdapter.start(setup,battleId,carry,{
+                attack: setup.player.baseAttack + this.scale(weapon?.attack || 0,ratio),
+                defense: setup.player.baseDefense + this.scale(weapon?.defense || 0,ratio),
+            });
+        }
         const state: NewBattleState = {
             version: 1, battleId, phase: "player_input", revision: 0, round: 1, mainActions: 0,
             player: { hp: carry?.hp ?? setup.player.maxHp, maxHp: setup.player.maxHp,
@@ -105,6 +113,7 @@ export class BattleRules {
         if (setup.earthRules && (!int(setup.earthRules.powerPercent, 100) ||
             !int(setup.earthRules.lowHpPercent, 1) || setup.earthRules.lowHpPercent > 100))
             throw new Error("土道或通用规则无效");
+        if (setup.qingming) QingmingBattleAdapter.validateSetup(setup);
     }
 
     private static validateWeapon(weapon: NonNullable<NewBattleState["weapon"]>): void {
@@ -116,6 +125,8 @@ export class BattleRules {
     }
 
     static validateState(setup: NewBattleSetup, state: NewBattleState): void {
+        if (setup.qingming) { QingmingBattleAdapter.validateState(setup,state); return; }
+        if (state?.qingming) throw new Error("战斗规则版本不匹配");
         const int = (n: number, max = Number.MAX_SAFE_INTEGER) => Number.isSafeInteger(n) && n >= 0 && n <= max;
         const p = state?.player, e = state?.enemy, s = state?.sword;
         if (!state || state.version !== 1 || typeof state.battleId !== "string" || !state.battleId || !p || !e || !s ||
@@ -163,6 +174,7 @@ export class BattleRules {
     }
 
     static resolve(setup: NewBattleSetup, snapshot: NewBattleState, action: NewBattleAction): NewBattleResult {
+        if (setup.qingming) return QingmingBattleAdapter.resolve(setup,snapshot,action,this.attributes(setup,snapshot));
         const reject = (reason: string): NewBattleResult =>
             ({ ok: false, reason, state: this.clone(snapshot), events: [], preview: null });
         try { this.validateSetup(setup); this.validateState(setup, snapshot); }

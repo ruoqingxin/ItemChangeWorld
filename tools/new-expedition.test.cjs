@@ -14,7 +14,13 @@ function unpack(b){if(!Buffer.isBuffer(b))b=fs.readFileSync(b);let at=4;const ou
     for(let i=0;i<b.readInt32LE(0);i++){const len=b.readInt32LE(at);at+=4;const key=b.toString("utf8",at,at+len);at+=len;
         const size=b.readInt32LE(at);at+=4;out[key]=b.subarray(at,at+size);at+=size;}assert.equal(at,b.length);return out;}
 const blocks=unpack(path.join(root,"assets/config/configbin.bin"));
-const cfg=Config.read(new Tables(n=>new ByteBuf(new Uint8Array(blocks[n])))),profile=B.profile(cfg.build);
+const tables=new Tables(n=>new ByteBuf(new Uint8Array(blocks[n])));
+const cfg=Config.read(tables);
+// Keep the legacy single-action transaction suite; integer Qingming has its own integration suite.
+const oldBuild=load("module/inventory/utils/InventoryConfigUtils.js").InventoryConfigUtils.read(tables).build;
+cfg.build.setup=oldBuild.setup;delete cfg.build.qingming;
+for(const e of cfg.build.encounters)delete e.qingmingEnemy;
+const profile=B.profile(cfg.build);
 const budgetKeys=["normalMin","normalMax","eliteMin","eliteMax","insightMin","insightMax","borrowMin","borrowMax"];
 const legacyCfg=structuredClone(cfg);
 for(const key of budgetKeys)delete legacyCfg.rules[key];
