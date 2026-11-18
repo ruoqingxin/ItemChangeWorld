@@ -1,5 +1,28 @@
 # 项目开发依据
 
+## 开发必读：持续适用的代码与预制体规则
+
+以下规则适用于本项目的每次开发，包括新建或重新打开的对话，不依赖此前聊天记录。开始编码或调整界面前必须遵守：
+
+1. 代码注释全部使用中文，新增或修改的注释统一用中文说明用途、业务规则和必要原因。
+2. 简单固定节点尽量直接在预制体中添加。按钮、标题、背景、固定容器等提前搭建，代码负责绑定、更新和交互；数量由数据决定的动态列表项等可以实例化对应预制体。
+3. 主预制体名称、主控制脚本文件名和控制类名必须对应，使用一致的名称主体，例如 `ShopView.lh`、`ShopView.ts`、`ShopView`。
+4. 不将多个独立界面的功能放在一个预制体中处理。独立界面分别维护主预制体和主控制脚本；界面内部组成部分可以保留，通用组件可以拆分复用。
+
+## 开发必读：UI 框架规则
+
+新增、修改 Laya UI、`.lh`、界面类或列表时，必须先阅读 `document/09_整合开发/09_工程配置与存档约定.md` 的“开发必读：UI 框架规范（2026-11-18）”，并遵守：
+
+- 独立 UI 必须同时具备同名 `.lh` 和 TS 界面类。新增预制体放 `assets/ui/prefab/module/<模块名>/<UIName>.lh`，脚本放 `src/script/module/<模块名>/view/<UIName>.ts`；`path` 返回 `ui/prefab/module/<模块名>/<UIName>.lh`，路径统一用正斜杠，文件名和类名一致。
+- 沿用 `UIManager → UIBaseView → UIElements/ElementMapper`；实现当前基类要求的 `layer`、`path`、`onConstruct`、`onOpen`、`onClose`。`onOpen` 使用明确参数和类型，`...args` 仅留在基类定义中；刷新函数与事件响应分开。
+- `getElement` 只能传入 ElementMapper `elements` 已绑定的唯一节点名，禁止 `a/b/c` 路径。访问按钮内文本等子节点也要先单独绑定；在 `onConstruct` 缓存节点和绑定点击，业务逻辑不反复查找。
+- 项目封装 `List` 必须用 `this.elems.getList("list_name")` 获取。`onConstruct` 中设置 `itemCtrl`、按场景设置 `isVirtual`，需要点击时用 `setClickListener(this, this.onClickXxx)`，回调为 `(index: number, ctrl: XxxItemCtrl)`；上述初始化必须在首次 `list.array = [...]` 前完成，数据通过 `array` 绑定，不直接操作内部 item 节点。
+- `ListItemCtrl` 在 `setComponents(rootNode, index, ...)` 中查找节点和完成一次性初始化，`update(data, index, ...)` 只渲染与刷新状态。列表项控制器用 `XxxItemCtrl`，数据接口用 `IXxxItemData`。
+- 主预制根使用 `GWidget` 和 ElementMapper，所有脚本访问的界面节点显式绑定；列表包含 `GList` 和 `_templateNode`。新增节点按语义用 `btn_`、`txt_`、`img_`、`list_`、`box_` 前缀，同一映射范围名称唯一。页面/弹窗继续使用本项目 1280×720 横屏及原生 adapter 关系，公共片段沿用所属页面适配。
+- 新增 UI 按模块与名称确认、预制体/脚本配对、节点绑定、列表初始化顺序检查。缺少 `.lh` 时说明需在 Laya 编辑器创建或导出，不能只写 TS 就宣称完成；现有节点改名、预制移动和依赖更新仅按具体任务范围进行。
+
+## 项目开发入口
+
 - 后续开发唯一的现行文档入口是 `E:\NowChange\ItemChangeWorld\document\09_整合开发\README.md`。开始开发、改配置或验收前先阅读该入口，再阅读涉及模块的整合文档。
 - `document` 下的 `00` 至 `08`、`旧`、`第一版开发`、`必读- 已确认规则` 与 `UI参考` 均作为历史来源或参考资料，不直接作为现行需求。旧文件名中的“定稿”“已确认”“已完成”不改变这一点。
 - `09_整合开发\参考资料\原始快照` 只供追溯，不是第二套现行规则；其中草案、测试 JSON 和旧验收数字不得自动升级为正式规则或当前测试成绩。
