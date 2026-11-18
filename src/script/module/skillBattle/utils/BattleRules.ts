@@ -4,7 +4,7 @@ import type {
 } from "../types/BattleTypes";
 import { QingmingBattleAdapter } from "./QingmingBattleAdapter";
 
-/** Resource values use integer hundredths. This module never touches scenes, clocks or storage. */
+/** Legacy resources use hundredths; Qingming uses raw integers through its adapter. */
 export class BattleRules {
     static readonly unit = 100;
     private static readonly main = [100, 110, 110, 120, 120, 130];

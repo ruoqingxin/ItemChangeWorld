@@ -8,7 +8,9 @@ const ready=p=>p.waitForFunction(()=>window.__skillBattlePreview?.panel?.opened&
 async function click(p,key){
     const point=await p.evaluate(key=>{
         const v=window.__skillBattlePreview,n=v.ui.topView?.getElement(key,false)||v.panel.buttons[key];
-        if(!n?.visible||!n.mouseEnabled)throw Error(`Unavailable ${key}`);
+        if(!n?.visible||!n.mouseEnabled)throw Error(`Unavailable ${key}; ${JSON.stringify({
+            node:v.trial.inventory?.node,stamina:v.trial.inventory?.stamina,selected:v.panel.selectedNode,
+            page:v.panel.pageRole,pending:v.trial.flow?.pending,battles:v.trial.flow?.battles.length})}`);
         const a=n.localToGlobal(new Laya.Point(n.width/2,n.height/2)),r=document.querySelector("canvas").getBoundingClientRect();
         return {x:r.left+a.x*r.width/Laya.stage.width,y:r.top+a.y*r.height/Laya.stage.height};
     },key);
@@ -43,6 +45,40 @@ async function claim(p){
     await click(p,"warehouse"+q.offers.indexOf(key));await click(p,"newRun");
     await p.waitForFunction(()=>!window.__skillBattlePreview.trial.flow.pending);
 }
+async function revealNode(p,id){
+    const r=await p.evaluate(()=>{const r=document.querySelector("canvas").getBoundingClientRect();
+        return {x:r.left,y:r.top,width:r.width,height:r.height};});
+    const blank={x:r.x+r.width*.55,y:r.y+r.height*.88};
+    if(p.touchMode)await p.touchscreen.tap(blank.x,blank.y);else await p.mouse.click(blank.x,blank.y);
+    await p.waitForTimeout(100);
+    for(let i=0;i<16;i++){
+        const x=await p.evaluate(id=>{
+            const v=window.__skillBattlePreview,n=v.panel.buttons[`expNode${id}`];
+            return n.localToGlobal(new Laya.Point(n.width/2,n.height/2)).x/Laya.stage.width;
+        },id);
+        if(x>.06&&x<.94)return;
+        const direction=x<.06?1:-1,a={x:r.x+r.width*(direction===1?.3:.75),y:r.y+r.height*.34};
+        const b={x:a.x+direction*r.width*.2,y:a.y};
+        if(p.touchMode){
+            const c=await p.context().newCDPSession(p);
+            await c.send("Input.dispatchTouchEvent",{type:"touchStart",touchPoints:[{...a,id:1}]});
+            for(let j=1;j<=15;j++){
+                await c.send("Input.dispatchTouchEvent",{type:"touchMove",touchPoints:[{
+                    x:a.x+(b.x-a.x)*j/15,y:a.y,id:1}]});await p.waitForTimeout(16);
+            }
+            await p.waitForTimeout(200);
+            await c.send("Input.dispatchTouchEvent",{type:"touchEnd",touchPoints:[]});await c.detach();
+        }else{
+            await p.mouse.move(a.x,a.y);await p.mouse.down();
+            await p.mouse.move(b.x,b.y,{steps:20});await p.waitForTimeout(200);await p.mouse.up();
+        }
+        await p.waitForTimeout(800);
+        await p.waitForFunction(()=>!window.__skillBattlePreview.panel.scroller._tweening);
+        if(p.touchMode)await p.touchscreen.tap(blank.x,blank.y);else await p.mouse.click(blank.x,blank.y);
+        await p.waitForTimeout(100);
+    }
+    throw Error(`Could not bring map node ${id} into the viewport`);
+}
 async function walk(p,node){
     const s=await state(p),queue=[[s.node]],seen=new Set([s.node]);let route;
     for(const q of queue){
@@ -53,11 +89,24 @@ async function walk(p,node){
     assert.ok(route);
     for(const id of route.slice(1)){
         if((await state(p)).phase!=="active")return;
+        await revealNode(p,id);
         await click(p,`expNode${id}`);
         const latest=await state(p),n=latest.map.nodes.find(n=>n.id===id);
+        if(latest.phase==="active"&&latest.node!==id){
+            await p.screenshot({path:path.join(out,"failed-travel.png")});
+            console.log(await p.evaluate(id=>{
+                const v=window.__skillBattlePreview,n=v.panel.buttons[`expNode${id}`];
+                return {target:id,current:v.trial.inventory.node,selected:v.panel.selectedNode,notice:v.panel.notice,
+                    phase:v.trial.inventory.phase,pending:v.trial.flow.pending,dragged:v.panel.scroller.isDragged,
+                    node:v.trial.inventory.map.nodes.find(n=>n.id===id),
+                    point:n.localToGlobal(new Laya.Point(n.width/2,n.height/2)),
+                    size:[Laya.stage.width,Laya.stage.height]};
+            },id));
+            assert.equal(latest.node,id,"Native node click committed travel");
+        }
         if(n.enemy&&!latest.map.cleared.includes(id))return id;
     }
-    if(route.length===1)await click(p,`expNode${node}`);
+    if(route.length===1){await revealNode(p,node);await click(p,`expNode${node}`);}
     return node;
 }
 async function fight(p,limit=100){

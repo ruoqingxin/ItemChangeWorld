@@ -55,6 +55,8 @@ if ($RulesOnly) { $expeditionArguments += "--rules-only" }
 if ($LASTEXITCODE -ne 0) { throw "Expedition transaction tests failed." }
 & $node (Join-Path $PSScriptRoot "feature-modules.test.cjs") $build
 if ($LASTEXITCODE -ne 0) { throw "Feature module boundary tests failed." }
+& $node (Join-Path $PSScriptRoot "qingming-formal.test.cjs") $build
+if ($LASTEXITCODE -ne 0) { throw "Qingming formal integration tests failed." }
 & $node (Join-Path $PSScriptRoot "skill-battle-prefab.test.cjs")
 if ($LASTEXITCODE -ne 0) { throw "Skill battle prefab tests failed." }
 & $node (Join-Path $PSScriptRoot "ui-assets.cjs")

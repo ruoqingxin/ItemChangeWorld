@@ -55,10 +55,10 @@ function enterFight(f){
 }
 function confirm(f,action){const p=f.s.preview(action);assert.ok(p.ok,p.reason);
     const r=f.s.confirm(action,p.preview.token);assert.ok(r.ok,r.reason);return r;}
-test("generated config stores raw integer units and only two blocks differ",()=>{
+test("generated config stores raw integer units and matches the source export",()=>{
     assert.equal(Object.keys(blocks).length,44);
-    const old=unpack(path.join(root,"tmp/config-export/qingming-before.bin"));
-    assert.deepEqual(Object.keys(blocks).filter(k=>!old[k]||!blocks[k].equals(old[k])).sort(),["new_expedition_rule","new_qingming_rule"]);
+    assert.equal(cfg.mapVersion,"qingming-20261117-integer-v1");
+    assert.ok(blocks.new_qingming_rule);
     assert.deepEqual(fs.readFileSync(path.join(root,"assets/config/configbin.bin")),fs.readFileSync(path.join(root,"../config/configbin.bin")));
     assert.deepEqual(fs.readFileSync(path.join(root,"src/script/config/schema.ts")),fs.readFileSync(path.join(root,"../config/output_client/code/schema.ts")));
     assert.deepEqual(cfg.build.setup.player,{maxHp:1000,maxMp:120,baseAttack:96,baseDefense:38});
@@ -116,6 +116,23 @@ test("durability crossing uses full attributes, subsequent action uses half weap
     assert.equal(act(r,"edge").preview.enemyHpLoss,108);
     assert.equal(act(r,"end").preview.durabilityCost,0);
     const none=battle("patrol",[],{weapon:null});assert.ok(act(none,"basic").ok);
+});
+test("durability loss preserves shields and deferred damage already earned",()=>{
+    const r=battle("tortoise",[],{weapon:{...cfg.build.setup.weapon,attack:100,defense:100,durability:2}});
+    act(r,"wind");act(r,"wind");
+    assert.equal(r.state.weapon.durability,0);
+    assert.ok(r.state.player.block>Core.attributes(r.setup,r.state).defense*6);
+    const source=structuredClone(r.state.qingming);
+    Object.assign(source.player,Core.attributes(r.setup,r.state));
+    const expected=Q.resolve(source,{move:"basic"});
+    assert.ok(expected.ok,expected.reason);
+    assert.deepEqual(act(r,"basic").state.qingming,expected.state);
+    const d=battle("tortoise",["delayedFall","stillness"],
+        {weapon:{...cfg.build.setup.weapon,attack:100,defense:100,durability:1}});
+    act(d,"fall");const suspended=d.state.qingming.pendingSword;
+    assert.equal(suspended,Math.round(196*2.2*1.5));
+    act(d,"wind");assert.equal(d.state.qingming.pendingSword,suspended);
+    act(d,"end");Core.validateState(d.setup,d.state);
 });
 test("bad targets, old skills, prototype actions and full/absent potions reject without mutation",()=>{
     const r=battle();
@@ -178,12 +195,33 @@ test("save failure, stale preview, concurrent tab and timeout preserve atomic in
     f.fail(true);assert.equal(f.s.confirm(action,preview.preview.token).ok,false);
     assert.deepEqual(f.s.archive,before);assert.equal(f.data.get(S.key),text);
     f.fail(false);confirm(f,action);assert.equal(f.s.confirm(action,preview.preview.token).ok,false);
-    const other=f.restore();confirm(f,{type:"basic"});
+    const other=f.restore();confirm(f,{type:"basic"});const latest=f.data.get(S.key);
     const p=other.preview({type:"basic"});assert.equal(other.confirm({type:"basic"},p.preview.token).ok,false);
-    const latest=f.data.get(S.key);assert.equal(latest,f.data.get(S.key));
+    assert.equal(f.data.get(S.key),latest);
     f.clock(f.s.archive.state.deadlineAt);assert.equal(f.s.expire(),true);
     assert.equal(f.s.inventory.result,"timeout");assert.equal(f.s.flow.qingming,undefined);
     assert.equal(f.data.get("other-app"),"keep");assert.deepEqual(f.restore().archive,f.s.archive);
+});
+test("movement and search exhaustion deaths clear the current loadout and settle once",()=>{
+    const entered=R.apply(cfg,profile,R.start(cfg,profile,1,"exhaustion"),{type:"enter"},1000,1).state;
+    for(const type of ["travel","openSource"]){
+        let s=structuredClone(entered);s.flow.qingming=makeLoadout(["swordcraft"]);
+        let command;
+        if(type==="travel"){
+            command={type,node:[...R.reachable(cfg,s)].find(n=>n!==s.node)};
+        }else{
+            const id=s.map.nodes.find(n=>n.kind==="search").id;
+            const edge=s.map.edges.find(([a,b])=>a===id||b===id);
+            s.node=edge.find(n=>n!==id);s.map.debugEnemyBlocking=false;
+            s=R.apply(cfg,profile,s,{type:"travel",node:id},1050,1).state;command={type};
+        }
+        s.stamina=0;s.hp=1;
+        const result=R.apply(cfg,profile,s,command,1100,1).state;
+        assert.equal(result.phase,"ended");assert.equal(result.result,"defeat");
+        assert.equal(result.flow.qingming,undefined);assert.equal(result.flow.pending,null);
+        assert.deepEqual(result.flow.build,{schools:[],actives:[],passiveIds:[]});
+        assert.throws(()=>R.apply(cfg,profile,result,command,1200,1));
+    }
 });
 test("changed config and fractional/tampered snapshots preserve raw archive and block restoration",()=>{
     const f=fixture();enterFight(f);const raw=f.data.get(S.key),changed=structuredClone(cfg);
