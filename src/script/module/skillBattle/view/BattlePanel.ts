@@ -287,7 +287,7 @@ export class BattlePanel {
         this.text("intent",QE.summary(q),410,208,440,80,17,colors.red);
         this.text("interrupt",`飞剑 ${q.flying}/${QR.has(q,"swordUnity")?5:3} · 剑伤 ${q.wounds}/6 · 势 ${q.momentum}/3`,
             410,292,440,34,18,colors.blue);
-        this.drawActors(record.setup.enemy.id);
+        this.drawActors(record.setup.qingming.enemyId);
         placeInDesign(this.elements.enemy,this.root,1100,350);
         this.text("event",this.notice||(this.busy?"结算中":""),410,345,440,42,17,colors.gold);
         const mechanics=[`护盾 ${q.player.shield} · 药品${q.potionUsed?"已用":"可用"}`,
@@ -400,7 +400,7 @@ export class BattlePanel {
         bar.graphics.clear(); bar.graphics.drawRect(0, 0, width, 8, "#39443c");
         if (ratio > 0) bar.graphics.drawRect(0, 0, width * ratio, 8, color);
     }
-    private drawActors(enemyId: number): void {
+    private drawActors(enemyCode: string): void {
         const player = this.elements.player, enemy = this.elements.enemy;
         player.visible = enemy.visible = true;
         placeInDesign(player, this.root, 250, 340); placeInDesign(enemy, this.root, 970, 350);
@@ -408,12 +408,12 @@ export class BattlePanel {
             const g = actor.graphics, isPlayer = actor === player;
             g.clear(); g.drawEllipse(-61, 64, 122, 22, "#18201a", null, 0);
             g.drawPoly(0, 0, [-22,-34, 19,-34, 49,61, 13,70, -43,62],
-                isPlayer ? "#a9b9aa" : enemyId === 3 ? "#aa8f68" : "#7e929d", "#dce3d3", 2);
+                isPlayer ? "#a9b9aa" : enemyCode === "thunder" ? "#aa8f68" : "#7e929d", "#dce3d3", 2);
             g.drawPoly(0, 0, [-18,-27, 10,-24, 29,60, -10,64], isPlayer ? "#465f51" : "#414f60");
             g.drawCircle(0, -49, 20, "#c4c9b4");
             g.drawPoly(0, 0, [-23,-49, -17,-72, 13,-74, 24,-51, 9,-56, -4,-43], "#17211c");
             g.drawLine(24, 5, 88, -65, "#d9e3d4", 6); g.drawLine(40, -3, 21, -21, colors.gold, 5);
-            if (!isPlayer && enemyId !== 1)
+            if (!isPlayer && enemyCode !== "patrol")
                 g.drawPoly(0, 0, [-46,-18, -10,-18, -10,30, -28,48, -46,30], "#9baaaa", colors.gold, 2);
         }
     }

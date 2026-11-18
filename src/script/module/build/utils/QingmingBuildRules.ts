@@ -54,7 +54,7 @@ export class QingmingBuildRules {
                 const maxHp=Math.round(q.enemy.hp*(enemy.tier==="首领"?3:enemy.tier==="精英"?1.6:1)*
                     C.guzongTempo.hp[enemy.tier]*(1+stage*pressure.hp));
                 const setup=Core.clone(config.setup);
-                setup.enemy={id:row.enemy.id,name:enemy.name,maxHp,
+                setup.enemy={id:enemy.id,name:enemy.name,maxHp,
                     };
                 setup.qingming={enemyId:row.qingmingEnemy,enemyMp:q.enemy.mp,enemyDefense:q.enemy.defense,
                     enemyAttack:Math.round(q.enemy.attack*(enemy.tier==="首领"?1.5:enemy.tier==="精英"?1.2:1)*

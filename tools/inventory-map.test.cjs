@@ -92,10 +92,10 @@ test("搜索首次扣费、检查点与尾段保存、刷新暂停和逐件揭�
     session.openSource();
     assert.equal(session.inventory.stamina,before-c.rules.searchCost);
     assert.equal(session.inventory.items.some(i=>i.uid===unknown),false);
-    tick+=c.rules.checkpointMs;now+=c.rules.checkpointMs;
+    tick+=R.searchCheckpointMs;now+=R.searchCheckpointMs;
     assert.equal(session.advanceSearch(),true);
     tick+=100;now+=100;session.pauseSearch();
-    assert.equal(R.source(session.inventory).progressMs,c.rules.checkpointMs+100);
+    assert.equal(R.source(session.inventory).progressMs,R.searchCheckpointMs+100);
     const archive=session.archive;
     session=restore();
     assert.equal(session.searching,false);assert.deepEqual(session.archive,archive);
@@ -103,10 +103,10 @@ test("搜索首次扣费、检查点与尾段保存、刷新暂停和逐件揭�
     session.startSearch();assert.equal(session.inventory.stamina,paid);
     tick+=1500;now+=1500;
     assert.equal(session.advanceSearch(),false);
-    assert.equal(R.source(session.inventory).progressMs,c.rules.checkpointMs+100);
+    assert.equal(R.source(session.inventory).progressMs,R.searchCheckpointMs+100);
     session.startSearch();
     for(let i=0;i<24&&!R.source(session.inventory).revealed;i++){
-        tick+=c.rules.checkpointMs;now+=c.rules.checkpointMs;session.advanceSearch();
+        tick+=R.searchCheckpointMs;now+=R.searchCheckpointMs;session.advanceSearch();
     }
     assert.equal(R.source(session.inventory).revealed,1);
     assert.equal(session.inventory.items.filter(i=>i.uid===unknown).length,1);

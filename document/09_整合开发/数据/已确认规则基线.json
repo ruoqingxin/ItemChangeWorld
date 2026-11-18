@@ -216,6 +216,11 @@
     }
   },
   "acceptedAdjustableTestStartingPoints": {
+    "itemRecyclePricing": {
+      "wishPerSingleCellByQuality": [10, 16, 60, 140, 400, 1200],
+      "gridAreas": [1, 2, 3, 4, 6, 8, 9],
+      "totalPriceMultipliers": [1, 1.5, 2, 2.5, 3.5, 4.5, 5]
+    },
     "formalQingming20261118": {
       "source": "用户要求接入现在战斗，随后明确全部整数；具体投放映射为接入测试起点",
       "mapVersion": "qingming-20261117-integer-v1",

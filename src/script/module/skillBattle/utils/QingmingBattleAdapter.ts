@@ -41,7 +41,8 @@ export class QingmingBattleAdapter {
     }
     static validateSetup(setup: BattleSetup): void {
         const q = setup.qingming;
-        if (!q || !E.enemies[q.enemyId] || E.enemies[q.enemyId].name !== setup.enemy.name ||
+        if (!q || !E.enemies[q.enemyId] || E.enemies[q.enemyId].id !== setup.enemy.id ||
+            E.enemies[q.enemyId].name !== setup.enemy.name ||
             !Number.isInteger(q.seed) || q.seed < 1 || q.seed > 2147483646 ||
             ![q.enemyMp,q.enemyAttack,q.enemyDefense].every(n => Number.isSafeInteger(n) && n >= 0 && n <= 1000000) ||
             !q.loadout || q.loadout.offers.length || Object.keys(q.loadout.offerRoles).length ||

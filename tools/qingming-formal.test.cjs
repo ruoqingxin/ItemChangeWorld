@@ -1,6 +1,6 @@
 const assert=require("node:assert/strict"),fs=require("node:fs"),path=require("node:path");
 const root=path.resolve(__dirname,".."),build=path.resolve(process.argv[2]||path.join(root,"bin/gameplay-tests"));
-const {load,blocks,config:cfg}=require("./config-fixture.cjs");
+const {load,blocks,tables,config:cfg}=require("./config-fixture.cjs");
 const {BattleRules:Core}=load("module/skillBattle/utils/BattleRules.js");
 const {QingmingRules:Q}=load("module/skillBattle/utils/QingmingRules.js");
 const {QingmingConfig:C}=load("module/skillBattle/utils/QingmingConfig.js");
@@ -37,7 +37,7 @@ function fixture(seed=1,c=cfg){
 }
 function enterFight(f){
     f.s.inventoryCommand({type:"enter"});
-    const nodes=f.s.inventory.map.nodes,enemy=nodes.filter(n=>n.enemy&&n.mainOrder>=0).sort((a,b)=>a.mainOrder-b.mainOrder)[0];
+    const nodes=f.s.inventory.map.nodes,enemy=nodes.filter(n=>n.qingmingEnemy&&n.mainOrder>=0).sort((a,b)=>a.mainOrder-b.mainOrder)[0];
     const queue=[[f.s.inventory.node]],seen=new Set(queue[0]),edges=f.s.inventory.map.edges;
     let route;
     for(const p of queue){if(p.at(-1)===enemy.id){route=p;break;}
@@ -56,6 +56,85 @@ test("generated config stores raw integer units and matches the source export",(
     assert.deepEqual(fs.readFileSync(path.join(root,"src/script/config/schema.ts")),fs.readFileSync(path.join(configRoot,"output_client/code/schema.ts")));
     assert.deepEqual(cfg.build.setup.player,{maxHp:1000,maxMp:120,baseAttack:96,baseDefense:38});
     assert.deepEqual(cfg.build.setup.potions.map(p=>p.amount),[300,36]);
+});
+function withRows(changes){
+    const edited=Object.create(tables);
+    for(const [name,transform] of Object.entries(changes)){
+        const rows=transform(tables[name].getDataList().map(row=>({...row})));
+        const byId=new Map(rows.map(row=>[row.id,row]));
+        Object.defineProperty(edited,name,{value:{getDataList:()=>rows,get:id=>byId.get(id)}});
+    }
+    return edited;
+}
+test("物品编号稳定，药效编号独立，引用按目标表查找",()=>{
+    const bands=[
+        [1,300,["weapon"]], [301,600,["hp","mp","repair","stamina","mixed","shield"]],
+        [601,900,["book"]], [901,1200,["material"]], [1201,1500,["container"]],
+    ];
+    const items=tables.item.getDataList();
+    for(const {id,kind} of items){
+        const band=bands.find(([first,last])=>id>=first&&id<=last);
+        assert.ok(band?.[2].includes(kind),`${id} ${kind} 不在对应编号段`);
+        assert.ok(id===9||id>38,`旧编号 ${id} 已退役`);
+    }
+    assert.equal(tables.item.get(9)?.name,"铁剑");
+    assert.equal(tables.item.get(601)?.name,"回澜剑");
+    assert.equal(tables.item.get(1201)?.name,"素麻囊");
+    assert.equal(items.filter(i=>i.enabled===0).length,40);
+    assert.equal(cfg.templates.length,36);
+    assert.deepEqual(cfg.fixtures.map(f=>f.templateId),[9,1201,301,302,303,304,305,306]);
+    assert.equal(tables.item.get(927)?.recycle_price,1200);
+    assert.equal(tables.item.get(46)?.weapon_durability,76);
+    assert.equal(tables.item.get(314)?.repair_amount,-1);
+    assert.equal(tables.potion.get(tables.item.get(311).potion_id)?.secondary_amount,20);
+    const reordered=withRows({
+        item:rows=>rows.map(r=>r.id===301?{...r,potion_id:101}:r).reverse(),
+        potion:rows=>rows.map(r=>r.id===1?{...r,id:101}:r).reverse(),
+        map_node:rows=>rows.reverse(),
+        map_variant:rows=>rows.reverse(),
+        skill:rows=>rows.reverse(),
+        build:rows=>rows.reverse(),
+        enemy:rows=>rows.reverse(),
+    });
+    const before=[Object.keys(C.items),Object.keys(E.enemies)];
+    assert.deepEqual(Config.read(reordered),cfg);
+    assert.deepEqual([Object.keys(C.items),Object.keys(E.enemies)],before);
+});
+test("重复编号、未知行为码和错误跨表引用在读表时拒绝",()=>{
+    const change=(at,fields)=>rows=>rows.map((r,i)=>i===at?{...r,...fields}:r);
+    for(const [table,patch,reason] of [
+        ["item",change(1,{id:9}),/编号无效或重复/],
+        ["item",change(1,{enabled:2}),/投放开关/],
+        ["build",change(0,{code:"unknown"}),/行为码未知或重复/],
+        ["enemy",change(1,{code:"patrol"}),/行为码未知或重复/],
+        ["potion",change(0,{id:99}),/引用的药效/],
+        ["map_rule",change(0,{hp_id:302}),/起始物品编号/],
+        ["map_rule",change(0,{hp_id:307}),/起始物品编号/],
+        ["map_node",change(1,{pool_id:999}),/掉落池引用无效/],
+        ["map_variant",change(0,{item_id:302}),/引用的物品编号/],
+        ["map_variant",change(0,{item_id:307}),/引用的物品编号/],
+        ["map_variant",change(0,{item_id:999}),/引用的物品编号/],
+    ]) assert.throws(()=>Config.read(withRows({[table]:patch})),reason);
+});
+test("地图计时与搜索参数实际生效，耐久上限统一读表",()=>{
+    const c=Config.read(withRows({
+        battle_rule:rows=>rows.map(r=>({...r,weapon_max_durability:65})),
+        map_rule:rows=>rows.map(r=>({...r,limit_ms:450000,search_ms:1500})),
+    }));
+    assert.equal(c.build.setup.weapon.maxDurability,65);
+    assert.equal(c.fixtures.find(f=>f.templateId===9).durability,65);
+    const f=fixture(1,c);
+    f.s.inventoryCommand({type:"enter"});
+    assert.equal(f.s.remainingMs,450000);
+    assert.deepEqual(f.s.inventory.map.warnings,[]);
+    f.clock(151000);
+    f.s.expire();
+    assert.deepEqual(f.s.inventory.map.warnings,[300000]);
+    const s=f.s.inventory;
+    s.node=s.map.nodes.find(n=>n.kind==="search").id;
+    R.makeSource(c,s,1);
+    const item=R.source(s).entries[0];
+    assert.equal(R.searchDuration(c,s),1500*c.templates.find(t=>t.id===item.templateId).quality);
 });
 test("3AP, four base skills, nearest-integer rounding and exact shared-kernel parity for all fifteen enemies",()=>{
     for(const id of Object.keys(E.enemies)){
@@ -89,7 +168,7 @@ test("actual potion UID, independent save, shared once-per-turn chance and no AP
     const f=fixture();enterFight(f);
     assert.deepEqual(f.s.state.qingming.potions,{heal:0,mana:0});
     confirm(f,{type:"qingming",move:"edge"});
-    const state=f.s.state,mp=state.pouch.find(i=>i?.itemId===2);
+    const state=f.s.state,mp=state.pouch.find(i=>i?.itemId===302);
     const p=f.s.preview({type:"potion",itemUid:mp.itemUid});
     assert.equal(p.preview.recovery,4);
     confirm(f,{type:"potion",itemUid:mp.itemUid});
@@ -98,7 +177,7 @@ test("actual potion UID, independent save, shared once-per-turn chance and no AP
     assert.equal(f.s.state.player.mp,120);assert.ok(f.s.inventory.consumed.includes(mp.itemUid));
     assert.deepEqual(f.restore().archive,f.s.archive);
     assert.equal(f.s.preview({type:"potion",itemUid:mp.itemUid}).ok,false);
-    assert.equal(f.s.preview({type:"potion",itemUid:state.pouch.find(i=>i?.itemId===1).itemUid}).ok,false);
+    assert.equal(f.s.preview({type:"potion",itemUid:state.pouch.find(i=>i?.itemId===301).itemUid}).ok,false);
     assert.equal(f.s.preview({type:"qingming",move:"heal"}).ok,false,"no prototype potion path");
     assert.equal(f.data.get("other-app"),"keep");
 });
@@ -140,7 +219,7 @@ test("map roster is seeded independently, complete 7/5/3 coverage and reload pre
     const found=new Set();
     for(let seed=1;seed<=128;seed++){
         const s=R.apply(cfg,R.start(cfg,seed,"coverage"),{type:"enter"},1000,seed).state;
-        for(const n of s.map.nodes.filter(n=>n.enemy)){
+        for(const n of s.map.nodes.filter(n=>n.qingmingEnemy)){
             found.add(n.qingmingEnemy);const e=E.enemies[n.qingmingEnemy];
             assert.equal(n.name,e.name);assert.equal(e.tier,n.kind==="normal"?"普通":n.kind==="elite"?"精英":"首领");
         }
@@ -221,6 +300,10 @@ test("changed config and fractional/tampered snapshots preserve raw archive and 
     changed.build.setup.player.maxHp++;
     const mismatch=new S(new M(),f.storage,()=>1000,changed,()=>0);
     assert.match(mismatch.error,/配置已改变/);assert.equal(f.data.get(S.key),raw);
+    const former=JSON.parse(raw);former.config.rules.checkpointMs=250;
+    f.data.set(S.key,JSON.stringify(former));
+    assert.match(f.restore().error,/配置已改变，请明确重建/);
+    assert.equal(f.data.get(S.key),JSON.stringify(former));
     const bad=JSON.parse(raw);bad.state.flow.battles[0].state.player.hp+=0.5;f.data.set(S.key,JSON.stringify(bad));
     assert.match(f.restore().error,/无法读取/);assert.equal(f.data.get(S.key),JSON.stringify(bad));
 });

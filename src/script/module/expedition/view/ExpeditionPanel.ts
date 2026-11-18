@@ -5,6 +5,7 @@ import { ConfigUtil } from "../../../config/ConfigUtil";
 import { ExpeditionRunConfigUtils } from "../utils/ExpeditionRunConfigUtils";
 import { ExpeditionRules as Rules } from "../utils/ExpeditionRules";
 import { ExpeditionRunManager } from "../manager/ExpeditionRunManager";
+import { isBattleNode } from "../types/ExpeditionRunTypes";
 import type { ExpeditionState } from "../types/ExpeditionRunTypes";
 import { InventoryPanel } from "../../inventory/view/InventoryPanel";
 import { InventoryRules as Inventory } from "../../inventory/utils/InventoryRules";
@@ -206,7 +207,7 @@ export class ExpeditionPanel extends InventoryPanel {
                 }
                 if (key === "expUse") {
                     const c = this.expedition.archive!.config, id = s.node, n = Rules.node(c, id, s);
-                    if (n.enemy && !s.map.cleared.includes(id)) {
+                    if (isBattleNode(n) && !s.map.cleared.includes(id)) {
                         this.expedition.mapCommand({ type: "fight" }); this.navigate("battle"); return;
                     }
                     if (s.map.used.includes(id)) return;
@@ -555,7 +556,7 @@ export class ExpeditionPanel extends InventoryPanel {
         for (const id of Rules.displayNodes(s, viewport.width)) {
             const n = Rules.node(c, id, s), { x: px, y: py } = positions.get(id)!;
             points.set(id, { x: px, y: py });
-            const cleared = !!n.enemy && s.map.cleared.includes(id), source = s.map.sources.find(box => box.node === id);
+            const cleared = isBattleNode(n) && s.map.cleared.includes(id), source = s.map.sources.find(box => box.node === id);
             const explored = !!source && source.revealed === source.entries.length;
             const key = `expNode${id}`;
             this.button(key, "", px - 58, py - 52, 116, 116, reach.has(id), id === s.node || id === this.selectedNode);
@@ -566,7 +567,7 @@ export class ExpeditionPanel extends InventoryPanel {
             base.grayed = explored; base.alpha = 1; base.color = TRANSIT_STONE_COLOR;
             l.visible = false;
             const image = this.child(b, 2) as Laya.GImage;
-            const art = n.kind === "search" ? (n.icon || (n.pool.startsWith("supply") ? "supply" : "search")) :
+            const art = n.kind === "search" ? n.icon! :
                 ({
                     normal: "enemy-normal", elite: "enemy-elite", boss: "enemy-boss", borrow: "borrow", insight: "insight",
                     extract: "extract", recovery: "recovery", start: "start", transit: "transit"
@@ -615,7 +616,7 @@ export class ExpeditionPanel extends InventoryPanel {
         if (!this.movement && this.selectedNode !== null && current.kind !== "transit") {
             const n = current, used = s.map.used.includes(n.id);
             const source = s.map.sources.find(box => box.node === n.id);
-            const enemy = n.enemy && !s.map.cleared.includes(n.id);
+            const enemy = isBattleNode(n) && !s.map.cleared.includes(n.id);
             const fightCost = n.kind === "boss" ? c.rules.bossCost : n.kind === "elite" ? c.rules.eliteCost : c.rules.normalCost;
             const tired = enemy && s.stamina! < fightCost;
             const searched = !!source && source.revealed === source.entries.length;
@@ -625,14 +626,14 @@ export class ExpeditionPanel extends InventoryPanel {
                     n.kind === "extract" ? "安全撤离" : n.kind === "recovery" ? "休息" :
                         n.kind === "borrow" ? "借法" : n.kind === "insight" ? "悟道" : "已在此处";
             const title = enemy ? ({ normal: "普通敌人", elite: "精英敌人", boss: "首领" })[n.kind] :
-                source && n.enemy ? "战后掉落" : n.kind === "recovery" ? "恢复点" : n.kind === "extract" ? "撤离点" : n.name;
+                source && isBattleNode(n) ? "战后掉落" : n.kind === "recovery" ? "恢复点" : n.kind === "extract" ? "撤离点" : n.name;
             const context = this.expeditionNodes.expContextBackground;
             context.visible = true;
             const contextIcon = this.expeditionNodes.expContextIcon as Laya.GImage;
             contextIcon.src = (this.child(this.buttons[`expNode${n.id}`], 2) as Laya.GImage).src
                 .replace("/expeditionNodes/", "/expeditionNodes/clean/");
             contextIcon.visible = true;
-            this.styleNodeIcon(contextIcon, !!n.enemy && s.map.cleared.includes(n.id),
+            this.styleNodeIcon(contextIcon, isBattleNode(n) && s.map.cleared.includes(n.id),
                 !!source && source.revealed === source.entries.length);
             this.mapLabel("expContextTitle", title);
             this.mapLabel("expContextStatus", enemy ? tired ? `体力不足 · 需${fightCost}` : `阻路 · 开战需${fightCost}体力` :

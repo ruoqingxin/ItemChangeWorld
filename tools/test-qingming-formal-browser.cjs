@@ -104,7 +104,7 @@ async function walk(p,node){
             },id));
             assert.equal(latest.node,id,"Native node click committed travel");
         }
-        if(n.enemy&&!latest.map.cleared.includes(id))return id;
+        if(n.qingmingEnemy&&!latest.map.cleared.includes(id))return id;
     }
     if(route.length===1){await revealNode(p,node);await click(p,`expNode${node}`);}
     return node;
@@ -113,8 +113,8 @@ async function fight(p,limit=100){
     for(let i=0;i<limit;i++){
         const s=await state(p);if(s.phase!=="active"||s.flow.phase!=="battle")return;
         const b=await p.evaluate(()=>window.__skillBattlePreview.trial.state),q=b.qingming;
-        const heal=!b.potionUsed&&q.player.hp<=650?b.pouch.findIndex(i=>i?.itemId===1):-1;
-        const mana=!b.potionUsed&&q.player.mp<=70?b.pouch.findIndex(i=>i?.itemId===2):-1;
+        const heal=!b.potionUsed&&q.player.hp<=650?b.pouch.findIndex(i=>i?.itemId===301):-1;
+        const mana=!b.potionUsed&&q.player.mp<=70?b.pouch.findIndex(i=>i?.itemId===302):-1;
         if(heal>=0||mana>=0){await act(p,`pouch${heal>=0?heal:mana}`);continue;}
         const a=choose(q,"flex");
         if(a.move==="guide")await act(p,`qIntent${a.enemyAction||1}`);
@@ -135,7 +135,7 @@ async function fight(p,limit=100){
             await click(p,"invPrimary");assert.equal((await state(p)).flow.phase,"ready");
             assert.equal((await state(p)).flow.pending,null);
             await shot(p,name+"-map");
-            const first=(await state(p)).map.nodes.filter(n=>n.enemy&&n.mainOrder>=0).sort((a,b)=>a.mainOrder-b.mainOrder)[0];
+            const first=(await state(p)).map.nodes.filter(n=>n.qingmingEnemy&&n.mainOrder>=0).sort((a,b)=>a.mainOrder-b.mainOrder)[0];
             await walk(p,first.id);await click(p,"expUse");
             assert.equal((await state(p)).flow.phase,"battle");
             assert.equal(await p.evaluate(()=>window.__skillBattlePreview.trial.state.qingming.ap),3);
@@ -144,7 +144,7 @@ async function fight(p,limit=100){
             await shot(p,name+"-guide-preview");await click(p,"cancel");
             await act(p,"skill4");
             const used=await p.evaluate(()=>window.__skillBattlePreview.trial.state);
-            const slot=used.pouch.findIndex(i=>i?.itemId===2);await act(p,`pouch${slot}`);
+            const slot=used.pouch.findIndex(i=>i?.itemId===302);await act(p,`pouch${slot}`);
             assert.equal(await p.evaluate(()=>window.__skillBattlePreview.trial.state.qingming.ap),2);
             const saved=await state(p);await p.reload();await ready(p);assert.deepEqual(await state(p),saved);
             await shot(p,name+"-restored");
@@ -165,14 +165,14 @@ async function fight(p,limit=100){
                     const queue=[s.node],distance=new Map([[s.node,0]]);
                     for(const last of queue)for(const [a,b]of s.map.edges){
                         const n=a===last?b:b===last?a:null;if(n&&!distance.has(n)){distance.set(n,distance.get(last)+1);queue.push(n);}}
-                    next=s.map.nodes.filter(n=>n.enemy&&!s.map.cleared.includes(n.id)&&n.kind!=="boss")
+                    next=s.map.nodes.filter(n=>n.qingmingEnemy&&!s.map.cleared.includes(n.id)&&n.kind!=="boss")
                         .sort((a,b)=>distance.get(a.id)-distance.get(b.id))[0];
                 }
                 if(!next)break;
                 const arrived=await walk(p,next.id),fresh=await state(p);
                 if(fresh.phase!=="active")break;
                 const n=fresh.map.nodes.find(n=>n.id===arrived);
-                if(n.enemy&&!fresh.map.cleared.includes(n.id)){
+                if(n.qingmingEnemy&&!fresh.map.cleared.includes(n.id)){
                     if(fresh.stamina<(n.kind==="boss"?60:n.kind==="elite"?30:10))break;
                     await click(p,"expUse");await fight(p);
                     if((await state(p)).phase==="active")await claim(p);

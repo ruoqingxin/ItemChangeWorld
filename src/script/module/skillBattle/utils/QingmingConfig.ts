@@ -1,5 +1,12 @@
 import type { Tables } from "../../../config/schema";
+import { byBehaviorCode } from "../../../config/ConfigRows";
 import type { RogueItem, RogueMove, RogueSetup, RogueState } from "../types/QingmingTypes";
+
+const MOVE_CODES = ["basic","guard","edge","wind","guide","fall","end","heal","mana","choose","next","retreat"] as const;
+const BUILD_CODES: readonly RogueItem[] = ["swordcraft","flyingEdge","salvo","swordUnity","wound","rupture","dye",
+    "endlessWound","riposte","breakingWave","retention","turnTables","breathing","bloodMana","risk","storedEdge",
+    "heavyEdge","delayedFall","shieldWind","pinGuide","shieldFall","tempo","swordSiphon","woundGuard","cycle",
+    "stillness","meditation"];
 
 export interface RogueItemDefinition {
     name: string; type: "passive" | "mutation" | "core"; family: "flying" | "wound" | "guard" | "neutral";
@@ -50,21 +57,29 @@ export class QingmingConfig {
         enemyArrayBreak: "拆阵", enemyPhase: "第二阶段", enemyWindow: "暴露窗口", enemyBonus: "条件强化", basicMana: "普攻回灵" };
     static items: Record<RogueItem, RogueItemDefinition> = {} as Record<RogueItem, RogueItemDefinition>;
     static load(tables: Tables): void {
-        this.moves = {} as Record<RogueMove, string>;
-        this.skills = {};
-        for (const row of tables.skill.getDataList()) {
-            this.moves[row.id] = row.name;
-            this.skills[row.id] = {name: row.name, cost: row.mp_cost, description: row.description};
+        const moves = {} as Record<RogueMove, string>;
+        const skills: typeof this.skills = {};
+        const items = {} as Record<RogueItem, RogueItemDefinition>;
+        for (const row of byBehaviorCode(tables.skill.getDataList(), MOVE_CODES, "技能表")) {
+            if (!row.name || !row.description || !Number.isSafeInteger(row.mp_cost) || row.mp_cost < 0)
+                throw new Error(`技能配置无效：${row.code}`);
+            moves[row.code] = row.name;
+            skills[row.code] = {name: row.name, cost: row.mp_cost, description: row.description};
         }
-        this.items = {} as Record<RogueItem, RogueItemDefinition>;
-        for (const row of tables.build.getDataList()) this.items[row.id] = {
-            name: row.name, type: row.type as RogueItemDefinition["type"],
-            family: row.family as RogueItemDefinition["family"], description: row.description,
-            ...(row.slot ? {slot: row.slot as RogueMove} : {}),
-        };
-        if (Object.keys(this.items).length !== 27 || Object.keys(this.moves).length !== 12 ||
-            ["basic","guard","edge","wind","guide","fall","end","heal","mana","choose","next","retreat"].some(k=>!this.skills[k]))
-            throw new Error("技能或构筑配置不完整");
+        for (const row of byBehaviorCode(tables.build.getDataList(), BUILD_CODES, "构筑表")) {
+            if (!row.name || !row.description || !["passive","mutation","core"].includes(row.type) ||
+                !["flying","wound","guard","neutral"].includes(row.family) ||
+                (row.type === "mutation" ? !["edge","wind","guide","fall"].includes(row.slot) : !!row.slot))
+                throw new Error(`构筑配置无效：${row.code}`);
+            items[row.code] = {
+                name: row.name, type: row.type as RogueItemDefinition["type"],
+                family: row.family as RogueItemDefinition["family"], description: row.description,
+                ...(row.slot ? {slot: row.slot as RogueMove} : {}),
+            };
+        }
+        this.moves = moves;
+        this.skills = skills;
+        this.items = items;
     }
     static cost(move: RogueMove, state?: RogueState): number {
         const base = this.skills[move]?.cost || 0;

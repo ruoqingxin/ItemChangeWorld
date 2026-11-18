@@ -37,23 +37,78 @@ export enum EQuality {
 export class Ibattle_ruleConfig {
 
     constructor(_buf_: ByteBuf) {
-        this.id = _buf_.ReadString()
-        this.value = _buf_.ReadInt()
-        this.description = _buf_.ReadString()
+        this.id = _buf_.ReadInt()
+        this.player_hp = _buf_.ReadInt()
+        this.player_mp = _buf_.ReadInt()
+        this.base_attack = _buf_.ReadInt()
+        this.base_defense = _buf_.ReadInt()
+        this.weapon_attack = _buf_.ReadInt()
+        this.weapon_defense = _buf_.ReadInt()
+        this.enemy_hp = _buf_.ReadInt()
+        this.enemy_mp = _buf_.ReadInt()
+        this.enemy_attack = _buf_.ReadInt()
+        this.enemy_defense = _buf_.ReadInt()
+        this.battle_rewards = _buf_.ReadInt()
+        this.version = _buf_.ReadInt()
+        this.weapon_max_durability = _buf_.ReadInt()
     }
 
     /**
-     * 规则键
+     * 固定编号
      */
-    readonly id: string
+    readonly id: number
     /**
-     * 整数值
+     * 生命上限
      */
-    readonly value: number
+    readonly player_hp: number
     /**
-     * 可调整测试起点
+     * 灵力上限
      */
-    readonly description: string
+    readonly player_mp: number
+    /**
+     * 基础攻击
+     */
+    readonly base_attack: number
+    /**
+     * 基础防御
+     */
+    readonly base_defense: number
+    /**
+     * 武器攻击
+     */
+    readonly weapon_attack: number
+    /**
+     * 武器防御
+     */
+    readonly weapon_defense: number
+    /**
+     * 敌人基础生命，按类型及战次调整
+     */
+    readonly enemy_hp: number
+    /**
+     * 敌人灵力
+     */
+    readonly enemy_mp: number
+    /**
+     * 敌人基础攻击
+     */
+    readonly enemy_attack: number
+    /**
+     * 敌人防御
+     */
+    readonly enemy_defense: number
+    /**
+     * 胜利后构筑奖励场数
+     */
+    readonly battle_rewards: number
+    /**
+     * 整数规则版本
+     */
+    readonly version: number
+    /**
+     * 武器耐久上限
+     */
+    readonly weapon_max_durability: number
 
 
 }
@@ -61,7 +116,8 @@ export class Ibattle_ruleConfig {
 export class IbuildConfig {
 
     constructor(_buf_: ByteBuf) {
-        this.id = _buf_.ReadString()
+        this.id = _buf_.ReadInt()
+        this.code = _buf_.ReadString()
         this.name = _buf_.ReadString()
         this.type = _buf_.ReadString()
         this.family = _buf_.ReadString()
@@ -70,9 +126,13 @@ export class IbuildConfig {
     }
 
     /**
-     * 构筑标识
+     * 固定编号
      */
-    readonly id: string
+    readonly id: number
+    /**
+     * 程序行为码
+     */
+    readonly code: string
     /**
      * 名称
      */
@@ -100,7 +160,8 @@ export class IbuildConfig {
 export class IenemyConfig {
 
     constructor(_buf_: ByteBuf) {
-        this.id = _buf_.ReadString()
+        this.id = _buf_.ReadInt()
+        this.code = _buf_.ReadString()
         this.name = _buf_.ReadString()
         this.tier = _buf_.ReadString()
         this.opening = _buf_.ReadInt()
@@ -108,9 +169,13 @@ export class IenemyConfig {
     }
 
     /**
-     * 敌人标识
+     * 固定编号
      */
-    readonly id: string
+    readonly id: number
+    /**
+     * 程序行为码
+     */
+    readonly code: string
     /**
      * 名称
      */
@@ -200,10 +265,16 @@ export class IitemConfig {
         this.weight = _buf_.ReadInt()
         this.weight_limit = _buf_.ReadInt()
         this.stamina_restore = _buf_.ReadInt()
+        this.recycle_price = _buf_.ReadInt()
+        this.enabled = _buf_.ReadInt()
+        this.weapon_attack = _buf_.ReadInt()
+        this.weapon_defense = _buf_.ReadInt()
+        this.weapon_durability = _buf_.ReadInt()
+        this.repair_amount = _buf_.ReadInt()
     }
 
     /**
-     * 物品ID
+     * 固定物品编号；停用也不复用
      */
     readonly id: number
     /**
@@ -239,7 +310,7 @@ export class IitemConfig {
      */
     readonly stack: number
     /**
-     * 药品效果ID
+     * 药效编号；0 表示无
      */
     readonly potion_id: number
     /**
@@ -270,6 +341,30 @@ export class IitemConfig {
      * 战外体力恢复
      */
     readonly stamina_restore: number
+    /**
+     * 回收基价（愿力）
+     */
+    readonly recycle_price: number
+    /**
+     * 已投放 1，待投放 0
+     */
+    readonly enabled: number
+    /**
+     * 武器攻击
+     */
+    readonly weapon_attack: number
+    /**
+     * 武器防御
+     */
+    readonly weapon_defense: number
+    /**
+     * 武器耐久上限
+     */
+    readonly weapon_durability: number
+    /**
+     * 修理量，-1 表示修满
+     */
+    readonly repair_amount: number
 
 
 }
@@ -281,8 +376,7 @@ export class Imap_nodeConfig {
         this.key = _buf_.ReadString()
         this.kind = _buf_.ReadString()
         this.name = _buf_.ReadString()
-        this.enemy = _buf_.ReadString()
-        this.pool = _buf_.ReadString()
+        this.pool_id = _buf_.ReadInt()
         this.main_order = _buf_.ReadInt()
         this.x = _buf_.ReadFloat()
         this.y = _buf_.ReadFloat()
@@ -309,13 +403,9 @@ export class Imap_nodeConfig {
      */
     readonly name: string
     /**
-     * 敌人键
+     * 掉落池编号；0 表示无
      */
-    readonly enemy: string
-    /**
-     * 来源池
-     */
-    readonly pool: string
+    readonly pool_id: number
     /**
      * 主序号
      */
@@ -343,7 +433,8 @@ export class Imap_nodeConfig {
 export class Imap_poolConfig {
 
     constructor(_buf_: ByteBuf) {
-        this.id = _buf_.ReadString()
+        this.id = _buf_.ReadInt()
+        this.code = _buf_.ReadString()
         this.min_count = _buf_.ReadInt()
         this.max_count = _buf_.ReadInt()
         this.min_weight = _buf_.ReadInt()
@@ -367,9 +458,13 @@ export class Imap_poolConfig {
     }
 
     /**
-     * 来源池
+     * 固定编号
      */
-    readonly id: string
+    readonly id: number
+    /**
+     * 来源标识
+     */
+    readonly code: string
     /**
      * 较少件数
      */
@@ -443,11 +538,7 @@ export class Imap_ruleConfig {
         this.map_version = _buf_.ReadString()
         this.limit_ms = _buf_.ReadInt()
         this.search_ms = _buf_.ReadInt()
-        this.checkpoint_ms = _buf_.ReadInt()
         this.recovery_percent = _buf_.ReadInt()
-        this.supply_hp = _buf_.ReadInt()
-        this.supply_mp = _buf_.ReadInt()
-        this.supply_repair = _buf_.ReadInt()
         this.book_sword = _buf_.ReadInt()
         this.book_earth = _buf_.ReadInt()
         this.book_common = _buf_.ReadInt()
@@ -495,25 +586,9 @@ export class Imap_ruleConfig {
      */
     readonly search_ms: number
     /**
-     * 检查点毫秒
-     */
-    readonly checkpoint_ms: number
-    /**
      * 恢复百分比
      */
     readonly recovery_percent: number
-    /**
-     * 补给血药权重
-     */
-    readonly supply_hp: number
-    /**
-     * 补给蓝药权重
-     */
-    readonly supply_mp: number
-    /**
-     * 补给修补权重
-     */
-    readonly supply_repair: number
     /**
      * 剑书权重
      */
@@ -527,23 +602,23 @@ export class Imap_ruleConfig {
      */
     readonly book_common: number
     /**
-     * 夹具武器
+     * 初始武器的物品编号
      */
     readonly weapon_id: number
     /**
-     * 夹具容器
+     * 初始容器的物品编号
      */
     readonly container_id: number
     /**
-     * 夹具血药
+     * 初始血药的物品编号
      */
     readonly hp_id: number
     /**
-     * 夹具蓝药
+     * 初始蓝药的物品编号
      */
     readonly mp_id: number
     /**
-     * 夹具修补
+     * 初始修补工具的物品编号
      */
     readonly repair_id: number
     /**
@@ -624,7 +699,7 @@ export class Imap_variantConfig {
     }
 
     /**
-     * 子项ID
+     * 固定掉落条目编号
      */
     readonly id: number
     /**
@@ -632,7 +707,7 @@ export class Imap_variantConfig {
      */
     readonly family: string
     /**
-     * 物品ID
+     * 引用物品表固定编号
      */
     readonly item_id: number
     /**
@@ -647,27 +722,27 @@ export class IpotionConfig {
 
     constructor(_buf_: ByteBuf) {
         this.id = _buf_.ReadInt()
-        this.name = _buf_.ReadString()
         this.resource = _buf_.ReadString()
         this.amount = _buf_.ReadInt()
+        this.secondary_amount = _buf_.ReadInt()
     }
 
     /**
-     * 药品ID
+     * 固定药效编号
      */
     readonly id: number
-    /**
-     * 名称
-     */
-    readonly name: string
     /**
      * 恢复资源
      */
     readonly resource: string
     /**
-     * 恢复量
+     * 固定恢复量（点）
      */
     readonly amount: number
+    /**
+     * 双恢复的灵力恢复量
+     */
+    readonly secondary_amount: number
 
 
 }
@@ -675,16 +750,21 @@ export class IpotionConfig {
 export class IskillConfig {
 
     constructor(_buf_: ByteBuf) {
-        this.id = _buf_.ReadString()
+        this.id = _buf_.ReadInt()
+        this.code = _buf_.ReadString()
         this.name = _buf_.ReadString()
         this.mp_cost = _buf_.ReadInt()
         this.description = _buf_.ReadString()
     }
 
     /**
-     * 技能标识
+     * 固定编号
      */
-    readonly id: string
+    readonly id: number
+    /**
+     * 程序行为码
+     */
+    readonly code: string
     /**
      * 名称
      */
@@ -702,7 +782,7 @@ export class IskillConfig {
 }
 
 export class battle_rule {
-    private _dataMap: Map<string, Ibattle_ruleConfig>
+    private _dataMap: Map<number, Ibattle_ruleConfig>
 
     private _dataList: Ibattle_ruleConfig[]
     private _loaded:boolean=false;
@@ -721,7 +801,7 @@ export class battle_rule {
             console.error("_buf_ null");
             return;
         }
-        this._dataMap = new Map<string, Ibattle_ruleConfig>()
+        this._dataMap = new Map<number, Ibattle_ruleConfig>()
         this._dataList = []
 
         for(let n = _buf_.ReadInt(); n > 0; n--) {
@@ -733,11 +813,11 @@ export class battle_rule {
         }
         this._loaded = true;
     }
-    getDataMap(): Map<string, Ibattle_ruleConfig> {this.load(); return this._dataMap; }
+    getDataMap(): Map<number, Ibattle_ruleConfig> {this.load(); return this._dataMap; }
 
     getDataList(): Ibattle_ruleConfig[] { this.load();return this._dataList; }
 
-    get(key: string): Ibattle_ruleConfig | undefined {
+    get(key: number): Ibattle_ruleConfig | undefined {
 		this.load();
         return this._dataMap.get(key);
     }
@@ -745,7 +825,7 @@ export class battle_rule {
 }
 
 export class skill {
-    private _dataMap: Map<string, IskillConfig>
+    private _dataMap: Map<number, IskillConfig>
 
     private _dataList: IskillConfig[]
     private _loaded:boolean=false;
@@ -764,7 +844,7 @@ export class skill {
             console.error("_buf_ null");
             return;
         }
-        this._dataMap = new Map<string, IskillConfig>()
+        this._dataMap = new Map<number, IskillConfig>()
         this._dataList = []
 
         for(let n = _buf_.ReadInt(); n > 0; n--) {
@@ -776,11 +856,11 @@ export class skill {
         }
         this._loaded = true;
     }
-    getDataMap(): Map<string, IskillConfig> {this.load(); return this._dataMap; }
+    getDataMap(): Map<number, IskillConfig> {this.load(); return this._dataMap; }
 
     getDataList(): IskillConfig[] { this.load();return this._dataList; }
 
-    get(key: string): IskillConfig | undefined {
+    get(key: number): IskillConfig | undefined {
 		this.load();
         return this._dataMap.get(key);
     }
@@ -788,7 +868,7 @@ export class skill {
 }
 
 export class build {
-    private _dataMap: Map<string, IbuildConfig>
+    private _dataMap: Map<number, IbuildConfig>
 
     private _dataList: IbuildConfig[]
     private _loaded:boolean=false;
@@ -807,7 +887,7 @@ export class build {
             console.error("_buf_ null");
             return;
         }
-        this._dataMap = new Map<string, IbuildConfig>()
+        this._dataMap = new Map<number, IbuildConfig>()
         this._dataList = []
 
         for(let n = _buf_.ReadInt(); n > 0; n--) {
@@ -819,11 +899,11 @@ export class build {
         }
         this._loaded = true;
     }
-    getDataMap(): Map<string, IbuildConfig> {this.load(); return this._dataMap; }
+    getDataMap(): Map<number, IbuildConfig> {this.load(); return this._dataMap; }
 
     getDataList(): IbuildConfig[] { this.load();return this._dataList; }
 
-    get(key: string): IbuildConfig | undefined {
+    get(key: number): IbuildConfig | undefined {
 		this.load();
         return this._dataMap.get(key);
     }
@@ -831,7 +911,7 @@ export class build {
 }
 
 export class enemy {
-    private _dataMap: Map<string, IenemyConfig>
+    private _dataMap: Map<number, IenemyConfig>
 
     private _dataList: IenemyConfig[]
     private _loaded:boolean=false;
@@ -850,7 +930,7 @@ export class enemy {
             console.error("_buf_ null");
             return;
         }
-        this._dataMap = new Map<string, IenemyConfig>()
+        this._dataMap = new Map<number, IenemyConfig>()
         this._dataList = []
 
         for(let n = _buf_.ReadInt(); n > 0; n--) {
@@ -862,11 +942,11 @@ export class enemy {
         }
         this._loaded = true;
     }
-    getDataMap(): Map<string, IenemyConfig> {this.load(); return this._dataMap; }
+    getDataMap(): Map<number, IenemyConfig> {this.load(); return this._dataMap; }
 
     getDataList(): IenemyConfig[] { this.load();return this._dataList; }
 
-    get(key: string): IenemyConfig | undefined {
+    get(key: number): IenemyConfig | undefined {
 		this.load();
         return this._dataMap.get(key);
     }
@@ -1046,7 +1126,7 @@ export class map_node {
 }
 
 export class map_pool {
-    private _dataMap: Map<string, Imap_poolConfig>
+    private _dataMap: Map<number, Imap_poolConfig>
 
     private _dataList: Imap_poolConfig[]
     private _loaded:boolean=false;
@@ -1065,7 +1145,7 @@ export class map_pool {
             console.error("_buf_ null");
             return;
         }
-        this._dataMap = new Map<string, Imap_poolConfig>()
+        this._dataMap = new Map<number, Imap_poolConfig>()
         this._dataList = []
 
         for(let n = _buf_.ReadInt(); n > 0; n--) {
@@ -1077,11 +1157,11 @@ export class map_pool {
         }
         this._loaded = true;
     }
-    getDataMap(): Map<string, Imap_poolConfig> {this.load(); return this._dataMap; }
+    getDataMap(): Map<number, Imap_poolConfig> {this.load(); return this._dataMap; }
 
     getDataList(): Imap_poolConfig[] { this.load();return this._dataList; }
 
-    get(key: string): Imap_poolConfig | undefined {
+    get(key: number): Imap_poolConfig | undefined {
 		this.load();
         return this._dataMap.get(key);
     }

@@ -42,7 +42,7 @@ export class InventoryRules {
             if (!int(t.id, 1) || !t.name || !["hp","mp","repair","stamina","book","material","weapon","container"].includes(t.kind) ||
                 !int(t.width, 1, 8) || !int(t.height, 1, 6) || t.stack !== 1 ||
                 ![t.rotate,t.battle,t.safe].every(v => typeof v === "boolean") ||
-                !int(t.bagWidth, 0, 8) || !int(t.bagHeight, 0, 6) || !int(t.potionId) ||
+                !int(t.bagWidth, 0, 8) || !int(t.bagHeight, 0, 6) ||
                 !/^(?:ui\/atlas\/module\/inventory\/[\w-]+|ui\/image\/naxu\/naxu-[a-z]+-q[1-6])\.png$/.test(t.icon) ||
                 (t.quality !== undefined && !int(t.quality, 1, 6)) ||
                 (["weapon","container"].includes(t.kind) && (t.safe || t.battle)) ||
@@ -55,9 +55,9 @@ export class InventoryRules {
                 t.kind !== "stamina" && !!t.staminaRestore)
                 throw new Error("物品重量、承重或体力药配置无效");
             if (t.kind === "hp" || t.kind === "mp") {
-                if (!config.build.setup.potions.some(p => p.itemId === t.potionId && p.resource === t.kind) ||
+                if (!config.build.setup.potions.some(p => p.itemId === t.id && p.resource === t.kind) ||
                     t.width !== 1 || t.height !== 1) throw new Error("实际药品与新核配置不匹配");
-            } else if (t.potionId !== 0) throw new Error("非药品不能借用药品效果");
+            }
             if (t.kind === "weapon" && (t.width !== 2 || t.height !== 3) ||
                 t.kind === "container" && (t.width !== 2 || t.height !== 2))
                 throw new Error("武器实体须为2×3六格，纳虚器本体须为2×2四格");
@@ -276,7 +276,7 @@ export class InventoryRules {
         for (const item of state.items.filter(i => i.location.space === "battle")) {
             const t = this.template(config,item);
             if (t.kind === "hp" || t.kind === "mp")
-                pouch[item.location.y! * config.spaces.battleWidth + item.location.x!] = { itemUid: item.uid, itemId: t.potionId };
+                pouch[item.location.y! * config.spaces.battleWidth + item.location.x!] = { itemUid: item.uid, itemId: t.id };
         }
         return { hp: state.hp, mp: state.mp, weapon: weapon ?
             { ...Core.clone(config.build.setup.weapon!), durability: weapon.durability! } : null, pouch };
@@ -405,7 +405,7 @@ export class InventoryRules {
                 } else if (t.kind === "hp" || t.kind === "mp") {
                     const max = t.kind === "hp" ? config.build.setup.player.maxHp : config.build.setup.player.maxMp;
                     if (state[t.kind] >= max) throw new Error(t.kind === "hp" ? "生命已满" : "灵力已满");
-                    state[t.kind] = Math.min(max,state[t.kind] + config.build.setup.potions.find(p => p.itemId === t.potionId)!.amount);
+                    state[t.kind] = Math.min(max,state[t.kind] + config.build.setup.potions.find(p => p.itemId === t.id)!.amount);
                 } else throw new Error("此物品不能使用；本阶段不开放学习");
                 this.consume(state,item);
                 break;

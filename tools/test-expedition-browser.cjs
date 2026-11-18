@@ -46,10 +46,10 @@ async function drag(p,from,to){
         p.touchMode=touch;p.on("pageerror",e=>errors.push(e.message));
         await p.goto(url);await p.waitForFunction(()=>window.__skillBattlePreview?.panel?.opened);
         await click(p,"invPrimary");
-        const small=await p.evaluate(()=>window.__skillBattlePreview.panel.visibleItems.findIndex(i=>i.templateId===36));
+        const small=await p.evaluate(()=>window.__skillBattlePreview.panel.visibleItems.findIndex(i=>i.templateId===304));
         assert.ok(small>=0);
         await drag(p,`invList${small}`,"invCell_bag_1");
-        assert.equal(await p.evaluate(()=>window.__skillBattlePreview.trial.inventory.items.find(i=>i.templateId===36).location.space),"bag");
+        assert.equal(await p.evaluate(()=>window.__skillBattlePreview.trial.inventory.items.find(i=>i.templateId===304).location.space),"bag");
         await shot(p,name+"-drag");
         await click(p,"invPrimary");await p.waitForFunction(()=>window.__skillBattlePreview.panel.pageRole==="map");
         const initial=await p.evaluate(()=>window.__skillBattlePreview.trial.inventory);

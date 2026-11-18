@@ -8,7 +8,7 @@ export interface InventoryLocation { space: InventorySpace; x?: number; y?: numb
 export interface InventoryTemplate {
     id: number; name: string; kind: "hp" | "mp" | "repair" | "stamina" | "book" | "material" | "weapon" | "container";
     width: number; height: number; rotate: boolean; battle: boolean; safe: boolean; stack: number;
-    potionId: number; bagWidth: number; bagHeight: number; icon: string; quality: EQuality;
+    bagWidth: number; bagHeight: number; icon: string; quality: EQuality;
     weight: number; weightLimit: number; staminaRestore: number;
 }
 export interface InventoryItem { uid: string; templateId: number; location: InventoryLocation; durability: number | null; }

@@ -1,18 +1,30 @@
 import type { Tables } from "../../../config/schema";
+import { byBehaviorCode } from "../../../config/ConfigRows";
 import type { RogueEnemyId, RogueEnemyIntent, RogueFoeState, RogueMove, RogueSetup, RogueState } from "../types/QingmingTypes";
 import { QingmingConfig as C } from "./QingmingConfig";
 
+const ENEMY_CODES: readonly RogueEnemyId[] = ["patrol","stone","thunder","apothecary","bloodBlade","echo","shade",
+    "gatekeeper","alchemist","swordsman","breaker","arrayMaster","tortoise","swordmaster","swordSpirit"];
+
 interface EnemyDefinition {
-    name: string; tier: "普通" | "精英" | "首领"; hint: string; opening?: number;
+    id: number; name: string; tier: "普通" | "精英" | "首领"; hint: string; opening: number;
 }
 export class GuzongEnemyRules {
     static enemies: Record<RogueEnemyId, EnemyDefinition> = {} as Record<RogueEnemyId, EnemyDefinition>;
     static load(tables: Tables): void {
-        this.enemies = {} as Record<RogueEnemyId, EnemyDefinition>;
-        for (const row of tables.enemy.getDataList()) this.enemies[row.id] = {
-            name: row.name, tier: row.tier as EnemyDefinition["tier"], hint: row.hint, opening: row.opening,
-        };
-        if (Object.keys(this.enemies).length !== 15) throw new Error("古宗十五敌人配置不完整");
+        const enemies = {} as Record<RogueEnemyId, EnemyDefinition>;
+        for (const row of byBehaviorCode(tables.enemy.getDataList(), ENEMY_CODES, "敌人表")) {
+            if (!row.name || !row.hint || !["普通","精英","首领"].includes(row.tier) ||
+                !Number.isSafeInteger(row.opening) || row.opening < 0 || row.opening > 600)
+                throw new Error(`敌人配置无效：${row.code}`);
+            enemies[row.code] = {id: row.id, name: row.name, tier: row.tier as EnemyDefinition["tier"],
+                hint: row.hint, opening: row.opening};
+        }
+        for (const [tier, count] of [["普通",7],["精英",5],["首领",3]] as const) {
+            if (Object.values(enemies).filter(e => e.tier === tier).length !== count)
+                throw new Error(`敌人级别数量无效：${tier}`);
+        }
+        this.enemies = enemies;
     }
     static fresh(id: RogueEnemyId | null): RogueFoeState {
         return { id, phase2: false, broken: false, vulnerable: false, acting: false, casts: [], lastCast: null, read: null,

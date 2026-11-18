@@ -3,6 +3,7 @@ import { BuildRules as Build } from "../../build/utils/BuildRules";
 import { InventoryRules as Inventory } from "../../inventory/utils/InventoryRules";
 import type { BattleResult } from "../../skillBattle/types/BattleTypes";
 import type { ExpeditionCommand, ExpeditionConfig, ExpeditionNode, ExpeditionSource, ExpeditionState } from "../types/ExpeditionRunTypes";
+import { isBattleNode } from "../types/ExpeditionRunTypes";
 import { GuzongEnemyRules } from "../../skillBattle/utils/GuzongEnemyRules";
 import type { RogueEnemyId } from "../../skillBattle/types/QingmingTypes";
 
@@ -36,6 +37,11 @@ class Random {
 }
 
 export class ExpeditionRules {
+    static readonly searchCheckpointMs = 250;
+    static pendingWarnings(c: ExpeditionConfig, s: ExpeditionState, at: number): number[] {
+        return [600000,300000].filter(ms => ms < c.rules.limitMs &&
+            at >= s.deadlineAt! - ms && !s.map.warnings.includes(ms));
+    }
     static node(config: ExpeditionConfig, id: number, state?: ExpeditionState) {
         const row = (state?.map.nodes.length ? state.map.nodes : config.nodes).find(n => n.id === id);
         if (!row) throw new Error("地图节点不存在");
@@ -45,29 +51,31 @@ export class ExpeditionRules {
         Inventory.validateConfig(c);
         if (!c.mapVersion || !c.nodes.length || new Set(c.nodes.map(n => n.id)).size !== c.nodes.length ||
             new Set(c.nodes.map(n => n.key)).size !== c.nodes.length ||
-            c.rules.limitMs !== 1200000 || c.rules.searchMs !== 1000 || c.rules.checkpointMs !== 250)
+            !Number.isSafeInteger(c.rules.limitMs) || c.rules.limitMs <= 0 ||
+            !Number.isSafeInteger(c.rules.searchMs) || c.rules.searchMs < this.searchCheckpointMs)
             throw new Error("正式地图版本、节点或时限无效");
         const weights = (values: number[]) => Array.isArray(values) && values.every(v =>
             Number.isSafeInteger(v) && v >= 0) && values.reduce((a,b) => a+b,0) === 100;
-        if (!weights(c.rules.supply) || !weights(c.rules.books) || c.rules.supply.length !== 3 || c.rules.books.length !== 3 ||
+        if (!weights(c.rules.books) || c.rules.books.length !== 3 ||
             !Number.isSafeInteger(c.rules.recoveryPercent) || c.rules.recoveryPercent < 1 || c.rules.recoveryPercent > 100 ||
-            c.pools.length < 5 || new Set(c.pools.map(p => p.id)).size !== c.pools.length ||
-            !["normal","elite","boss","search","risk"].every(id => c.pools.some(p => p.id === id)))
+            new Set(c.pools.map(p => p.id)).size !== c.pools.length ||
+            new Set(c.pools.map(p => p.code)).size !== c.pools.length)
             throw new Error("恢复、补给或掉落条件权重无效");
+        const poolIds = new Set(c.pools.map(p => p.id));
         for (const n of c.nodes) {
-            if (!Number.isInteger(n.id) || n.id < 1 || n.id > 36 ||
+            if (!Number.isSafeInteger(n.id) || n.id < 1 || !n.key ||
                 !["start","normal","elite","boss","search","borrow","insight","transit","extract","recovery"].includes(n.kind) ||
                 !Number.isFinite(n.x) || !Number.isFinite(n.y) ||
-                !!n.enemy !== ["normal","elite","boss"].includes(n.kind) ||
-                n.enemy && !c.build.encounters.some(e => e.id === `battle:${n.key}`))
-                throw new Error("地图类型或敌人绑定无效");
+                ((isBattleNode(n) || n.kind === "search") ? !poolIds.has(n.poolId) : n.poolId !== 0) ||
+                isBattleNode(n) && !c.build.encounters.some(e => e.id === `battle:${n.key}`))
+                throw new Error(`地图节点类型或掉落池引用无效：${n.id}`);
         }
         const searches = c.nodes.filter(n => n.kind === "search");
         {
             if (searches.some(n => !Number.isSafeInteger(n.searchMin) || n.searchMin! < 0 ||
                 !Number.isSafeInteger(n.searchMax) || n.searchMax! < n.searchMin! ||
                 !Number.isSafeInteger(n.searchWeight) || n.searchWeight! <= 0 ||
-                !/^[a-z]+(?:-[a-z]+)*$/.test(n.icon || "") || !c.pools.some(p => p.id === n.pool)) ||
+                !/^[a-z]+(?:-[a-z]+)*$/.test(n.icon || "")) ||
                 searches.reduce((sum,n) => sum+n.searchWeight!,0) !== 100 ||
                 (
                     searches.reduce((sum,n) => sum+n.searchMin!,0) > c.rules.searchMin ||
@@ -94,18 +102,30 @@ export class ExpeditionRules {
             c.rules.searchMin<8 || c.rules.searchMax>12 || c.rules.searchMin>c.rules.searchMax)
             throw new Error("随机图规模、体力或承重配置无效");
         for (const p of c.pools) {
-            if (![p.categories,p.qualities].every(w => w.every(n => Number.isSafeInteger(n) && n >= 0) &&
+            if (!Number.isSafeInteger(p.id) || p.id <= 0 || !/^[a-z][a-zA-Z]*$/.test(p.code) ||
+                ![p.min,p.max,p.minWeight,...p.durability].every(Number.isSafeInteger) ||
+                ![p.categories,p.qualities].every(w => w.every(n => Number.isSafeInteger(n) && n >= 0) &&
                 w.reduce((a,b) => a+b,0) === 100) || p.categories.length !== 9 || p.qualities.length !== 6 ||
                 p.min < 1 || p.max > 4 || p.min > p.max || p.minWeight < 0 || p.minWeight > 100 ||
-                p.durability[0] < 0 || p.durability[1] > 60 || p.durability[0] > p.durability[1])
-                throw new Error("掉落池无效");
+                p.durability[0] < 0 || p.durability[1] > c.build.setup.weapon!.maxDurability ||
+                p.durability[0] > p.durability[1])
+                throw new Error(`掉落池配置无效：${p.id}`);
         }
-        for (const family of ["hp","mp","repair","herb","ore","small","weapon","bookSword","bookEarth","bookCommon",
-            ...[1,2,3,4,5,6].map(q => `container${q}`)]) {
-            const rows = c.variants.filter(r => r.family === family);
-            if (!rows.length || rows.some(r => !c.templates.some(t => t.id === r.templateId) ||
-                !Number.isSafeInteger(r.weight) || r.weight <= 0)) throw new Error("掉落子项无效");
+        const familyKinds = new Map<string, string>([
+            ["hp","hp"],["mp","mp"],["repair","repair"],["herb","material"],["ore","material"],["small","material"],
+            ["weapon","weapon"],["bookSword","book"],["bookEarth","book"],["bookCommon","book"],
+            ...[1,2,3,4,5,6].map(q => [`container${q}`,"container"] as const),
+        ]);
+        const families = new Set(familyKinds.keys());
+        for (const v of c.variants) {
+            const template = c.templates.find(t => t.id === v.templateId);
+            if (!template || template.kind !== familyKinds.get(v.family) ||
+                (template.kind === "container" && v.family !== `container${template.quality}`) ||
+                !Number.isSafeInteger(v.weight) || v.weight <= 0)
+                throw new Error(`掉落条目 ${v.family} 引用的物品编号或权重无效：${v.templateId}`);
+            families.delete(v.family);
         }
+        if (families.size) throw new Error(`掉落组缺少物品：${[...families].join("、")}`);
     }
     static start(c: ExpeditionConfig, seed: number, runId: string): ExpeditionState {
         this.validateConfig(c);
@@ -132,7 +152,7 @@ export class ExpeditionRules {
         const add = (row:ExpeditionNode,x:number,y:number,mainOrder=-1) => {
             const id=s.map.nodes.length+1;
             s.map.nodes.push({...row,id,key:`${row.key}@${id}`,x,y,mainOrder,
-                ...(row.enemy?{encounterKey:row.key}:{})});
+                ...(isBattleNode(row)?{encounterKey:row.key}:{})});
             return id;
         };
         const sample = (kind:string,count:number) => {
@@ -144,6 +164,7 @@ export class ExpeditionRules {
         const transitCount=range(c.rules.transitMin,c.rules.transitMax);
         const searchCount=range(c.rules.searchMin,c.rules.searchMax);
         const searchTemplates=c.nodes.filter(n=>n.kind==="search");
+        const alchemyId = c.pools.find(p => p.code === "alchemy")?.id;
         let searches: ExpeditionNode[];
         {
             const counts=searchTemplates.map(n=>n.searchMin!);
@@ -152,7 +173,7 @@ export class ExpeditionRules {
                 counts[random.weighted(weights)]++;
             }
             searches=random.shuffle(searchTemplates.flatMap((n,i)=>Array.from({length:counts[i]},()=>n)));
-            const supply=searches.findIndex(n=>n.pool==="alchemy");
+            const supply=searches.findIndex(n=>n.poolId===alchemyId);
             if(supply>=0)searches.unshift(...searches.splice(supply,1));
         }
         const insightCount=range(c.rules.insightMin!,c.rules.insightMax!);
@@ -166,12 +187,12 @@ export class ExpeditionRules {
             ...random.shuffle([...normals.splice(0,5),...elites.splice(0,2),
                 ...searches.splice(0,mainSearch),...Array.from({length:mainTransit-1},()=>pick("transit"))])
         ];
-        const supplyIndex=main.findIndex(n=>n.pool==="alchemy");
+        const supplyIndex=main.findIndex(n=>n.poolId===alchemyId);
         if(supplyIndex>=0) {
             const early=2+random.below(5);
             [main[early],main[supplyIndex]]=[main[supplyIndex],main[early]];
         }
-        const fights=main.flatMap((n,i)=>n.enemy?[i]:[]);
+        const fights=main.flatMap((n,i)=>isBattleNode(n)?[i]:[]);
         const first=range(fights[1]+1,fights[2]);
         const later=random.shuffle(Array.from({length:main.length-first},(_,i)=>first+i+1)).slice(0,2);
         for (const index of [first,...later].sort((a,b)=>b-a)) main.splice(index,0,pick("borrow"));
@@ -234,7 +255,7 @@ export class ExpeditionRules {
     }
     static travelPaths(c: ExpeditionConfig, s: ExpeditionState): Map<number,number[]> {
         const paths=new Map([[s.node,[s.node]]]);
-        if(s.map.debugEnemyBlocking!==false&&this.node(c,s.node,s).enemy&&!s.map.cleared.includes(s.node))return paths;
+        if(s.map.debugEnemyBlocking!==false&&isBattleNode(this.node(c,s.node,s))&&!s.map.cleared.includes(s.node))return paths;
         for(const [a,b]of s.map.edges) {
             const next=a===s.node?b:b===s.node?a:null;
             if(next!==null)paths.set(next,[s.node,next]);
@@ -254,21 +275,19 @@ export class ExpeditionRules {
     static makeSource(c: ExpeditionConfig, s: ExpeditionState, seed: number): void {
         if (this.source(s)) throw new Error("箱来源已生成");
         const node = this.node(c,s.node,s), random = new Random(seed,`loot:${node.key}`);
-        const supply = node.pool.startsWith("supply");
-        const pool = c.pools.find(p => p.id === (node.pool === "deep" ? "risk" : node.pool));
-        if (!supply && !pool) throw new Error("节点来源池不存在");
-        const count = supply ? 3 : random.below(100) < pool!.minWeight ? pool!.min : pool!.max;
+        const pool = c.pools.find(p => p.id === node.poolId);
+        if (!pool) throw new Error("节点来源池不存在");
+        const count = random.below(100) < pool.minWeight ? pool.min : pool.max;
         const entries: ExpeditionSource["entries"] = [];
         for (let i = 0; i < count; i++) {
-            let family = node.pool === "alchemy" && i < 2 ? ["hp","mp"][i] : supply ? i === 0 ? "hp" : i === 1 ? "mp" :
-                ["hp","mp","repair"][random.weighted(c.rules.supply)] :
-                ["hp","mp","repair","herb","ore","small","book","container","weapon"][random.weighted(pool!.categories)];
+            let family = pool.code === "alchemy" && i < 2 ? ["hp","mp"][i] :
+                ["hp","mp","repair","herb","ore","small","book","container","weapon"][random.weighted(pool.categories)];
             if (family === "book") family = ["bookSword","bookEarth","bookCommon"][random.weighted(c.rules.books)];
-            if (family === "container") family += random.weighted(pool!.qualities) + 1;
+            if (family === "container") family += random.weighted(pool.qualities) + 1;
             const variants = c.variants.filter(v => v.family === family);
             const templateId = variants[random.weighted(variants.map(v => v.weight))].templateId;
-            const durability = family === "weapon" ? pool!.durability[0] +
-                random.below(pool!.durability[1]-pool!.durability[0]+1) : null;
+            const durability = family === "weapon" ? pool.durability[0] +
+                random.below(pool.durability[1]-pool.durability[0]+1) : null;
             entries.push({ uid: `${s.runId}:loot:${node.key}:${i}`, templateId, durability,
                 location: { space: "source", node: s.node } });
         }
@@ -287,7 +306,7 @@ export class ExpeditionRules {
         Inventory.settle(s,"defeat");return false;
     }
     private static battleConfig(c: ExpeditionConfig,s: ExpeditionState) {
-        return {...c.build,encounters:s.map.nodes.filter(n=>n.enemy).map(n=>{
+        return {...c.build,encounters:s.map.nodes.filter(isBattleNode).map(n=>{
             const template=c.build.encounters.find(e=>e.id===`battle:${n.encounterKey}`);
             if(!template)throw new Error("地图敌人模板不存在");
             return {...template,id:`battle:${n.key}`,qingmingEnemy:n.qingmingEnemy};
@@ -322,7 +341,7 @@ export class ExpeditionRules {
                 this.generateLongRouteMap(c,s,seed);
                 {
                     const ids=Object.keys(GuzongEnemyRules.enemies) as RogueEnemyId[];
-                    for(const n of s.map.nodes.filter(n=>n.enemy)) {
+                    for(const n of s.map.nodes.filter(isBattleNode)) {
                         const tier=n.kind==="boss"?"首领":n.kind==="elite"?"精英":"普通";
                         const pool=ids.filter(k=>GuzongEnemyRules.enemies[k].tier===tier);
                         n.qingmingEnemy=pool[new Random(seed,`qingming-enemy:${n.key}`).below(pool.length)];
@@ -345,7 +364,7 @@ export class ExpeditionRules {
             case "fight": {
                 ready();
                 const n=this.node(c,s.node,s);
-                if(!n.enemy||s.map.cleared.includes(n.id))throw new Error("此处没有待战敌人");
+                if(!isBattleNode(n)||s.map.cleared.includes(n.id))throw new Error("此处没有待战敌人");
                 const cost=n.kind==="boss"?c.rules.bossCost:n.kind==="elite"?c.rules.eliteCost:c.rules.normalCost;
                 if(s.stamina!<cost)throw new Error(`体力不足，开战需要 ${cost}，当前 ${s.stamina}`);
                 s.stamina!-=cost;
@@ -386,7 +405,7 @@ export class ExpeditionRules {
                 ready();
                 const box = this.source(s);
                 if (!box || !box.opened || box.revealed >= box.entries.length || !Number.isInteger(command.deltaMs) ||
-                    command.deltaMs < 1 || command.deltaMs > c.rules.checkpointMs) throw new Error("搜索进度无效");
+                    command.deltaMs < 1 || command.deltaMs > this.searchCheckpointMs) throw new Error("搜索进度无效");
                 const duration=this.searchDuration(c,s);
                 box.progressMs += command.deltaMs;
                 if (box.progressMs >= duration) {
@@ -398,7 +417,7 @@ export class ExpeditionRules {
             }
             case "warnings": {
                 if (s.phase !== "active") throw new Error("当前未入境");
-                const crossed = [600000,300000].filter(v => at >= s.deadlineAt! - v && !s.map.warnings.includes(v));
+                const crossed = this.pendingWarnings(c,s,at);
                 if (!crossed.length) throw new Error("没有新的计时提示");
                 s.map.warnings.push(...crossed); s.map.warning = Math.min(...crossed);
                 break;

@@ -21,9 +21,9 @@ export class ExpeditionRunManager {
             this.data.savedText = storage.getItem(ExpeditionRunManager.key);
             if (this.data.savedText !== null) {
                 const candidate = JSON.parse(this.data.savedText);
-                ExpeditionRunManager.validate(candidate);
-                if (currentConfig && !Inventory.same(currentConfig,candidate.config))
+                if (candidate?.version === 4 && currentConfig && !Inventory.same(currentConfig,candidate.config))
                     throw new Error("配置已改变，请明确重建探索存档");
+                ExpeditionRunManager.validate(candidate);
                 this.data.save = candidate; this.restoreManager();
             }
         } catch (e) { this.data.error = `地图档无法读取，原文保留：${(e as Error).message}`; }
@@ -111,9 +111,9 @@ export class ExpeditionRunManager {
         if (elapsed < 0 || elapsed > 1000 || this.data.save?.state.node !== this.data.searchNode) {
             this.pauseSearch(false); return false;
         }
-        if (elapsed < this.data.save!.config.rules.checkpointMs) return false;
+        if (elapsed < Rules.searchCheckpointMs) return false;
         try {
-            const deltaMs = this.data.save!.config.rules.checkpointMs;
+            const deltaMs = Rules.searchCheckpointMs;
             this.commit({type:"search",deltaMs},this.token);
             this.data.searchAt! += deltaMs;
             const box = Rules.source(this.data.save!.state)!;
@@ -129,7 +129,7 @@ export class ExpeditionRunManager {
         while (elapsed > 0) {
             const box = Rules.source(this.data.save!.state);
             if (!box || box.revealed === box.entries.length) break;
-            const deltaMs = Math.min(elapsed,this.data.save!.config.rules.checkpointMs);
+            const deltaMs = Math.min(elapsed,Rules.searchCheckpointMs);
             this.commit({type:"search",deltaMs},this.token); elapsed -= deltaMs;
         }
     }
@@ -165,7 +165,7 @@ export class ExpeditionRunManager {
             next.state = Rules.apply(next.config,next.state,command,at,next.seed).state;
             next.commands.push({at,command}); this.persist(next,false); return true;
         }
-        if ([600000,300000].some(v => at >= this.data.save!.state.deadlineAt!-v && !this.data.save!.state.map.warnings.includes(v))) {
+        if (Rules.pendingWarnings(this.data.save.config,this.data.save.state,at).length) {
             const next = this.archive!, command: ExpeditionCommand = {type:"warnings"};
             next.state = Rules.apply(next.config,next.state,command,at,next.seed).state;
             next.commands.push({at,command}); this.persist(next);
