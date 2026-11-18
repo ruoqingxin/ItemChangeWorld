@@ -1,4 +1,4 @@
-import { AssetRequest } from "./AssetRequest";
+
 
 export class ResInfo implements Laya.ILoadURL {
     url: string;

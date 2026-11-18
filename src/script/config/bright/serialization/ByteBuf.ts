@@ -7,7 +7,6 @@ export enum EDeserializeError {
 const MIN_CAPACITY: number = 16;
 
 const f_2power32 = Math.pow(2, 32);
-const f_2power56 = Math.pow(2, 56);
 
 export default class ByteBuf {
     private static emptyBuff: Uint8Array = new Uint8Array(0);
@@ -118,10 +117,6 @@ export default class ByteBuf {
         if (this._readerIndex + size > this._writerIndex) {
             throw new Error();
         }
-    }
-
-    private CanRead(size: number): boolean {
-        return (this._readerIndex + size <= this._writerIndex);
     }
 
     WriteBool(b: boolean) {
@@ -280,70 +275,7 @@ export default class ByteBuf {
         new DataView(this._bytes.buffer).setInt32(this._writerIndex, x, true);
         this._writerIndex += 4;
     }
-    /*
-        WriteNumberAsLong(x: number) {
-            if (x < 0) {
-                this.EnsureWrite(9);
-                this._bytes[this._writerIndex] = 0xff;
-                new DataView(this._bytes.buffer).setBigInt64(this._writerIndex + 1, BigInt(x), false);
-                this._writerIndex += 9;
-            } else if (x < 0x80) {
-                this.EnsureWrite(1);
-                this._bytes[this._writerIndex++] = x;
-            }
-            else if (x < 0x4000) {
-                this.EnsureWrite(2);
-                new DataView(this._bytes.buffer).setUint16(this._writerIndex, x | 0x8000, false);
-                this._writerIndex += 2;
-            }
-            else if (x < 0x200000) {
-                this.EnsureWrite(4);
-                new DataView(this._bytes.buffer).setUint32(this._writerIndex, (x | 0xc00000) << 8, false);
-                this._writerIndex += 3;
-            }
-            else if (x < 0x10000000) {
-                this.EnsureWrite(4);
-                new DataView(this._bytes.buffer).setUint32(this._writerIndex, x | 0xe0000000, false);
-                this._writerIndex += 4;
-            }
-            else if (x < 0x800000000) {
-                this.EnsureWrite(8);
-                new DataView(this._bytes.buffer).setUint8(this._writerIndex, (x / 0x100000000) | 0xf0);
-                new DataView(this._bytes.buffer).setUint32(this._writerIndex + 1, x % 0x100000000, false);
-                this._writerIndex += 5;
-            }
-            else if (x < 0x40000000000) {
-                this.EnsureWrite(8);
-                new DataView(this._bytes.buffer).setUint16(this._writerIndex, (x / 0x100000000) | 0xf800, false);
-                new DataView(this._bytes.buffer).setUint32(this._writerIndex + 2, x % 0x100000000, false);
-                this._writerIndex += 6;
-            }
-            else if (x < 0x200000000000) {
-                this.EnsureWrite(8);
-                new DataView(this._bytes.buffer).setUint32(this._writerIndex, ((x / 0x100000000) | 0xfc0000) << 8, false);
-                new DataView(this._bytes.buffer).setUint32(this._writerIndex + 3, x % 0x100000000, false);
-                this._writerIndex += 7;
-            }
-            else if (x <= Number.MAX_SAFE_INTEGER) {
-                this.EnsureWrite(8);
-                new DataView(this._bytes.buffer).setUint32(this._writerIndex, (x / 0x100000000) | 0xfe000000, false);
-                new DataView(this._bytes.buffer).setUint32(this._writerIndex + 4, x % 0x100000000, false);
-                this._writerIndex += 8;
-            }
-            else if (x < f_2power56) {
-                this.EnsureWrite(9);
-                let n = BigInt(x);
-                new DataView(this._bytes.buffer).setBigInt64(this._writerIndex, n | (BigInt(0xfe) << BigInt(56)), false);
-                this._writerIndex += 8;
-            }
-            else {
-                this.EnsureWrite(9);
-                this._bytes[this._writerIndex] = 0xff;
-                new DataView(this._bytes.buffer).setBigInt64(this._writerIndex + 1, BigInt(x), false);
-                this._writerIndex += 9;
-            }
-        }
-    */
+
         ReadLongAsNumber(): number {
             this.EnsureRead(1);
             const h = this._bytes[this._readerIndex];
@@ -404,142 +336,7 @@ export default class ByteBuf {
                 return Number(x);
             }
         }
-    /*
-        WriteLong(n: bigint) {
-            if (n < 0 || n >= f_2power56) {
-                this.EnsureWrite(9);
-                this._bytes[this._writerIndex] = 0xff;
-                new DataView(this._bytes.buffer).setBigInt64(this._writerIndex + 1, n, false);
-                this._writerIndex += 9;
-                return;
-            }
-            if (n > Number.MAX_SAFE_INTEGER) {
-                this.EnsureWrite(8);
-                new DataView(this._bytes.buffer).setBigUint64(this._writerIndex, n | (BigInt(0xfe) << BigInt(56)), false);
-                this._writerIndex += 8;
-                return;
-            }
-    
-            let x = Number(n);
-            if (x < 0x80) {
-                this.EnsureWrite(1);
-                this._bytes[this._writerIndex++] = x;
-            }
-            else if (x < 0x4000) {
-                this.EnsureWrite(2);
-                new DataView(this._bytes.buffer).setUint16(this._writerIndex, x | 0x8000, false);
-                this._writerIndex += 2;
-            }
-            else if (x < 0x200000) {
-                this.EnsureWrite(4);
-                new DataView(this._bytes.buffer).setUint32(this._writerIndex, (x | 0xc00000) << 8, false);
-                this._writerIndex += 3;
-            }
-            else if (x < 0x10000000) {
-                this.EnsureWrite(4);
-                new DataView(this._bytes.buffer).setUint32(this._writerIndex, x | 0xe0000000, false);
-                this._writerIndex += 4;
-            }
-            else if (x < 0x800000000) {
-                this.EnsureWrite(8);
-                new DataView(this._bytes.buffer).setUint8(this._writerIndex, (x / 0x100000000) | 0xf0);
-                new DataView(this._bytes.buffer).setUint32(this._writerIndex + 1, x % 0x100000000, false);
-                this._writerIndex += 5;
-            }
-            else if (x < 0x40000000000) {
-                this.EnsureWrite(8);
-                new DataView(this._bytes.buffer).setUint16(this._writerIndex, (x / 0x100000000) | 0xf800, false);
-                new DataView(this._bytes.buffer).setUint32(this._writerIndex + 2, x % 0x100000000, false);
-                this._writerIndex += 6;
-            }
-            else if (x < 0x200000000000) {
-                this.EnsureWrite(8);
-                new DataView(this._bytes.buffer).setUint32(this._writerIndex, ((x / 0x100000000) | 0xfc0000) << 8, false);
-                new DataView(this._bytes.buffer).setUint32(this._writerIndex + 3, x % 0x100000000, false);
-                this._writerIndex += 7;
-            }
-            else {
-                this.EnsureWrite(8);
-                new DataView(this._bytes.buffer).setUint32(this._writerIndex, (x / 0x100000000) | 0xfe000000, false);
-                new DataView(this._bytes.buffer).setUint32(this._writerIndex + 4, x % 0x100000000, false);
-                this._writerIndex += 8;
-            }
-        }
-    
-        ReadLong(): bigint {
-            this.EnsureRead(1);
-            const h = this._bytes[this._readerIndex];
-            if (h < 0x80) {
-                this._readerIndex++;
-                return BigInt(h);
-            }
-            else if (h < 0xc0) {
-                this.EnsureRead(2);
-                const x = new DataView(this._bytes.buffer).getUint16(this._readerIndex, false) & 0x3fff;
-                this._readerIndex += 2;
-                return BigInt(x);
-            }
-            else if (h < 0xe0) {
-                this.EnsureRead(3);
-                const x = ((h & 0x1f) << 16) | new DataView(this._bytes.buffer).getUint16(this._readerIndex + 1, false);
-                this._readerIndex += 3;
-                return BigInt(x);
-            }
-            else if (h < 0xf0) {
-                this.EnsureRead(4);
-                const x = new DataView(this._bytes.buffer).getInt32(this._readerIndex, false) & 0x0fffffff;
-                this._readerIndex += 4;
-                return BigInt(x);
-            }
-            else if (h < 0xf8) {
-                this.EnsureRead(5);
-                const xl = new DataView(this._bytes.buffer).getUint32(this._readerIndex + 1, false);
-                const xh = h & 0x07;
-                this._readerIndex += 5;
-                return BigInt(xh * 0x100000000 + xl);
-            }
-            else if (h < 0xfc) {
-                this.EnsureRead(6);
-                const xl = new DataView(this._bytes.buffer).getUint32(this._readerIndex + 2, false);
-                const xh = new DataView(this._bytes.buffer).getUint16(this._readerIndex, false) & 0x3ff;
-                this._readerIndex += 6;
-                return BigInt(xh * 0x100000000 + xl);
-            }
-            else if (h < 0xfe) {
-                this.EnsureRead(7);
-                const xl = new DataView(this._bytes.buffer).getUint32(this._readerIndex + 3, false);
-                const xh = (new DataView(this._bytes.buffer).getUint32(this._readerIndex, false) >> 8) & 0x1ffff;
-                this._readerIndex += 7;
-                return BigInt(xh * 0x100000000 + xl);
-            }
-            else if (h < 0xff) {
-                this.EnsureRead(8);
-                const xl = new DataView(this._bytes.buffer).getUint32(this._readerIndex + 4, false);
-                const xh = new DataView(this._bytes.buffer).getUint32(this._readerIndex, false) & 0xffffff;
-                this._readerIndex += 8;
-                return (BigInt(xh) << BigInt(32)) | BigInt(xl);
-            }
-            else {
-                this.EnsureRead(9);
-                const x = new DataView(this._bytes.buffer).getBigInt64(this._readerIndex + 1, false);
-                this._readerIndex += 9;
-                return x;
-            }
-        }
-    
-        WriteFlong(x: bigint) {
-            this.EnsureWrite(8);
-            new DataView(this._bytes.buffer).setBigInt64(this._writerIndex, x, true);
-            this._writerIndex += 8;
-        }
-    
-        ReadFlong(): bigint {
-            this.EnsureRead(8);
-            let x = new DataView(this._bytes.buffer).getBigInt64(this._readerIndex, true);
-            this._readerIndex += 8;
-            return x;
-        }
-    */
+
     WriteFloat(x: number) {
         this.EnsureWrite(4);
         new DataView(this._bytes.buffer).setFloat32(this._writerIndex, x, true);

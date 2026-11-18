@@ -1,7 +1,7 @@
 import type { UIBaseView } from "../../../games/ui/UIBaseView";
 import { ConfigUtil } from "../../../config/ConfigUtil";
-import { BattleRules as Core } from "../../skillBattle/utils/BattleRules";
-import { BuildConfigUtils } from "../../build/utils/BuildConfigUtils";
+
+
 import { ExpeditionRunConfigUtils } from "../utils/ExpeditionRunConfigUtils";
 import { ExpeditionRules as Rules } from "../utils/ExpeditionRules";
 import { ExpeditionRunManager } from "../manager/ExpeditionRunManager";
@@ -60,7 +60,7 @@ export class ExpeditionPanel extends InventoryPanel {
                 this.buttons[n.name] = n;
                 n.on(Laya.Event.CLICK, this, () => this.command(n.name));
                 if (!/^expNode/.test(n.name)) {
-                    this.prepareMapImage(n.getChildAt(0) as Laya.GImage);
+                    this.prepareMapImage(this.child(n, 0) as Laya.GImage);
                     n.on(Laya.Event.MOUSE_OVER, this, () => this.mapButtonState(n, "hover"));
                     n.on(Laya.Event.MOUSE_DOWN, this, () => this.mapButtonState(n, "pressed"));
                     n.on(Laya.Event.MOUSE_UP, this, () => this.mapButtonState(n,
@@ -73,6 +73,11 @@ export class ExpeditionPanel extends InventoryPanel {
             if (n instanceof Laya.GImage && n.src?.startsWith(MAP_ART))
                 this.prepareMapImage(n);
         });
+        for (let i = 1; i <= 65; i++) {
+            const name = `img_expDone${i}`;
+            this.expeditionNodes[name] = view.getElement<Laya.GWidget>(name);
+        }
+        this.labels.txt_expEnemyBlocking = view.getElement("txt_expEnemyBlocking");
         const viewport = this.expeditionNodes.expViewport as Laya.GPanel;
         this.scroller = new Laya.Scroller();
         this.scroller.direction = Laya.ScrollDirection.Horizontal;
@@ -84,35 +89,7 @@ export class ExpeditionPanel extends InventoryPanel {
         this.elements.mapGroundTexture.on(Laya.Event.LOADED, this, this.updateMapBackground);
         this.expeditionNodes.mapRouteTexture.on(Laya.Event.LOADED, this, this.mapArtLoaded);
         this.elements.screenBackground.filters = null;
-        const content = this.expeditionNodes.expMapContent;
-        const template = this.buttons.expNode1;
-        for (let id = 33; id <= 65; id++) {
-            const node = new Laya.GWidget(); node.name = `expNode${id}`; node.mouseEnabled = true;
-            for (let index = 0; index < 3; index++) {
-                const source = template.getChildAt(index) as Laya.GWidget;
-                const child = index === 1 ? new Laya.GTextField() : new Laya.GImage();
-                child.pos(source.x, source.y); child.size(source.width, source.height);
-                if (child instanceof Laya.GImage) child.autoSize = (source as Laya.GImage).autoSize;
-                node.addChild(child);
-            }
-            content.addChild(node); this.expeditionNodes[node.name] = node; this.buttons[node.name] = node;
-            node.on(Laya.Event.CLICK, this, () => this.command(node.name));
-        }
-        for (let id = 1; id <= 65; id++) {
-            const node = this.buttons[`expNode${id}`];
-            if (!node) continue;
-            const done = new Laya.GImage(); done.name = "expDone"; done.mouseEnabled = false;
-            done.autoSize = false; done.src = MAP_ART + "map-completed-badge.png";
-            done.size(30, 30); done.visible = false;
-            node.addChild(done);
-        }
-        const blocking = new Laya.GButton(); blocking.name = "expEnemyBlocking";
-        blocking.mode = Laya.ButtonMode.Check; blocking.changeStateOnClick = false;
-        const blockingLabel = new Laya.GTextField(); blockingLabel.name = "title";
-        blockingLabel.text = "测试·怪物拦路"; blockingLabel.font = "Microsoft YaHei";
-        blockingLabel.mouseEnabled = false; blockingLabel.valign = "middle";
-        blocking.addChild(blockingLabel);
-        this.mapAreas.mapActionsArea.addChild(blocking);
+        const blocking = view.getElement<Laya.GButton>("expEnemyBlocking");
         this.buttons[blocking.name] = blocking; this.expeditionNodes[blocking.name] = blocking;
         blocking.on(Laya.Event.CLICK, this, () => this.command(blocking.name));
     }
@@ -177,7 +154,7 @@ export class ExpeditionPanel extends InventoryPanel {
             if (!s || s.phase === "ended") {
                 const c = ExpeditionRunConfigUtils.read(ConfigUtil.Tables), seed = new Uint32Array(1);
                 crypto.getRandomValues(seed);
-                this.expedition.prepare(c, BuildConfigUtils.profile(c.build), seed[0] || 1);
+                this.expedition.prepare(c, seed[0] || 1);
                 this.mapOpen = false; this.centerMap = true; this.inventoryPage = 0;
                 this.selectedNode = null;
                 if (this.screen === "settlement") this.navigate("start");
@@ -335,14 +312,14 @@ export class ExpeditionPanel extends InventoryPanel {
             this.buttons.actions.visible = false;
             const b = this.buttons.invToggle;
             if (b) { b.visible = true; }
-            // Ready construction retains its existing upgrade confirmation.
+
             if (this.buttons.newRun?.visible) {
-                const l = this.buttons.newRun.getChildAt(0) as Laya.GTextField;
+                const l = this.child(this.buttons.newRun, 0) as Laya.GTextField;
                 if (l.text === "进入下一战" || l.text === "结束演练") l.text = "返回地图";
             }
         }
         if (this.pageRole === "build") {
-            const reset = this.buttons.reset?.getChildAt(0) as Laya.GTextField;
+            const reset = this.labels.txt_reset;
             if (reset) reset.text = "放弃本局";
         }
     }
@@ -368,12 +345,12 @@ export class ExpeditionPanel extends InventoryPanel {
     }
     protected button(key: string, value: string, x: number, y: number, w: number, h = 54, enabled = true, selected = false): void {
         if (!key.startsWith("exp")) { super.button(key, value, x, y, w, h, enabled, selected); return; }
-        const n = this.buttons[key], label = n.getChildAt(1) as Laya.GTextField;
+        const n = this.buttons[key], label = this.child(n, 1) as Laya.GTextField;
         const mapNode = /^expNode\d+$/.test(key);
         n.visible = true;
         if (mapNode) n.pos(x, y); else placeInDesign(n, this.root, x, y);
         n.size(w, h); n.mouseEnabled = enabled; n.alpha = this.pageRole === "map" || enabled || selected ? 1 : 0.55;
-        const skin = n.getChildAt(0) as Laya.GImage;
+        const skin = this.child(n, 0) as Laya.GImage;
         if (!mapNode) skin.size(w, h);
         label.text = value; label.pos(4, 2); label.size(w - 8, h - 4); label.fontSize = 18;
         label.color = selected ? "#ffd879" : "#e8edf0"; label.textIns.color = label.color;
@@ -385,8 +362,8 @@ export class ExpeditionPanel extends InventoryPanel {
     private mapAction(key: string, value: string, enabled = true): void {
         const button = this.buttons[key];
         button.visible = true; button.mouseEnabled = enabled;
-        (button.getChildAt(1) as Laya.GTextField).text = value;
-        for (let i = 0; i < button.numChildren; i++)button.getChildAt(i).visible = true;
+        (this.child(button, 1) as Laya.GTextField).text = value;
+        for (let i = 0; i < button.numChildren; i++)this.child(button, i).visible = true;
         this.mapButtonState(button, "normal");
     }
     private prepareMapImage(image: Laya.GImage): void {
@@ -400,14 +377,14 @@ export class ExpeditionPanel extends InventoryPanel {
         const texture = image.texture, grid = [inset, inset, inset, inset, 0];
         if (!inset || !texture || texture._sizeGrid?.join(",") === grid.join(",") &&
             image.graphics.cmds.some(cmd => cmd.cmdID === Laya.Draw9GridTextureCmd.ID)) return;
-        // Direct PNG previews bypass the IDE importer; retain real nine-slice drawing there too.
+
         texture._sizeGrid = grid;
         const src = image.src;
         image.texture = texture; image.src = src;
     }
     private mapButtonState(button: Laya.GWidget, state: "normal" | "hover" | "pressed"): void {
-        const image = button.getChildAt(0) as Laya.GImage;
-        // A brief movement lock blocks input without flashing the persistent toolbar disabled.
+        const image = this.child(button, 0) as Laya.GImage;
+
         const movementLock = !!this.movement && (button.name === "expStorage" || button.name === "expBuild");
         const disabled = !button.mouseEnabled && !movementLock;
         if (!button.mouseEnabled) state = "normal";
@@ -460,7 +437,7 @@ export class ExpeditionPanel extends InventoryPanel {
         blocking.selected = s.map.debugEnemyBlocking !== false;
         blocking.size(this.compactMap ? 264 : 234, 44);
         blocking.pos(build.x + build.width + 20, build.y + build.height - blocking.height);
-        const label = blocking.getChildAt(0) as Laya.GTextField;
+        const label = this.labels.txt_expEnemyBlocking;
         label.pos(38, 0); label.size(blocking.width - 38, blocking.height);
         label.fontSize = this.compactMap ? 22 : 20;
         label.color = blocking.selected ? "#fff2d2" : "#ffe1b1";
@@ -475,7 +452,7 @@ export class ExpeditionPanel extends InventoryPanel {
         const fill = this.expeditionNodes[`map${key}Fill`];
         const ratio = max > 0 ? Math.min(1, Math.max(0, value / max)) : 0;
         fill.visible = ratio > 0;
-        // Crop the fixed-size artwork so low values do not squeeze its painted texture.
+
         fill.scrollRect = new Laya.Rectangle(0, 0, fill.width * ratio, fill.height);
     }
     private renderSearchSpinner(): void {
@@ -483,7 +460,7 @@ export class ExpeditionPanel extends InventoryPanel {
         if (!spinner) return;
         spinner.visible = !!this.nodes.inventoryRoot?.visible && !!this.nodes.expUnknown?.visible && this.expedition.searching;
         if (!spinner.visible) return;
-        spinner.getChildAt(0).rotation = performance.now() * 0.24 % 360;
+        this.child(spinner, 0).rotation = performance.now() * 0.24 % 360;
     }
     private updateMapBackground(): void {
         if (this.opened && this.expeditionNodes.expeditionRoot.visible) this.backdrop();
@@ -501,8 +478,8 @@ export class ExpeditionPanel extends InventoryPanel {
         const marker = this.expeditionNodes.expPlayer;
         marker.visible = true; marker.mouseEnabled = false; marker.zOrder = 2;
         marker.graphics.clear();
-        const avatar = marker.getChildByName("expPlayerAvatar") as Laya.GImage;
-        const frame = marker.getChildByName("expPlayerFrame") as Laya.GImage;
+        const avatar = this.namedChild(marker, "expPlayerAvatar") as Laya.GImage;
+        const frame = this.namedChild(marker, "expPlayerFrame") as Laya.GImage;
         avatar.visible = true; frame.visible = true;
     }
     private get mapBandTop(): number {
@@ -511,7 +488,7 @@ export class ExpeditionPanel extends InventoryPanel {
     private mapPositions(s: ExpeditionState): Map<number, MapPoint> {
         const height = this.expeditionNodes.expViewport.height;
         const rows = s.map.nodes.map(n => {
-            const size = (this.buttons[`expNode${n.id}`].getChildAt(2) as Laya.GImage).height;
+            const size = (this.child(this.buttons[`expNode${n.id}`], 2) as Laya.GImage).height;
             let hash = 2166136261;
             for (const char of `${s.runId}:${n.key}`) hash = Math.imul(hash ^ char.charCodeAt(0), 16777619) >>> 0;
             hash = Math.imul(hash ^ (hash >>> 16), 0x7feb352d);
@@ -525,12 +502,12 @@ export class ExpeditionPanel extends InventoryPanel {
             return {
                 id: n.id, x: 112 + n.x * 242, lane: n.y, above, below,
                 desired: height / 2 - 4 + n.y * 158 +
-                    (s.map.generatorVersion === 4 ? (hash % 33) - 16 : (hash % 89) - 44),
+                    (hash % 33) - 16,
                 min: Math.max(this.mapBandTop - 22 + topSpace, underHud ? hud.y + hud.height + topSpace + 8 : 0),
                 max: height - 104, y: 0
             };
         }).sort((a, b) => a.lane - b.lane || a.id - b.id);
-        // Reserve vertical room for nearby columns before applying each node's stable offset.
+
         const before = rows.map((row, i) => rows.slice(0, i).filter(other => Math.abs(row.x - other.x) < 116));
         for (let i = 0; i < rows.length; i++)
             for (const other of before[i]) rows[i].min = Math.max(rows[i].min, other.min + other.below + rows[i].above + 12);
@@ -552,7 +529,7 @@ export class ExpeditionPanel extends InventoryPanel {
         ground.visible = true; ground.graphics.clear();
         ground.graphics.drawRect(start.x, start.y, page.width, page.height, "#3d4640");
         if (texture) {
-            // Texture phase is in map coordinates, independent of revealed map length.
+
             const anchor = page.globalToLocal(this.root.localToGlobal(new Laya.Point()));
             const x = anchor.x - (this.scroller?.scrollingPosX || 0);
             const offset = (value: number, size: number) => -((-value % size + size) % size);
@@ -582,13 +559,13 @@ export class ExpeditionPanel extends InventoryPanel {
             const explored = !!source && source.revealed === source.entries.length;
             const key = `expNode${id}`;
             this.button(key, "", px - 58, py - 52, 116, 116, reach.has(id), id === s.node || id === this.selectedNode);
-            const b = this.buttons[key], l = b.getChildAt(1) as Laya.GTextField;
-            const base = b.getChildAt(0) as Laya.GImage;
+            const b = this.buttons[key], l = this.child(b, 1) as Laya.GTextField;
+            const base = this.child(b, 0) as Laya.GImage;
             base.src = MAP_ART + "map-transit-stone-muted.png";
             base.visible = n.kind === "transit";
             base.grayed = explored; base.alpha = 1; base.color = TRANSIT_STONE_COLOR;
             l.visible = false;
-            const image = b.getChildAt(2) as Laya.GImage;
+            const image = this.child(b, 2) as Laya.GImage;
             const art = n.kind === "search" ? (n.icon || (n.pool.startsWith("supply") ? "supply" : "search")) :
                 ({
                     normal: "enemy-normal", elite: "enemy-elite", boss: "enemy-boss", borrow: "borrow", insight: "insight",
@@ -604,7 +581,7 @@ export class ExpeditionPanel extends InventoryPanel {
                     b.graphics.drawEllipse(58 - width / 2, 99 - height / 2, width, height, "rgba(16,22,19,0.045)", null, 0);
                 }
             }
-            const done = b.getChildByName("expDone");
+            const done = this.expeditionNodes[`img_expDone${n.id}`];
             done.visible = explored || s.map.used.includes(id);
             done.pos(image.x + image.width - 22, image.y + 4);
         }
@@ -615,7 +592,7 @@ export class ExpeditionPanel extends InventoryPanel {
             this.scroller.posX = Math.max(0, points.get(s.node)!.x - viewport.width * 0.42);
             this.centerMap = false;
         }
-        // Native layout can clamp scroll position without emitting a Scroll event.
+
         this.backdrop();
         this.renderMapConnections(points, s.map.edges, reach);
         const marker = this.expeditionNodes.expPlayer, p = points.get(s.node)!;
@@ -652,7 +629,7 @@ export class ExpeditionPanel extends InventoryPanel {
             const context = this.expeditionNodes.expContextBackground;
             context.visible = true;
             const contextIcon = this.expeditionNodes.expContextIcon as Laya.GImage;
-            contextIcon.src = (this.buttons[`expNode${n.id}`].getChildAt(2) as Laya.GImage).src
+            contextIcon.src = (this.child(this.buttons[`expNode${n.id}`], 2) as Laya.GImage).src
                 .replace("/expeditionNodes/", "/expeditionNodes/clean/");
             contextIcon.visible = true;
             this.styleNodeIcon(contextIcon, !!n.enemy && s.map.cleared.includes(n.id),
@@ -722,8 +699,8 @@ export class ExpeditionPanel extends InventoryPanel {
         const lines = this.expeditionNodes.expLines; lines.visible = true; lines.graphics.clear();
         const rectangles: number[][] = [];
         for (const [id, p] of points) {
-            const node = this.buttons[`expNode${id}`], image = node.getChildAt(2) as Laya.GImage;
-            const transit = node.getChildAt(0).visible;
+            const node = this.buttons[`expNode${id}`], image = this.child(node, 2) as Laya.GImage;
+            const transit = this.child(node, 0).visible;
             const halfWidth = transit ? 44 : Math.max(54, image.width / 2 - 4), above = transit ? 8 : Math.max(54, 30 - image.y);
             rectangles.push([p.x - halfWidth - 2, p.y - above - 2, p.x + halfWidth + 2, p.y + (transit ? 44 : 56)]);
         }
@@ -745,7 +722,7 @@ export class ExpeditionPanel extends InventoryPanel {
             this.mapRoutes.set(`${b}:${a}`, [q, p]);
             const current = this.expedition.inventory!.node;
             const active = !this.movement && !this.pendingPath && ((a === current && reach.has(b)) || (b === current && reach.has(a)));
-            // Hide the portions under node artwork without bending the connection.
+
             const hidden = rectangles.map(box => interval(p, q, box)).filter((v): v is number[] => !!v)
                 .sort((a, b) => a[0] - b[0]);
             const at = (t: number) => ({ x: p.x + (q.x - p.x) * t, y: p.y + (q.y - p.y) * t });
@@ -761,7 +738,7 @@ export class ExpeditionPanel extends InventoryPanel {
         const texture = (this.expeditionNodes.mapRouteTexture as Laya.GImage).texture;
         if (!texture) return;
         const dash = 22, gap = 14, period = dash + gap;
-        // Anchor collinear segments to the same phase so shared routes cannot fill each other's gaps.
+
         for (let i = 1; i < route.length; i++) {
             const a = route[i - 1], b = route[i], dx = b.x - a.x, dy = b.y - a.y, length = Math.hypot(dx, dy);
             if (length < 0.0001) continue;
@@ -777,10 +754,10 @@ export class ExpeditionPanel extends InventoryPanel {
                     const endX = start.x + ux * (offset + step), endY = start.y + uy * (offset + step);
                     const span = Math.hypot(endX - x, endY - y);
                     const matrix = new Laya.Matrix(ux, uy, -uy, ux, x, y);
-                    // Warm highlights match the HUD; dark edges keep both states legible on terrain.
+
                     const draw = (height: number, alpha: number, color: string) =>
                         graphics.drawTexture(texture, -span * 0.14, -height / 2, span * 1.28, height, matrix, alpha, color);
-                    //draw(active?30:16,active?0.95:0.85,"#14221c");
+
                     draw(active ? 28 : 28, active ? 1 : 1, active ? "#dbdbdbff" : "#9caaa1");
                     draw(active ? 18 : 18, active ? 1 : 1, active ? "#f5ba84ff" : "#d3d3d3ff");
                 }

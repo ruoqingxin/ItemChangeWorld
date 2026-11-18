@@ -1,13 +1,12 @@
 import { BattleRules as Core } from "../../skillBattle/utils/BattleRules";
 import { BuildRules as Build } from "../../build/utils/BuildRules";
 import { InventoryRules as Inventory } from "../../inventory/utils/InventoryRules";
-import type { NewBattleResult } from "../../skillBattle/types/BattleTypes";
-import type { NewBuildProfile } from "../../build/types/BuildTypes";
+import type { BattleResult } from "../../skillBattle/types/BattleTypes";
 import type { ExpeditionCommand, ExpeditionConfig, ExpeditionNode, ExpeditionSource, ExpeditionState } from "../types/ExpeditionRunTypes";
 import { GuzongEnemyRules } from "../../skillBattle/utils/GuzongEnemyRules";
 import type { RogueEnemyId } from "../../skillBattle/types/QingmingTypes";
 
-/** Source-keyed streams keep map placement, construction and each box independent. */
+
 class Random {
     private value: number;
     constructor(seed: number, key: string) {
@@ -42,8 +41,8 @@ export class ExpeditionRules {
         if (!row) throw new Error("地图节点不存在");
         return row;
     }
-    static validateConfig(c: ExpeditionConfig, profile: NewBuildProfile): void {
-        Inventory.validateConfig(c,profile);
+    static validateConfig(c: ExpeditionConfig): void {
+        Inventory.validateConfig(c);
         if (!c.mapVersion || !c.nodes.length || new Set(c.nodes.map(n => n.id)).size !== c.nodes.length ||
             new Set(c.nodes.map(n => n.key)).size !== c.nodes.length ||
             c.rules.limitMs !== 1200000 || c.rules.searchMs !== 1000 || c.rules.checkpointMs !== 250)
@@ -64,36 +63,35 @@ export class ExpeditionRules {
                 throw new Error("地图类型或敌人绑定无效");
         }
         const searches = c.nodes.filter(n => n.kind === "search");
-        if (searches.some(n => n.searchWeight !== undefined)) {
+        {
             if (searches.some(n => !Number.isSafeInteger(n.searchMin) || n.searchMin! < 0 ||
                 !Number.isSafeInteger(n.searchMax) || n.searchMax! < n.searchMin! ||
                 !Number.isSafeInteger(n.searchWeight) || n.searchWeight! <= 0 ||
                 !/^[a-z]+(?:-[a-z]+)*$/.test(n.icon || "") || !c.pools.some(p => p.id === n.pool)) ||
                 searches.reduce((sum,n) => sum+n.searchWeight!,0) !== 100 ||
-                c.rules.normalMin !== undefined && (
+                (
                     searches.reduce((sum,n) => sum+n.searchMin!,0) > c.rules.searchMin ||
                     searches.reduce((sum,n) => sum+n.searchMax!,0) < c.rules.searchMax))
                 throw new Error("搜索节点分类或数量预算无效");
         }
         const budgets = [c.rules.normalMin,c.rules.normalMax,c.rules.eliteMin,c.rules.eliteMax,
             c.rules.insightMin,c.rules.insightMax,c.rules.borrowMin,c.rules.borrowMax];
-        const expanded = budgets.some(v=>v!==undefined);
-        if (expanded && (budgets.some(v=>!Number.isSafeInteger(v)||v!<=0) ||
+        if (budgets.some(v=>!Number.isSafeInteger(v)||v!<=0) ||
             c.rules.normalMin!<13 || c.rules.normalMax!>16 || c.rules.normalMin!>c.rules.normalMax! ||
             c.rules.eliteMin!<4 || c.rules.eliteMax!>7 || c.rules.eliteMin!>c.rules.eliteMax! ||
             c.rules.insightMin!<2 || c.rules.insightMax!>4 || c.rules.insightMin!>c.rules.insightMax! ||
             c.rules.borrowMin!<3 || c.rules.borrowMax!>5 || c.rules.borrowMin!>c.rules.borrowMax! ||
-            c.groundNodeLimit!==65)) throw new Error("扩展地图节点预算无效");
+            c.nodeLimit!==65) throw new Error("地图节点预算无效");
         if(c.nodes.filter(n=>n.kind==="normal").length!==11 || c.nodes.filter(n=>n.kind==="elite").length!==3 ||
             c.nodes.filter(n=>n.kind==="boss").length!==1 || !c.weight || c.staminaMax!==c.rules.staminaMax ||
             !["start","transit","borrow","insight","extract","recovery"].every(kind=>c.nodes.some(n=>n.kind===kind)) ||
-            c.nodes.filter(n=>n.kind==="search").length<(expanded?1:c.rules.searchMax) ||
+            c.nodes.filter(n=>n.kind==="search").length<1 ||
             ![c.rules.staminaMax,c.rules.moveCost,c.rules.normalCost,c.rules.eliteCost,c.rules.bossCost,c.rules.searchCost,
                 c.rules.moveHpPercent,c.rules.searchHpPercent,c.rules.transitMin,c.rules.transitMax,
                 c.rules.searchMin,c.rules.searchMax].every(v=>Number.isSafeInteger(v)&&v>0) ||
             c.rules.moveHpPercent>100 || c.rules.searchHpPercent>100 ||
             c.rules.transitMin<10 || c.rules.transitMax>14 || c.rules.transitMin>c.rules.transitMax ||
-            c.rules.searchMin<(expanded?8:3) || c.rules.searchMax>(expanded?12:5) || c.rules.searchMin>c.rules.searchMax)
+            c.rules.searchMin<8 || c.rules.searchMax>12 || c.rules.searchMin>c.rules.searchMax)
             throw new Error("随机图规模、体力或承重配置无效");
         for (const p of c.pools) {
             if (![p.categories,p.qualities].every(w => w.every(n => Number.isSafeInteger(n) && n >= 0) &&
@@ -102,11 +100,6 @@ export class ExpeditionRules {
                 p.durability[0] < 0 || p.durability[1] > 60 || p.durability[0] > p.durability[1])
                 throw new Error("掉落池无效");
         }
-        for (const group of ["recoveryCount","recoveryAttach","exitCount","exit2","exit3"]) {
-            const rows = c.placements.filter(r => r.group === group);
-            if (!rows.length || rows.some(r => !Number.isSafeInteger(r.weight) || r.weight <= 0) ||
-                rows.reduce((a,b) => a+b.weight,0) !== 100) throw new Error("布点条件权重无效");
-        }
         for (const family of ["hp","mp","repair","herb","ore","small","weapon","bookSword","bookEarth","bookCommon",
             ...[1,2,3,4,5,6].map(q => `container${q}`)]) {
             const rows = c.variants.filter(r => r.family === family);
@@ -114,15 +107,12 @@ export class ExpeditionRules {
                 !Number.isSafeInteger(r.weight) || r.weight <= 0)) throw new Error("掉落子项无效");
         }
     }
-    static start(c: ExpeditionConfig, p: NewBuildProfile, seed: number, runId: string,
-        generatorVersion: 1|2|3|4 = c.rules.normalMin===undefined?3:4): ExpeditionState {
-        this.validateConfig(c,p);
-        if ((c.rules.normalMin!==undefined)!==(generatorVersion===4))
-            throw new Error("地图生成版本与节点预算不匹配，无法重放");
-        const base = Inventory.start(c,p,seed,runId);
+    static start(c: ExpeditionConfig, seed: number, runId: string): ExpeditionState {
+        this.validateConfig(c);
+        const base = Inventory.start(c,seed,runId);
         const state: ExpeditionState = { ...base, node: 1, stamina: c.rules.staminaMax,
             sourceLayouts: [], interactionSource: null, map: { version: c.mapVersion,
-                ...(generatorVersion!==1?{generatorVersion}:{}), nodes: [], edges: [],
+                generatorVersion: 4, nodes: [], edges: [],
             present: [], visible: [], cleared: [], used: [], sources: [], warnings: [], warning: null } };
         let slot = 0;
         for (const item of state.items) {
@@ -155,7 +145,7 @@ export class ExpeditionRules {
         const searchCount=range(c.rules.searchMin,c.rules.searchMax);
         const searchTemplates=c.nodes.filter(n=>n.kind==="search");
         let searches: ExpeditionNode[];
-        if (searchTemplates.some(n=>n.searchWeight!==undefined)) {
+        {
             const counts=searchTemplates.map(n=>n.searchMin!);
             for(let left=searchCount-counts.reduce((sum,n)=>sum+n,0);left>0;left--) {
                 const weights=searchTemplates.map((n,i)=>counts[i]<n.searchMax!?n.searchWeight!:0);
@@ -164,7 +154,7 @@ export class ExpeditionRules {
             searches=random.shuffle(searchTemplates.flatMap((n,i)=>Array.from({length:counts[i]},()=>n)));
             const supply=searches.findIndex(n=>n.pool==="alchemy");
             if(supply>=0)searches.unshift(...searches.splice(supply,1));
-        } else searches=sample("search",searchCount);
+        }
         const insightCount=range(c.rules.insightMin!,c.rules.insightMax!);
         const borrowCount=range(c.rules.borrowMin!,c.rules.borrowMax!);
         const recoveryCount=range(1,2), exitCount=range(1,2);
@@ -210,7 +200,7 @@ export class ExpeditionRules {
         ];
         const slots = (r:typeof routes[number]) => Array.from({length:24},(_,i)=>i+r.phase)
             .filter(x=>x>reference[r.from].x&&x<reference[r.to].x);
-        // Each corridor has enough arrivals to open its next step, even on the earliest approach.
+
         for (let remaining=extra.length-routes.reduce((n,r)=>n+r.count,0);remaining>0;remaining--) {
             const available=routes.filter(r=>r.count<slots(r).length);
             if(!available.length)throw new Error("长分流节点位置不足");
@@ -230,240 +220,6 @@ export class ExpeditionRules {
         const boss=add(pick("boss"),26,0), terminal=add(pick("extract"),27,0);
         s.map.edges.push([reference[last].id,boss],[boss,terminal]);
         s.map.present=s.map.nodes.map(n=>n.id); s.map.visible=[1]; s.revealed=[1];
-    }
-    private static generateFreeMap(c: ExpeditionConfig, s: ExpeditionState, seed: number): void {
-        const random = new Random(seed,"free-map");
-        const range = (a:number,b:number) => a+random.below(b-a+1);
-        const pick = (kind:string) => Core.clone(c.nodes.find(n=>n.kind===kind)!);
-        const add = (row:ExpeditionNode,x:number,y:number,mainOrder=-1) => {
-            const id = s.map.nodes.length+1;
-            s.map.nodes.push({...row,id,key:`${row.key}@${id}`,x,y,mainOrder,
-                ...(row.enemy?{encounterKey:row.key}:{})});
-            return id;
-        };
-        const normals = random.shuffle(c.nodes.filter(n=>n.kind==="normal"));
-        const elites = random.shuffle(c.nodes.filter(n=>n.kind==="elite"));
-        const searches = random.shuffle(c.nodes.filter(n=>n.kind==="search"));
-        const transitCount = range(c.rules.transitMin,c.rules.transitMax);
-        const searchCount = range(c.rules.searchMin,c.rules.searchMax);
-        const transitRoll = range(7,9), mainSearch = range(1,2);
-        const mainTransit = Math.max(transitRoll,9-mainSearch);
-        const main = random.shuffle([
-            ...normals.splice(0,6), ...elites.splice(0,2),
-            ...searches.splice(0,mainSearch), ...Array.from({length:mainTransit},()=>pick("transit"))
-        ]);
-        if (main[main.length-1].kind==="transit") {
-            const index=random.shuffle(main.flatMap((n,i)=>n.kind!=="transit"?[i]:[]))[0];
-            [main[index],main[main.length-1]]=[main[main.length-1],main[index]];
-        }
-        // Keep a playable reference walk, not three mandatory reward checkpoints.
-        const fights = main.flatMap((n,i)=>n.enemy?[i]:[]);
-        const first = range(fights[1]+1,fights[2]);
-        const later = random.shuffle(Array.from({length:main.length-first},(_,i)=>first+i+1)).slice(0,2);
-        for (const index of [first,...later].sort((a,b)=>b-a)) main.splice(index,0,pick("borrow"));
-        add(pick("start"),0,0,0);
-        const columns = random.shuffle(Array.from({length:24},(_,i)=>i+1)).slice(0,main.length).sort((a,b)=>a-b);
-        const lanes = [-1.1,0,1.1];
-        main.forEach((row,i)=>add(row,columns[i],lanes[random.below(lanes.length)],i+1));
-        for (let id=2;id<=s.map.nodes.length;id++) s.map.edges.push([id-1,id]);
-        const referenceEnd = s.map.nodes.length;
-        const extra = random.shuffle([
-            ...normals,...elites,...searches.slice(0,searchCount-mainSearch),pick("insight"),
-            ...Array.from({length:transitCount-mainTransit},()=>pick("transit")),
-            ...Array.from({length:range(1,2)},()=>pick("recovery")),
-            ...Array.from({length:range(1,2)},()=>pick("extract"))
-        ]);
-        const point = (id:number) => s.map.nodes[id-1];
-        const distanceToEdge = (p:ExpeditionNode,a:ExpeditionNode,b:ExpeditionNode) => {
-            const dx=(b.x-a.x)*242, dy=(b.y-a.y)*158;
-            const t=Math.max(0,Math.min(1,((p.x-a.x)*242*dx+(p.y-a.y)*158*dy)/(dx*dx+dy*dy)));
-            return Math.hypot((p.x-a.x)*242-t*dx,(p.y-a.y)*158-t*dy);
-        };
-        const occupied = (x:number,y:number) => s.map.nodes.some(n=>n.x===x&&n.y===y);
-        const slots = random.shuffle(columns.flatMap(x=>lanes.map(y=>({x,y})))
-            .concat(Array.from({length:24},(_,i)=>i+1).filter(x=>!columns.includes(x))
-                .flatMap(x=>lanes.map(y=>({x,y})))));
-        for (const slot of slots) {
-            if (s.map.nodes.length-referenceEnd===extra.length) break;
-            if (occupied(slot.x,slot.y)||s.map.nodes.filter(n=>n.x===slot.x).length>=2) continue;
-            const p={...pick("transit"),...slot};
-            if (s.map.edges.some(([a,b])=>distanceToEdge(p,point(a),point(b))<96)) continue;
-            add(p,slot.x,slot.y);
-        }
-        if (s.map.nodes.length-referenceEnd!==extra.length) throw new Error("随机地图可用位置不足");
-        const cross = (a:ExpeditionNode,b:ExpeditionNode,p:ExpeditionNode) =>
-            (b.x-a.x)*(p.y-a.y)-(b.y-a.y)*(p.x-a.x);
-        const candidates:Array<{a:number;b:number;length:number;score:number}> = [];
-        for (const a of s.map.nodes) for (const b of s.map.nodes) {
-            if (a.id>=b.id || s.map.nodes.some(p=>p.id!==a.id&&p.id!==b.id&&distanceToEdge(p,a,b)<90)) continue;
-            const length=Math.hypot((a.x-b.x)*242,(a.y-b.y)*158);
-            candidates.push({a:a.id,b:b.id,length,score:length*(0.8+random.below(401)/1000)});
-        }
-        candidates.sort((a,b)=>a.score-b.score||a.a-b.a||a.b-b.b);
-        const legal = (a:number,b:number) => !s.map.edges.some(([u,v])=>{
-            if ((u===a&&v===b)||(u===b&&v===a)) return true;
-            if ([u,v].includes(a)||[u,v].includes(b)) return false;
-            return cross(point(a),point(b),point(u))*cross(point(a),point(b),point(v))<0 &&
-                cross(point(u),point(v),point(a))*cross(point(u),point(v),point(b))<0;
-        });
-        const groups = s.map.nodes.map(n=>n.id);
-        const root = (id:number):number => groups[id-1]===id?id:(groups[id-1]=root(groups[id-1]));
-        const connect = (a:number,b:number) => {
-            s.map.edges.push([a,b]); groups[root(a)-1]=root(b);
-        };
-        for (let id=2;id<=referenceEnd;id++) groups[id-1]=1;
-        for (const {a,b} of candidates) if (root(a)!==root(b)&&legal(a,b)) connect(a,b);
-        if (s.map.nodes.some(n=>root(n.id)!==root(1))) throw new Error("随机地图未连通");
-        const degree = (id:number) => s.map.edges.filter(e=>e.includes(id)).length;
-        const additional = s.map.nodes.slice(referenceEnd);
-        const transitExtra = extra.filter(n=>n.kind==="transit").length;
-        const loopTarget = range(3,9);
-        const hops = (from:number,to:number) => {
-            const queue=[from], distances=new Map([[from,0]]);
-            for (const id of queue) for (const [a,b] of s.map.edges) {
-                const next=a===id?b:b===id?a:null;
-                if (next===null||distances.has(next)) continue;
-                const distance=distances.get(id)!+1;
-                if (next===to) return distance;
-                distances.set(next,distance); queue.push(next);
-            }
-            return 0;
-        };
-        const loopsByDetour = candidates.filter(e=>e.length<242*4).map(e=>({
-            ...e,detour:hops(e.a,e.b)*(0.75+random.below(501)/1000)
-        })).sort((a,b)=>b.detour-a.detour||a.score-b.score);
-        let loops=0;
-        for (const {a,b} of loopsByDetour) {
-            const internal=additional.filter(n=>degree(n.id)>1).length;
-            if (loops>=loopTarget&&internal>=transitExtra) break;
-            if (degree(a)>=4||degree(b)>=4||!legal(a,b)) continue;
-            connect(a,b); loops++;
-        }
-        // Assign meaningful encounters to dead ends; blank transit never ends a branch.
-        const interior = random.shuffle(additional.filter(n=>degree(n.id)>1));
-        const transitSlots = new Set(interior.slice(0,transitExtra).map(n=>n.id));
-        if (transitSlots.size!==transitExtra) throw new Error("随机地图中转节点缺少出口");
-        const events = random.shuffle(extra.filter(n=>n.kind!=="transit"));
-        for (const n of additional) {
-            const row=transitSlots.has(n.id)?pick("transit"):events.pop()!;
-            Object.assign(n,row,{id:n.id,x:n.x,y:n.y,mainOrder:-1,key:`${row.key}@${n.id}`,
-                ...(row.enemy?{encounterKey:row.key}:{})});
-        }
-        const boss = add(pick("boss"),26,0);
-        const terminal = add(pick("extract"),27,0);
-        const frontier = s.map.nodes.filter(n=>n.id<boss);
-        const farthest = Math.max(...frontier.map(n=>n.x));
-        const approaches = frontier.filter(n=>n.x===farthest);
-        const approach = approaches[random.below(approaches.length)];
-        s.map.edges.push([approach.id,boss],[boss,terminal]);
-        s.map.present=s.map.nodes.map(n=>n.id); s.map.visible=[1]; s.revealed=[1];
-    }
-    private static generateMap(c: ExpeditionConfig, s: ExpeditionState, seed: number): void {
-        if (s.map.generatorVersion===4) {
-            if(c.rules.normalMin===undefined)throw new Error("长分流地图缺少扩展节点预算");
-            this.generateLongRouteMap(c,s,seed); return;
-        }
-        if (s.map.generatorVersion===3) { this.generateFreeMap(c,s,seed); return; }
-        const random = new Random(seed,"map");
-        const pick = (kind: string) => Core.clone(c.nodes.find(n=>n.kind===kind)!);
-        const range = (a:number,b:number) => a+random.below(b-a+1);
-        const add = (row: ExpeditionNode,x:number,y:number,mainOrder=-1) => {
-            const id=s.map.nodes.length+1;
-            const node={...row,id,key:`${row.key}@${id}`,x,y,mainOrder,
-                ...(row.enemy?{encounterKey:row.key}:{})};
-            s.map.nodes.push(node);return id;
-        };
-        const link=(a:number,b:number) => {
-            if(a!==b&&!s.map.edges.some(e=>e.includes(a)&&e.includes(b)))s.map.edges.push([a,b]);
-        };
-        const normals=random.shuffle(c.nodes.filter(n=>n.kind==="normal"));
-        const elites=random.shuffle(c.nodes.filter(n=>n.kind==="elite"));
-        const transit=()=>pick("transit"), borrow=()=>pick("borrow");
-        const searches=random.shuffle(c.nodes.filter(n=>n.kind==="search"));
-        const mains: ExpeditionNode[][] = [
-            [transit(),normals.pop()!,transit(),normals.pop()!],
-            [searches.pop()!,transit(),normals.pop()!,transit(),normals.pop()!,elites.pop()!],
-            [transit(),normals.pop()!,transit(),normals.pop()!,transit(),elites.pop()!,transit()],
-        ];
-        // Shared rewards between legs keep all three borrows available in one run.
-        const extra=[...normals,...elites,pick("insight")];
-        for(let i=1,n=range(c.rules.searchMin,c.rules.searchMax);i<n;i++)extra.push(searches.pop()!);
-        for(let i=0,n=range(1,2);i<n;i++)extra.push(pick("recovery"));
-        for(let i=8,n=range(c.rules.transitMin,c.rules.transitMax);i<n;i++)extra.push(transit());
-        const branches: ExpeditionNode[][]=[[],[],[]];
-        random.shuffle(extra).forEach((row,i)=>branches[i%3].push(row));
-        let previous=add(pick("start"),0,0,0),order=0;
-        const merges:number[]=[];
-        for(let leg=0;leg<3;leg++) {
-            if(s.map.generatorVersion===2) {
-                const routeCount=range(2,4);
-                const levels=routeCount===4?[-1.1,-0.3,0.5,1.3]:[-1.1,0,1.1];
-                const lanes=random.shuffle(levels.map((y,i)=>({y,phase:routeCount===4&&i%2?0.5:0})));
-                const lane=lanes[0],content=leg===0?mains[leg]:random.shuffle(mains[leg]);
-                // Stagger the four compact lanes by half a column to keep node hit areas apart.
-                const slots=(from:number,to:number,phase:number) => {
-                    const xs:number[]=[];
-                    for(let x=leg*8+phase;x<leg*8+8;x+=routeCount===4?1:0.5)
-                        if(x>from&&x<to)xs.push(x);
-                    return xs;
-                };
-                const place=(rows:ExpeditionNode[],from:number,to:number,lane:{y:number;phase:number},main=false) => {
-                    const xs=slots(from,to,lane.phase);
-                    if(xs.length<rows.length)throw new Error("随机路线节点间距不足");
-                    return rows.map((row,i)=>add(row,xs[Math.floor((i+0.5)*xs.length/rows.length)],lane.y,
-                        main?++order:-1));
-                };
-                const path=[previous,...place(content,leg*8,(leg+1)*8,lane,true)];
-                const merge=add(borrow(),(leg+1)*8,0,++order);
-                path.push(merge);for(let i=1;i<path.length;i++)link(path[i-1],path[i]);
-                const fork=path[random.below(2)],join=path[path.length-1-random.below(2)];
-                const rows:ExpeditionNode[][]=Array.from({length:routeCount-1},()=>[]);
-                branches[leg].forEach((row,i)=>rows[i%rows.length].push(row));
-                let first:number[]=[];
-                for(let i=0;i<rows.length;i++) {
-                    let from=fork,to=join;
-                    if(i>0&&random.below(2)===0) {
-                        const a=first[1],b=first[first.length-2];
-                        if(slots(s.map.nodes[a-1].x,s.map.nodes[b-1].x,lanes[i+1].phase).length>=rows[i].length) {
-                            from=a;to=b;
-                        }
-                    }
-                    const route=[from,...place(rows[i],s.map.nodes[from-1].x,s.map.nodes[to-1].x,lanes[i+1]),to];
-                    for(let j=1;j<route.length;j++)link(route[j-1],route[j]);
-                    if(!i)first=route;
-                }
-                previous=merge;merges.push(merge);continue;
-            }
-            // Existing v4 saves replay the original generator without rerolling their graph.
-            const lanes=random.shuffle([-1.1,0,1.1]),main=mains[leg];
-            // Permute events within a leg, without moving the first borrow before its two fights.
-            const content=leg===0?main:random.shuffle(main);
-            const path=[previous];
-            content.forEach((n,i)=>path.push(add(n,leg*8+(i+1)*8/(content.length+1),lanes[0],++order)));
-            const merge=add(borrow(),(leg+1)*8,0,++order);
-            path.push(merge);for(let i=1;i<path.length;i++)link(path[i-1],path[i]);
-            const fork=path[random.below(2)],join=path[path.length-1-random.below(2)];
-            const fromX=s.map.nodes[fork-1].x,toX=s.map.nodes[join-1].x;
-            const branch=[fork];
-            branches[leg].forEach((n,i)=>branch.push(add(n,fromX+(i+1)*(toX-fromX)/(branches[leg].length+1),lanes[1])));
-            branch.push(join);for(let i=1;i<branch.length;i++)link(branch[i-1],branch[i]);
-            // Random cross-route joins add cycles while never bypassing the final boss gate.
-            if(random.below(2) && branch.length>3) {
-                const index=range(1,path.length-2);
-                const target=branch.slice(1,-1).reduce((best,id)=>
-                    Math.abs(s.map.nodes[id-1].x-s.map.nodes[path[index]-1].x) <
-                    Math.abs(s.map.nodes[best-1].x-s.map.nodes[path[index]-1].x)?id:best,branch[1]);
-                link(path[index],target);
-            }
-            previous=merge;merges.push(merge);
-        }
-        const boss=add(pick("boss"),26,0,++order),terminal=add(pick("extract"),27,0,++order);
-        link(previous,boss);link(boss,terminal);
-        const exit=add(pick("extract"),24,1.1);link(previous,exit);
-        if(random.below(100)>=60) {
-            const leg=random.below(2),early=add(pick("extract"),(leg+1)*8,-1.1);link(merges[leg],early);
-        }
-        s.map.present=s.map.nodes.map(n=>n.id);s.map.visible=[1];s.revealed=[1];
     }
     static browseWidth(s: ExpeditionState, viewportWidth: number, pitch=242): number {
         const end=Math.max(viewportWidth,...s.map.nodes.map(n=>112+n.x*pitch+80));
@@ -525,27 +281,22 @@ export class ExpeditionRules {
         s.hp=Math.max(0,s.hp-Math.round(c.build.setup.player.maxHp*hpPercent/100));
         if(s.hp>0)return true;
         s.flow!.phase="ended";s.flow!.endReason="defeat";s.flow!.pending=null;
-        if(c.build.qingming) {
-            delete s.flow!.qingming;s.flow!.build={schools:[],actives:[],passiveIds:[]};
+        {
+            delete s.flow!.qingming;
         }
         Inventory.settle(s,"defeat");return false;
     }
     private static battleConfig(c: ExpeditionConfig,s: ExpeditionState) {
-        if(s.map.generatorVersion!==4 && !c.build.qingming)return c.build;
         return {...c.build,encounters:s.map.nodes.filter(n=>n.enemy).map(n=>{
             const template=c.build.encounters.find(e=>e.id===`battle:${n.encounterKey}`);
             if(!template)throw new Error("地图敌人模板不存在");
-            return {...template,id:`battle:${n.key}`,...(c.build.qingming?{qingmingEnemy:n.qingmingEnemy}:{})};
+            return {...template,id:`battle:${n.key}`,qingmingEnemy:n.qingmingEnemy};
         })};
     }
-    static apply(c: ExpeditionConfig, p: NewBuildProfile, snapshot: ExpeditionState,
-        command: ExpeditionCommand, at: number, seed: number): { state: ExpeditionState; battle?: NewBattleResult } {
-        let s = Core.clone(snapshot), battle: NewBattleResult | undefined;
+    static apply(c: ExpeditionConfig, snapshot: ExpeditionState,
+        command: ExpeditionCommand, at: number, seed: number): { state: ExpeditionState; battle?: BattleResult } {
+        let s = Core.clone(snapshot), battle: BattleResult | undefined;
         if (!command || s.phase === "ended") throw new Error("本局已结算");
-        if(command.type==="move" && [command.move.from.space,command.move.to.space].includes("ground") ||
-            (command.type==="equipWeapon" || command.type==="equipContainer") &&
-            (command.from?.space==="ground" || command.oldTo?.space==="ground"))
-            throw new Error("局内物品只存放于来源仓库，不存在地面散落物");
         if (!Number.isSafeInteger(at) || at < 0) throw new Error("操作时间无效");
         if (s.deadlineAt !== null && (command.type === "timeout" ? at < s.deadlineAt : at >= s.deadlineAt))
             throw new Error("已到截止，须先结算超时");
@@ -555,7 +306,7 @@ export class ExpeditionRules {
         };
         const finish = (reason: "extract" | "abandon" | "timeout") => {
             if (s.phase !== "active" || !s.flow) throw new Error("当前未入境");
-            s.flow = Build.apply(c.build,p,s.flow,{ type: reason },at).state;
+            s.flow = Build.apply(c.build,s.flow,{ type: reason },at).state;
             Inventory.settle(s,reason);
         };
         switch (command.type) {
@@ -566,10 +317,10 @@ export class ExpeditionRules {
                 break;
             case "enter":
                 if (s.phase !== "preparation") throw new Error("不能重复入境");
-                s.flow = Build.start(c.build,p,seed,s.runId);
+                s.flow = Build.start(c.build,seed,s.runId);
                 s.phase = "active"; s.enteredAt = at; s.deadlineAt = at + c.rules.limitMs;
-                this.generateMap(c,s,seed);
-                if(c.build.qingming) {
+                this.generateLongRouteMap(c,s,seed);
+                {
                     const ids=Object.keys(GuzongEnemyRules.enemies) as RogueEnemyId[];
                     for(const n of s.map.nodes.filter(n=>n.enemy)) {
                         const tier=n.kind==="boss"?"首领":n.kind==="elite"?"精英":"普通";
@@ -598,14 +349,14 @@ export class ExpeditionRules {
                 const cost=n.kind==="boss"?c.rules.bossCost:n.kind==="elite"?c.rules.eliteCost:c.rules.normalCost;
                 if(s.stamina!<cost)throw new Error(`体力不足，开战需要 ${cost}，当前 ${s.stamina}`);
                 s.stamina!-=cost;
-                s.flow=Build.apply(this.battleConfig(c,s),p,s.flow!,{type:"battle"},at,Inventory.carry(c,s),
-                    `battle:${s.map.generatorVersion===4?n.key:n.encounterKey}`).state;
+                s.flow=Build.apply(this.battleConfig(c,s),s.flow!,{type:"battle"},at,Inventory.carry(c,s),
+                    `battle:${n.key}`).state;
                 break;
             }
             case "borrow": case "insight":
                 ready();
                 if (this.node(c,s.node,s).kind !== command.type || s.map.used.includes(s.node)) throw new Error("此处奖励不可用");
-                s.flow = Build.offer(c.build,p,s.flow!,`${command.type}:${this.node(c,s.node,s).key}`,
+                s.flow = Build.offer(c.build,s.flow!,`${command.type}:${this.node(c,s.node,s).key}`,
                     command.type === "borrow" ? "active" : "passive");
                 s.map.used.push(s.node);
                 break;
@@ -658,11 +409,11 @@ export class ExpeditionRules {
                 finish("extract"); break;
             case "abandon": case "timeout": finish(command.type); break;
             case "build": {
-                if (s.phase !== "active" || !s.flow || !["choose","forgo","upgrade","action"].includes(command.command.type))
+                if (s.phase !== "active" || !s.flow || !["choose","action"].includes(command.command.type))
                     throw new Error("图上战斗及奖励须由对应节点发起");
                 const n=this.node(c,s.node,s);
-                const result = Build.apply(this.battleConfig(c,s),p,s.flow,command.command,at,Inventory.carry(c,s),
-                    `battle:${s.map.generatorVersion===4?n.key:n.encounterKey}`);
+                const result = Build.apply(this.battleConfig(c,s),s.flow,command.command,at,Inventory.carry(c,s),
+                    `battle:${n.key}`);
                 s.flow = result.state; battle = result.battle;
                 if (battle?.ok) {
                     s.hp = battle.state.player.hp; s.mp = battle.state.player.mp;
@@ -681,18 +432,16 @@ export class ExpeditionRules {
                 }
                 break;
             }
-            case "visit": case "reveal": throw new Error("旧线性地图命令已停用");
             default: {
-                // Inventory remains the sole owner of actual instance movement and consumption.
+
                 if (s.phase === "active" && s.flow?.pending) throw new Error("请先完成强制选择");
-                const result = Inventory.apply(c,p,s,command,at,seed);
+                const result = Inventory.apply(c,s,command,at);
                 s = result.state as ExpeditionState;
                 s.revision--;
             }
         }
         if (s.warehouseLayout) s.warehouseLayout = Inventory.warehousePlacements(c,s);
         Inventory.syncSources(c,s);
-        if(s.items.some(i=>i.location.space==="ground"))throw new Error("正式地图只允许来源仓库，不存在地面物品");
         s.revision++;
         Inventory.validate(c,s);
         return { state: s, battle };

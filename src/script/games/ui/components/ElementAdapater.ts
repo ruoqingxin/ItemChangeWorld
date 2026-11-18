@@ -1,4 +1,4 @@
-const { regClass, classInfo, runInEditor, property } = Laya;
+const { regClass, classInfo, property } = Laya;
 
 @regClass()
 @classInfo({

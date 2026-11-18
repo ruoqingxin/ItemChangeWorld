@@ -120,8 +120,8 @@ export class List<R extends ListItemCtrl, I extends ListItem<R> = ListItem<R>, D
 
     /**
      * laya glist更新元素回调
-     * @param cell 
-     * @param index 
+     * @param cell
+     * @param index
      */
     private _onUpdateListItem(index: number, cell: TLayaListCell<I>) {
         let listItem = cell.listItem;
@@ -275,7 +275,7 @@ export class List<R extends ListItemCtrl, I extends ListItem<R> = ListItem<R>, D
 
     /**
      * 获取所有ctrl控制组件
-     * @returns 
+     * @returns
      */
     getItemCtrlList(): R[] {
         let cells = this._layalist.children;
@@ -293,7 +293,7 @@ export class List<R extends ListItemCtrl, I extends ListItem<R> = ListItem<R>, D
     /**
      * 获取子节点控制器
      * @param index 子节点下标
-     * @returns 
+     * @returns
      */
     getItemCtrl(index: number) {
         let cell = this._layalist.children[index];

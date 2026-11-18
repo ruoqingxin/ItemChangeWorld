@@ -1,4 +1,4 @@
-/** Viewport backgrounds follow the chess client's cover-and-center layout. */
+
 export class UIViewportLayout {
     private static readonly backgrounds = new WeakMap<Laya.GImage, {
         viewport: Laya.GWidget; parent: Laya.Sprite; width: number; height: number; resize: () => void;
@@ -27,7 +27,7 @@ export class UIViewportLayout {
         };
         this.backgrounds.set(image, { viewport, parent: image.parent, width, height, resize });
         viewport.on(Laya.Event.RESIZE, image, resize);
-        // A background nested in a centered adapter must follow its final offset.
+
         image.parent.on(Laya.Event.MOVED, image, resize);
         resize();
     }

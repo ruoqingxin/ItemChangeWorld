@@ -1,6 +1,6 @@
 import { UIClickListener } from "./UIClickListener";
 
-const { regClass, classInfo, runInEditor, property } = Laya;
+const { regClass, classInfo, property } = Laya;
 @regClass()
 @classInfo({
     menu: "UI扩展",
@@ -57,7 +57,7 @@ export class UIScaleButton extends Laya.Script {
         this._killLastTween();
         this._lastTween = Laya.Tween.to(this.tweenTarget, { scaleX: targetScaleX, scaleY: targetScaleY }, this.downTime);
     }
-    onStageMouseUp(evt: Laya.Event): void {
+    onStageMouseUp(): void {
         this._removeStageMouseUp();
         const elapsed = Laya.timer.totalTime - this._lastDownTimeAt;
         if (elapsed < this.downTime) {

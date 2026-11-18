@@ -48,8 +48,6 @@ export abstract class RedDotBase extends BaseClass {
         return this._connectedEvents;
     }
 
-
-
     /**
      * 内部使用 检查红点逻辑
      */

@@ -26,8 +26,8 @@ export default class DeviceUtils extends BaseClass {
 
     /**
      * 获取启动参数
-     * @param variable 
-     * @returns 
+     * @param variable
+     * @returns
      */
     public getQueryVariable(variable: string) {
         if (window.location) {

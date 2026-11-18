@@ -53,7 +53,7 @@ export class TabConstructor {
      */
     tabCtrl: new () => TabItemCtrl;
 
-    static defaultCheckFunc(id: number, data: any) {
+    static defaultCheckFunc(id: number) {
         return FuncChecker.isFuncAvailable(id);
     }
 }

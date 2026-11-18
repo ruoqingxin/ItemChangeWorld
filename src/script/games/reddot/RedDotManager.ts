@@ -55,7 +55,7 @@ export class RedDotManager extends BaseClass {
     /**
      * 将事件派发给红点系统
      * @param e 事件id
-     * @returns 
+     * @returns
      */
     onEvent(e: number): void {
         if (this._events.indexOf(e) > -1) {
@@ -66,7 +66,7 @@ export class RedDotManager extends BaseClass {
 
     /**
      * 更新红点系统
-     * @returns 
+     * @returns
      */
     onUpdate(): void {
         if (this._events.length == 0) {

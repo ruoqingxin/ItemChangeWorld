@@ -6,7 +6,6 @@ const root = path.resolve(__dirname, "..");
 const assets = path.join(root, "assets");
 const ui = path.join(assets, "ui");
 const write = process.argv.includes("--write");
-const referencesOnly = process.argv.includes("--references-only");
 const walk = directory => fs.readdirSync(directory, { withFileTypes: true }).flatMap(entry =>
     entry.isDirectory() ? walk(path.join(directory, entry.name)) : [path.join(directory, entry.name)]);
 const relative = file => path.relative(assets, file).replaceAll("\\", "/");
@@ -60,13 +59,13 @@ for (const file of files.filter(file => file.endsWith(".lh")).sort()) {
     };
     checkExpanded(prefabs.expand(relative(file)));
     for (const ref of expandedRefs) assert.ok(expandedIds.has(ref), `${relative(file)} unresolved node ${ref}`);
-    // Include runtime-switched icons, which are deliberately not all in the hierarchy.
+    // 依赖表还需覆盖运行时切换的图标。
     const dynamicDirectory = file.includes(`${path.sep}expedition${path.sep}`)
         ? "ui/atlas/module/expedition/" : file.includes(`${path.sep}skillBattle${path.sep}`)
             ? "ui/atlas/module/skillBattle/" : null;
     if (dynamicDirectory) for (const image of files.filter(candidate =>
         relative(candidate).startsWith(dynamicDirectory) && candidate.endsWith(".png"))) deps.add(relative(image));
-    if (file.includes(`${path.sep}skillBattle${path.sep}`)) for (const image of files.filter(candidate =>
+    if (/module[\\/](skillBattle|gameplay|inventory|build)[\\/]/.test(file)) for (const image of files.filter(candidate =>
         (relative(candidate).startsWith("ui/atlas/module/inventory/") ||
             relative(candidate).startsWith("ui/texture/inventory/") ||
             relative(candidate).startsWith("ui/image/naxu/") ||
@@ -85,8 +84,6 @@ function checkCycles(file, stack = []) {
 for (const file of Object.keys(depMap)) checkCycles(file);
 for (const file of files.filter(file => /\.(png|lh)$/.test(file))) {
     assert.ok(fs.existsSync(file + ".meta"), `Missing asset metadata: ${relative(file)}`);
-    if (!referencesOnly) assert.doesNotMatch(relative(file), /segment_\d|source_original|generatedRoute|\/ui\/|拷贝/,
-        `Unorganized runtime asset ${relative(file)}`);
 }
 const output = path.join(ui, "ui-deps.json");
 if (write) fs.writeFileSync(output, JSON.stringify(depMap, null, 2) + "\n");

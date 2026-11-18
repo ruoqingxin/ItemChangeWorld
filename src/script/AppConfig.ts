@@ -5,7 +5,7 @@ export class AppConfig {
     /**
      * 当前打包projectCode
      */
-    static projectCode: string = 'xiangqi';
+    static projectCode: string = 'nowchange';
     /**
      * 当前打包branch
      */
@@ -35,10 +35,6 @@ export class AppConfig {
      */
     static urlSub: string = '';
     /**
-     * 登录url
-     */
-    static wsAddress: string = 'ws://159.75.109.51:13308';
-    /**
      * 是否开启打点上报
      */
     static enable_report: boolean;
@@ -57,7 +53,7 @@ export class AppConfig {
 
     /**
      * 获取完整版本号
-     * @returns 
+     * @returns
      */
     static getFullVersion() {
         return `${this.version}.${this.buildNumber}`;
@@ -65,7 +61,7 @@ export class AppConfig {
 
     /**
      * 当前是否是版署环境
-     * @returns 
+     * @returns
      */
     static isBanShuEvn() {
         return this.defines.indexOf(`BANSHU`) != -1;

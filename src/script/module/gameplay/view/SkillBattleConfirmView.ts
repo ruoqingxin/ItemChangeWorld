@@ -11,21 +11,29 @@ export interface SkillBattleConfirmation {
 
 export class SkillBattleConfirmView extends UIBaseView {
     get layer(): UILayer { return UILayer.MessageBox; }
-    get path(): string { return "ui/prefab/module/skillBattle/SkillBattleConfirmView.lh"; }
+    get path(): string { return "ui/prefab/module/gameplay/SkillBattleConfirmView.lh"; }
     private request: SkillBattleConfirmation;
     private submitting = false;
+    private title: Laya.GTextField;
+    private detail: Laya.GTextField;
+    private error: Laya.GTextField;
+    private confirmText: Laya.GTextField;
 
     protected onConstruct(): void {
+        this.title = this.getElement("dialogTitle");
+        this.detail = this.getElement("dialogDetail");
+        this.error = this.getElement("dialogError");
+        this.confirmText = this.getElement("dialogConfirmText");
         this.addClickListener(this.getElement("dialogCancel"), this.close);
         this.addClickListener(this.getElement("dialogConfirm"), this.confirm);
     }
 
     onOpen(request: SkillBattleConfirmation): void {
         this.request = request; this.submitting = false;
-        this.getElement<Laya.GTextField>("dialogTitle").text = request.title;
-        this.getElement<Laya.GTextField>("dialogDetail").text = request.detail;
-        this.getElement<Laya.GTextField>("dialogError").text = "";
-        this.getElement<Laya.GTextField>("dialogConfirmText").text = request.confirmText || "确认";
+        this.title.text = request.title;
+        this.detail.text = request.detail;
+        this.error.text = "";
+        this.confirmText.text = request.confirmText || "确认";
     }
 
     private confirm(): void {
@@ -35,7 +43,7 @@ export class SkillBattleConfirmView extends UIBaseView {
             this.request.confirm();
             this.close();
         } catch (error) {
-            this.getElement<Laya.GTextField>("dialogError").text = (error as Error).message;
+            this.error.text = (error as Error).message;
         } finally { this.submitting = false; }
     }
 

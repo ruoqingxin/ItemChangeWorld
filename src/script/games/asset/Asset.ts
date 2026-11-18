@@ -20,25 +20,15 @@ export class Asset {
         }
         return cnt;
     }
-    /**
-     * private
-     */
+
     _path: string;
-    /**
-     * private
-     */
+
     _info: ResInfo;
-    /**
-     * private
-     */
+
     _refCount: number = 0;
-    /**
-     * private
-     */
+
     _res: any;
-    /**
-     * private
-     */
+
     _loaded: boolean = false;
 
     get data() {
@@ -62,9 +52,7 @@ export class Asset {
     public get loaded() {
         return this._loaded;
     }
-    /**
-     * private
-     */
+
     _onLoad() {
         if (this._loaded) {
             return;
@@ -79,9 +67,7 @@ export class Asset {
         }
         this.lastUseAtTime = Laya.Browser.now();
     }
-    /**
-     * private
-     */
+
     _onDestroy(): boolean {
         if (!this._loaded) {
             return;
@@ -157,7 +143,7 @@ export class Asset {
                 const url = Laya.URL.getResURLByUUID(child._$prefab);
                 const prefab = Laya.loader.getRes(url, Laya.Loader.HIERARCHY) as Laya.PrefabImpl;
                 if (!prefab) throw new Error(`Missing nested prefab: ${url}`);
-                // Keep native override semantics and scope IDs just like ElementMapper's array references.
+
                 const overrides = Laya.SerializeUtil.bakeOverrideData([child._$child || []]);
                 const data = overrides ? Laya.SerializeUtil.applyOverrideData(prefab.data, overrides) : prefab.data;
                 this._findEChild(data._$child || [], checkMap, idPath);

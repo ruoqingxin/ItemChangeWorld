@@ -1,0 +1,218 @@
+{
+  "_$ver": 1,
+  "_$id": "page_SkillBattleBuildInfoView",
+  "_$type": "GWidget",
+  "name": "SkillBattleBuildInfoView",
+  "width": 1280,
+  "height": 720,
+  "_$child": [
+    {
+      "_$id": "region_144",
+      "_$type": "GWidget",
+      "name": "adapter",
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 720,
+      "mouseThrough": true,
+      "_$child": [
+        {
+          "_$id": "region_143",
+          "relations": [
+            {
+              "_$type": "Relation",
+              "target": {
+                "_$ref": "region_144"
+              },
+              "data": [
+                6,
+                0,
+                13,
+                0
+              ]
+            }
+          ],
+          "_$prefab": "2255efde-79f2-41ec-91aa-521cbd3dd215",
+          "x": 128,
+          "y": 48,
+          "_$child": [
+            {
+              "_$override": "dialog_96",
+              "text": "当前构筑"
+            }
+          ]
+        }
+      ],
+      "relations": [
+        {
+          "_$type": "Relation",
+          "target": {
+            "_$ref": "page_SkillBattleBuildInfoView"
+          },
+          "data": [
+            1,
+            0,
+            2,
+            0
+          ]
+        }
+      ]
+    }
+  ],
+  "_$comp": [
+    {
+      "_$type": "3593fc26-337e-42e3-92dc-1b9c2bb8f988",
+      "scriptPath": "../src/script/games/ui/components/ElementMapper.ts",
+      "adapter": {
+        "_$ref": "region_144"
+      },
+      "elements": [
+        {
+          "_$ref": "region_144"
+        },
+        {
+          "_$ref": "region_143"
+        },
+        {
+          "_$ref": [
+            "region_143",
+            "dialog_95"
+          ]
+        },
+        {
+          "_$ref": [
+            "region_143",
+            "region_98"
+          ]
+        },
+        {
+          "_$ref": [
+            "region_143",
+            "dialog_96"
+          ]
+        },
+        {
+          "_$ref": [
+            "region_143",
+            "dialog_97"
+          ]
+        },
+        {
+          "_$ref": [
+            "region_143",
+            "region_100"
+          ]
+        },
+        {
+          "_$ref": [
+            "region_143",
+            "dialog_99"
+          ]
+        },
+        {
+          "_$ref": [
+            "region_143",
+            "region_117"
+          ]
+        },
+        {
+          "_$ref": [
+            "region_143",
+            "dialog_101"
+          ]
+        },
+        {
+          "_$ref": [
+            "region_143",
+            "dialog_103"
+          ]
+        },
+        {
+          "_$ref": [
+            "region_143",
+            "dialog_104"
+          ]
+        },
+        {
+          "_$ref": [
+            "region_143",
+            "dialog_102"
+          ]
+        },
+        {
+          "_$ref": [
+            "region_143",
+            "dialog_106"
+          ]
+        },
+        {
+          "_$ref": [
+            "region_143",
+            "dialog_107"
+          ]
+        },
+        {
+          "_$ref": [
+            "region_143",
+            "dialog_105"
+          ]
+        },
+        {
+          "_$ref": [
+            "region_143",
+            "dialog_109"
+          ]
+        },
+        {
+          "_$ref": [
+            "region_143",
+            "dialog_110"
+          ]
+        },
+        {
+          "_$ref": [
+            "region_143",
+            "dialog_108"
+          ]
+        },
+        {
+          "_$ref": [
+            "region_143",
+            "dialog_112"
+          ]
+        },
+        {
+          "_$ref": [
+            "region_143",
+            "dialog_113"
+          ]
+        },
+        {
+          "_$ref": [
+            "region_143",
+            "dialog_111"
+          ]
+        },
+        {
+          "_$ref": [
+            "region_143",
+            "dialog_115"
+          ]
+        },
+        {
+          "_$ref": [
+            "region_143",
+            "dialog_116"
+          ]
+        },
+        {
+          "_$ref": [
+            "region_143",
+            "dialog_114"
+          ]
+        }
+      ],
+      "mapperType": 1
+    }
+  ]
+}

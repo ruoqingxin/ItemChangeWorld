@@ -1,8 +1,10 @@
+import { UIManager } from "../../../games/ui/UIManager";
+import { EnemyPickerView } from "./EnemyPickerView";
 import type { ManualTestView } from "./ManualTestView";
-import type { RogueAction, RogueItem, RogueMove } from "../types/RogueTestTypes";
-import { RogueTestConfig as C } from "../utils/RogueTestConfig";
-import { RogueTestRules as R } from "../utils/RogueTestRules";
-import { RogueEnemyRules as E } from "../utils/RogueEnemyRules";
+import type { RogueAction, RogueItem, RogueMove } from "../../skillBattle/types/QingmingTypes";
+import { QingmingConfig as C } from "../../skillBattle/utils/QingmingConfig";
+import { QingmingRules as R } from "../../skillBattle/utils/QingmingRules";
+import { GuzongEnemyRules as E } from "../../skillBattle/utils/GuzongEnemyRules";
 import type { RogueTestManager } from "../manager/RogueTestManager";
 
 const colors = { bg: "#171e1d", pane: "#222c29", line: "#48564f", text: "#edf1ee",
@@ -22,9 +24,35 @@ export class RogueTestPanel {
     private revision = -1;
     private notice = "";
     private tab: "log" | "build" | "pool" | "report" | "enemy" = "log";
-    private popup: Laya.GWidget = null;
+    private popup: EnemyPickerView = null;
+    private readonly clicks: Record<string, () => void> = {};
+    private readonly changes: Record<string, (n: number) => void> = {};
+    private detailScroll: Laya.GPanel;
+    private readonly icons: Record<string, Laya.GImage> = {};
     constructor(private readonly view: ManualTestView) {
         this.session = view.rogueSession; this.root = view.getElement<Laya.GWidget>("adapter");
+        for (const key of ["pressure_relaxed","pressure_standard","pressure_hard","battles_1","battles_12","battles_15","enemyPick","restart","heal","mana","intent_1","intent_2","intent_3","reward_0","reward_1","reward_2","nextBattle","retreat","tab_log","tab_build","tab_pool","tab_report","tab_enemy","cancel","back","endTurn","confirm","move_basic","move_guard","move_edge","move_wind","move_guide","move_fall"]) {
+            const b = view.getElement<Laya.GWidget>("btn_" + key);
+            this.buttons[key] = b;
+            b.on(Laya.Event.CLICK, this, () => { if (this.opened) this.clicks[key]?.(); });
+            this.labels[key + "Text"] = view.getElement<Laya.GTextField>("txt_" + key + "Text");
+        }
+        for (const key of ["manualName","selfHead","enemyHead","hpLabel","mpLabel","attackLabel","defenseLabel","seedLabel","supplyLabel","draftStatus","emptyArena","playerState","enemyState","flyingState","coreState","enemyMechanic","mutationState","passiveState","mechanicState","runOutcome","totals","detailText","pageTitle","roundState","bossForecast","preview"]) this.labels[key] = view.getElement<Laya.GTextField>("txt_" + key);
+        for (const key of ["seed","healPotions","manaPotions","player_hp","player_mp","player_attack","player_defense","enemy_hp","enemy_mp","enemy_attack","enemy_defense"]) {
+            const input = view.getElement<Laya.GTextInput>("input_" + key);
+            this.inputs[key] = input;
+            input.restrict = "0-9"; input.maxChars = 10;
+            input.on(Laya.Event.INPUT, this, () => {
+                this.changes[key]?.(input.text.trim() ? Number(input.text) : NaN);
+                this.labels.draftStatus.text = "参数待应用";
+            });
+        }
+        for (const key of ["edge","wind","guide","fall"]) this.icons[key] = view.getElement<Laya.GImage>("img_" + key);
+        this.detailScroll = view.getElement<Laya.GPanel>("box_detailScroll");
+        const scroll = new Laya.Scroller();
+        scroll.direction = Laya.ScrollDirection.Vertical; scroll.barDisplay = Laya.ScrollBarDisplay.Hidden;
+        scroll.touchEffect = Laya.ScrollTouchEffect.On; scroll.bouncebackEffect = Laya.ScrollBounceBackEffect.Off;
+        this.detailScroll.scroller = scroll;
         view.view.on(Laya.Event.RESIZE, this, this.resize);
     }
     open(onBack: () => void): void {
@@ -37,53 +65,37 @@ export class RogueTestPanel {
         this.root.pos(0, 0).size(this.width, this.height); this.render();
     }
     private text(name: string, value: string, x: number, y: number, w: number, h: number,
-        size = 17, color = colors.text, parent = this.root): Laya.GTextField {
-        const t = new Laya.GTextField(); t.name = name; t.text = value; t.font = "Microsoft YaHei";
+        size = 17, color = colors.text): Laya.GTextField {
+        const t = this.labels[name]; t.visible = true; t.text = value; t.font = "Microsoft YaHei";
         t.fontSize = size; t.color = color; t.wordWrap = true; t.overflow = "shrink"; t.valign = "middle";
-        t.leading = 4; t.mouseEnabled = false; t.pos(x, y).size(w, h); parent.addChild(t); this.labels[name] = t; return t;
+        t.leading = 4; t.align = "left"; t.mouseEnabled = false; t.pos(x, y).size(w, h); return t;
     }
     private button(name: string, title: string, x: number, y: number, w: number, h: number,
-        click: () => void, selected = false, enabled = true, parent = this.root): Laya.GWidget {
-        const b = new Laya.GWidget(); b.name = name; b.pos(x, y).size(w, h);
+        click: () => void, selected = false, enabled = true): Laya.GWidget {
+        const b = this.buttons[name]; b.visible = true; b.pos(x,y).size(w,h); b.graphics.clear();
+        this.clicks[name] = click;
         b.mouseEnabled = enabled; b.alpha = enabled ? 1 : 0.4;
         b.graphics.drawRect(0, 0, w, h, selected ? "#385346" : "#2b3b34", selected ? colors.jade : colors.line, 1);
-        this.text(name + "Text", title, 8, 3, w - 16, h - 6, 16, selected ? colors.jade : colors.text, b).align = "center";
-        parent.addChild(b); b.on(Laya.Event.CLICK, this, () => { if (this.opened) click(); }); this.buttons[name] = b; return b;
+        this.text(name + "Text", title, 8, 3, w - 16, h - 6, 16, selected ? colors.jade : colors.text).align = "center";
+        return b;
     }
     private input(name: string, value: number, x: number, y: number, w: number, apply: (n: number) => void): void {
-        const t = new Laya.GTextInput(); t.name = name; t.pos(x, y).size(w, 28); t.text = String(value);
+        const t = this.inputs[name]; t.visible = true; t.pos(x,y).size(w,28); t.text = String(value);
+        t.graphics.clear(); this.changes[name] = apply;
         t.font = "Microsoft YaHei"; t.fontSize = 16; t.color = colors.text; t.align = "right"; t.valign = "middle";
         t.padding = [2, 6, 2, 4]; t.restrict = "0-9"; t.maxChars = 10;
         t.graphics.drawRect(0, 0, w, 28, "#151e1a", colors.line, 1);
-        t.on(Laya.Event.INPUT, this, () => { apply(t.text.trim() ? Number(t.text) : NaN); this.labels.draftStatus.text = "参数待应用"; });
-        this.root.addChild(t); this.inputs[name] = t;
     }
     private select(move: RogueMove, extra: Partial<RogueAction> = {}): void {
         this.selected = { move, ...extra }; this.revision = this.session.state?.revision ?? -1; this.notice = ""; this.render();
     }
-    private closeMenu(): void {
-        if (!this.popup) return;
-        this.popup.destroy(); this.popup = null;
-        for (const key of Object.keys(this.buttons).filter(k => k.startsWith("option_"))) {
-            delete this.buttons[key]; delete this.labels[key + "Text"];
-        }
-    }
+    private closeMenu(): void { this.popup?.close(); this.popup = null; }
     private enemyMenu(): void {
         this.closeMenu();
-        const veil = new Laya.GWidget(); veil.size(this.width, this.height); veil.zOrder = 100; veil.mouseEnabled = true;
-        veil.on(Laya.Event.CLICK, this, this.closeMenu); this.root.addChild(veil); this.popup = veil;
-        const rows = [{ key: null, name: "随机古宗敌阵" }, ...Object.entries(E.enemies).map(([key, v]) =>
-            ({ key, name: `${v.tier} · ${v.name}` }))];
-        const width = Math.min(660, this.width - 40), cell = width / 3;
-        const list = new Laya.GWidget(); list.pos(20, 278).size(width, 200);
-        list.graphics.drawRect(0, 0, width, 200, colors.bg, colors.line, 1); veil.addChild(list);
-        rows.forEach((row, i) => {
-            const b = this.button("option_" + i, row.name, i % 3 * cell + 4, 4 + Math.floor(i / 3) * 32, cell - 8, 28, () => {
-                const d = this.session.draft; d.style = "guzong"; d.enemyId = row.key as typeof d.enemyId;
-                if (row.key) d.battles = 1;
-                this.closeMenu(); this.render();
-            }, false, true, list);
-            b.on(Laya.Event.CLICK, this, (event: Laya.Event) => event.stopPropagation());
+        this.popup = UIManager.ins().openForm(EnemyPickerView, (key) => {
+            this.session.draft.enemyId = key;
+            if (key) this.session.draft.battles = 1;
+            this.popup = null; this.render();
         });
     }
     private setup(): void {
@@ -106,8 +118,6 @@ export class RogueTestPanel {
         this.input("seed", d.seed, 70, 336, 164, n => { d.seed = n; });
         [1, 12, 15].forEach((n, i) => this.button(`battles_${n}`, n === 1 ? "单场" : `${n}战`,
             20 + i * 73, 378, 68, 30, () => { d.battles = n; if (n !== 1) d.enemyId = null; this.render(); }, d.battles === n));
-        Object.entries(C.styles).forEach(([key, name], i) => this.button("style_" + key, name,
-            20 + i % 2 * 110, 414 + Math.floor(i / 2) * 26, 104, 24, () => { d.style = key as typeof d.style; d.enemyId = null; this.render(); }, d.style === key));
         this.button("enemyPick", d.enemyId ? E.enemies[d.enemyId].name + "  v" : "指定古宗敌人  v",
             20, 492, 214, 26, this.enemyMenu.bind(this));
         this.text("supplyLabel", "血/蓝药", 20, 522, 50, 28, 14, colors.muted);
@@ -172,9 +182,9 @@ export class RogueTestPanel {
                 const role = C.offerRoles[s.offerRoles[key]];
                 const related = R.related(s, key);
                 const title = `${item.name}${role ? ` · ${role}` : ""}${old ? `  ← 替换${C.items[old].name}` : ""}\n${item.description}`;
-                const b = this.button("reward_" + key, title, x, 330 + i * 70, w, 64,
+                const b = this.button("reward_" + i, title, x, 330 + i * 70, w, 64,
                     () => this.select("choose", { choice: key }), this.selected?.choice === key);
-                this.labels[b.name + "Text"].align = "left";
+                this.labels["reward_" + i + "Text"].align = "left";
                 b.tooltips = item.description + (related.length ? `\n联动：${related.map(k => C.items[k].name).join("、")}` : "");
             });
         } else {
@@ -215,23 +225,22 @@ export class RogueTestPanel {
                 s.foe.id === "arrayMaster" || s.foe.id === "swordSpirit" ? "布阵后下一玩家回合3次本体命中可拆阵；派生攻击不计" : ""}` +
             "\n\n条件攻击按上限预留法力，条件未触发仍耗预留值；不足时按预告降为普攻。" +
             `\n\n本局敌阵\n${s.enemyPlan.map((k, i) => `${i + 1} · ${E.enemies[k].name}`).join("\n")}` :
-            "旧模板敌阵" + (s ? ` · ${C.styles[s.enemy.style]}` : "");
+            "尚未开始演练";
         else text = s?.reports.slice().reverse().map(r =>
             `第${r.battle}战 ${r.tier}${r.enemyId ? "·" + E.enemies[r.enemyId].name : ""} · ${r.won ? "胜" : "败"}\n${r.rounds}回合 / ${r.actions}行动\n生命 ${r.startHp} → ${r.endHp}\n法力 ${r.startMp} → ${r.endMp}\n承伤${r.taken} / 耗蓝${r.mpSpent} / 血祭${r.bloodSpent}\n` +
             Object.entries(r.skills).map(([k, n]) => `${C.moves[k]}${n}`).join(" ") + "\n" +
             Object.entries(r.events).map(([k, n]) => `${C.events[k] || k}:${n}`).join(" ")).join("\n\n") || "尚无完整战报";
-        const panel = new Laya.GPanel(); panel.name = "detailScroll"; panel.pos(x, 128).size(w, this.height - 256);
-        const scroll = new Laya.Scroller(); scroll.direction = Laya.ScrollDirection.Vertical; scroll.barDisplay = Laya.ScrollBarDisplay.Hidden;
-        scroll.touchEffect = Laya.ScrollTouchEffect.On; scroll.bouncebackEffect = Laya.ScrollBounceBackEffect.Off;
-        panel.scroller = scroll; this.root.addChild(panel);
-        const t = this.text("detailText", text, 4, 0, w - 10, 100, 16, colors.muted, panel);
+        const panel = this.detailScroll; panel.visible = true; panel.pos(x,128).size(w,this.height-256);
+        const t = this.text("detailText", text, 4, 0, w - 10, 100, 16, colors.muted);
         t.overflow = "visible"; t.valign = "top"; t.textIns.typeset(); t.height = Math.max(panel.height, t.textIns.textHeight + 12);
     }
     render(): void {
         if (!this.opened) return;
         this.closeMenu();
-        this.root.destroyChildren(); this.root.graphics.clear();
-        for (const map of [this.buttons, this.labels, this.inputs]) for (const key of Object.keys(map)) delete map[key];
+        this.root.graphics.clear();
+        for (const map of [this.buttons, this.labels, this.inputs, this.icons])
+            for (const node of Object.values(map)) node.visible = false;
+        this.detailScroll.visible = false;
         this.root.graphics.drawRect(0, 0, this.width, this.height, colors.bg);
         this.root.graphics.drawRect(0, 0, 254, this.height, colors.pane);
         const x = 276, right = this.width - 300, w = right - x - 24, s = this.session.state;
@@ -241,7 +250,6 @@ export class RogueTestPanel {
             "青冥剑典 · 局内构筑", x, 14, w - 10, 36, 20, colors.jade);
         const boss = s?.enemyPlan.find(k => E.enemies[k].tier === "首领");
         if (boss) this.text("bossForecast", `本局首领：${E.enemies[boss].name}`, x, 50, w, 24, 15, colors.red);
-        this.button("legacyMode", "旧版对照", this.width - 248, 16, 126, 32, () => this.view.switchMode("legacy"));
         this.button("cancel", "x", this.width - 110, 16, 40, 32, () => { this.selected = null; this.notice = ""; this.render(); }, false, !!this.selected).tooltips = "取消选择";
         this.button("back", "<", this.width - 62, 16, 42, 32, () => { this.view.close(); this.onBack(); }).tooltips = "返回";
         this.setup(); this.arena(x, w); this.side(right, 280);
@@ -253,9 +261,9 @@ export class RogueTestPanel {
             b.tooltips = `${title} · 1行动 · ${C.cost(move, s)}法力` + (s?.mutations[move] ? `\n${C.items[s.mutations[move]].description}` : "");
             if (move === "basic" && s?.foe.id) b.tooltips += `\n普攻后回${C.guzongTempo.basicMana}蓝，吐纳再加4；致胜不回蓝`;
             if (i >= 2) {
-                const image = new Laya.GImage(); image.autoSize = false; image.src = `ui/atlas/module/skillBattle/skill-${i - 1}.png`;
-                image.pos(4, 8).size(28, 28); image.mouseEnabled = false; b.addChild(image);
-                this.labels[b.name + "Text"].pos(32, 2).size(step - 44, 42);
+                const image = this.icons[move]; image.visible = true;
+                image.pos(4,8).size(28,28);
+                this.labels["move_" + move + "Text"].pos(32, 2).size(step - 44, 42);
             }
         });
         this.button("endTurn", "结束回合", this.width - 222, footer, 100, 46, () => this.select("end"), false, s?.phase === "fighting");

@@ -2,7 +2,8 @@
   "compilerOptions": {
     "module": "System",
     "target": "es6",
-    //"strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "lib": [
       "es2020",
       "dom"

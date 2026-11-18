@@ -2,7 +2,7 @@ import type { UIBaseView } from "../../../games/ui/UIBaseView";
 
 export type SkillBattlePage = "start" | "battle" | "settlement" | "inventory" | "build" | "map";
 
-/** Live adapter coordinates, also used by inventory hit testing and dragging. */
+
 export function pagePosition(node: Laya.GWidget, root: Laya.GWidget): Laya.Point {
     const point = new Laya.Point(node.x, node.y);
     let parent = node.parent as Laya.GWidget;
@@ -18,7 +18,7 @@ export function placeInPage(node: Laya.GWidget, root: Laya.GWidget, x: number, y
     node.pos(x - origin.x, y - origin.y);
 }
 
-/** Convert existing design coordinates to region-local positions without undoing native anchors. */
+
 export function placeInDesign(node: Laya.GWidget, root: Laya.GWidget, x: number, y: number): void {
     let parent = node.parent as Laya.GWidget;
     while (parent && parent !== root) {
@@ -29,7 +29,7 @@ export function placeInDesign(node: Laya.GWidget, root: Laya.GWidget, x: number,
     node.pos(x, y);
 }
 
-/** Region containers stay visible; renderers control only their mapped content. */
+
 export function visitRegion(view: UIBaseView, root: Laya.GWidget,
     visit: (node: Laya.GWidget) => boolean | void): void {
     for (let i = 0; i < root.numChildren; i++) {

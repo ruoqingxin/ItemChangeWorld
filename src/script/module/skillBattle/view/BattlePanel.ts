@@ -1,10 +1,8 @@
 import type { UIBaseView } from "../../../games/ui/UIBaseView";
-import { ConfigUtil } from "../../../config/ConfigUtil";
 import { BattleRules } from "../utils/BattleRules";
-import { BattleConfigUtils, NewTrialOptions } from "../utils/BattleConfigUtils";
-import { BattleTrialManager } from "../manager/BattleTrialManager";
-import type { NewBattleAction, NewBattleEvent, NewBattleResult } from "../types/BattleTypes";
-import type { NewTrialRecord } from "../types/BattleTrialTypes";
+import type { ExpeditionRunManager } from "../../expedition/manager/ExpeditionRunManager";
+import type { BattleAction, BattleEvent, BattleResult } from "../types/BattleTypes";
+
 import { UIManager } from "../../../games/ui/UIManager";
 import { SkillBattleConfirmView } from "../../gameplay/view/SkillBattleConfirmView";
 import { SkillBattleReportView } from "./SkillBattleReportView";
@@ -17,26 +15,22 @@ import { GuzongEnemyRules as QE } from "../utils/GuzongEnemyRules";
 import type { RogueMove } from "../types/QingmingTypes";
 
 type Screen = "start" | "battle" | "settlement";
-export type NewBattlePanelSession = Pick<BattleTrialManager, "error" | "outcome" | "state" | "record" |
-    "remainingMs" | "expire" | "preview" | "confirm" | "resetConfirmed"> &
-    { readonly snapshot: unknown; readonly records: NewTrialRecord[]; readonly integerResources?: boolean };
+export type BattlePanelSession = ExpeditionRunManager;
 const colors = { text: "#ecefe7", muted: "#bac3b6", gold: "#e3c98c", jade: "#a1d7ba",
     red: "#efa797", blue: "#9ec9ec", fill: "#1c2924", line: "#7a8876" };
 
-/** A projection of saved results onto the existing UIBaseView / ElementMapper prefabs. */
+
 export class BattlePanel {
     readonly buttons: { [key: string]: Laya.GWidget } = {};
     readonly labels: { [key: string]: Laya.GTextField } = {};
-    protected selected: NewBattleAction | null = null;
-    protected selection: NewBattleResult | null = null;
+    protected selected: BattleAction | null = null;
+    protected selection: BattleResult | null = null;
     protected notice = "";
     protected opened = false;
     protected busy = false;
-    private mode: "actives" | "passives" | "environment" = "actives";
-    private selectedSkill = 1;
     protected resetConfirm = false;
     protected overlay: "log" | "build" | null = null;
-    private queue: NewBattleEvent[] = [];
+    private queue: BattleEvent[] = [];
     protected root: Laya.GWidget;
     private viewport: Laya.GWidget;
     protected elements: { [key: string]: Laya.GWidget } = {};
@@ -45,9 +39,21 @@ export class BattlePanel {
     private guideTarget = 1;
     private readonly qMoves: RogueMove[] = ["basic","guard","edge","wind","guide","fall","end"];
     private readonly qKeys = ["skill1","skill2","skill3","skill4","upgrade0","qFall","qEnd"];
-    constructor(view: UIBaseView, readonly session: NewBattlePanelSession, readonly options: NewTrialOptions,
+    private readonly childNodes = new Map<Laya.Node, Laya.GWidget[]>();
+    protected child(node: Laya.Node, index: number): Laya.GWidget { return this.childNodes.get(node)?.[index]; }
+    protected namedChild(node: Laya.Node, name: string): Laya.GWidget { return this.childNodes.get(node)?.find(n => n.name === name); }
+    constructor(view: UIBaseView, readonly session: BattlePanelSession,
         protected readonly navigate: (screen: SkillBattlePage) => void, readonly screen: Screen,
         readonly pageRole: SkillBattlePage = screen) {
+        const cache = (node: Laya.Node) => {
+            const children: Laya.GWidget[] = [];
+            for (let i = 0; i < node.numChildren; i++) {
+                const child = node.getChildAt(i) as Laya.GWidget;
+                children.push(child); cache(child);
+            }
+            this.childNodes.set(node, children);
+        };
+        cache(view.view);
         this.viewport = view.view;
         this.root = view.getElement<Laya.GWidget>("adapter", false) || view.view;
         visitRegion(view, view.view, child => {
@@ -59,25 +65,22 @@ export class BattlePanel {
                 child.fontSize = 20;
                 child.textIns.bgColor = null as any;
                 child.textIns.borderColor = null as any;
-            } else if (child.numChildren > 0 && child.getChildAt(0) instanceof Laya.GTextField) {
+            } else if (this.child(child,0) instanceof Laya.GTextField) {
                 this.buttons[child.name] = child;
+                this.labels[`txt_${child.name}`] = view.getElement<Laya.GTextField>(`txt_${child.name}`);
                 return false;
             }
         });
-        // Bind through ElementMapper, just like the existing panels.
+        for (let i = 1; i <= 4; i++) {
+            const name = `img_skill${i}`;
+            const icon = view.getElement<Laya.GWidget>(name, false);
+            if (icon) this.elements[name] = icon;
+        }
+        // 通过预制体映射统一绑定按钮。
         for (const key of Object.keys(this.buttons)) {
             const button = view.getElement<Laya.GWidget>(key, false);
             if (!button) throw new Error(`预制按钮未绑定：${key}`);
             button.on(Laya.Event.CLICK, this, () => this.command(key));
-        }
-        if(screen==="battle")for(const key of ["qFall","qEnd","qIntent1","qIntent2","qIntent3"]) {
-            const button=new Laya.GWidget();button.name=key;button.mouseEnabled=true;
-            const label=new Laya.GTextField();label.font="Microsoft YaHei";label.mouseEnabled=false;
-            button.addChild(label);
-            const parent=key.startsWith("qIntent")?this.elements.intent.parent:this.buttons.skill1.parent;
-            parent.addChild(button);
-            this.buttons[key]=this.elements[key]=button;
-            button.on(Laya.Event.CLICK,this,()=>this.command(key));
         }
         const resizeBackdrop = () => {
             if (this.elements.result?.visible) this.backdrop();
@@ -103,14 +106,7 @@ export class BattlePanel {
         const numbers = this.labels.numbers;
         if (numbers) Laya.Tween.clearAll(numbers);
     }
-    startRun(): void {
-        this.run(() => {
-            if (this.session.outcome === "active") { this.navigate("battle"); return; }
-            const setup = BattleConfigUtils.read(ConfigUtil.Tables, this.options);
-            (this.session as BattleTrialManager).start(setup, this.options.emptyPouch);
-            this.navigate("battle");
-        });
-    }
+    startRun(): void { this.navigate("map"); }
     private open(): void {
         this.opened = true; this.busy = false; this.selected = null; this.selection = null;
         this.overlay = null; this.resetConfirm = false; this.notice = "";
@@ -137,9 +133,7 @@ export class BattlePanel {
         }
         if (this.opened && refresh) this.refresh();
     }
-    protected format(n: number): string {
-        return this.session.integerResources || this.session.record?.setup.qingming ? String(n) : BattleRules.format(n);
-    }
+    protected format(n: number): string { return String(n); }
     protected command(key: string): void {
         if (this.modalOpen) return;
         this.run(() => {
@@ -152,16 +146,15 @@ export class BattlePanel {
             if (key === "reset") { this.resetConfirm = true; return; }
             if (key === "newRun") { this.startRun(); return; }
             if (key === "hub" || key === "loot") { this.navigate("start"); return; }
-            if (key === "lootClose") { (this.session as BattleTrialManager).continueBattle(); this.navigate("battle"); return; }
             if (key === "battleReport" || (key === "report" && this.screen !== "start")) {
                 this.openReport(); return;
             }
             if (key === "build" && this.screen !== "start") { this.openReport(true); return; }
-            if (this.screen === "start") { this.configure(key); return; }
+            if (this.screen === "start") return;
             if (this.screen !== "battle") return;
             if (key === "cancel") { this.selected = null; this.selection = null; this.notice = ""; return; }
             if (key === "confirm") { this.confirm(); return; }
-            if(this.session.record?.setup.qingming) {
+            {
                 if(/^qIntent[1-3]$/.test(key)) {
                     this.guideTarget=Number(key.slice(-1));
                     this.select({type:"qingming",move:"guide",enemyAction:this.guideTarget});return;
@@ -172,51 +165,13 @@ export class BattlePanel {
                     this.select({type:"qingming",move,...(move==="guide"?{enemyAction:this.guideTarget}:{})});return;
                 }
             }
-            const keys = ["skill1", "skill2", "skill3", "skill4", "upgrade0"];
-            const index = keys.indexOf(key);
-            if (index >= 0) {
-                const build = this.session.record!.setup.build;
-                this.select(index === 0 ? { type: "basic" } : index === 1 ? { type: "guard" }
-                    : { type: "skill", skillId: build.actives[index - 2].skillId });
-            }
             if (/^pouch[0-4]$/.test(key)) {
                 const item = this.session.state!.pouch[Number(key.slice(5))];
                 if (item) this.select({ type: "potion", itemUid: item.itemUid });
             }
         });
     }
-    private configure(key: string): void {
-        if (key === "report") this.mode = "actives";
-        if (key === "summary") this.mode = "passives";
-        if (key === "actions") this.mode = "environment";
-        const index = /^warehouse[0-5]$/.test(key) ? Number(key.slice(9)) : -1;
-        if (index >= 0 && this.session.outcome !== "active" && !this.session.error) {
-            if (this.mode === "actives" && index < 5) {
-                const id = ConfigUtil.Tables.new_sword_skill.getDataList()[index].id;
-                this.selectedSkill = id;
-                const old = this.options.actives.findIndex(row => row.skillId === id);
-                if (old >= 0) this.options.actives.splice(old, 1);
-                else if (this.options.actives.length >= 3) this.notice = "主动位已满";
-                else { this.options.sword = true; this.options.actives.push({ skillId: id, level: 0 }); }
-            } else if (this.mode === "passives") {
-                const id = ConfigUtil.Tables.new_sword_passive.getDataList()[index].id;
-                const old = this.options.passiveIds.indexOf(id);
-                if (old >= 0) this.options.passiveIds.splice(old, 1);
-                else this.options.passiveIds.push(id);
-            } else if (this.mode === "environment") {
-                if (index < 3) this.options.enemyId = ConfigUtil.Tables.new_battle_enemy.getDataList()[index].id;
-                if (index === 3) this.options.weapon = this.options.weapon === "full" ? "zero"
-                    : this.options.weapon === "zero" ? "none" : "full";
-                if (index === 4) this.options.sword = !this.options.sword;
-                if (index === 5) this.options.emptyPouch = !this.options.emptyPouch;
-            }
-        }
-        if ((key === "previousPage" || key === "nextPage") && this.session.outcome !== "active") {
-            const active = this.options.actives.find(row => row.skillId === this.selectedSkill);
-            if (active) active.level = Math.max(0, Math.min(5, active.level + (key === "previousPage" ? -1 : 1)));
-        }
-    }
-    private select(action: NewBattleAction): void {
+    private select(action: BattleAction): void {
         this.selected = action;
         this.selection = this.session.preview(action);
         this.notice = this.selection.ok === false ? this.selection.reason : "";
@@ -282,12 +237,9 @@ export class BattlePanel {
         label.textIns.color = label.color; label.textIns.wordWrap = true;
     }
     private buttonLabel(key: string): Laya.GTextField {
-        const button=this.buttons[key];
-        for(let i=0;i<button.numChildren;i++) {
-            const child=button.getChildAt(i);
-            if(child instanceof Laya.GTextField)return child;
-        }
-        throw new Error(`按钮缺少文本：${key}`);
+        const label = this.labels[`txt_${key}`];
+        if (!label) throw new Error(`按钮文本未绑定：${key}`);
+        return label;
     }
     protected backdrop(): void {
         const result = this.elements.result;
@@ -300,119 +252,10 @@ export class BattlePanel {
         const s = Math.ceil(this.session.remainingMs / 1000);
         return `${Math.floor(s / 60).toString().padStart(2, "0")}:${(s % 60).toString().padStart(2, "0")}`;
     }
-    protected renderStart(): void {
-        this.backdrop();
-        this.text("overlayBrand", "末法寻仙", 32, 20, 420, 44, 26, colors.gold);
-        this.text("currency", this.timeText(), 1000, 24, 248, 40, 20, colors.muted);
-        this.text("resultTitle", "剑道试炼", 290, 72, 700, 54, 32);
-        const active = this.session.outcome === "active", readable = !this.session.error;
-        const names = this.options.actives.map(row => `${ConfigUtil.Tables.new_sword_skill.get(row.skillId)!.name}+${row.level}`);
-        this.text("resultDetail", active ? "当前试炼进行中" : `单场测试构筑    ${names.join("  /  ") || "无主动"}`,
-            180, 132, 920, 40, 20, colors.muted);
-        this.button("report", "主动", 170, 190, 290, 48, true, this.mode === "actives");
-        this.button("summary", "被动", 490, 190, 290, 48, true, this.mode === "passives");
-        this.button("actions", "环境", 810, 190, 290, 48, true, this.mode === "environment");
-        const choose = (i: number, name: string, checked: boolean) => this.button(`warehouse${i}`,
-            `${checked ? "[x]" : "[ ]"} ${name}`, 170 + (i % 3) * 320, 278 + Math.floor(i / 3) * 96,
-            290, 76, readable && !active, checked);
-        if (this.mode === "actives") {
-            this.text("section", `主动位 ${this.options.actives.length}/3`, 170, 242, 940, 32, 18, colors.jade);
-            ConfigUtil.Tables.new_sword_skill.getDataList().forEach((row, i) => {
-                const selected = this.options.actives.find(a => a.skillId === row.id);
-                choose(i, `${row.name}${selected ? ` +${selected.level}` : ""}\n灵力 ${row.mp_cost}`, !!selected);
-            });
-            const chosen = this.options.actives.find(row => row.skillId === this.selectedSkill);
-            const skill = ConfigUtil.Tables.new_sword_skill.get(this.selectedSkill)!;
-            this.text("choiceTitle", `${skill.name}    +${chosen?.level || 0}`, 170, 474, 540, 40, 20, colors.gold);
-            this.button("previousPage", "-", 810, 474, 130, 48, readable && !active && !!chosen && chosen.level > 0);
-            this.button("nextPage", "+", 970, 474, 130, 48, readable && !active && !!chosen && chosen.level < 5);
-        } else if (this.mode === "passives") {
-            this.text("section", `被动 ${this.options.passiveIds.length}/6`, 170, 242, 940, 32, 18, colors.jade);
-            ConfigUtil.Tables.new_sword_passive.getDataList().forEach((row, i) =>
-                choose(i, row.name, this.options.passiveIds.includes(row.id)));
-        } else {
-            this.text("section", "试炼条件", 170, 242, 940, 32, 18, colors.jade);
-            ConfigUtil.Tables.new_battle_enemy.getDataList().forEach((row, i) =>
-                choose(i, `${row.name}\n生命 ${row.hp}`, this.options.enemyId === row.id));
-            choose(3, `武器：${{ full: "完整", zero: "零耐久", none: "无" }[this.options.weapon]}`, this.options.weapon !== "none");
-            choose(4, "借取剑道", this.options.sword);
-            choose(5, this.options.emptyPouch ? "空斗法匣" : "两血药 / 两蓝药", !this.options.emptyPouch);
-        }
-        this.text("overlayMessage", this.session.error || this.notice, 170, 540, 940, 64, 18, colors.red);
-        this.button("newRun", active ? "继续试炼" : "开始试炼", 810, 628, 290, 54, readable);
-        this.button("reset", active ? "放弃试炼" : "清除试炼档", 170, 628, 290);
-    }
+    protected renderStart(): void { this.navigate("map"); }
     protected renderBattle(): void {
-        const record = this.session.record;
-        if (!record) { this.navigate("start"); return; }
-        if(record.setup.qingming) { this.renderQingmingBattle();return; }
-        const f=(n:number)=>this.format(n);
-        const s = record.state, setup = record.setup, a = BattleRules.attributes(setup, s);
-        this.text("brand", setup.earthRules ? "末法寻仙 · 双道试炼" : "末法寻仙 · 剑道试炼", 24, 12, 380, 52, 26, colors.gold);
-        this.text("round", `第 ${s.round} 回合`, 420, 16, 250, 46, 24);
-        this.text("upgrades", this.timeText(), 750, 16, 250, 46, 20, colors.muted);
-        this.text("enemyName", setup.enemy.name, 720, 110, 284, 44, 26);
-        this.text("enemyBlock", `护盾 ${f(s.enemy.block)}`, 800, 156, 204, 40, 20, colors.gold);
-        this.text("enemyHp", `${f(s.enemy.hp)} / ${f(s.enemy.maxHp)}`, 720, 200, 284, 38);
-        const intent = setup.enemy.intents[s.enemy.intentIndex];
-        this.text("intent", intent.name, 410, 210, 280, 44, 24, colors.red);
-        this.text("interrupt", `${intent.damage ? `伤害 ${f(intent.damage)}` : `得盾 ${f(intent.block)}`}${intent.charging ? " · 蓄力" : ""}`,
-            410, 258, 280, 40, 20, colors.muted);
-        this.text("event", this.notice || (this.busy ? "结算中" : "主行动前"), 400, 338, 600, 48, 18, colors.gold);
-        this.text("playerName", "散修", 80, 410, 320, 42, 26);
-        this.text("durability", s.weapon ? `${s.weapon.name} ${s.weapon.durability}/${s.weapon.maxDurability}  攻 ${f(a.attack)} / 防 ${f(a.defense)}`
-            : `无武器  攻 ${f(a.attack)} / 防 ${f(a.defense)}`, 30, 460, 390, 40, 18, colors.muted);
-        this.text("playerHp", `生命 ${f(s.player.hp)} / ${f(s.player.maxHp)}`, 30, 504, 390, 40, 22, colors.jade);
-        this.text("playerBlock", `灵力 ${f(s.player.mp)} / ${f(s.player.maxMp)}`, 30, 554, 390, 40, 22, colors.blue);
-        this.text("qi", `剑势 ${s.sword.momentum}/3${s.sword.keen ? " · 锋意" : ""}${s.earth?.power ? " · 磐劲" : ""}\n药品机会：${s.potionUsed ? "已使用" : "可用"}`,
-            30, 604, 390, 72, 20, colors.gold);
-        this.bar("enemyHpBar", s.enemy.hp / s.enemy.maxHp, 720, 244, 284, colors.red);
-        this.bar("playerHpBar", s.player.hp / s.player.maxHp, 30, 546, 370, colors.jade);
-        this.drawActors(setup.enemy.id);
-        const p = this.selection?.ok ? this.selection.preview : null;
-        this.text("previewTitle", p ? p.name : "行动预览", 454, 396, 550, 28, 20, colors.jade);
-        let detail = this.notice;
-        if (p?.potion) detail = `恢复${p.resource === "hp" ? "生命" : "灵力"} ${f(p.recovery)}${p.shield ? ` · 得盾 ${f(p.shield)}` : ""}\n不占主行动`;
-        else if (p) {
-            const lines: string[] = [], action = this.selected;
-            const ningfeng = action?.type === "skill" &&
-                setup.skills.find(row => row.id === action.skillId)?.kind === "ningfeng";
-            if (p.body || p.shred || p.shield)
-                lines.push(`本体 ${f(p.body)} · 削盾 ${f(p.shred)} · 得盾 ${f(p.shield)}`);
-            if (p.keen || p.difeng || p.guanxi)
-                lines.push(`锋意 ${f(p.keen)} · 递锋 ${f(p.difeng)} · 贯隙 ${f(p.guanxi)}`);
-            if (p.earthBonus || p.commonBonus || p.powerUsed)
-                lines.push(`磐劲${p.powerUsed ? "已计入本体" : "未兑现"} · 土道附伤 ${f(p.earthBonus || 0)} · 先机 ${f(p.commonBonus || 0)}`);
-            if (p.counter || p.reduction) lines.push(`存活吸盾后反击 ${f(p.counter || 0)} · 本次减伤 ${f(p.reduction || 0)}`);
-            if (p.momentumGain) lines.push(`剑势 +${p.momentumGain}${ningfeng ? ` · 本轮锋意 ${p.keenEnhancement}%` : ""}`);
-            if (p.mark) lines.push(`剑痕 ${f(p.mark)} × ${p.markTicks}（阶段末）`);
-            lines.push(`灵力 -${f(p.mpCost)} · 耐久 -${p.durabilityCost} · 本次承伤 ${f(p.playerHpLoss)}`);
-            detail = lines.join("\n");
-        }
-        this.text("preview", detail, 454, 418, 550, 114, 16, colors.text);
-        const enabled = !this.busy && this.session.outcome === "active";
-        ["skill1", "skill2", "skill3", "skill4", "upgrade0"].forEach((key, i) => {
-            const active = setup.build.actives[i - 2], skill = active && setup.skills.find(row => row.id === active.skillId);
-            const action: NewBattleAction | null = i === 0 ? { type: "basic" } : i === 1 ? { type: "guard" }
-                : active ? { type: "skill", skillId: active.skillId } : null;
-            const available = action ? BattleRules.resolve(setup, s, action).ok : false;
-            this.button(key, i === 0 ? "普攻" : i === 1 ? "防御" : skill
-                ? `${skill.name} +${active.level}\n灵力 ${f(skill.mpCost)}` : "空主动位",
-                454 + i * 152, 614, 144, 76, enabled && !!action,
-                !!action && JSON.stringify(action) === JSON.stringify(this.selected));
-            if (!available && action && enabled) this.buttons[key].alpha = 0.6;
-        });
-        for (let i = 0; i < 5; i++) {
-            const item = s.pouch[i], potion = item && setup.potions.find(row => row.itemId === item.itemId);
-            this.button(`pouch${i}`, potion ? `${potion.resource === "hp" ? "血药" : "蓝药"}\n+${f(potion.amount)}` : "空",
-                454 + i * 112, 540, 102, 62, enabled && !!item && !s.potionUsed,
-                this.selected?.type === "potion" && this.selected.itemUid === item?.itemUid);
-        }
-        this.button("confirm", p?.potion ? "确认用药" : "确认行动", 1034, 540, 176, 62, enabled && !!p, true);
-        this.button("cancel", "取消", 1034, 474, 176, 54, enabled && !!this.selected);
-        this.button("battleReport", "战斗记录", 1034, 24, 176);
-        this.button("build", "构筑", 1034, 88, 176);
-        this.button("loot", "返回据点", 1034, 152, 176);
+        if (!this.session.record) { this.navigate("start"); return; }
+        this.renderQingmingBattle();
     }
     private renderQingmingBattle(): void {
         const record=this.session.record,s=record.state,q=s.qingming,a=BattleRules.attributes(record.setup,s);
@@ -464,7 +307,7 @@ export class BattlePanel {
         this.text("preview",detail,440,432,560,100,17);
         this.qMoves.forEach((move,i)=>{
             const key=this.qKeys[i],active=i>=2&&i<=5;
-            const action:NewBattleAction={type:"qingming",move,...(move==="guide"?{enemyAction:this.guideTarget}:{})};
+            const action:BattleAction={type:"qingming",move,...(move==="guide"?{enemyAction:this.guideTarget}:{})};
             const mutation=active&&q.mutations[move];
             this.button(key,`${mutation?QC.items[mutation].name:QC.moves[move]}${active?`\n灵力 ${QC.cost(move,q)}`:""}`,
                 i===6?1034:30+i*162,614,i===6?176:152,76,enabled,
@@ -475,9 +318,7 @@ export class BattlePanel {
                     end:"放弃剩余行动，进入敌方回合"})[move];
             if(enabled&&!BattleRules.resolve(record.setup,s,action).ok)this.buttons[key].alpha=0.55;
             if(active) {
-                let icon=this.buttons[key].getChildByName("qSkillIcon") as Laya.GImage;
-                if(!icon) {icon=new Laya.GImage();icon.name="qSkillIcon";icon.autoSize=false;icon.mouseEnabled=false;
-                    icon.src=`ui/atlas/module/skillBattle/skill-${i-1}.png`;this.buttons[key].addChild(icon);}
+                const icon=this.elements[`img_skill${i-1}`] as Laya.GImage;
                 icon.visible=true;icon.pos(5,8).size(26,26);
                 const label=this.buttonLabel(key);
                 label.pos(34,4).size(112,68);label.fontSize=16;
@@ -532,28 +373,12 @@ export class BattlePanel {
         this.renderOverlay();
     }
     protected renderOverlay(): void {
-        const f=(n:number)=>this.format(n);
         if (this.modalOpen || !this.opened) return;
         const build = this.overlay === "build";
         const records = (build ? [this.session.record].filter(Boolean) : this.session.records).map((record,index) => {
             let lines: string[] = [];
-            if(record.setup.qingming) {
-                lines=build?["青冥剑典 · 基础四招",...QR.build(record.setup.qingming.loadout).map(k=>
-                    `${QC.items[k].name} · ${QC.items[k].description}`)]:record.state.qingming.logs.slice();
-            } else if (build) {
-                lines = [record.setup.build.schools.map(s => s === "earth" ? "土道 · 承岳" : "剑道 · 养锋").join(" / "),
-                    ...record.setup.build.actives.map(a => `${record.setup.skills.find(s => s.id === a.skillId)!.name} +${a.level}`),
-                    ...record.setup.build.passiveIds.map(id => record.setup.passives.find(row => row.id === id)!.name)];
-            } else {
-            let state = BattleRules.clone(record.initial);
-            for (const row of record.actions) {
-                const result = BattleRules.resolve(record.setup, state, row.action);
-                if (!result.ok) break;
-                lines.push(`第 ${state.round} 回合 · ${result.preview.name}    灵力 ${f(result.state.player.mp)}    生命 ${f(result.state.player.hp)}`);
-                lines.push(...result.events.filter(e => e.type === "damage" || e.type === "passive").map(e => this.eventText(e)));
-                state = result.state;
-            }
-            }
+            lines=build?["青冥剑典 · 基础四招",...QR.build(record.setup.qingming.loadout).map(k=>
+                `${QC.items[k].name} · ${QC.items[k].description}`)]:record.state.qingming.logs.slice();
             return { title: build ? record.setup.enemy.name : `第 ${index + 1} 场 · ${record.setup.enemy.name}`, lines };
         });
         this.modalOpen = true;
@@ -565,11 +390,9 @@ export class BattlePanel {
             },
         });
     }
-    private eventText(event: NewBattleEvent): string {
+    private eventText(event: BattleEvent): string {
         const f=(n:number)=>this.format(n);
-        if (event.type === "damage") return `${{ body: "本体", keen: "锋意", difeng: "递锋", guanxi: "贯隙",
-            mark: "剑痕", enemy: "敌方", xianji: "先机", lifeng: "砾锋", zhongyue: "重岳", jieshan: "借山", counter: "返震" }[event.part]}  ${f(event.amount)}    抵盾 ${f(event.absorbed)}    扣血 ${f(event.hpLoss)}`;
-        if (event.type === "passive") return event.name;
+        if (event.type === "damage") return `${{ body: "本体", enemy: "敌方" }[event.part]}  ${f(event.amount)}    抵盾 ${f(event.absorbed)}    扣血 ${f(event.hpLoss)}`;
         return "";
     }
     private bar(key: string, ratio: number, x: number, y: number, width: number, color: string): void {

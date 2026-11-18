@@ -4,17 +4,16 @@ import { BattleRules as Core } from "../../skillBattle/utils/BattleRules";
 import { InventoryRules as Inventory } from "../../inventory/utils/InventoryRules";
 import { ExpeditionRules as Rules } from "../utils/ExpeditionRules";
 import type { GameStorage } from "../../common/types/GameStorage";
-import type { NewBattleAction, NewBattleState, NewBattleToken } from "../../skillBattle/types/BattleTypes";
-import type { NewBuildCommand, NewBuildProfile, NewBuildSave, NewBuildToken } from "../../build/types/BuildTypes";
+import type { BattleAction, BattleState, BattleToken } from "../../skillBattle/types/BattleTypes";
+import type { BuildCommand, BuildSave, BuildToken } from "../../build/types/BuildTypes";
 import type { InventoryCommand, InventoryConfig } from "../../inventory/types/InventoryTypes";
 import type { ExpeditionCommand, ExpeditionConfig, ExpeditionSave } from "../types/ExpeditionRunTypes";
 
-/** One saved transaction includes graph, source progress, instances, combat and settlement. */
+
 export class ExpeditionRunManager {
-    static readonly key = "nowchange.stage4-expedition.v1";
+    static readonly key = "nowchange.expedition.v1";
     private readonly data = new ExpeditionRunData();
     get error(): string { return this.data.error; }
-    get integerResources(): boolean { return !!(this.data.save?.config || this.currentConfig)?.build.qingming; }
     constructor(readonly manager: SkillBattleManager, private readonly storage: GameStorage,
         private readonly clock: () => number = () => Date.now(), private readonly currentConfig?: ExpeditionConfig,
         private readonly monotonic: () => number = () => performance.now()) {
@@ -23,27 +22,27 @@ export class ExpeditionRunManager {
             if (this.data.savedText !== null) {
                 const candidate = JSON.parse(this.data.savedText);
                 ExpeditionRunManager.validate(candidate);
-                if (currentConfig && !ExpeditionRunManager.matchesCurrent(currentConfig,candidate))
-                    throw new Error("配置已改变，请明确重建本阶段档");
+                if (currentConfig && !Inventory.same(currentConfig,candidate.config))
+                    throw new Error("配置已改变，请明确重建探索存档");
                 this.data.save = candidate; this.restoreManager();
             }
         } catch (e) { this.data.error = `地图档无法读取，原文保留：${(e as Error).message}`; }
-        manager.beforeNewCommit = (expected,action) => {
+        manager.beforeCommit = (expected,action) => {
             this.commit({ type:"build",command:{ type:"action",action } },this.token,expected);
         };
     }
     get archive() { return Core.clone(this.data.save); }
     get inventory() { return this.archive?.state || null; }
-    get snapshot(): NewBuildSave | null {
+    get snapshot(): BuildSave | null {
         const s = this.data.save;
         return !s?.state.flow ? null : Core.clone({version:1,startedAt:s.state.enteredAt!,deadlineAt:s.state.deadlineAt!,
-            seed:s.seed,runId:s.runId,config:s.config.build,profile:s.profile,commands:[],state:s.state.flow});
+            seed:s.seed,runId:s.runId,config:s.config.build,commands:[],state:s.state.flow});
     }
     get flow() { return this.snapshot?.state || null; }
     get records() { return this.flow?.battles || []; }
     get record() { const a = this.records; return a[a.length-1] || null; }
     get state() { return this.record?.state || null; }
-    get token(): NewBuildToken { return {runId:this.data.save?.runId || "",revision:this.data.save?.state.revision ?? -1}; }
+    get token(): BuildToken { return {runId:this.data.save?.runId || "",revision:this.data.save?.state.revision ?? -1}; }
     get remainingMs() { return this.data.save?.state.deadlineAt ? Math.max(0,this.data.save.state.deadlineAt-this.clock()) : 0; }
     get outcome(): "active" | "victory" | "defeat" | "timeout" | "empty" {
         const s = this.data.save?.state;
@@ -54,25 +53,25 @@ export class ExpeditionRunManager {
         return this.flow?.phase === "battle" ? "battle" : this.inventory?.phase === "ended" ? "settlement" : "start";
     }
     get searching() { return this.data.searchAt !== null; }
-    prepare(config: InventoryConfig, profile: NewBuildProfile, seed: number): void {
+    prepare(config: InventoryConfig, seed: number): void {
         this.readable();
         if (this.data.save && this.data.save.state.phase !== "ended") throw new Error("已有进行中的探索");
         if (this.currentConfig && !Inventory.same(config,this.currentConfig)) throw new Error("配置不匹配");
         const createdAt = this.clock(), runId = `expedition_${createdAt}_${seed}`, c = config as ExpeditionConfig;
-        const state = Rules.start(c,profile,seed,runId);
-        this.persist({version:4,runId,createdAt,seed,config:Core.clone(c),profile:Core.clone(profile),commands:[],state});
+        const state = Rules.start(c,seed,runId);
+        this.persist({version:4,runId,createdAt,seed,config:Core.clone(c),commands:[],state});
         this.pauseSearch(false); this.manager.reset();
     }
     previewMove(command: InventoryCommand, token = this.token) {
         this.readable(); this.checkToken(token); this.expire();
         const s = this.data.save!;
-        return Rules.apply(s.config,s.profile,s.state,command,this.clock(),s.seed);
+        return Rules.apply(s.config,s.state,command,this.clock(),s.seed);
     }
     inventoryCommand(command: InventoryCommand, token = this.token) {
         if (command.type === "build" || command.type === "timeout") throw new Error("请使用专用入口");
         return this.commit(command,token);
     }
-    dispatch(command: Exclude<NewBuildCommand,{type:"action"}>, token = this.token) {
+    dispatch(command: Exclude<BuildCommand,{type:"action"}>, token = this.token) {
         if (["extract","abandon"].includes(command.type)) return this.commit({type:command.type as "extract"|"abandon"},token);
         return this.commit({type:"build",command},token);
     }
@@ -108,7 +107,7 @@ export class ExpeditionRunManager {
         if (!this.searching) return false;
         if (!foreground) { this.pauseSearch(false); return false; }
         const now = this.monotonic(), elapsed = Math.floor(now-this.data.searchAt!);
-        // Long suspension gaps never become free search progress.
+
         if (elapsed < 0 || elapsed > 1000 || this.data.save?.state.node !== this.data.searchNode) {
             this.pauseSearch(false); return false;
         }
@@ -134,22 +133,22 @@ export class ExpeditionRunManager {
             this.commit({type:"search",deltaMs},this.token); elapsed -= deltaMs;
         }
     }
-    preview(action: NewBattleAction) { this.requireBattle(); return this.manager.previewNewAction(action); }
-    confirm(action: NewBattleAction, token: NewBattleToken) { this.requireBattle(); return this.manager.confirmNewAction(action,token); }
+    preview(action: BattleAction) { this.requireBattle(); return this.manager.preview(action); }
+    confirm(action: BattleAction, token: BattleToken) { this.requireBattle(); return this.manager.confirm(action,token); }
     private requireBattle() {
         this.readable(); this.expire();
         if (this.data.save?.state.phase !== "active" || this.data.save.state.flow?.phase !== "battle") throw new Error("当前没有可操作战斗");
     }
     private readable() { if (this.data.error) throw new Error(this.data.error); }
-    private checkToken(token: NewBuildToken) {
+    private checkToken(token: BuildToken) {
         if (!this.data.save || token.runId !== this.data.save.runId || token.revision !== this.data.save.state.revision)
             throw new Error("页面修订已过期");
     }
-    private commit(command: ExpeditionCommand, token: NewBuildToken, expected?: NewBattleState) {
+    private commit(command: ExpeditionCommand, token: BuildToken, expected?: BattleState) {
         this.readable(); this.checkToken(token); this.expire();
         if (this.data.writing) throw new Error("地图事务正在提交");
         const next = this.archive!, at = this.clock();
-        const result = Rules.apply(next.config,next.profile,next.state,command,at,next.seed);
+        const result = Rules.apply(next.config,next.state,command,at,next.seed);
         if (expected && (!result.battle?.ok || !Inventory.same(result.battle.state,expected))) throw new Error("战斗与地图事务结果不一致");
         next.commands.push({at,command:Core.clone(command)}); next.state = result.state;
         this.persist(next);
@@ -163,12 +162,12 @@ export class ExpeditionRunManager {
         if (at >= this.data.save.state.deadlineAt!) {
             this.pauseSearch(false);
             const next = this.archive!, command: ExpeditionCommand = {type:"timeout"};
-            next.state = Rules.apply(next.config,next.profile,next.state,command,at,next.seed).state;
+            next.state = Rules.apply(next.config,next.state,command,at,next.seed).state;
             next.commands.push({at,command}); this.persist(next,false); return true;
         }
         if ([600000,300000].some(v => at >= this.data.save!.state.deadlineAt!-v && !this.data.save!.state.map.warnings.includes(v))) {
             const next = this.archive!, command: ExpeditionCommand = {type:"warnings"};
-            next.state = Rules.apply(next.config,next.profile,next.state,command,at,next.seed).state;
+            next.state = Rules.apply(next.config,next.state,command,at,next.seed).state;
             next.commands.push({at,command}); this.persist(next);
         }
         return false;
@@ -180,21 +179,8 @@ export class ExpeditionRunManager {
     }
     private restoreManager() {
         const r = this.record;
-        if (r && this.inventory?.phase === "active") this.manager.restoreNewRules(r.setup,r.state);
+        if (r && this.inventory?.phase === "active") this.manager.restore(r.setup,r.state);
         else this.manager.reset();
-    }
-    private static matchesCurrent(current: ExpeditionConfig, saved: ExpeditionSave): boolean {
-        if (Inventory.same(current,saved.config)) return true;
-        if (saved.state.map.generatorVersion===4 || current.rules.normalMin===undefined) return false;
-        const original=Core.clone(current);
-        for (const key of ["normalMin","normalMax","eliteMin","eliteMax",
-            "insightMin","insightMax","borrowMin","borrowMax"] as const) {
-            if(saved.config.rules[key]!==undefined)return false;
-            delete original.rules[key];
-        }
-        // Existing maps keep their own budgets and exact replay; only new maps use the expanded table.
-        original.rules.searchMin=3; original.rules.searchMax=5; original.groundNodeLimit=44;
-        return Inventory.same(original,saved.config);
     }
     private persist(next: ExpeditionSave, deadline = true) {
         if (this.data.writing) throw new Error("地图事务正在提交");
@@ -213,14 +199,10 @@ export class ExpeditionRunManager {
         if (!save || save.version !== 4 || !Number.isSafeInteger(save.createdAt) || save.createdAt < 0 ||
             save.runId !== `expedition_${save.createdAt}_${save.seed}` || !Array.isArray(save.commands) || save.commands.length > 8192)
             throw new Error("地图档版本或标识无效");
-        const generator = save.state?.map?.generatorVersion;
-        if(generator!==undefined && generator!==2 && generator!==3 && generator!==4)
-            throw new Error("地图生成版本无效");
-        let state = Rules.start(save.config,save.profile,save.seed,save.runId,
-            generator ?? 1), last = save.createdAt;
+        let state = Rules.start(save.config,save.seed,save.runId), last = save.createdAt;
         for (const entry of save.commands) {
             if (!entry || !Number.isSafeInteger(entry.at) || entry.at < last) throw new Error("操作时间逆序");
-            state = Rules.apply(save.config,save.profile,state,entry.command,entry.at,save.seed).state; last = entry.at;
+            state = Rules.apply(save.config,state,entry.command,entry.at,save.seed).state; last = entry.at;
         }
         if (!Inventory.same(state,save.state)) throw new Error("地图、战斗、物品或搜索与完整重放不一致");
     }

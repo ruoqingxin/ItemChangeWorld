@@ -39,14 +39,7 @@ export abstract class UITabView extends UIBaseView {
         if (!tabIdList || tabIdList.length <= 0) {
             return;
         }
-        // tabIdList.sort((a, b) => {
-        //     const aCfg = FuncEntryData.ins().getFuncCfg(a as any);
-        //     const bCfg = FuncEntryData.ins().getFuncCfg(b as any);
-        //     if (!aCfg || !bCfg) {
-        //         return a - b;
-        //     }
-        //     return aCfg.order - bCfg.order;
-        // });
+
         tabConstructor.viewClassList = this.buildViewClassList(tabIdList);
     }
 
@@ -132,7 +125,7 @@ export abstract class UITabView extends UIBaseView {
 
     /**
      * 获取当前页签
-     * @returns 
+     * @returns
      */
     getCurrentTab(): UITabSubView {
         return this._tabCtrl.getCurrentTab();
@@ -158,7 +151,7 @@ export abstract class UITabView extends UIBaseView {
     /**
      * 设置页签红点
      * @param id 页签
-     * @param value 是否显示 
+     * @param value 是否显示
      */
     setRedDotVisibleById(id: number, value: boolean) {
         this._tabCtrl.setRedDotVisibleById(id, value);

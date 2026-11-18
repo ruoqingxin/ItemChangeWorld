@@ -359,14 +359,14 @@ export class ResLoader {
                 delete this._assets[key];
                 delete this._infoDic[key];
                 unloadNum++;
-                // console.log("clear res " + key);
+
             }
         }
 
         // 30秒间隔调用laya的gc
         if (unloadNum > 0 && now - this._lastClearTimeAt > 30000) {
             this._lastClearTimeAt = now;
-            // console.log("gc");
+
             Laya.Scene.gc();
         }
     }

@@ -1,11 +1,5 @@
-/*
- * @Author: GaryJy 1035465291@qq.com
- * @Date: 2024-04-30 17:08:16
- * @LastEditors: GaryJy 1035465291@qq.com
- * @LastEditTime: 2024-04-30 17:08:20
- * @FilePath: \minigame3.0\src\script\Event\EventEngine.ts
- * @Description: 
- */
+
+
 import { RedDotManager } from "../reddot/RedDotManager";
 
 export default class EventEngine {

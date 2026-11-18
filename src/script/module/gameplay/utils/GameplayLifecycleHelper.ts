@@ -4,7 +4,7 @@ interface TimedRun {
     pauseSearch?(flush?: boolean): void;
 }
 
-/** Owns foreground/deadline listeners for a lazily created run manager. */
+
 export class GameplayLifecycleHelper {
     static watch(owner: object, run: TimedRun, expired: () => void): void {
         const check = () => {

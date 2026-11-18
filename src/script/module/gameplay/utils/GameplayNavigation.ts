@@ -23,18 +23,12 @@ export function closeSkillBattleScreens(): void {
 }
 
 export function openSkillBattleScreen(screen: SkillBattleScreen): void {
-    if ((GameplayManager.previewBuildTrial || GameplayManager.previewInventoryTrial) &&
-        screen === "settlement") screen = "start";
-    if (!GameplayManager.previewSingleTrial && !GameplayManager.previewBuildTrial) {
-        const state = (GameplayManager.previewInventoryTrial ?
-            GameplayManager.getInventory() : GameplayManager.getMapTrial()).inventory;
-        if (state?.phase === "ended") screen = "settlement";
-        else if (state?.phase === "active" && state.flow?.phase === "battle") screen = "battle";
-        else if (state?.phase === "active" && state.flow?.pending) screen = "build";
-        else if (screen === "start" && state?.phase === "active")
-            screen = GameplayManager.previewInventoryTrial ? "inventory" : "map";
-        else if (!state || state.phase === "preparation") screen = "start";
-    }
+    const state = GameplayManager.getMapTrial().inventory;
+    if (state?.phase === "ended") screen = "settlement";
+    else if (state?.phase === "active" && state.flow?.phase === "battle") screen = "battle";
+    else if (state?.phase === "active" && state.flow?.pending) screen = "build";
+    else if (screen === "start" && state?.phase === "active") screen = "map";
+    else if (!state || state.phase === "preparation") screen = "start";
     GameplayManager.onTrialExpired = () => openSkillBattleScreen("settlement");
     const ui = UIManager.ins();
     closeSkillBattleScreens();

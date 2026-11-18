@@ -654,6 +654,603 @@
         },
         {
           "_$ref": "map_polish_notice"
+        },
+        {
+          "_$ref": "f81cd5929d5e47d48cdbb79037402eb3"
+        },
+        {
+          "_$ref": "e4fb801b358947869b2cb809d0a22176"
+        },
+        {
+          "_$ref": "f830b1cffd1e466d93d176007a8bfac6"
+        },
+        {
+          "_$ref": "863fdc798c0e417780004bf20ba9acd5"
+        },
+        {
+          "_$ref": "8542a63e3abe4a0599e40b34854eafe2"
+        },
+        {
+          "_$ref": "1f9557c7968e4fac941ef03801fa2afe"
+        },
+        {
+          "_$ref": "0dedd909a71549d799b332c85230ad7f"
+        },
+        {
+          "_$ref": "b950d261dac141a6be89b5cf2cc9e51c"
+        },
+        {
+          "_$ref": "6dd8878cd665498792b768e8c5188029"
+        },
+        {
+          "_$ref": "68189e93dd2a470da7d4a269720abd8c"
+        },
+        {
+          "_$ref": "ea55c6e8505240adb6fc09583fbf1350"
+        },
+        {
+          "_$ref": "8f7baef956d34ce884e7e79b198b7df8"
+        },
+        {
+          "_$ref": "688b53c85fc6465e9c2d03bfe5891faa"
+        },
+        {
+          "_$ref": "48413b455b0047ddb3ac93b75e96539f"
+        },
+        {
+          "_$ref": "7df9f8ba44e14ed79a9a52e89d26171f"
+        },
+        {
+          "_$ref": "57efe2a8b326492fa425745ba21117dc"
+        },
+        {
+          "_$ref": "4698dbaa07bd449cac7c18223ca7ab97"
+        },
+        {
+          "_$ref": "56e25b55e3a443cfbf636ec516eb9043"
+        },
+        {
+          "_$ref": "e459f8eb6a4447b1a5707e94427a3a16"
+        },
+        {
+          "_$ref": "0a31b7a8dc9f4a79a057994bef83a758"
+        },
+        {
+          "_$ref": "722ae14cb3244f7db487f74493de44c5"
+        },
+        {
+          "_$ref": "a39be077a64e448593c33f8ec6f43945"
+        },
+        {
+          "_$ref": "2276cf5dd692488483efd5d559b6d8bd"
+        },
+        {
+          "_$ref": "42ee60613cd445c1b6464c86f74e931f"
+        },
+        {
+          "_$ref": "db309e3cec4c44fcb621af6fb53b23d6"
+        },
+        {
+          "_$ref": "fd45fe4e32ea4b129c7271c0f961a639"
+        },
+        {
+          "_$ref": "16618d192fd14719bce87157cfb2449a"
+        },
+        {
+          "_$ref": "b12d8159de52422ca12eeffc7f5b1492"
+        },
+        {
+          "_$ref": "7aabe9708c3c4cb68fa953091c4279d9"
+        },
+        {
+          "_$ref": "f786dd65b89540ad9df79faa41b122b5"
+        },
+        {
+          "_$ref": "edf77b39bd7244fcba8f49a40a8f6d60"
+        },
+        {
+          "_$ref": "39120428ab044c509725a08198288399"
+        },
+        {
+          "_$ref": "b26643b41d054ec482e96e70fa0718b6"
+        },
+        {
+          "_$ref": "1208903f83c24400977ed360ebae8655"
+        },
+        {
+          "_$ref": "fb4a95a340184390a0bb10b303533843"
+        },
+        {
+          "_$ref": "ba8ff69999dd4845bda09ae0636da10c"
+        },
+        {
+          "_$ref": "31ddc84af09741afbd51288d8796b5ba"
+        },
+        {
+          "_$ref": "c9b8c06311434dd3a57d0b8bfbc674e6"
+        },
+        {
+          "_$ref": "eb11b4a33f4e46789343325a8e28f1a4"
+        },
+        {
+          "_$ref": "6398fb392d0347f78c1865efd0cb7b11"
+        },
+        {
+          "_$ref": "db062c2f896b4f40a26c5f28f1a2ae2c"
+        },
+        {
+          "_$ref": "acfb7c30e1644d0496375c49e5101153"
+        },
+        {
+          "_$ref": "cc3868184e8846648fdd95a2a4554ed1"
+        },
+        {
+          "_$ref": "952f05401f1c4287a6b2188220eeffc0"
+        },
+        {
+          "_$ref": "51dcbeb4ba444b17beb05e86f0c39274"
+        },
+        {
+          "_$ref": "c18384b98e3e44dfbdd8eca057dc3dbd"
+        },
+        {
+          "_$ref": "b0267de7a139467f94bb8ca08b5a6ab8"
+        },
+        {
+          "_$ref": "e4706bc79b5741be9bdc2031d2765013"
+        },
+        {
+          "_$ref": "8f8bf2eecda34f5a98116ee3c93852b6"
+        },
+        {
+          "_$ref": "d2bb07521a1b4d3a8f2bf912b6795e8a"
+        },
+        {
+          "_$ref": "1e048bb92ee84f88ae21e51eb57df88c"
+        },
+        {
+          "_$ref": "9370355cebea4f2a92f6fa7a260cad8d"
+        },
+        {
+          "_$ref": "a6f059895a1344d493de56131750d94d"
+        },
+        {
+          "_$ref": "cc35922110424d65b53dd734ac70f3a4"
+        },
+        {
+          "_$ref": "060bc6344a154d4db43f332676973dbe"
+        },
+        {
+          "_$ref": "874f5c05d4ff471c9226f83c97ed2035"
+        },
+        {
+          "_$ref": "ff3a0a6c5c7849d8be83ab66a31a7809"
+        },
+        {
+          "_$ref": "f8b8f605b454415ca30e16d70082631a"
+        },
+        {
+          "_$ref": "b18c5bbadd414ffea7f3b2f243b4f637"
+        },
+        {
+          "_$ref": "746951318a9c485db563367ed17f97a8"
+        },
+        {
+          "_$ref": "182fea4e2dd24028bda879f8373fb69e"
+        },
+        {
+          "_$ref": "12b3ef8bf15b42aea23c5c92da9ed73e"
+        },
+        {
+          "_$ref": "8a7825882c7f4a8ab01384ad46ecb775"
+        },
+        {
+          "_$ref": "a4cb4124766e4df397d203212a952272"
+        },
+        {
+          "_$ref": "0fbc46416f09472c9129f8cb7ad7e153"
+        },
+        {
+          "_$ref": "54137aa7b03a4274848ef79416c54b15"
+        },
+        {
+          "_$ref": "483bd563ba7e46e793f529f5141fd98c"
+        },
+        {
+          "_$ref": "2a6f7270225646b38e3ebf7f1a279a94"
+        },
+        {
+          "_$ref": "7732b4a080fc40bb85d8df647033db66"
+        },
+        {
+          "_$ref": "8f369436d45a471b96040bce90b0240b"
+        },
+        {
+          "_$ref": "570b1997d6934d1ca1835debedc2d894"
+        },
+        {
+          "_$ref": "0ce3854448494f91b85e1c23484f2d2d"
+        },
+        {
+          "_$ref": "274d9051842e4e1aa68f8b89fd7521a2"
+        },
+        {
+          "_$ref": "dd668edceed44aa68bcb0cdbf11e8e6d"
+        },
+        {
+          "_$ref": "19d516435f404fecb208bf1c00a8a201"
+        },
+        {
+          "_$ref": "4c510a544694409f9f224921047b6226"
+        },
+        {
+          "_$ref": "a2327082a0ff49e2b8db973db3173cd2"
+        },
+        {
+          "_$ref": "94ebff159c0748edbf1306848f5843e5"
+        },
+        {
+          "_$ref": "35fe8c81aeb14b579691c12f792a53ba"
+        },
+        {
+          "_$ref": "9c07eb23674d48ddb2cf02a3a4e606f8"
+        },
+        {
+          "_$ref": "377f822848de469bba9b4c3554aece81"
+        },
+        {
+          "_$ref": "2f17005855934beeac050eb8db8a5149"
+        },
+        {
+          "_$ref": "f034edc8af35400da3df8fdd29bbf1ee"
+        },
+        {
+          "_$ref": "acafa021cd644f308954770274103804"
+        },
+        {
+          "_$ref": "79ca670f597e4b608d99452f1e4ecea4"
+        },
+        {
+          "_$ref": "61d9f6fa38404e3089ae46079a224afb"
+        },
+        {
+          "_$ref": "2bc9d8126152414c87d062328f94d5da"
+        },
+        {
+          "_$ref": "16189664943e4bc6a5d30652c7912e5f"
+        },
+        {
+          "_$ref": "c2d7cce0a3f7412483ac521771bb2685"
+        },
+        {
+          "_$ref": "2020ae4252a64aa7848359afd6d33e9c"
+        },
+        {
+          "_$ref": "a439d9d69fbc4be4837d5940761ced78"
+        },
+        {
+          "_$ref": "c592cfc27f7e4c1d8b26be2950f8eb8e"
+        },
+        {
+          "_$ref": "46e45fb3ed8746019525adf75ab17ded"
+        },
+        {
+          "_$ref": "2567c56b41c74b27949494810325f43f"
+        },
+        {
+          "_$ref": "2e6ec9efc1124b6683902d7ede9cd5e5"
+        },
+        {
+          "_$ref": "f8ff6abb52f64b488c4b2993cf774faf"
+        },
+        {
+          "_$ref": "c847a0b91f39489e919a110e148594a5"
+        },
+        {
+          "_$ref": "5d287a78eb9b4da0a392f1f85ce0144f"
+        },
+        {
+          "_$ref": "7f63b8ae3caf4d018debcb742942da7d"
+        },
+        {
+          "_$ref": "11dae98dae5c4d17a480402b619f9101"
+        },
+        {
+          "_$ref": "104236efe7574fab9c0686f35fdb1690"
+        },
+        {
+          "_$ref": "db74a018e2f34697b13b6887e33265ec"
+        },
+        {
+          "_$ref": "ce959dee7f3a4adb87288d8e32093e7e"
+        },
+        {
+          "_$ref": "2c0fffa991c544aea5a12fcf144b585a"
+        },
+        {
+          "_$ref": "b38bd55d70f94496a1bbcbcdf6e09efe"
+        },
+        {
+          "_$ref": "8230de5bb62f48f18e8fe7ab0a3b4838"
+        },
+        {
+          "_$ref": "dcb14a129f454490b1313bd282ac5358"
+        },
+        {
+          "_$ref": "24092269f72e4bda8c53617b97c2fde7"
+        },
+        {
+          "_$ref": "adb1ae9cbecc4e749b23a0d3c36d2d2e"
+        },
+        {
+          "_$ref": "14de929e626a404ab8ae61a86e5c587f"
+        },
+        {
+          "_$ref": "df8cbac203ec4299a939454b6aeb0a33"
+        },
+        {
+          "_$ref": "21cc894632eb4dadb24bf4d446f423c4"
+        },
+        {
+          "_$ref": "b28a69268e934a9eb73f8d9011ae0aec"
+        },
+        {
+          "_$ref": "e61812b8c7fd4c05a7b2c704ce65510e"
+        },
+        {
+          "_$ref": "436ecff5916743fc924fd2584bec3ac8"
+        },
+        {
+          "_$ref": "066000c7b4324220a549bf8ad4fd4e04"
+        },
+        {
+          "_$ref": "0b1896d5697645edb40440a91d36abc0"
+        },
+        {
+          "_$ref": "8ccc362a1bfc4e89aa981944d2855e23"
+        },
+        {
+          "_$ref": "81013e18cef345acacde04271af216d0"
+        },
+        {
+          "_$ref": "360f66b96c944e4fa97a1cbb03ef4af9"
+        },
+        {
+          "_$ref": "1eec22571da64a6db3fe01ff3e6bfa36"
+        },
+        {
+          "_$ref": "56ae89517d7045c2931898b08f2dda4d"
+        },
+        {
+          "_$ref": "ba2a479672e04d58941b167d6dc3c0a6"
+        },
+        {
+          "_$ref": "43674d4bb5b840ddbdef463865b36e46"
+        },
+        {
+          "_$ref": "fb50166daaac47e39e5fb0a75006cb2d"
+        },
+        {
+          "_$ref": "3ad325be611d4defa2b0b753a4640647"
+        },
+        {
+          "_$ref": "f7b39ed9c730488893ebcc2b18cf60e3"
+        },
+        {
+          "_$ref": "9a8f07110e41441f94f2fbba104133da"
+        },
+        {
+          "_$ref": "c057a19967ad4e80ac8dec15ad8c0c86"
+        },
+        {
+          "_$ref": "fa44a25ed2584dcc9e273510de0eb187"
+        },
+        {
+          "_$ref": "86dbca41d7404d99a6b989724b2ed6e2"
+        },
+        {
+          "_$ref": "2a9b9fb49d1f43c0a1bd60237dde1193"
+        },
+        {
+          "_$ref": "822029ad5a6a4fa9b8376df707ef8b98"
+        },
+        {
+          "_$ref": "3b76429e9782497ca5bc8ea411ab26c5"
+        },
+        {
+          "_$ref": "f317d1f2f0a44ace93f2818ee4906b83"
+        },
+        {
+          "_$ref": "84a5603c99c24d67b561b5ea86c05b8c"
+        },
+        {
+          "_$ref": "875b7861f7184e6384fb60311ec6fab7"
+        },
+        {
+          "_$ref": "0bcbf10d96cd4511ae805782a0f2ad7f"
+        },
+        {
+          "_$ref": "831ecdd2069a48c2bcf9d0b830598244"
+        },
+        {
+          "_$ref": "3d6e08b22c7a4b1b86480615440603fb"
+        },
+        {
+          "_$ref": "3fb41ed70d8646e79177a78d9df0ef4a"
+        },
+        {
+          "_$ref": "1900e480d5614c13b360c385592d53ac"
+        },
+        {
+          "_$ref": "6f54e2ce2e5a44908f381eb202497392"
+        },
+        {
+          "_$ref": "a503b0b922ae466393199d3338463800"
+        },
+        {
+          "_$ref": "984d3016a0cb43b09123923f57691ca4"
+        },
+        {
+          "_$ref": "bdd732c4cc8d41c2b92bff09aed075d3"
+        },
+        {
+          "_$ref": "e9c1796da1b947869662de253df665f6"
+        },
+        {
+          "_$ref": "2adc9b66cf9343daa929fed665cb3dd0"
+        },
+        {
+          "_$ref": "8abde5a30e7e40179f8a75b3e9e91f9e"
+        },
+        {
+          "_$ref": "d8bd9c0284854dd2beb0ac96c341a07b"
+        },
+        {
+          "_$ref": "933e9a852ee446f98a97f4e988f287c4"
+        },
+        {
+          "_$ref": "522fa69475394d9492502068a4063f5d"
+        },
+        {
+          "_$ref": "4070db61c3b94d4e84bdd451434be0df"
+        },
+        {
+          "_$ref": "e863b61f58ac425e91f7b293cdbd4294"
+        },
+        {
+          "_$ref": "013f5de569a5427d9fee9cd619d4afc3"
+        },
+        {
+          "_$ref": "cf1f3e708e804f298f613fe987bcdb4f"
+        },
+        {
+          "_$ref": "f98dd65a17cc461b86cf87190720da52"
+        },
+        {
+          "_$ref": "8c69898921db4fdba31c0f97d04f2af9"
+        },
+        {
+          "_$ref": "38c733dade01469899b98e27e0cc4bde"
+        },
+        {
+          "_$ref": "481729553b2b433a8a965f96cded7c5e"
+        },
+        {
+          "_$ref": "2af17b4a85c2477c9a9f9a9b3dda0ab1"
+        },
+        {
+          "_$ref": "b132a90d4a9a486bba45d5987690e273"
+        },
+        {
+          "_$ref": "b8d54b9b250745cb85fd3859b783c674"
+        },
+        {
+          "_$ref": "728b2a28e68b4fe19477efb838bded56"
+        },
+        {
+          "_$ref": "b7b7415ebec14f60aa0b4972c1e970aa"
+        },
+        {
+          "_$ref": "99efeabfb46f41af92c70e1eb677230a"
+        },
+        {
+          "_$ref": "c16f56aca77d4c8ba66fff49c942f166"
+        },
+        {
+          "_$ref": "971f56d4e6c542b3890378a3ef84f86e"
+        },
+        {
+          "_$ref": "87c87048779d4e3dacfb8f2a64640aa5"
+        },
+        {
+          "_$ref": "78827cbc90d241c4a2c4fa1045adf8e8"
+        },
+        {
+          "_$ref": "1e5b21bf411d4c0faa0b913a6b52de9c"
+        },
+        {
+          "_$ref": "9bc8377389504f73bd77fb78b830367c"
+        },
+        {
+          "_$ref": "3aeb62ff6965450c8991dd866442898a"
+        },
+        {
+          "_$ref": "fd4de86683424a1084ad99524e6fd212"
+        },
+        {
+          "_$ref": "33e0a7d2ed4d4b97ab6891e570190bf2"
+        },
+        {
+          "_$ref": "38160ed18f1145979f8f93a8fe464d10"
+        },
+        {
+          "_$ref": "aa2a41b4276245818313a5184aa0cede"
+        },
+        {
+          "_$ref": "11d9a0c4cce84fdfa201a522b17b8788"
+        },
+        {
+          "_$ref": "719a376724f24e369108cc530d4f3957"
+        },
+        {
+          "_$ref": "b9d0943d36aa415a9649ef9169808da7"
+        },
+        {
+          "_$ref": "41220ac7f37f4f5d9b6490dfc2b536d2"
+        },
+        {
+          "_$ref": "0439dfbf69834b94aadc769ba5967b67"
+        },
+        {
+          "_$ref": "01563344de984c308a523cce2178ceaa"
+        },
+        {
+          "_$ref": "b3b501e5f0ed4103a8202fa25d3979c9"
+        },
+        {
+          "_$ref": "f19c5a505499483daa953adf23fcff0c"
+        },
+        {
+          "_$ref": "554216b21b5e42e7b2cb15b987c9f1f8"
+        },
+        {
+          "_$ref": "cd4a903c13044ac886579da0b54dac7f"
+        },
+        {
+          "_$ref": "25d844cf8e3b4dd38611dcb79b463613"
+        },
+        {
+          "_$ref": "af0c794ecace42759466d7955cc3fa1c"
+        },
+        {
+          "_$ref": "fdefabf725f148ee92a48e844ac95681"
+        },
+        {
+          "_$ref": "55f63134fc1b4f3e83286516ff61a6ba"
+        },
+        {
+          "_$ref": "70331fb07ffd4b838ea278a0ea58a72e"
+        },
+        {
+          "_$ref": "66345887998c47009a690982d93d2d1d"
+        },
+        {
+          "_$ref": "36931e16b6d2433486d80e39e2d3f9fd"
+        },
+        {
+          "_$ref": "5a9f6bd6d1ea437096d9ec18edf8435c"
+        },
+        {
+          "_$ref": "6ace1e4bb1e2459ab9b0a28b3231f782"
+        },
+        {
+          "_$ref": "42fde8671338412d9b6eed3287dbf884"
+        },
+        {
+          "_$ref": "ddad7a520e204983a78066be725aee59"
+        },
+        {
+          "_$ref": "3f6c17b03f90433bb0b8615d360d6f30"
         }
       ],
       "prefabs": null,
@@ -899,6 +1496,17 @@
                           "_mouseState": 1,
                           "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                           "autoSize": false
+                        },
+                        {
+                          "_$id": "f81cd5929d5e47d48cdbb79037402eb3",
+                          "_$type": "GImage",
+                          "name": "img_expDone1",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
                         }
                       ]
                     },
@@ -947,6 +1555,17 @@
                           "_mouseState": 1,
                           "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                           "autoSize": false
+                        },
+                        {
+                          "_$id": "e4fb801b358947869b2cb809d0a22176",
+                          "_$type": "GImage",
+                          "name": "img_expDone2",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
                         }
                       ]
                     },
@@ -995,6 +1614,17 @@
                           "_mouseState": 1,
                           "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                           "autoSize": false
+                        },
+                        {
+                          "_$id": "f830b1cffd1e466d93d176007a8bfac6",
+                          "_$type": "GImage",
+                          "name": "img_expDone3",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
                         }
                       ]
                     },
@@ -1043,6 +1673,17 @@
                           "_mouseState": 1,
                           "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                           "autoSize": false
+                        },
+                        {
+                          "_$id": "863fdc798c0e417780004bf20ba9acd5",
+                          "_$type": "GImage",
+                          "name": "img_expDone4",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
                         }
                       ]
                     },
@@ -1091,6 +1732,17 @@
                           "_mouseState": 1,
                           "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                           "autoSize": false
+                        },
+                        {
+                          "_$id": "8542a63e3abe4a0599e40b34854eafe2",
+                          "_$type": "GImage",
+                          "name": "img_expDone5",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
                         }
                       ]
                     },
@@ -1139,6 +1791,17 @@
                           "_mouseState": 1,
                           "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                           "autoSize": false
+                        },
+                        {
+                          "_$id": "1f9557c7968e4fac941ef03801fa2afe",
+                          "_$type": "GImage",
+                          "name": "img_expDone6",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
                         }
                       ]
                     },
@@ -1187,6 +1850,17 @@
                           "_mouseState": 1,
                           "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                           "autoSize": false
+                        },
+                        {
+                          "_$id": "0dedd909a71549d799b332c85230ad7f",
+                          "_$type": "GImage",
+                          "name": "img_expDone7",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
                         }
                       ]
                     },
@@ -1235,6 +1909,17 @@
                           "_mouseState": 1,
                           "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                           "autoSize": false
+                        },
+                        {
+                          "_$id": "b950d261dac141a6be89b5cf2cc9e51c",
+                          "_$type": "GImage",
+                          "name": "img_expDone8",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
                         }
                       ]
                     },
@@ -1283,6 +1968,17 @@
                           "_mouseState": 1,
                           "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                           "autoSize": false
+                        },
+                        {
+                          "_$id": "6dd8878cd665498792b768e8c5188029",
+                          "_$type": "GImage",
+                          "name": "img_expDone9",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
                         }
                       ]
                     },
@@ -1331,6 +2027,17 @@
                           "_mouseState": 1,
                           "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                           "autoSize": false
+                        },
+                        {
+                          "_$id": "68189e93dd2a470da7d4a269720abd8c",
+                          "_$type": "GImage",
+                          "name": "img_expDone10",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
                         }
                       ]
                     },
@@ -1379,6 +2086,17 @@
                           "_mouseState": 1,
                           "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                           "autoSize": false
+                        },
+                        {
+                          "_$id": "ea55c6e8505240adb6fc09583fbf1350",
+                          "_$type": "GImage",
+                          "name": "img_expDone11",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
                         }
                       ]
                     },
@@ -1427,6 +2145,17 @@
                           "_mouseState": 1,
                           "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                           "autoSize": false
+                        },
+                        {
+                          "_$id": "8f7baef956d34ce884e7e79b198b7df8",
+                          "_$type": "GImage",
+                          "name": "img_expDone12",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
                         }
                       ]
                     },
@@ -1475,6 +2204,17 @@
                           "_mouseState": 1,
                           "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                           "autoSize": false
+                        },
+                        {
+                          "_$id": "688b53c85fc6465e9c2d03bfe5891faa",
+                          "_$type": "GImage",
+                          "name": "img_expDone13",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
                         }
                       ]
                     },
@@ -1523,6 +2263,17 @@
                           "_mouseState": 1,
                           "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                           "autoSize": false
+                        },
+                        {
+                          "_$id": "48413b455b0047ddb3ac93b75e96539f",
+                          "_$type": "GImage",
+                          "name": "img_expDone14",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
                         }
                       ]
                     },
@@ -1571,6 +2322,17 @@
                           "_mouseState": 1,
                           "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                           "autoSize": false
+                        },
+                        {
+                          "_$id": "7df9f8ba44e14ed79a9a52e89d26171f",
+                          "_$type": "GImage",
+                          "name": "img_expDone15",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
                         }
                       ]
                     },
@@ -1619,6 +2381,17 @@
                           "_mouseState": 1,
                           "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                           "autoSize": false
+                        },
+                        {
+                          "_$id": "57efe2a8b326492fa425745ba21117dc",
+                          "_$type": "GImage",
+                          "name": "img_expDone16",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
                         }
                       ]
                     },
@@ -1667,6 +2440,17 @@
                           "_mouseState": 1,
                           "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                           "autoSize": false
+                        },
+                        {
+                          "_$id": "4698dbaa07bd449cac7c18223ca7ab97",
+                          "_$type": "GImage",
+                          "name": "img_expDone17",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
                         }
                       ]
                     },
@@ -1715,6 +2499,17 @@
                           "_mouseState": 1,
                           "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                           "autoSize": false
+                        },
+                        {
+                          "_$id": "56e25b55e3a443cfbf636ec516eb9043",
+                          "_$type": "GImage",
+                          "name": "img_expDone18",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
                         }
                       ]
                     },
@@ -1763,6 +2558,17 @@
                           "_mouseState": 1,
                           "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                           "autoSize": false
+                        },
+                        {
+                          "_$id": "e459f8eb6a4447b1a5707e94427a3a16",
+                          "_$type": "GImage",
+                          "name": "img_expDone19",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
                         }
                       ]
                     },
@@ -1811,6 +2617,17 @@
                           "_mouseState": 1,
                           "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                           "autoSize": false
+                        },
+                        {
+                          "_$id": "0a31b7a8dc9f4a79a057994bef83a758",
+                          "_$type": "GImage",
+                          "name": "img_expDone20",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
                         }
                       ]
                     },
@@ -1859,6 +2676,17 @@
                           "_mouseState": 1,
                           "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                           "autoSize": false
+                        },
+                        {
+                          "_$id": "722ae14cb3244f7db487f74493de44c5",
+                          "_$type": "GImage",
+                          "name": "img_expDone21",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
                         }
                       ]
                     },
@@ -1907,6 +2735,17 @@
                           "_mouseState": 1,
                           "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                           "autoSize": false
+                        },
+                        {
+                          "_$id": "a39be077a64e448593c33f8ec6f43945",
+                          "_$type": "GImage",
+                          "name": "img_expDone22",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
                         }
                       ]
                     },
@@ -1955,6 +2794,17 @@
                           "_mouseState": 1,
                           "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                           "autoSize": false
+                        },
+                        {
+                          "_$id": "2276cf5dd692488483efd5d559b6d8bd",
+                          "_$type": "GImage",
+                          "name": "img_expDone23",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
                         }
                       ]
                     },
@@ -2003,6 +2853,17 @@
                           "_mouseState": 1,
                           "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                           "autoSize": false
+                        },
+                        {
+                          "_$id": "42ee60613cd445c1b6464c86f74e931f",
+                          "_$type": "GImage",
+                          "name": "img_expDone24",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
                         }
                       ]
                     },
@@ -2051,6 +2912,17 @@
                           "_mouseState": 1,
                           "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                           "autoSize": false
+                        },
+                        {
+                          "_$id": "db309e3cec4c44fcb621af6fb53b23d6",
+                          "_$type": "GImage",
+                          "name": "img_expDone25",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
                         }
                       ]
                     },
@@ -2099,6 +2971,17 @@
                           "_mouseState": 1,
                           "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                           "autoSize": false
+                        },
+                        {
+                          "_$id": "fd45fe4e32ea4b129c7271c0f961a639",
+                          "_$type": "GImage",
+                          "name": "img_expDone26",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
                         }
                       ]
                     },
@@ -2147,6 +3030,17 @@
                           "_mouseState": 1,
                           "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                           "autoSize": false
+                        },
+                        {
+                          "_$id": "16618d192fd14719bce87157cfb2449a",
+                          "_$type": "GImage",
+                          "name": "img_expDone27",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
                         }
                       ]
                     },
@@ -2195,6 +3089,17 @@
                           "_mouseState": 1,
                           "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                           "autoSize": false
+                        },
+                        {
+                          "_$id": "b12d8159de52422ca12eeffc7f5b1492",
+                          "_$type": "GImage",
+                          "name": "img_expDone28",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
                         }
                       ]
                     },
@@ -2243,6 +3148,17 @@
                           "_mouseState": 1,
                           "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                           "autoSize": false
+                        },
+                        {
+                          "_$id": "7aabe9708c3c4cb68fa953091c4279d9",
+                          "_$type": "GImage",
+                          "name": "img_expDone29",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
                         }
                       ]
                     },
@@ -2291,6 +3207,17 @@
                           "_mouseState": 1,
                           "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                           "autoSize": false
+                        },
+                        {
+                          "_$id": "f786dd65b89540ad9df79faa41b122b5",
+                          "_$type": "GImage",
+                          "name": "img_expDone30",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
                         }
                       ]
                     },
@@ -2339,6 +3266,17 @@
                           "_mouseState": 1,
                           "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                           "autoSize": false
+                        },
+                        {
+                          "_$id": "edf77b39bd7244fcba8f49a40a8f6d60",
+                          "_$type": "GImage",
+                          "name": "img_expDone31",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
                         }
                       ]
                     },
@@ -2387,6 +3325,1964 @@
                           "_mouseState": 1,
                           "src": "ui/image/expeditionNodes/node-enemy-normal.png",
                           "autoSize": false
+                        },
+                        {
+                          "_$id": "39120428ab044c509725a08198288399",
+                          "_$type": "GImage",
+                          "name": "img_expDone32",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "b26643b41d054ec482e96e70fa0718b6",
+                      "_$type": "GWidget",
+                      "name": "expNode33",
+                      "width": 116,
+                      "height": 116,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "1208903f83c24400977ed360ebae8655",
+                          "_$type": "GImage",
+                          "name": "img_expNode33_1",
+                          "x": 6,
+                          "y": 18,
+                          "width": 104,
+                          "height": 104,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/expedition/handpainted/map-transit-stone-muted.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "fb4a95a340184390a0bb10b303533843",
+                          "_$type": "GTextField",
+                          "name": "txt_expNode33_2",
+                          "width": 116,
+                          "height": 28,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "ba8ff69999dd4845bda09ae0636da10c",
+                          "_$type": "GImage",
+                          "name": "img_expNode33_3",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "31ddc84af09741afbd51288d8796b5ba",
+                          "_$type": "GImage",
+                          "name": "img_expDone33",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "c9b8c06311434dd3a57d0b8bfbc674e6",
+                      "_$type": "GWidget",
+                      "name": "expNode34",
+                      "width": 116,
+                      "height": 116,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "eb11b4a33f4e46789343325a8e28f1a4",
+                          "_$type": "GImage",
+                          "name": "img_expNode34_1",
+                          "x": 6,
+                          "y": 18,
+                          "width": 104,
+                          "height": 104,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/expedition/handpainted/map-transit-stone-muted.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "6398fb392d0347f78c1865efd0cb7b11",
+                          "_$type": "GTextField",
+                          "name": "txt_expNode34_2",
+                          "width": 116,
+                          "height": 28,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "db062c2f896b4f40a26c5f28f1a2ae2c",
+                          "_$type": "GImage",
+                          "name": "img_expNode34_3",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "acfb7c30e1644d0496375c49e5101153",
+                          "_$type": "GImage",
+                          "name": "img_expDone34",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "cc3868184e8846648fdd95a2a4554ed1",
+                      "_$type": "GWidget",
+                      "name": "expNode35",
+                      "width": 116,
+                      "height": 116,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "952f05401f1c4287a6b2188220eeffc0",
+                          "_$type": "GImage",
+                          "name": "img_expNode35_1",
+                          "x": 6,
+                          "y": 18,
+                          "width": 104,
+                          "height": 104,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/expedition/handpainted/map-transit-stone-muted.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "51dcbeb4ba444b17beb05e86f0c39274",
+                          "_$type": "GTextField",
+                          "name": "txt_expNode35_2",
+                          "width": 116,
+                          "height": 28,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "c18384b98e3e44dfbdd8eca057dc3dbd",
+                          "_$type": "GImage",
+                          "name": "img_expNode35_3",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "b0267de7a139467f94bb8ca08b5a6ab8",
+                          "_$type": "GImage",
+                          "name": "img_expDone35",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "e4706bc79b5741be9bdc2031d2765013",
+                      "_$type": "GWidget",
+                      "name": "expNode36",
+                      "width": 116,
+                      "height": 116,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "8f8bf2eecda34f5a98116ee3c93852b6",
+                          "_$type": "GImage",
+                          "name": "img_expNode36_1",
+                          "x": 6,
+                          "y": 18,
+                          "width": 104,
+                          "height": 104,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/expedition/handpainted/map-transit-stone-muted.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "d2bb07521a1b4d3a8f2bf912b6795e8a",
+                          "_$type": "GTextField",
+                          "name": "txt_expNode36_2",
+                          "width": 116,
+                          "height": 28,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "1e048bb92ee84f88ae21e51eb57df88c",
+                          "_$type": "GImage",
+                          "name": "img_expNode36_3",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "9370355cebea4f2a92f6fa7a260cad8d",
+                          "_$type": "GImage",
+                          "name": "img_expDone36",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "a6f059895a1344d493de56131750d94d",
+                      "_$type": "GWidget",
+                      "name": "expNode37",
+                      "width": 116,
+                      "height": 116,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "cc35922110424d65b53dd734ac70f3a4",
+                          "_$type": "GImage",
+                          "name": "img_expNode37_1",
+                          "x": 6,
+                          "y": 18,
+                          "width": 104,
+                          "height": 104,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/expedition/handpainted/map-transit-stone-muted.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "060bc6344a154d4db43f332676973dbe",
+                          "_$type": "GTextField",
+                          "name": "txt_expNode37_2",
+                          "width": 116,
+                          "height": 28,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "874f5c05d4ff471c9226f83c97ed2035",
+                          "_$type": "GImage",
+                          "name": "img_expNode37_3",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "ff3a0a6c5c7849d8be83ab66a31a7809",
+                          "_$type": "GImage",
+                          "name": "img_expDone37",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "f8b8f605b454415ca30e16d70082631a",
+                      "_$type": "GWidget",
+                      "name": "expNode38",
+                      "width": 116,
+                      "height": 116,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "b18c5bbadd414ffea7f3b2f243b4f637",
+                          "_$type": "GImage",
+                          "name": "img_expNode38_1",
+                          "x": 6,
+                          "y": 18,
+                          "width": 104,
+                          "height": 104,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/expedition/handpainted/map-transit-stone-muted.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "746951318a9c485db563367ed17f97a8",
+                          "_$type": "GTextField",
+                          "name": "txt_expNode38_2",
+                          "width": 116,
+                          "height": 28,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "182fea4e2dd24028bda879f8373fb69e",
+                          "_$type": "GImage",
+                          "name": "img_expNode38_3",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "12b3ef8bf15b42aea23c5c92da9ed73e",
+                          "_$type": "GImage",
+                          "name": "img_expDone38",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "8a7825882c7f4a8ab01384ad46ecb775",
+                      "_$type": "GWidget",
+                      "name": "expNode39",
+                      "width": 116,
+                      "height": 116,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "a4cb4124766e4df397d203212a952272",
+                          "_$type": "GImage",
+                          "name": "img_expNode39_1",
+                          "x": 6,
+                          "y": 18,
+                          "width": 104,
+                          "height": 104,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/expedition/handpainted/map-transit-stone-muted.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "0fbc46416f09472c9129f8cb7ad7e153",
+                          "_$type": "GTextField",
+                          "name": "txt_expNode39_2",
+                          "width": 116,
+                          "height": 28,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "54137aa7b03a4274848ef79416c54b15",
+                          "_$type": "GImage",
+                          "name": "img_expNode39_3",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "483bd563ba7e46e793f529f5141fd98c",
+                          "_$type": "GImage",
+                          "name": "img_expDone39",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "2a6f7270225646b38e3ebf7f1a279a94",
+                      "_$type": "GWidget",
+                      "name": "expNode40",
+                      "width": 116,
+                      "height": 116,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "7732b4a080fc40bb85d8df647033db66",
+                          "_$type": "GImage",
+                          "name": "img_expNode40_1",
+                          "x": 6,
+                          "y": 18,
+                          "width": 104,
+                          "height": 104,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/expedition/handpainted/map-transit-stone-muted.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "8f369436d45a471b96040bce90b0240b",
+                          "_$type": "GTextField",
+                          "name": "txt_expNode40_2",
+                          "width": 116,
+                          "height": 28,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "570b1997d6934d1ca1835debedc2d894",
+                          "_$type": "GImage",
+                          "name": "img_expNode40_3",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "0ce3854448494f91b85e1c23484f2d2d",
+                          "_$type": "GImage",
+                          "name": "img_expDone40",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "274d9051842e4e1aa68f8b89fd7521a2",
+                      "_$type": "GWidget",
+                      "name": "expNode41",
+                      "width": 116,
+                      "height": 116,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "dd668edceed44aa68bcb0cdbf11e8e6d",
+                          "_$type": "GImage",
+                          "name": "img_expNode41_1",
+                          "x": 6,
+                          "y": 18,
+                          "width": 104,
+                          "height": 104,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/expedition/handpainted/map-transit-stone-muted.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "19d516435f404fecb208bf1c00a8a201",
+                          "_$type": "GTextField",
+                          "name": "txt_expNode41_2",
+                          "width": 116,
+                          "height": 28,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "4c510a544694409f9f224921047b6226",
+                          "_$type": "GImage",
+                          "name": "img_expNode41_3",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "a2327082a0ff49e2b8db973db3173cd2",
+                          "_$type": "GImage",
+                          "name": "img_expDone41",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "94ebff159c0748edbf1306848f5843e5",
+                      "_$type": "GWidget",
+                      "name": "expNode42",
+                      "width": 116,
+                      "height": 116,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "35fe8c81aeb14b579691c12f792a53ba",
+                          "_$type": "GImage",
+                          "name": "img_expNode42_1",
+                          "x": 6,
+                          "y": 18,
+                          "width": 104,
+                          "height": 104,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/expedition/handpainted/map-transit-stone-muted.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "9c07eb23674d48ddb2cf02a3a4e606f8",
+                          "_$type": "GTextField",
+                          "name": "txt_expNode42_2",
+                          "width": 116,
+                          "height": 28,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "377f822848de469bba9b4c3554aece81",
+                          "_$type": "GImage",
+                          "name": "img_expNode42_3",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "2f17005855934beeac050eb8db8a5149",
+                          "_$type": "GImage",
+                          "name": "img_expDone42",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "f034edc8af35400da3df8fdd29bbf1ee",
+                      "_$type": "GWidget",
+                      "name": "expNode43",
+                      "width": 116,
+                      "height": 116,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "acafa021cd644f308954770274103804",
+                          "_$type": "GImage",
+                          "name": "img_expNode43_1",
+                          "x": 6,
+                          "y": 18,
+                          "width": 104,
+                          "height": 104,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/expedition/handpainted/map-transit-stone-muted.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "79ca670f597e4b608d99452f1e4ecea4",
+                          "_$type": "GTextField",
+                          "name": "txt_expNode43_2",
+                          "width": 116,
+                          "height": 28,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "61d9f6fa38404e3089ae46079a224afb",
+                          "_$type": "GImage",
+                          "name": "img_expNode43_3",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "2bc9d8126152414c87d062328f94d5da",
+                          "_$type": "GImage",
+                          "name": "img_expDone43",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "16189664943e4bc6a5d30652c7912e5f",
+                      "_$type": "GWidget",
+                      "name": "expNode44",
+                      "width": 116,
+                      "height": 116,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "c2d7cce0a3f7412483ac521771bb2685",
+                          "_$type": "GImage",
+                          "name": "img_expNode44_1",
+                          "x": 6,
+                          "y": 18,
+                          "width": 104,
+                          "height": 104,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/expedition/handpainted/map-transit-stone-muted.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "2020ae4252a64aa7848359afd6d33e9c",
+                          "_$type": "GTextField",
+                          "name": "txt_expNode44_2",
+                          "width": 116,
+                          "height": 28,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "a439d9d69fbc4be4837d5940761ced78",
+                          "_$type": "GImage",
+                          "name": "img_expNode44_3",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "c592cfc27f7e4c1d8b26be2950f8eb8e",
+                          "_$type": "GImage",
+                          "name": "img_expDone44",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "46e45fb3ed8746019525adf75ab17ded",
+                      "_$type": "GWidget",
+                      "name": "expNode45",
+                      "width": 116,
+                      "height": 116,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "2567c56b41c74b27949494810325f43f",
+                          "_$type": "GImage",
+                          "name": "img_expNode45_1",
+                          "x": 6,
+                          "y": 18,
+                          "width": 104,
+                          "height": 104,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/expedition/handpainted/map-transit-stone-muted.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "2e6ec9efc1124b6683902d7ede9cd5e5",
+                          "_$type": "GTextField",
+                          "name": "txt_expNode45_2",
+                          "width": 116,
+                          "height": 28,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "f8ff6abb52f64b488c4b2993cf774faf",
+                          "_$type": "GImage",
+                          "name": "img_expNode45_3",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "c847a0b91f39489e919a110e148594a5",
+                          "_$type": "GImage",
+                          "name": "img_expDone45",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "5d287a78eb9b4da0a392f1f85ce0144f",
+                      "_$type": "GWidget",
+                      "name": "expNode46",
+                      "width": 116,
+                      "height": 116,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "7f63b8ae3caf4d018debcb742942da7d",
+                          "_$type": "GImage",
+                          "name": "img_expNode46_1",
+                          "x": 6,
+                          "y": 18,
+                          "width": 104,
+                          "height": 104,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/expedition/handpainted/map-transit-stone-muted.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "11dae98dae5c4d17a480402b619f9101",
+                          "_$type": "GTextField",
+                          "name": "txt_expNode46_2",
+                          "width": 116,
+                          "height": 28,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "104236efe7574fab9c0686f35fdb1690",
+                          "_$type": "GImage",
+                          "name": "img_expNode46_3",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "db74a018e2f34697b13b6887e33265ec",
+                          "_$type": "GImage",
+                          "name": "img_expDone46",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "ce959dee7f3a4adb87288d8e32093e7e",
+                      "_$type": "GWidget",
+                      "name": "expNode47",
+                      "width": 116,
+                      "height": 116,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "2c0fffa991c544aea5a12fcf144b585a",
+                          "_$type": "GImage",
+                          "name": "img_expNode47_1",
+                          "x": 6,
+                          "y": 18,
+                          "width": 104,
+                          "height": 104,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/expedition/handpainted/map-transit-stone-muted.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "b38bd55d70f94496a1bbcbcdf6e09efe",
+                          "_$type": "GTextField",
+                          "name": "txt_expNode47_2",
+                          "width": 116,
+                          "height": 28,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "8230de5bb62f48f18e8fe7ab0a3b4838",
+                          "_$type": "GImage",
+                          "name": "img_expNode47_3",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "dcb14a129f454490b1313bd282ac5358",
+                          "_$type": "GImage",
+                          "name": "img_expDone47",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "24092269f72e4bda8c53617b97c2fde7",
+                      "_$type": "GWidget",
+                      "name": "expNode48",
+                      "width": 116,
+                      "height": 116,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "adb1ae9cbecc4e749b23a0d3c36d2d2e",
+                          "_$type": "GImage",
+                          "name": "img_expNode48_1",
+                          "x": 6,
+                          "y": 18,
+                          "width": 104,
+                          "height": 104,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/expedition/handpainted/map-transit-stone-muted.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "14de929e626a404ab8ae61a86e5c587f",
+                          "_$type": "GTextField",
+                          "name": "txt_expNode48_2",
+                          "width": 116,
+                          "height": 28,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "df8cbac203ec4299a939454b6aeb0a33",
+                          "_$type": "GImage",
+                          "name": "img_expNode48_3",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "21cc894632eb4dadb24bf4d446f423c4",
+                          "_$type": "GImage",
+                          "name": "img_expDone48",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "b28a69268e934a9eb73f8d9011ae0aec",
+                      "_$type": "GWidget",
+                      "name": "expNode49",
+                      "width": 116,
+                      "height": 116,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "e61812b8c7fd4c05a7b2c704ce65510e",
+                          "_$type": "GImage",
+                          "name": "img_expNode49_1",
+                          "x": 6,
+                          "y": 18,
+                          "width": 104,
+                          "height": 104,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/expedition/handpainted/map-transit-stone-muted.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "436ecff5916743fc924fd2584bec3ac8",
+                          "_$type": "GTextField",
+                          "name": "txt_expNode49_2",
+                          "width": 116,
+                          "height": 28,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "066000c7b4324220a549bf8ad4fd4e04",
+                          "_$type": "GImage",
+                          "name": "img_expNode49_3",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "0b1896d5697645edb40440a91d36abc0",
+                          "_$type": "GImage",
+                          "name": "img_expDone49",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "8ccc362a1bfc4e89aa981944d2855e23",
+                      "_$type": "GWidget",
+                      "name": "expNode50",
+                      "width": 116,
+                      "height": 116,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "81013e18cef345acacde04271af216d0",
+                          "_$type": "GImage",
+                          "name": "img_expNode50_1",
+                          "x": 6,
+                          "y": 18,
+                          "width": 104,
+                          "height": 104,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/expedition/handpainted/map-transit-stone-muted.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "360f66b96c944e4fa97a1cbb03ef4af9",
+                          "_$type": "GTextField",
+                          "name": "txt_expNode50_2",
+                          "width": 116,
+                          "height": 28,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "1eec22571da64a6db3fe01ff3e6bfa36",
+                          "_$type": "GImage",
+                          "name": "img_expNode50_3",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "56ae89517d7045c2931898b08f2dda4d",
+                          "_$type": "GImage",
+                          "name": "img_expDone50",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "ba2a479672e04d58941b167d6dc3c0a6",
+                      "_$type": "GWidget",
+                      "name": "expNode51",
+                      "width": 116,
+                      "height": 116,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "43674d4bb5b840ddbdef463865b36e46",
+                          "_$type": "GImage",
+                          "name": "img_expNode51_1",
+                          "x": 6,
+                          "y": 18,
+                          "width": 104,
+                          "height": 104,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/expedition/handpainted/map-transit-stone-muted.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "fb50166daaac47e39e5fb0a75006cb2d",
+                          "_$type": "GTextField",
+                          "name": "txt_expNode51_2",
+                          "width": 116,
+                          "height": 28,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "3ad325be611d4defa2b0b753a4640647",
+                          "_$type": "GImage",
+                          "name": "img_expNode51_3",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "f7b39ed9c730488893ebcc2b18cf60e3",
+                          "_$type": "GImage",
+                          "name": "img_expDone51",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "9a8f07110e41441f94f2fbba104133da",
+                      "_$type": "GWidget",
+                      "name": "expNode52",
+                      "width": 116,
+                      "height": 116,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "c057a19967ad4e80ac8dec15ad8c0c86",
+                          "_$type": "GImage",
+                          "name": "img_expNode52_1",
+                          "x": 6,
+                          "y": 18,
+                          "width": 104,
+                          "height": 104,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/expedition/handpainted/map-transit-stone-muted.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "fa44a25ed2584dcc9e273510de0eb187",
+                          "_$type": "GTextField",
+                          "name": "txt_expNode52_2",
+                          "width": 116,
+                          "height": 28,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "86dbca41d7404d99a6b989724b2ed6e2",
+                          "_$type": "GImage",
+                          "name": "img_expNode52_3",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "2a9b9fb49d1f43c0a1bd60237dde1193",
+                          "_$type": "GImage",
+                          "name": "img_expDone52",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "822029ad5a6a4fa9b8376df707ef8b98",
+                      "_$type": "GWidget",
+                      "name": "expNode53",
+                      "width": 116,
+                      "height": 116,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "3b76429e9782497ca5bc8ea411ab26c5",
+                          "_$type": "GImage",
+                          "name": "img_expNode53_1",
+                          "x": 6,
+                          "y": 18,
+                          "width": 104,
+                          "height": 104,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/expedition/handpainted/map-transit-stone-muted.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "f317d1f2f0a44ace93f2818ee4906b83",
+                          "_$type": "GTextField",
+                          "name": "txt_expNode53_2",
+                          "width": 116,
+                          "height": 28,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "84a5603c99c24d67b561b5ea86c05b8c",
+                          "_$type": "GImage",
+                          "name": "img_expNode53_3",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "875b7861f7184e6384fb60311ec6fab7",
+                          "_$type": "GImage",
+                          "name": "img_expDone53",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "0bcbf10d96cd4511ae805782a0f2ad7f",
+                      "_$type": "GWidget",
+                      "name": "expNode54",
+                      "width": 116,
+                      "height": 116,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "831ecdd2069a48c2bcf9d0b830598244",
+                          "_$type": "GImage",
+                          "name": "img_expNode54_1",
+                          "x": 6,
+                          "y": 18,
+                          "width": 104,
+                          "height": 104,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/expedition/handpainted/map-transit-stone-muted.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "3d6e08b22c7a4b1b86480615440603fb",
+                          "_$type": "GTextField",
+                          "name": "txt_expNode54_2",
+                          "width": 116,
+                          "height": 28,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "3fb41ed70d8646e79177a78d9df0ef4a",
+                          "_$type": "GImage",
+                          "name": "img_expNode54_3",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "1900e480d5614c13b360c385592d53ac",
+                          "_$type": "GImage",
+                          "name": "img_expDone54",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "6f54e2ce2e5a44908f381eb202497392",
+                      "_$type": "GWidget",
+                      "name": "expNode55",
+                      "width": 116,
+                      "height": 116,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "a503b0b922ae466393199d3338463800",
+                          "_$type": "GImage",
+                          "name": "img_expNode55_1",
+                          "x": 6,
+                          "y": 18,
+                          "width": 104,
+                          "height": 104,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/expedition/handpainted/map-transit-stone-muted.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "984d3016a0cb43b09123923f57691ca4",
+                          "_$type": "GTextField",
+                          "name": "txt_expNode55_2",
+                          "width": 116,
+                          "height": 28,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "bdd732c4cc8d41c2b92bff09aed075d3",
+                          "_$type": "GImage",
+                          "name": "img_expNode55_3",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "e9c1796da1b947869662de253df665f6",
+                          "_$type": "GImage",
+                          "name": "img_expDone55",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "2adc9b66cf9343daa929fed665cb3dd0",
+                      "_$type": "GWidget",
+                      "name": "expNode56",
+                      "width": 116,
+                      "height": 116,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "8abde5a30e7e40179f8a75b3e9e91f9e",
+                          "_$type": "GImage",
+                          "name": "img_expNode56_1",
+                          "x": 6,
+                          "y": 18,
+                          "width": 104,
+                          "height": 104,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/expedition/handpainted/map-transit-stone-muted.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "d8bd9c0284854dd2beb0ac96c341a07b",
+                          "_$type": "GTextField",
+                          "name": "txt_expNode56_2",
+                          "width": 116,
+                          "height": 28,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "933e9a852ee446f98a97f4e988f287c4",
+                          "_$type": "GImage",
+                          "name": "img_expNode56_3",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "522fa69475394d9492502068a4063f5d",
+                          "_$type": "GImage",
+                          "name": "img_expDone56",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "4070db61c3b94d4e84bdd451434be0df",
+                      "_$type": "GWidget",
+                      "name": "expNode57",
+                      "width": 116,
+                      "height": 116,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "e863b61f58ac425e91f7b293cdbd4294",
+                          "_$type": "GImage",
+                          "name": "img_expNode57_1",
+                          "x": 6,
+                          "y": 18,
+                          "width": 104,
+                          "height": 104,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/expedition/handpainted/map-transit-stone-muted.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "013f5de569a5427d9fee9cd619d4afc3",
+                          "_$type": "GTextField",
+                          "name": "txt_expNode57_2",
+                          "width": 116,
+                          "height": 28,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "cf1f3e708e804f298f613fe987bcdb4f",
+                          "_$type": "GImage",
+                          "name": "img_expNode57_3",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "f98dd65a17cc461b86cf87190720da52",
+                          "_$type": "GImage",
+                          "name": "img_expDone57",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "8c69898921db4fdba31c0f97d04f2af9",
+                      "_$type": "GWidget",
+                      "name": "expNode58",
+                      "width": 116,
+                      "height": 116,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "38c733dade01469899b98e27e0cc4bde",
+                          "_$type": "GImage",
+                          "name": "img_expNode58_1",
+                          "x": 6,
+                          "y": 18,
+                          "width": 104,
+                          "height": 104,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/expedition/handpainted/map-transit-stone-muted.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "481729553b2b433a8a965f96cded7c5e",
+                          "_$type": "GTextField",
+                          "name": "txt_expNode58_2",
+                          "width": 116,
+                          "height": 28,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "2af17b4a85c2477c9a9f9a9b3dda0ab1",
+                          "_$type": "GImage",
+                          "name": "img_expNode58_3",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "b132a90d4a9a486bba45d5987690e273",
+                          "_$type": "GImage",
+                          "name": "img_expDone58",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "b8d54b9b250745cb85fd3859b783c674",
+                      "_$type": "GWidget",
+                      "name": "expNode59",
+                      "width": 116,
+                      "height": 116,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "728b2a28e68b4fe19477efb838bded56",
+                          "_$type": "GImage",
+                          "name": "img_expNode59_1",
+                          "x": 6,
+                          "y": 18,
+                          "width": 104,
+                          "height": 104,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/expedition/handpainted/map-transit-stone-muted.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "b7b7415ebec14f60aa0b4972c1e970aa",
+                          "_$type": "GTextField",
+                          "name": "txt_expNode59_2",
+                          "width": 116,
+                          "height": 28,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "99efeabfb46f41af92c70e1eb677230a",
+                          "_$type": "GImage",
+                          "name": "img_expNode59_3",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "c16f56aca77d4c8ba66fff49c942f166",
+                          "_$type": "GImage",
+                          "name": "img_expDone59",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "971f56d4e6c542b3890378a3ef84f86e",
+                      "_$type": "GWidget",
+                      "name": "expNode60",
+                      "width": 116,
+                      "height": 116,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "87c87048779d4e3dacfb8f2a64640aa5",
+                          "_$type": "GImage",
+                          "name": "img_expNode60_1",
+                          "x": 6,
+                          "y": 18,
+                          "width": 104,
+                          "height": 104,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/expedition/handpainted/map-transit-stone-muted.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "78827cbc90d241c4a2c4fa1045adf8e8",
+                          "_$type": "GTextField",
+                          "name": "txt_expNode60_2",
+                          "width": 116,
+                          "height": 28,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "1e5b21bf411d4c0faa0b913a6b52de9c",
+                          "_$type": "GImage",
+                          "name": "img_expNode60_3",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "9bc8377389504f73bd77fb78b830367c",
+                          "_$type": "GImage",
+                          "name": "img_expDone60",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "3aeb62ff6965450c8991dd866442898a",
+                      "_$type": "GWidget",
+                      "name": "expNode61",
+                      "width": 116,
+                      "height": 116,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "fd4de86683424a1084ad99524e6fd212",
+                          "_$type": "GImage",
+                          "name": "img_expNode61_1",
+                          "x": 6,
+                          "y": 18,
+                          "width": 104,
+                          "height": 104,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/expedition/handpainted/map-transit-stone-muted.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "33e0a7d2ed4d4b97ab6891e570190bf2",
+                          "_$type": "GTextField",
+                          "name": "txt_expNode61_2",
+                          "width": 116,
+                          "height": 28,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "38160ed18f1145979f8f93a8fe464d10",
+                          "_$type": "GImage",
+                          "name": "img_expNode61_3",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "aa2a41b4276245818313a5184aa0cede",
+                          "_$type": "GImage",
+                          "name": "img_expDone61",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "11d9a0c4cce84fdfa201a522b17b8788",
+                      "_$type": "GWidget",
+                      "name": "expNode62",
+                      "width": 116,
+                      "height": 116,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "719a376724f24e369108cc530d4f3957",
+                          "_$type": "GImage",
+                          "name": "img_expNode62_1",
+                          "x": 6,
+                          "y": 18,
+                          "width": 104,
+                          "height": 104,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/expedition/handpainted/map-transit-stone-muted.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "b9d0943d36aa415a9649ef9169808da7",
+                          "_$type": "GTextField",
+                          "name": "txt_expNode62_2",
+                          "width": 116,
+                          "height": 28,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "41220ac7f37f4f5d9b6490dfc2b536d2",
+                          "_$type": "GImage",
+                          "name": "img_expNode62_3",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "0439dfbf69834b94aadc769ba5967b67",
+                          "_$type": "GImage",
+                          "name": "img_expDone62",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "01563344de984c308a523cce2178ceaa",
+                      "_$type": "GWidget",
+                      "name": "expNode63",
+                      "width": 116,
+                      "height": 116,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "b3b501e5f0ed4103a8202fa25d3979c9",
+                          "_$type": "GImage",
+                          "name": "img_expNode63_1",
+                          "x": 6,
+                          "y": 18,
+                          "width": 104,
+                          "height": 104,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/expedition/handpainted/map-transit-stone-muted.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "f19c5a505499483daa953adf23fcff0c",
+                          "_$type": "GTextField",
+                          "name": "txt_expNode63_2",
+                          "width": 116,
+                          "height": 28,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "554216b21b5e42e7b2cb15b987c9f1f8",
+                          "_$type": "GImage",
+                          "name": "img_expNode63_3",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "cd4a903c13044ac886579da0b54dac7f",
+                          "_$type": "GImage",
+                          "name": "img_expDone63",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "25d844cf8e3b4dd38611dcb79b463613",
+                      "_$type": "GWidget",
+                      "name": "expNode64",
+                      "width": 116,
+                      "height": 116,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "af0c794ecace42759466d7955cc3fa1c",
+                          "_$type": "GImage",
+                          "name": "img_expNode64_1",
+                          "x": 6,
+                          "y": 18,
+                          "width": 104,
+                          "height": 104,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/expedition/handpainted/map-transit-stone-muted.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "fdefabf725f148ee92a48e844ac95681",
+                          "_$type": "GTextField",
+                          "name": "txt_expNode64_2",
+                          "width": 116,
+                          "height": 28,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "55f63134fc1b4f3e83286516ff61a6ba",
+                          "_$type": "GImage",
+                          "name": "img_expNode64_3",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "70331fb07ffd4b838ea278a0ea58a72e",
+                          "_$type": "GImage",
+                          "name": "img_expDone64",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "66345887998c47009a690982d93d2d1d",
+                      "_$type": "GWidget",
+                      "name": "expNode65",
+                      "width": 116,
+                      "height": 116,
+                      "visible": false,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "36931e16b6d2433486d80e39e2d3f9fd",
+                          "_$type": "GImage",
+                          "name": "img_expNode65_1",
+                          "x": 6,
+                          "y": 18,
+                          "width": 104,
+                          "height": 104,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/expedition/handpainted/map-transit-stone-muted.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "5a9f6bd6d1ea437096d9ec18edf8435c",
+                          "_$type": "GTextField",
+                          "name": "txt_expNode65_2",
+                          "width": 116,
+                          "height": 28,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "text": "",
+                          "fontSize": 18,
+                          "color": "#e8edf0",
+                          "overflow": "shrink"
+                        },
+                        {
+                          "_$id": "6ace1e4bb1e2459ab9b0a28b3231f782",
+                          "_$type": "GImage",
+                          "name": "img_expNode65_3",
+                          "x": 6,
+                          "width": 104,
+                          "height": 104,
+                          "_mouseState": 1,
+                          "src": "ui/image/expeditionNodes/node-enemy-normal.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "42fde8671338412d9b6eed3287dbf884",
+                          "_$type": "GImage",
+                          "name": "img_expDone65",
+                          "src": "ui/atlas/module/expedition/handpainted/map-completed-badge.png",
+                          "width": 30,
+                          "height": 30,
+                          "autoSize": false,
+                          "mouseEnabled": false,
+                          "visible": false
                         }
                       ]
                     }
@@ -4637,6 +7533,34 @@
                       ]
                     }
                   ]
+                },
+                {
+                  "_$id": "ddad7a520e204983a78066be725aee59",
+                  "_$type": "GButton",
+                  "name": "expEnemyBlocking",
+                  "width": 150,
+                  "height": 54,
+                  "mouseEnabled": true,
+                  "_$child": [
+                    {
+                      "_$id": "3f6c17b03f90433bb0b8615d360d6f30",
+                      "_$type": "GTextField",
+                      "name": "txt_expEnemyBlocking",
+                      "text": "测试·怪物拦路",
+                      "width": 150,
+                      "height": 40,
+                      "font": "Microsoft YaHei",
+                      "fontSize": 18,
+                      "color": "#ecefe7",
+                      "align": "center",
+                      "valign": "middle",
+                      "wordWrap": true,
+                      "overflow": "shrink",
+                      "mouseEnabled": false
+                    }
+                  ],
+                  "mode": 1,
+                  "changeStateOnClick": false
                 }
               ]
             },

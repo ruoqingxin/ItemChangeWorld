@@ -15,7 +15,7 @@ export class UIManager extends Laya.EventDispatcher {
     private static _ins: UIManager;
     /**
      * 获取单例
-     * @returns 
+     * @returns
      */
     static ins() {
         if (!this._ins) {
@@ -125,7 +125,7 @@ export class UIManager extends Laya.EventDispatcher {
         this._uiRoot.name = "adapter";
         Laya.GRoot.inst.addChild(this._uiRoot);
 
-        // Backgrounds and modal masks use the viewport; page adapters own content layout.
+
         const autoSize = () => {
             this._uiRoot.pos(0, 0);
             this._uiRoot.size(Laya.stage.width, Laya.stage.height);
@@ -149,13 +149,6 @@ export class UIManager extends Laya.EventDispatcher {
         this._mask.graphics.drawRect(0, 0, 1, 1, "#000000e0", null, 1, true);
         UIUtils.addClickListener(this._mask, this, this._onClickMask);
         UIUtils.setActive(this._mask, false);
-    }
-
-    /**
-     * 内部使用 检查刘海屏适配
-     * @param value 首次检查标记
-     */
-    public _checkSafeArea(value: boolean) {
     }
 
     /**
@@ -413,7 +406,7 @@ export class UIManager extends Laya.EventDispatcher {
     /**
      * 关闭某个层级所有界面
      * @param layer 界面层级
-     * @returns 
+     * @returns
      */
     public closeLayerForms(layer: UILayer) {
         let forms = this._openstacks[layer];
@@ -457,7 +450,7 @@ export class UIManager extends Laya.EventDispatcher {
     /**
      * 是否有任意一个界面正打开
      * @param layer 界面层级
-     * @returns 
+     * @returns
      */
     isAnyFormOpenedInLayer(layer: UILayer): boolean {
         let forms = this._openstacks[layer];
@@ -505,12 +498,12 @@ export class UIManager extends Laya.EventDispatcher {
     /**
      * 内部使用
      */
-    _onFormAsyncLoad(form: UIBaseView) {
+    _onFormAsyncLoad() {
         this._asyncOpenCnt--;
         if (this._asyncOpenCnt == 0) {
             this.event("loading", false);
         }
-        //uts.log("remove form:" + form.Name);
+
     }
 
     /**
@@ -726,7 +719,7 @@ export class UIManager extends Laya.EventDispatcher {
         this._openedViewTypes.splice(index, 1);
         this._openedViewList.splice(index, 1);
         view._destroy();
-        // console.log("destroy view " + view.path);
+
     }
 
     /**

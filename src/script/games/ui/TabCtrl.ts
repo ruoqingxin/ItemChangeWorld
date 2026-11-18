@@ -150,7 +150,7 @@ export class TabCtrl {
 
     /**
      * 获取当前打开的页签
-     * @returns 
+     * @returns
      */
     getCurrentTab(): UITabSubView {
         return this._openenView;
@@ -190,7 +190,7 @@ export class TabCtrl {
      * 根据页签功能id切换子界面
      * @param id 页签功能id
      * @param args 参数列表
-     * @returns 
+     * @returns
      */
     switchTabFormById(id: number, ...args: any[]) {
 

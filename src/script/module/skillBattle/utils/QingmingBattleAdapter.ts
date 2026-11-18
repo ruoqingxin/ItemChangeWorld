@@ -1,13 +1,12 @@
-import type { NewBattleAction, NewBattleCarry, NewBattleEvent, NewBattlePreview, NewBattleResult,
-    NewBattleSetup, NewBattleState } from "../types/BattleTypes";
+import type { BattleAction, BattleCarry, BattleEvent, BattlePreview, BattleResult, BattleSetup, BattleState } from "../types/BattleTypes";
 import { QingmingRules as R } from "./QingmingRules";
 import { QingmingConfig as C } from "./QingmingConfig";
 import { GuzongEnemyRules as E } from "./GuzongEnemyRules";
 
-/** Adapts integer combat to real inventory instances and weapon durability. */
+
 export class QingmingBattleAdapter {
-    static start(setup: NewBattleSetup, battleId: string, carry: NewBattleCarry | undefined,
-        attributes: { attack: number; defense: number }): NewBattleState {
+    static start(setup: BattleSetup, battleId: string, carry: BattleCarry | undefined,
+        attributes: { attack: number; defense: number }): BattleState {
         const q = setup.qingming;
         const combat = R.start({
             player: { hp: setup.player.maxHp, mp: setup.player.maxMp, ...attributes },
@@ -22,26 +21,25 @@ export class QingmingBattleAdapter {
         combat.fightStart = { hp: combat.player.hp, mp: combat.player.mp };
         Object.assign(combat,R.clone(q.loadout));
         combat.logs = [`[回1] ${E.title(combat)}；生命${setup.enemy.maxHp}，攻击${q.enemyAttack}`];
-        const state: NewBattleState = {
+        const state: BattleState = {
             version: 1, battleId, phase: "player_input", revision: 0, round: 1, mainActions: 0,
             player: { hp: 0, mp: 0, maxHp: setup.player.maxHp, maxMp: setup.player.maxMp, block: 0 },
-            enemy: { hp: 0, maxHp: setup.enemy.maxHp, block: 0, intentIndex: 0 },
+            enemy: { hp: 0, maxHp: setup.enemy.maxHp, block: 0 },
             weapon: R.clone(carry ? carry.weapon : setup.weapon), pouch: R.clone(carry?.pouch || [null,null,null,null,null]),
-            potionUsed: false, sword: { momentum: 0, keen: false, enhancement: 100, firstBasicUsed: false,
-                xifeng: false, previousAttack: null, mark: null }, qingming: combat,
+            potionUsed: false, qingming: combat,
         };
         this.sync(state);
         this.validateState(setup,state);
         return state;
     }
-    private static sync(s: NewBattleState): void {
+    private static sync(s: BattleState): void {
         const q = s.qingming;
         s.player = { hp: q.player.hp, mp: q.player.mp, maxHp: q.player.maxHp, maxMp: q.player.maxMp, block: q.player.shield };
-        s.enemy = { hp: q.enemy.hp, maxHp: q.enemy.maxHp, block: q.enemy.shield, intentIndex: 0 };
+        s.enemy = { hp: q.enemy.hp, maxHp: q.enemy.maxHp, block: q.enemy.shield };
         s.phase = q.phase === "fighting" ? "player_input" : q.phase === "complete" ? "victory" : "defeat";
         s.round = q.round; s.potionUsed = q.potionUsed; s.revision = q.revision;
     }
-    static validateSetup(setup: NewBattleSetup): void {
+    static validateSetup(setup: BattleSetup): void {
         const q = setup.qingming;
         if (!q || !E.enemies[q.enemyId] || E.enemies[q.enemyId].name !== setup.enemy.name ||
             !Number.isInteger(q.seed) || q.seed < 1 || q.seed > 2147483646 ||
@@ -51,7 +49,7 @@ export class QingmingBattleAdapter {
             throw new Error("青冥战斗配置无效");
         R.validateLoadout(q.loadout);
     }
-    static validateState(setup: NewBattleSetup, s: NewBattleState): void {
+    static validateState(setup: BattleSetup, s: BattleState): void {
         const q = s?.qingming;
         if (!q) throw new Error("青冥战斗快照缺失");
         R.validateState(q);
@@ -77,19 +75,17 @@ export class QingmingBattleAdapter {
             s.weapon.durability > s.weapon.maxDurability : setup.weapon !== null)
             throw new Error("青冥武器快照无效");
     }
-    static resolve(setup: NewBattleSetup, snapshot: NewBattleState, action: NewBattleAction,
-        attributes: { attack: number; defense: number }): NewBattleResult {
-        const reject = (reason: string): NewBattleResult =>
+    static resolve(setup: BattleSetup, snapshot: BattleState, action: BattleAction,
+        attributes: { attack: number; defense: number }): BattleResult {
+        const reject = (reason: string): BattleResult =>
             ({ ok: false, state: R.clone(snapshot), events: [], preview: null, reason });
         try {
             this.validateSetup(setup); this.validateState(setup,snapshot);
             if (snapshot.phase !== "player_input") throw new Error("战斗已结束");
-            const s = R.clone(snapshot), old = s.qingming, events: NewBattleEvent[] = [];
-            const preview: NewBattlePreview = {
-                token: {battleId:s.battleId,revision:s.revision}, name: "", mpCost: 0, durabilityCost: 0,
-                shred: 0, body: 0, keen: 0, difeng: 0, guanxi: 0, mark: 0, markTicks: 0,
+            const s = R.clone(snapshot), old = s.qingming, events: BattleEvent[] = [];
+            const preview: BattlePreview = {
+                token: {battleId:s.battleId,revision:s.revision}, name: "", mpCost: 0, durabilityCost: 0, body: 0,
                 enemyHpLoss: 0, playerHpLoss: 0, shield: 0, recovery: 0, resource: null, potion: false,
-                momentumGain: 0, keenEnhancement: 100,
             };
             if (action?.type === "potion") {
                 if (s.potionUsed) throw new Error("本回合药品机会已使用");

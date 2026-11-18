@@ -1,10 +1,10 @@
 const assert = require("node:assert/strict");
 const path = require("node:path");
-const base = path.resolve(__dirname, "../bin/manual-test/script/module/manualTest");
-const { RogueTestRules: R } = require(path.join(base, "utils/RogueTestRules.js"));
-const { RogueTestConfig: C } = require(path.join(base, "utils/RogueTestConfig.js"));
-const { RogueEnemyRules: E } = require(path.join(base, "utils/RogueEnemyRules.js"));
-const { RogueTestManager: Manager } = require(path.join(base, "manager/RogueTestManager.js"));
+const {load}=require("./config-fixture.cjs");
+const {QingmingRules:R}=load("module/skillBattle/utils/QingmingRules.js");
+const {QingmingConfig:C}=load("module/skillBattle/utils/QingmingConfig.js");
+const {GuzongEnemyRules:E}=load("module/skillBattle/utils/GuzongEnemyRules.js");
+const {RogueTestManager:Manager}=load("module/manualTest/manager/RogueTestManager.js");
 let groups = 0;
 function test(name, fn) { fn(); groups++; console.log("PASS " + name); }
 function setup(id, options = {}, items = []) {
@@ -72,7 +72,7 @@ test("stone actual break weakens first hit, expired shield does not; dynamic pre
     let s = setup("stone"); const before = R.clone(s);
     const preview = R.resolve(s, { move: "basic" }); assert.deepEqual(s, before);
     s = preview.state; assert.equal(s.foe.broken, true); assert.equal(E.percent(s, s.intentions[0]), 40);
-    s = act(s, "end"); assert.equal(s.totals.taken, 55); //22+33
+    s = act(s, "end"); assert.equal(s.totals.taken, 55);
     let unbroken = setup("stone"); unbroken = act(unbroken, "end");
     assert.equal(unbroken.totals.taken, 77); assert.equal(unbroken.totals.events.enemyBreak || 0, 0);
 });
@@ -136,7 +136,7 @@ test("read locks last previous active; another active clears, basic does not, de
     let s = setup("swordsman", {}, ["flyingEdge", "swordUnity"]);
     s = act(s, "edge"); s = act(s, "end"); assert.equal(s.foe.read, "edge");
     let read = act(s, "edge"); assert.equal(read.totals.events.enemyRead, 1);
-    assert.equal(read.totals.damage - s.totals.damage, 109 - s.enemy.shield); //49 main +2*30 flying, after old shield
+    assert.equal(read.totals.damage - s.totals.damage, 109 - s.enemy.shield);
     let basic = act(s, "basic"); assert.equal(basic.foe.read, "edge");
     let cleared = act(s, "wind"); assert.equal(cleared.foe.read, null);
     cleared = act(cleared, "edge"); assert.equal(cleared.totals.events.enemyRead || 0, 0);
@@ -144,7 +144,7 @@ test("read locks last previous active; another active clears, basic does not, de
 });
 test("shatter removes remaining shield only, never extra HP or second counter; slots alternate", () => {
     let s = setup("breaker", {}, ["riposte"]); s.player.shield = 240; s = act(s, "end");
-    assert.equal(s.totals.events.enemyShatter, 53); //106 attack, then53 remaining shield removed
+    assert.equal(s.totals.events.enemyShatter, 53);
     assert.equal(s.totals.events.counter, 2); assert.equal(s.totals.taken, 0);
     assert.equal(s.intentions[2].shatter, true);
     let naked = setup("breaker"); naked = act(naked, "end");
@@ -182,7 +182,7 @@ test("boss recovery window buffs all damage once, disappears next enemy turn; se
         const basic = act(s, "basic");
         assert.equal(basic.totals.damage - s.totals.damage, 120);
         const combo = act(s, "edge");
-        assert.equal(combo.totals.damage - s.totals.damage, 156); //84 body + two36 flying, no double multiplier
+        assert.equal(combo.totals.damage - s.totals.damage, 156);
         const ended = act(s, "end"); assert.equal(ended.foe.vulnerable, false);
     }
 });
@@ -234,12 +234,12 @@ test("seeded mixed actions across all enemies preserve source purity and bounded
     }
     console.log("Enemy fuzz attempts: " + attempts); assert.ok(attempts >= 2000);
 });
-test("guzong durability changes only species HP, not attack, pressure, player stats or old modes", () => {
+test("guzong durability changes only species HP, not attack, pressure or player stats", () => {
     const d = C.defaults();
     assert.equal(R.start(d).enemy.maxHp, 900);
     assert.equal(R.start({ ...d, enemyId: "gatekeeper", battles: 1 }).enemy.maxHp, 1080);
     assert.equal(R.start({ ...d, enemyId: "tortoise", battles: 1 }).enemy.maxHp, 1500);
-    assert.equal(R.start({ ...d, style: "mixed" }).enemy.maxHp, 500);
+    assert.throws(() => R.start({ ...d, style: "mixed" }), /敌阵无效/);
     assert.deepEqual(R.start(d).player, { ...d.player, maxHp: d.player.hp, maxMp: d.player.mp, shield: 0 });
     assert.equal(R.start(d).enemy.attack, 55);
 });
@@ -276,9 +276,7 @@ test("basic recovery is not free idling, does not apply to other skills, lethal 
     let invalid = setup("patrol"); invalid.player.mp = 0;
     const refused = R.resolve(invalid, { move: "fall" }); assert.equal(refused.ok, false); assert.equal(refused.state, invalid);
 });
-test("old-template basic mana behavior and no-victory-fill rule remain unchanged", () => {
-    let s = R.start({ ...C.defaults(), style: "mixed" }); s.player.mp = 100;
-    s = act(s, "basic"); assert.equal(s.player.mp, 100);
+test("victory preserves remaining mana without refilling", () => {
     const current = setup("patrol"); current.player.mp = 100; current.enemy.hp = 1;
     const won = act(current, "basic"); assert.equal(won.reports[0].endMp, 100);
     assert.equal(won.player.mp, 100);

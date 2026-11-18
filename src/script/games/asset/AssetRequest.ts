@@ -1,9 +1,7 @@
 import { Asset } from "./Asset";
 import { ResInfo } from "./ResInfo";
 export class AssetRequest {
-    /**
-     * private
-     */
+
     _resInfos: ResInfo[] = [];
 
     /**

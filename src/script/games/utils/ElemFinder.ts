@@ -1,6 +1,4 @@
-﻿import { ListItemCtrl } from "../uilib/ListItemCtrl";
-import { List } from "../uilib/List";
-import { UIButton } from "../ui/UIButton";
+import { ListItemCtrl } from "../uilib/ListItemCtrl";;import { List } from "../uilib/List";;import { UIButton } from "../ui/UIButton";;
 
 /**
  * 节点查找辅助类
@@ -97,10 +95,10 @@ export class ElemFinder {
     }
 
     /**
-     * 获取图片节点 
+     * 获取图片节点
      * @param node 目标节点
      * @param name 节点路径
-     * @returns 
+     * @returns
      */
     static getImage(node: Laya.Sprite, name: string): Laya.GImage {
         return this.getElement(node, name);
@@ -110,7 +108,7 @@ export class ElemFinder {
      * 获取加载器节点
      * @param node 目标节点
      * @param name 节点路径
-     * @returns 
+     * @returns
      */
     static getLoader(node: Laya.Sprite, name: string): Laya.GLoader {
         return this.getElement(node, name);
@@ -120,7 +118,7 @@ export class ElemFinder {
      * 获取面板节点
      * @param node 目标节点
      * @param name 节点路径
-     * @returns 
+     * @returns
      */
     static getPanel(node: Laya.Sprite, name: string): Laya.GPanel {
         let panel = this.getElement(node, name) as Laya.GPanel;
@@ -134,7 +132,7 @@ export class ElemFinder {
      * 获取进度条节点
      * @param node 目标节点
      * @param name 节点路径
-     * @returns 
+     * @returns
      */
     static getSlider(node: Laya.Sprite, name: string): Laya.GSlider {
         return this.getElement(node, name);
@@ -144,7 +142,7 @@ export class ElemFinder {
      * 获取list对象
      * @param node 目标节点
      * @param name 节点路径
-     * @returns 
+     * @returns
      */
     static getList<R extends ListItemCtrl>(node: Laya.Sprite, name: string): List<R> {
         let list = this.getElement(node, name) as Laya.GList;
@@ -158,7 +156,7 @@ export class ElemFinder {
      * 获取自定义按钮
      * @param node 目标节点
      * @param name 节点路径
-     * @returns 
+     * @returns
      */
     static getUIButton(node: Laya.Sprite, name: string): UIButton {
         let btn = this.getElement(node, name) as Laya.GWidget;

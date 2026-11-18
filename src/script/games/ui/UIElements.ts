@@ -3,13 +3,7 @@ import { List } from "src/script/games/uilib/List";
 import { ListItemCtrl } from "src/script/games/uilib/ListItemCtrl";
 import { UIButton } from "./UIButton";
 import { ElementMapper, MapperTypeEnum } from "./components/ElementMapper";
-import {
-    collectElementAnimIn,
-    collectElementAnimInHor,
-    collectElementAnimOut,
-    ElementAnimInHorBase,
-    IElementAnimPlayable,
-} from "./components/elementAnim/ElementAnimTypes";
+import { collectElementAnimIn, collectElementAnimInHor, collectElementAnimOut, ElementAnimInHorBase, IElementAnimPlayable } from "./components/elementAnim/ElementAnimTypes";
 
 
 export class UIElements {
@@ -79,7 +73,7 @@ export class UIElements {
      * 获取关联的预制体
      * @param name 名称
      * @param errorTip 是否提示错误
-     * @returns 
+     * @returns
      */
     getPrefab(name: string, errorTip: boolean = true): Laya.PrefabImpl {
         let data = this._prefabMap[name];
@@ -95,7 +89,7 @@ export class UIElements {
     /**
      * 获取ui节点
      * @param name 节点名称
-     * @returns 
+     * @returns
      */
     getUIElements(name: string): UIElements {
         let data = this[name];
@@ -159,9 +153,9 @@ export class UIElements {
     }
 
     /**
-     * 获取图片节点 
+     * 获取图片节点
      * @param name 节点名称
-     * @returns 
+     * @returns
      */
     getImage(name: string): Laya.GImage {
         return this.getElement(name);
@@ -170,7 +164,7 @@ export class UIElements {
     /**
      * 获取加载器节点
      * @param name 节点名称
-     * @returns 
+     * @returns
      */
     getLoader(name: string): Laya.GLoader {
         return this.getElement(name);
@@ -179,7 +173,7 @@ export class UIElements {
     /**
      * 获取面板节点
      * @param name 节点名称
-     * @returns 
+     * @returns
      */
     getPanel(name: string): Laya.GPanel {
         let panel = this.getElement(name) as Laya.GPanel;
@@ -192,7 +186,7 @@ export class UIElements {
     /**
      * 获取进度条节点
      * @param name 节点名称
-     * @returns 
+     * @returns
      */
     getSlider(name: string): Laya.GSlider {
         return this.getElement(name);
@@ -201,7 +195,7 @@ export class UIElements {
     /**
      * 获取list对象
      * @param name 节点名称
-     * @returns 
+     * @returns
      */
     getList<R extends ListItemCtrl>(name: string): List<R> {
         let list = this.getElement(name) as Laya.GList;
@@ -214,7 +208,7 @@ export class UIElements {
     /**
      * 获取自定义按钮
      * @param name 节点名称
-     * @returns 
+     * @returns
      */
     getUIButton(name: string): UIButton {
         let btn = this.getElement(name) as Laya.GWidget;

@@ -1,0 +1,613 @@
+{
+  "_$ver": 1,
+  "_$id": "def2ff00cee2451d81b30042e1d80e71",
+  "_$type": "GWidget",
+  "name": "EnemyPickerView",
+  "width": 1280,
+  "height": 720,
+  "_$child": [
+    {
+      "_$id": "0953102d7846414589b24c6169a835d0",
+      "_$type": "GWidget",
+      "name": "adapter",
+      "width": 1280,
+      "height": 720,
+      "mouseThrough": true,
+      "_$child": [
+        {
+          "_$id": "2cdab000033046189a4e29ee75864f22",
+          "_$type": "GWidget",
+          "name": "btn_enemy0",
+          "width": 214,
+          "height": 72,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "843cbe14b6fb43bdb230c7f1b00762e1",
+              "_$type": "GTextField",
+              "name": "txt_btn_enemy0",
+              "text": "",
+              "width": 214,
+              "height": 72,
+              "font": "Microsoft YaHei",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            }
+          ],
+          "x": 180,
+          "y": 160
+        },
+        {
+          "_$id": "df9216baa91b43aa8d88c8b02e1a05cd",
+          "_$type": "GWidget",
+          "name": "btn_enemy1",
+          "width": 214,
+          "height": 72,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "a2240be7f9244b80b411d691e278cf8e",
+              "_$type": "GTextField",
+              "name": "txt_btn_enemy1",
+              "text": "",
+              "width": 214,
+              "height": 72,
+              "font": "Microsoft YaHei",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            }
+          ],
+          "x": 410,
+          "y": 160
+        },
+        {
+          "_$id": "b4cc0a764997422ea9eab09edb6a2eb3",
+          "_$type": "GWidget",
+          "name": "btn_enemy2",
+          "width": 214,
+          "height": 72,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "16e1135313b14191aa7a5b3bcff8296d",
+              "_$type": "GTextField",
+              "name": "txt_btn_enemy2",
+              "text": "",
+              "width": 214,
+              "height": 72,
+              "font": "Microsoft YaHei",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            }
+          ],
+          "x": 640,
+          "y": 160
+        },
+        {
+          "_$id": "980a5583ecd84f8896d82049c8b5e208",
+          "_$type": "GWidget",
+          "name": "btn_enemy3",
+          "width": 214,
+          "height": 72,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "b6b1a259865b4be2be0d97fbb7bf1d09",
+              "_$type": "GTextField",
+              "name": "txt_btn_enemy3",
+              "text": "",
+              "width": 214,
+              "height": 72,
+              "font": "Microsoft YaHei",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            }
+          ],
+          "x": 870,
+          "y": 160
+        },
+        {
+          "_$id": "c3ae04f755ec4a9596b3798ceb92d5ef",
+          "_$type": "GWidget",
+          "name": "btn_enemy4",
+          "width": 214,
+          "height": 72,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "b27cbdb31d274c548e58a82e4df96fd9",
+              "_$type": "GTextField",
+              "name": "txt_btn_enemy4",
+              "text": "",
+              "width": 214,
+              "height": 72,
+              "font": "Microsoft YaHei",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            }
+          ],
+          "x": 180,
+          "y": 250
+        },
+        {
+          "_$id": "3cc33dba1f1a43c495529997527bab3a",
+          "_$type": "GWidget",
+          "name": "btn_enemy5",
+          "width": 214,
+          "height": 72,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "9b27e26fe5c74628baf56ac5d896fd1b",
+              "_$type": "GTextField",
+              "name": "txt_btn_enemy5",
+              "text": "",
+              "width": 214,
+              "height": 72,
+              "font": "Microsoft YaHei",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            }
+          ],
+          "x": 410,
+          "y": 250
+        },
+        {
+          "_$id": "d9b650247efd4df1870b68499da9b734",
+          "_$type": "GWidget",
+          "name": "btn_enemy6",
+          "width": 214,
+          "height": 72,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "da3d45c0204e4be6ac409f8cef68db62",
+              "_$type": "GTextField",
+              "name": "txt_btn_enemy6",
+              "text": "",
+              "width": 214,
+              "height": 72,
+              "font": "Microsoft YaHei",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            }
+          ],
+          "x": 640,
+          "y": 250
+        },
+        {
+          "_$id": "cd8bcdf4d9bb4a30a039f05d9e199a0d",
+          "_$type": "GWidget",
+          "name": "btn_enemy7",
+          "width": 214,
+          "height": 72,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "76f6857b65d647888ffc546b6bdd4bcc",
+              "_$type": "GTextField",
+              "name": "txt_btn_enemy7",
+              "text": "",
+              "width": 214,
+              "height": 72,
+              "font": "Microsoft YaHei",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            }
+          ],
+          "x": 870,
+          "y": 250
+        },
+        {
+          "_$id": "23cd8229ba3f4b62a6a80f11f2525c50",
+          "_$type": "GWidget",
+          "name": "btn_enemy8",
+          "width": 214,
+          "height": 72,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "8ab64d91bc38490f925b3d18a3b414bb",
+              "_$type": "GTextField",
+              "name": "txt_btn_enemy8",
+              "text": "",
+              "width": 214,
+              "height": 72,
+              "font": "Microsoft YaHei",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            }
+          ],
+          "x": 180,
+          "y": 340
+        },
+        {
+          "_$id": "a9974253ee6948b6a7759c8d090f69af",
+          "_$type": "GWidget",
+          "name": "btn_enemy9",
+          "width": 214,
+          "height": 72,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "926d62648355488baa89da5336b26dbc",
+              "_$type": "GTextField",
+              "name": "txt_btn_enemy9",
+              "text": "",
+              "width": 214,
+              "height": 72,
+              "font": "Microsoft YaHei",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            }
+          ],
+          "x": 410,
+          "y": 340
+        },
+        {
+          "_$id": "6ab1c3e3a96a45de91c18481db309862",
+          "_$type": "GWidget",
+          "name": "btn_enemy10",
+          "width": 214,
+          "height": 72,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "39db57a77f7d4b9bb1286affc93fdfe3",
+              "_$type": "GTextField",
+              "name": "txt_btn_enemy10",
+              "text": "",
+              "width": 214,
+              "height": 72,
+              "font": "Microsoft YaHei",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            }
+          ],
+          "x": 640,
+          "y": 340
+        },
+        {
+          "_$id": "e68456b309ed4f8b85b7f0933422a812",
+          "_$type": "GWidget",
+          "name": "btn_enemy11",
+          "width": 214,
+          "height": 72,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "cb459f331e4341b588d2bbe951fdce11",
+              "_$type": "GTextField",
+              "name": "txt_btn_enemy11",
+              "text": "",
+              "width": 214,
+              "height": 72,
+              "font": "Microsoft YaHei",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            }
+          ],
+          "x": 870,
+          "y": 340
+        },
+        {
+          "_$id": "fa780ba8cca743b995af2bf5320c7044",
+          "_$type": "GWidget",
+          "name": "btn_enemy12",
+          "width": 214,
+          "height": 72,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "de0d340455604f0292b560b169c92a84",
+              "_$type": "GTextField",
+              "name": "txt_btn_enemy12",
+              "text": "",
+              "width": 214,
+              "height": 72,
+              "font": "Microsoft YaHei",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            }
+          ],
+          "x": 180,
+          "y": 430
+        },
+        {
+          "_$id": "fe33c95fb281452ca05d31045fe0be2e",
+          "_$type": "GWidget",
+          "name": "btn_enemy13",
+          "width": 214,
+          "height": 72,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "34a0bb3aca794bb1bf3a64237a0b13d4",
+              "_$type": "GTextField",
+              "name": "txt_btn_enemy13",
+              "text": "",
+              "width": 214,
+              "height": 72,
+              "font": "Microsoft YaHei",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            }
+          ],
+          "x": 410,
+          "y": 430
+        },
+        {
+          "_$id": "246688300bc1407287e2d07c63e1e807",
+          "_$type": "GWidget",
+          "name": "btn_enemy14",
+          "width": 214,
+          "height": 72,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "d6e41f10be654f5589bd2d99f12c99a5",
+              "_$type": "GTextField",
+              "name": "txt_btn_enemy14",
+              "text": "",
+              "width": 214,
+              "height": 72,
+              "font": "Microsoft YaHei",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            }
+          ],
+          "x": 640,
+          "y": 430
+        },
+        {
+          "_$id": "2a3c98a893dc477295c9a3f61160918d",
+          "_$type": "GWidget",
+          "name": "btn_enemy15",
+          "width": 214,
+          "height": 72,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "50cb2229b7d74da0a8b07156428884f1",
+              "_$type": "GTextField",
+              "name": "txt_btn_enemy15",
+              "text": "",
+              "width": 214,
+              "height": 72,
+              "font": "Microsoft YaHei",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            }
+          ],
+          "x": 870,
+          "y": 430
+        },
+        {
+          "_$id": "8c2dd8b8e3134a25ac13167c57793269",
+          "_$type": "GWidget",
+          "name": "btn_close",
+          "width": 150,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "58634c74ca8644db9940ecad1cb44888",
+              "_$type": "GTextField",
+              "name": "txt_btn_close",
+              "text": "关闭",
+              "width": 150,
+              "height": 40,
+              "font": "Microsoft YaHei",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            }
+          ],
+          "x": 1000,
+          "y": 64
+        }
+      ]
+    }
+  ],
+  "_$comp": [
+    {
+      "_$type": "3593fc26-337e-42e3-92dc-1b9c2bb8f988",
+      "scriptPath": "../src/script/games/ui/components/ElementMapper.ts",
+      "mapperType": 4,
+      "elements": [
+        {
+          "_$ref": "0953102d7846414589b24c6169a835d0"
+        },
+        {
+          "_$ref": "2cdab000033046189a4e29ee75864f22"
+        },
+        {
+          "_$ref": "843cbe14b6fb43bdb230c7f1b00762e1"
+        },
+        {
+          "_$ref": "df9216baa91b43aa8d88c8b02e1a05cd"
+        },
+        {
+          "_$ref": "a2240be7f9244b80b411d691e278cf8e"
+        },
+        {
+          "_$ref": "b4cc0a764997422ea9eab09edb6a2eb3"
+        },
+        {
+          "_$ref": "16e1135313b14191aa7a5b3bcff8296d"
+        },
+        {
+          "_$ref": "980a5583ecd84f8896d82049c8b5e208"
+        },
+        {
+          "_$ref": "b6b1a259865b4be2be0d97fbb7bf1d09"
+        },
+        {
+          "_$ref": "c3ae04f755ec4a9596b3798ceb92d5ef"
+        },
+        {
+          "_$ref": "b27cbdb31d274c548e58a82e4df96fd9"
+        },
+        {
+          "_$ref": "3cc33dba1f1a43c495529997527bab3a"
+        },
+        {
+          "_$ref": "9b27e26fe5c74628baf56ac5d896fd1b"
+        },
+        {
+          "_$ref": "d9b650247efd4df1870b68499da9b734"
+        },
+        {
+          "_$ref": "da3d45c0204e4be6ac409f8cef68db62"
+        },
+        {
+          "_$ref": "cd8bcdf4d9bb4a30a039f05d9e199a0d"
+        },
+        {
+          "_$ref": "76f6857b65d647888ffc546b6bdd4bcc"
+        },
+        {
+          "_$ref": "23cd8229ba3f4b62a6a80f11f2525c50"
+        },
+        {
+          "_$ref": "8ab64d91bc38490f925b3d18a3b414bb"
+        },
+        {
+          "_$ref": "a9974253ee6948b6a7759c8d090f69af"
+        },
+        {
+          "_$ref": "926d62648355488baa89da5336b26dbc"
+        },
+        {
+          "_$ref": "6ab1c3e3a96a45de91c18481db309862"
+        },
+        {
+          "_$ref": "39db57a77f7d4b9bb1286affc93fdfe3"
+        },
+        {
+          "_$ref": "e68456b309ed4f8b85b7f0933422a812"
+        },
+        {
+          "_$ref": "cb459f331e4341b588d2bbe951fdce11"
+        },
+        {
+          "_$ref": "fa780ba8cca743b995af2bf5320c7044"
+        },
+        {
+          "_$ref": "de0d340455604f0292b560b169c92a84"
+        },
+        {
+          "_$ref": "fe33c95fb281452ca05d31045fe0be2e"
+        },
+        {
+          "_$ref": "34a0bb3aca794bb1bf3a64237a0b13d4"
+        },
+        {
+          "_$ref": "246688300bc1407287e2d07c63e1e807"
+        },
+        {
+          "_$ref": "d6e41f10be654f5589bd2d99f12c99a5"
+        },
+        {
+          "_$ref": "2a3c98a893dc477295c9a3f61160918d"
+        },
+        {
+          "_$ref": "50cb2229b7d74da0a8b07156428884f1"
+        },
+        {
+          "_$ref": "8c2dd8b8e3134a25ac13167c57793269"
+        },
+        {
+          "_$ref": "58634c74ca8644db9940ecad1cb44888"
+        }
+      ],
+      "adapter": {
+        "_$ref": "0953102d7846414589b24c6169a835d0"
+      }
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+import type { Tables } from "../../../config/schema";
 import type { RogueEnemyId, RogueEnemyIntent, RogueFoeState, RogueMove, RogueSetup, RogueState } from "../types/QingmingTypes";
 import { QingmingConfig as C } from "./QingmingConfig";
 
@@ -5,29 +6,19 @@ interface EnemyDefinition {
     name: string; tier: "普通" | "精英" | "首领"; hint: string; opening?: number;
 }
 export class GuzongEnemyRules {
-    static readonly enemies: Record<RogueEnemyId, EnemyDefinition> = {
-        patrol: { name: "巡山剑傀", tier: "普通", hint: "轻击架盾 / 第三击重斩交替" },
-        stone: { name: "石甲卫", tier: "普通", opening: 100, hint: "实际破盾后，本轮第一拳减半" },
-        thunder: { name: "蓄雷道尸", tier: "普通", hint: "蓄雷后下一轮第三击240%；压制不能打断蓄雷" },
-        apothecary: { name: "丹房药傀", tier: "普通", hint: "每战最多成功治疗2次，每次最大生命6%" },
-        bloodBlade: { name: "赤纹刀俑", tier: "普通", hint: "血炼后强攻；下一玩家回合受伤+20%" },
-        echo: { name: "回声符卫", tier: "普通", hint: "同回合复读主动，第三击80%→140%；派生不计" },
-        shade: { name: "逐隙影侍", tier: "普通", hint: "第一击前玩家无盾，突袭80%→140%" },
-        gatekeeper: { name: "镇门甲将", tier: "精英", opening: 250, hint: "偶数轮第一击200%；未实际破盾则280%" },
-        alchemist: { name: "血炉丹师", tier: "精英", hint: "有效治疗≥4%最大生命则升温；炉爆180%至260%" },
-        swordsman: { name: "负剑执事", tier: "精英", hint: "识破上一轮最后主动，本体-30%；另一主动解除" },
-        breaker: { name: "碎碑力士", tier: "精英", hint: "重锤后额外削剩余盾；重锤在第1/3行动交替" },
-        arrayMaster: { name: "伏剑阵使", tier: "精英", hint: "布剑后下一玩家回合3次本体命中，判剑260%→100%" },
-        tortoise: { name: "守山玄武傀", tier: "首领", opening: 400, hint: "铸甲→破城→开炉；破盾减轻破城，开炉受伤+20%" },
-        swordmaster: { name: "残阳剑尊", tier: "首领", hint: "试剑→追剑→归鞘；公开读招，半血后重斩移至第1击" },
-        swordSpirit: { name: "镇宗剑灵", tier: "首领", hint: "布阵→剑雨→收阵；3次本体命中使天剑300%→220%" },
-    };
+    static enemies: Record<RogueEnemyId, EnemyDefinition> = {} as Record<RogueEnemyId, EnemyDefinition>;
+    static load(tables: Tables): void {
+        this.enemies = {} as Record<RogueEnemyId, EnemyDefinition>;
+        for (const row of tables.enemy.getDataList()) this.enemies[row.id] = {
+            name: row.name, tier: row.tier as EnemyDefinition["tier"], hint: row.hint, opening: row.opening,
+        };
+        if (Object.keys(this.enemies).length !== 15) throw new Error("古宗十五敌人配置不完整");
+    }
     static fresh(id: RogueEnemyId | null): RogueFoeState {
         return { id, phase2: false, broken: false, vulnerable: false, acting: false, casts: [], lastCast: null, read: null,
             hits: 0, heals: 2, heat: 0, formation: false };
     }
     static lineup(d: RogueSetup): RogueEnemyId[] {
-        if (d.style !== "guzong") return [];
         if (d.enemyId) return [d.enemyId];
         let rng = d.seed;
         const pick = (rows: RogueEnemyId[]) => { rng = rng * 48271 % 2147483647; return rows[rng % rows.length]; };
@@ -131,7 +122,7 @@ export class GuzongEnemyRules {
             return action.kind === "attack" ? attack(100, "普攻") : { kind: "wait", percent: 0, label: "法力不足", mpCost: 0 };
         });
     }
-    static title(s: RogueState): string { return s.foe.id ? this.enemies[s.foe.id].name : C.styles[s.enemy.style]; }
+    static title(s: RogueState): string { return this.enemies[s.foe.id].name; }
     static summary(s: RogueState): string {
         const f = s.foe;
         if (!f.id) return "";

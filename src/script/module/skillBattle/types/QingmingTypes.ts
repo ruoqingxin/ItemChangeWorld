@@ -1,4 +1,3 @@
-export type EnemyStyle = "dummy" | "assault" | "defensive" | "burst";
 export type RunPhase = "fighting" | "reward" | "between" | "complete" | "defeat" | "retreated";
 export interface TestAttributes { hp: number; mp: number; attack: number; defense: number; }
 export interface EnemyIntent {
@@ -17,7 +16,7 @@ export type RoguePressure = "relaxed" | "standard" | "hard";
 export type RogueOfferRole = "extend" | "explore" | "random" | "core";
 export type RogueEnemyId = "patrol" | "stone" | "thunder" | "apothecary" | "bloodBlade" | "echo" | "shade" |
     "gatekeeper" | "alchemist" | "swordsman" | "breaker" | "arrayMaster" | "tortoise" | "swordmaster" | "swordSpirit";
-export type RogueEnemyStyle = EnemyStyle | "guzong";
+export type RogueEnemyStyle = "guzong";
 export interface RogueEnemyIntent extends Omit<EnemyIntent, "kind"> {
     kind: EnemyIntent["kind"] | "blood" | "expose" | "formation";
     condition?: "broken" | "unbroken" | "echo" | "unguarded" | "formation" | "heat";
@@ -30,7 +29,7 @@ export interface RogueFoeState {
 }
 export interface RogueSetup {
     player: TestAttributes; enemy: TestAttributes; seed: number; battles: number;
-    style: RogueEnemyStyle | "mixed"; pressure: RoguePressure; healPotions: number; manaPotions: number;
+    style: RogueEnemyStyle; pressure: RoguePressure; healPotions: number; manaPotions: number;
     enemyId?: RogueEnemyId | null;
 }
 export interface RogueLoadout {

@@ -1,8 +1,8 @@
-import type { EnemyStyle, RogueAction, RogueCounters, RogueEnemyIntent, RogueEnemyStyle, RogueItem, RogueLoadout, RogueMove, RogueResult, RogueSetup, RogueState } from "../types/QingmingTypes";
+import type { RogueAction, RogueCounters, RogueEnemyIntent, RogueItem, RogueLoadout, RogueMove, RogueResult, RogueSetup, RogueState } from "../types/QingmingTypes";
 import { QingmingConfig as C } from "./QingmingConfig";
 import { GuzongEnemyRules as E } from "./GuzongEnemyRules";
 
-/** Shared deterministic resolver for formal combat and the isolated test page. */
+
 export class QingmingRules {
     static clone<T>(value: T): T { return JSON.parse(JSON.stringify(value)); }
     static has(s: RogueLoadout, item: RogueItem): boolean {
@@ -42,7 +42,7 @@ export class QingmingRules {
         const s: RogueState = {
             setup: this.clone(d), revision: 0, phase: "fighting", battle: 0, round: 1, ap: 3,
             player: { ...d.player, maxHp: d.player.hp, maxMp: d.player.mp, shield: 0 },
-            enemy: { ...d.enemy, maxHp: d.enemy.hp, maxMp: d.enemy.mp, shield: 0, charged: false, style: "dummy", tier: "普通" },
+            enemy: { ...d.enemy, maxHp: d.enemy.hp, maxMp: d.enemy.mp, shield: 0, charged: false, style: "guzong", tier: "普通" },
             enemyPlan: E.lineup(d), foe: E.fresh(null),
             acquired: [], passives: [], mutations: {}, core: null, offers: [], offerRoles: {}, rng: d.seed, rewards: [],
             flying: 0, wounds: 0, firstActive: false, fallUsed: false, wave: false, counterAttacks: 0, lostAP: 0,
@@ -73,15 +73,13 @@ export class QingmingRules {
         this.resetTurn(s); s.fight = this.counters(); s.fightStart = { hp: s.player.hp, mp: s.player.mp };
         const enemyId = s.enemyPlan[s.battle - 1] || null;
         s.foe = E.fresh(enemyId);
-        const tier = enemyId ? E.enemies[enemyId].tier :
-            s.setup.battles > 1 && s.battle === s.setup.battles ? "首领" : s.battle % 3 === 0 ? "精英" : "普通";
+        const tier = E.enemies[enemyId].tier;
         const base = s.setup.enemy, stage = Math.min(3, Math.floor((s.battle - 1) / 3));
         const pressure = C.pressures[s.setup.pressure];
         const hp = Math.max(1, Math.round(base.hp * (tier === "首领" ? 3 : tier === "精英" ? 1.6 : 1) *
-            (enemyId ? C.guzongTempo.hp[tier] : 1) *
+            C.guzongTempo.hp[tier] *
             (1 + stage * pressure.hp)));
-        const style: RogueEnemyStyle = s.setup.style === "mixed" ?
-            (["assault", "defensive", "burst"] as EnemyStyle[])[(s.battle - 1) % 3] : s.setup.style;
+        const style = "guzong" as const;
         s.enemy = { ...base, hp, maxHp: hp, maxMp: base.mp, shield: 0, charged: false, style, tier,
             attack: Math.round(base.attack * (tier === "首领" ? 1.5 : tier === "精英" ? 1.2 : 1) *
                 (1 + stage * pressure.attack)) };
@@ -151,7 +149,7 @@ export class QingmingRules {
         const anchored = cores.filter(k => (C.coreAnchors[k] || []).some(anchor => this.has(s, anchor)));
         if (milestone && cores.length) add(weighted(anchored.length ? anchored : cores), "core");
         else add(weighted(pool.filter(k => this.related(s, k).length > 0)), "extend");
-        // One extension does not remove the chance to change direction or discover a bridge.
+
         const ordinary = pool.filter(k => !selected.includes(k) && C.items[k].type !== "core");
         const unrelated = ordinary.filter(k => this.related(s, k).length === 0);
         const different = unrelated.find(k => !selected.some(old => C.items[old].family === C.items[k].family));
@@ -235,24 +233,7 @@ export class QingmingRules {
         const n = Math.max(0, Math.min(Math.round(amount * (this.risky(s) ? 0.75 : 1)), s.setup.player.defense * 6 - s.player.shield));
         s.player.shield += n; this.count(s, "shield", n); this.log(s, `护盾+${n}`);
     }
-    private static intents(s: RogueState): RogueEnemyIntent[] {
-        if (s.foe.id) return E.intents(s);
-        const attack = (percent: number, label = "攻击"): RogueEnemyIntent => ({ kind: "attack", percent, label, mpCost: percent > 100 ? 4 : 0 });
-        const guard = (percent: number): RogueEnemyIntent => ({ kind: "guard", percent, label: "架盾", mpCost: 3 });
-        const odd = s.round % 2 === 1;
-        let rows: RogueEnemyIntent[];
-        if (s.enemy.style === "dummy") rows = [1, 2, 3].map(() => ({ kind: "wait", percent: 0, label: "待机", mpCost: 0 }));
-        else if (s.enemy.style === "assault") rows = odd ? [attack(80), attack(80), attack(140, "重斩")] : [guard(100), attack(60), attack(220, "破阵")];
-        else if (s.enemy.style === "defensive") rows = odd ? [guard(200), attack(90), { kind: "heal", percent: 60, label: "调息", mpCost: 5 }] :
-            [attack(180, "突刺"), attack(60), guard(150)];
-        else rows = odd ? [{ kind: "charge", percent: 0, label: "蓄力", mpCost: 4 }, guard(150), attack(50)] :
-            [attack(100), attack(120), attack(s.enemy.charged ? 330 : 220, "重击")];
-        let mp = s.enemy.mp;
-        return rows.map(i => {
-            if (mp >= (i.mpCost || 0)) { mp -= i.mpCost || 0; return i; }
-            return i.kind === "attack" ? attack(100, "普攻") : { kind: "wait", percent: 0, label: "法力不足", mpCost: 0 };
-        });
-    }
+    private static intents(s: RogueState): RogueEnemyIntent[] { return E.intents(s); }
     private static enemyTurn(s: RogueState): void {
         if (!this.has(s, "swordUnity")) this.flyingAttack(s, s.flying);
         if (s.phase !== "fighting") return;
@@ -484,7 +465,7 @@ export class QingmingRules {
         int(s.foe.hits, 0, 3); int(s.foe.heals, 0, 2); int(s.foe.heat, 0, 2);
         if (s.foe.casts.length > 3 || s.foe.casts.some(k => !["edge", "wind", "guide", "fall"].includes(k)))
             throw new Error("敌读招记录异常");
-        if (s.enemyPlan.length !== (s.setup.style === "guzong" ? s.setup.battles : 0) ||
+        if (s.enemyPlan.length !== s.setup.battles ||
             s.enemyPlan.some(k => !Object.prototype.hasOwnProperty.call(E.enemies, k))) throw new Error("敌阵异常");
         if (s.forms.length > 2 || new Set(s.forms).size !== s.forms.length ||
             s.forms.some(k => !["edge", "wind", "guide", "fall"].includes(k))) throw new Error("招式记录异常");

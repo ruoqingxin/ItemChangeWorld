@@ -236,7 +236,7 @@ export abstract class UIBaseView {
 
     /**
      * 设置界面id
-     * @param id 唯一id 
+     * @param id 唯一id
      */
     setViewId(id: number) {
         this._id = id;
@@ -295,7 +295,7 @@ export abstract class UIBaseView {
         if (this._asyncOpen) {
             this._asyncOpen = false;
             if (this._parentView == null) {
-                UIManager.ins()._onFormAsyncLoad(this);
+                UIManager.ins()._onFormAsyncLoad();
             }
         }
         try {
@@ -440,7 +440,7 @@ export abstract class UIBaseView {
 
         if (this._asyncOpen) {
             if (this._parentView == null) {
-                UIManager.ins()._onFormAsyncLoad(this);
+                UIManager.ins()._onFormAsyncLoad();
             }
             this._asyncOpen = false;
         }
@@ -482,7 +482,7 @@ export abstract class UIBaseView {
             this._closeAnimationCallback = null;
             try {
                 if (null != this._view) {
-                    // onClose may close an owned popup and reenter fullscreen visibility updates.
+
                     this._manualActive = false;
                     this._view.active = false;
                     this._view.visible = false;
@@ -597,7 +597,7 @@ export abstract class UIBaseView {
     }
     /**
      * 清除计时器
-     * @param callback 回调函数 
+     * @param callback 回调函数
      */
     public removeTimer(callback: () => void) {
         Laya.timer.clear(this, callback);
@@ -636,7 +636,7 @@ export abstract class UIBaseView {
     }
 
     /**
-     * 内部使用 
+     * 内部使用
      */
     _internal_checkRedDot() {
         this.onRedDotChange();
@@ -890,11 +890,9 @@ export abstract class UIBaseView {
 
     }
 
-
-
     /**
      * 设置界面层级
-     * @param order 
+     * @param order
      */
     public setSortingOrder(order: number) {
         this._sortingOrder = order;

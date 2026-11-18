@@ -4,7 +4,7 @@ import { UILayer } from "../../../games/ui/UILayer";
 import { BattlePanel } from "./BattlePanel";
 import { openSkillBattleScreen } from "../../gameplay/utils/GameplayNavigation";
 
-/** Battle-only UI entry. Start and settlement are separate UIBaseViews. */
+
 export class SkillBattleBattleView extends UIBaseView {
     get layer(): UILayer { return UILayer.Second; }
     get path(): string { return "ui/prefab/module/skillBattle/SkillBattleBattleView.lh"; }

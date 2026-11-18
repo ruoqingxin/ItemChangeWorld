@@ -11,23 +11,12 @@ import DeviceUtils from "./utils/DeviceUtils";
 
 export class GameStart {
     constructor() {
-        // Expand the stage without stretching the authored landscape content.
+
         Laya.stage.screenMode = Laya.Stage.SCREEN_HORIZONTAL;
         Laya.stage.scaleMode = Laya.Stage.SCALE_FIXED_AUTO;
         Laya.stage.alignH = Laya.Stage.ALIGN_CENTER;
         Laya.stage.alignV = Laya.Stage.ALIGN_MIDDLE;
         Laya.stage.size(Laya.stage.designWidth, Laya.stage.designHeight);
-
-        // if (Laya.LayaEnv.isEditor && DeviceUtils.ins().isDevelop()) {
-        //     Laya.loader.load("logincfg.json", Laya.Handler.create(this, (res: Laya.TextResource) => {
-        //         if (!res) {
-        //             return;
-        //         }
-        //         const cfg = res.data;
-        //         Laya.LocalStorage.setItem("ws", cfg.server);
-        //         Laya.LocalStorage.setItem("name", cfg.account);
-        //     }))
-        // }
 
         // 关闭物理更新
         Laya.Stat.enablePhysicsUpdate = false;
@@ -37,23 +26,20 @@ export class GameStart {
         ElementMapper.TOP_PADDING = 55;
 
         // 移除console日志
-        //ConsoleLogger.instance.initialize(DeviceUtils.ins().isDevelop(), false);
+
 
         console.log("Laya.LayaEnv.isEditor:" + Laya.LayaEnv.isEditor);
         console.log("DeviceUtils.ins().isDevelop():" + DeviceUtils.ins().isDevelop());
 
         this.hideSplashScreen();
 
-        //installCpuParticle3DHook();
-
-        //Hook.init();
         this.analyseUrl();
 
         Laya.alertGlobalError(DeviceUtils.ins().isDevelop());
         Laya.Shader3D.debugMode = DeviceUtils.ins().isDevelop();
 
         Laya.loader.maxLoader = 25;
-        //Laya.Resource.DEBUG = DeviceUtils.ins().isDevelop();
+
         if (!DeviceUtils.ins().isDevelop() && window["conchConfig"]) {
             //值为0：表示关闭所有日志输出
             //值为1：表示只有Fatal日志输出
@@ -61,8 +47,6 @@ export class GameStart {
             //值为n：表示只有LogLevel <= n的日志输出
             window["conchConfig"].setLogLevel(2);
         }
-
-        // GamePlatform.initialize();
 
         SoundManager.COMMON_CLICK_SOUND = SoundDef.SYS_BTNCLICK;
         SoundManager.COMMON_CLOSE_SOUND = SoundDef.CLOSE;
@@ -85,8 +69,6 @@ export class GameStart {
             });
         }
     }
-
-
 
     /**浏览器解析url */
     private analyseUrl() {

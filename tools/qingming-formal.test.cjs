@@ -1,9 +1,6 @@
 const assert=require("node:assert/strict"),fs=require("node:fs"),path=require("node:path");
 const root=path.resolve(__dirname,".."),build=path.resolve(process.argv[2]||path.join(root,"bin/gameplay-tests"));
-global.Laya={Resource:class{},Byte:class{constructor(b){this.bytes=Buffer.from(b);this.pos=0;}
-    readUTFBytes(n){const s=this.bytes.toString("utf8",this.pos,this.pos+n);this.pos+=n;return s;}}};
-const load=p=>require(path.join(build,"script",p));
-const {Tables}=load("config/schema.js"),ByteBuf=load("config/bright/serialization/ByteBuf.js").default;
+const {load,blocks,config:cfg}=require("./config-fixture.cjs");
 const {BattleRules:Core}=load("module/skillBattle/utils/BattleRules.js");
 const {QingmingRules:Q}=load("module/skillBattle/utils/QingmingRules.js");
 const {QingmingConfig:C}=load("module/skillBattle/utils/QingmingConfig.js");
@@ -15,11 +12,6 @@ const {ExpeditionRunConfigUtils:Config}=load("module/expedition/utils/Expedition
 const {ExpeditionRules:R}=load("module/expedition/utils/ExpeditionRules.js");
 const {ExpeditionRunManager:S}=load("module/expedition/manager/ExpeditionRunManager.js");
 const {SkillBattleManager:M}=load("module/skillBattle/manager/SkillBattleManager.js");
-function unpack(file){const b=fs.readFileSync(file),out={};let p=4;
-    for(let i=0;i<b.readInt32LE(0);i++){const n=b.readInt32LE(p);p+=4;const k=b.toString("utf8",p,p+n);p+=n;
-        const l=b.readInt32LE(p);p+=4;out[k]=b.subarray(p,p+l);p+=l;}assert.equal(p,b.length);return out;}
-const blocks=unpack(path.join(root,"assets/config/configbin.bin"));
-const cfg=Config.read(new Tables(n=>new ByteBuf(new Uint8Array(blocks[n])))),profile=BC.profile(cfg.build);
 let groups=0;
 const test=(name,fn)=>{fn();groups++;console.log("PASS Qingming formal "+name);};
 function makeLoadout(items=[]){const q=QB.empty(17);for(const k of items){
@@ -40,7 +32,7 @@ function act(record,move,extra={}){
 function fixture(seed=1,c=cfg){
     let now=1000,fail=false;const data=new Map([["other-app","keep"]]);
     const storage={getItem:k=>data.get(k)??null,setItem:(k,v)=>{if(fail)throw Error("disk");data.set(k,v);},removeItem:k=>data.delete(k)};
-    const s=new S(new M(),storage,()=>now,c,()=>0);s.prepare(c,BC.profile(c.build),seed);
+    const s=new S(new M(),storage,()=>now,c,()=>0);s.prepare(c,seed);
     return {s,data,storage,fail:v=>fail=v,clock:v=>now=v,restore:()=>new S(new M(),storage,()=>now,c,()=>0)};
 }
 function enterFight(f){
@@ -56,11 +48,12 @@ function enterFight(f){
 function confirm(f,action){const p=f.s.preview(action);assert.ok(p.ok,p.reason);
     const r=f.s.confirm(action,p.preview.token);assert.ok(r.ok,r.reason);return r;}
 test("generated config stores raw integer units and matches the source export",()=>{
-    assert.equal(Object.keys(blocks).length,44);
+    assert.equal(Object.keys(blocks).length,11);
     assert.equal(cfg.mapVersion,"qingming-20261117-integer-v1");
-    assert.ok(blocks.new_qingming_rule);
-    assert.deepEqual(fs.readFileSync(path.join(root,"assets/config/configbin.bin")),fs.readFileSync(path.join(root,"../config/configbin.bin")));
-    assert.deepEqual(fs.readFileSync(path.join(root,"src/script/config/schema.ts")),fs.readFileSync(path.join(root,"../config/output_client/code/schema.ts")));
+    assert.ok(blocks.battle_rule && blocks.skill && blocks.build && blocks.enemy);
+    const configRoot=process.env.CONFIG_ROOT||path.resolve(root,"../config");
+    assert.deepEqual(fs.readFileSync(path.join(root,"assets/config/configbin.bin")),fs.readFileSync(path.join(configRoot,"configbin.bin")));
+    assert.deepEqual(fs.readFileSync(path.join(root,"src/script/config/schema.ts")),fs.readFileSync(path.join(configRoot,"output_client/code/schema.ts")));
     assert.deepEqual(cfg.build.setup.player,{maxHp:1000,maxMp:120,baseAttack:96,baseDefense:38});
     assert.deepEqual(cfg.build.setup.potions.map(p=>p.amount),[300,36]);
 });
@@ -146,7 +139,7 @@ test("bad targets, old skills, prototype actions and full/absent potions reject 
 test("map roster is seeded independently, complete 7/5/3 coverage and reload preserves exact map",()=>{
     const found=new Set();
     for(let seed=1;seed<=128;seed++){
-        const s=R.apply(cfg,profile,R.start(cfg,profile,seed,"coverage"),{type:"enter"},1000,seed).state;
+        const s=R.apply(cfg,R.start(cfg,seed,"coverage"),{type:"enter"},1000,seed).state;
         for(const n of s.map.nodes.filter(n=>n.enemy)){
             found.add(n.qingmingEnemy);const e=E.enemies[n.qingmingEnemy];
             assert.equal(n.name,e.name);assert.equal(e.tier,n.kind==="normal"?"普通":n.kind==="elite"?"精英":"首领");
@@ -172,19 +165,19 @@ test("victory pays one persisted three-choice reward, preserves carried resource
 test("first nine battle rewards, every third choice core, node offers, and pool exhaustion do not grant old points",()=>{
     const c=structuredClone(cfg.build);c.setup.player.maxHp=1000000;c.setup.player.baseAttack=10000;
     c.encounters=Array.from({length:12},(_,i)=>({...c.encounters[0],id:"enc"+i}));
-    let s=B.start(c,profile,17,"rewards");
+    let s=B.start(c,17,"rewards");
     for(let n=1;n<=12;n++){
-        s=B.apply(c,profile,s,{type:"battle"},n).state;
-        while(s.phase==="battle")s=B.apply(c,profile,s,{type:"action",action:{type:"basic"}},n).state;
+        s=B.apply(c,s,{type:"battle"},n).state;
+        while(s.phase==="battle")s=B.apply(c,s,{type:"action",action:{type:"basic"}},n).state;
         if(n<=9){
             assert.equal(s.pending.kind,"qingming");
             if(n%3===0&&Object.keys(C.items).some(k=>C.items[k].type==="core"&&Q.eligible(s.qingming,k)))
                 assert.ok(s.qingming.offers.some(k=>C.items[k].type==="core"));
-            s=B.apply(c,profile,s,{type:"choose",source:s.pending.source,id:s.pending.candidates[0]},n).state;
+            s=B.apply(c,s,{type:"choose",source:s.pending.source,id:s.pending.candidates[0]},n).state;
         }else assert.equal(s.pending,null);
     }
-    s=B.offer(c,profile,s,"borrow:unique","active");assert.equal(s.pending.kind,"qingming");
-    assert.equal(s.daoyun,0);assert.equal(s.points,0);assert.equal(s.build.actives.length,0);
+    s=B.offer(c,s,"borrow:unique","active");assert.equal(s.pending.kind,"qingming");
+    assert.ok(!("daoyun" in s) && !("points" in s) && !("build" in s));
     const full=QB.start(17,"full");full.qingming.acquired=Object.keys(C.items);
     const exhausted=QB.offer(full,"insight:full");assert.equal(exhausted.pending,null);
     assert.throws(()=>QB.offer(exhausted,"insight:full"));
@@ -203,7 +196,7 @@ test("save failure, stale preview, concurrent tab and timeout preserve atomic in
     assert.equal(f.data.get("other-app"),"keep");assert.deepEqual(f.restore().archive,f.s.archive);
 });
 test("movement and search exhaustion deaths clear the current loadout and settle once",()=>{
-    const entered=R.apply(cfg,profile,R.start(cfg,profile,1,"exhaustion"),{type:"enter"},1000,1).state;
+    const entered=R.apply(cfg,R.start(cfg,1,"exhaustion"),{type:"enter"},1000,1).state;
     for(const type of ["travel","openSource"]){
         let s=structuredClone(entered);s.flow.qingming=makeLoadout(["swordcraft"]);
         let command;
@@ -213,14 +206,14 @@ test("movement and search exhaustion deaths clear the current loadout and settle
             const id=s.map.nodes.find(n=>n.kind==="search").id;
             const edge=s.map.edges.find(([a,b])=>a===id||b===id);
             s.node=edge.find(n=>n!==id);s.map.debugEnemyBlocking=false;
-            s=R.apply(cfg,profile,s,{type:"travel",node:id},1050,1).state;command={type};
+            s=R.apply(cfg,s,{type:"travel",node:id},1050,1).state;command={type};
         }
         s.stamina=0;s.hp=1;
-        const result=R.apply(cfg,profile,s,command,1100,1).state;
+        const result=R.apply(cfg,s,command,1100,1).state;
         assert.equal(result.phase,"ended");assert.equal(result.result,"defeat");
         assert.equal(result.flow.qingming,undefined);assert.equal(result.flow.pending,null);
-        assert.deepEqual(result.flow.build,{schools:[],actives:[],passiveIds:[]});
-        assert.throws(()=>R.apply(cfg,profile,result,command,1200,1));
+        assert.ok(!("build" in result.flow));
+        assert.throws(()=>R.apply(cfg,result,command,1200,1));
     }
 });
 test("changed config and fractional/tampered snapshots preserve raw archive and block restoration",()=>{

@@ -4,8 +4,8 @@
 export class StringUtils {
     /**
      * 判断字符串是否为空
-     * @param str 
-     * @returns 
+     * @param str
+     * @returns
      */
     static isNullOrEmpty(str: string) {
         if (!str) {
@@ -15,7 +15,7 @@ export class StringUtils {
     }
 
     static format(fmt: string, ...args): string {
-        return fmt.replace(/\{(\d+)\}/g, function (m, i) { return args[i]; });
+        return fmt.replace(/\{(\d+)\}/g, function (_match, i) { return args[i]; });
     }
 
     static padLeft(num, n) {

@@ -4,91 +4,44 @@ export interface QingmingBattleSetup {
     enemyId: RogueEnemyId; enemyMp: number; enemyAttack: number; enemyDefense: number; seed: number;
     loadout: RogueLoadout;
 }
-export type NewBattlePhase = "player_input" | "victory" | "defeat";
-export type NewSwordSkill = "dianxing" | "liejia" | "huilan" | "liuhen" | "ningfeng";
-export type NewSwordPassive = "chuzhao" | "xifeng" | "difeng" | "bengjia" | "lianmang" | "guanxi";
-export type NewSkillKind = NewSwordSkill | "feiyan" | "yanjia" | "hanyue" | "xiandi" | "fanzhen";
-export type NewPassiveKind = NewSwordPassive | "houlei" | "lifeng" | "yingxian" | "zhongyue" | "jieshan" |
-    "gumai" | "xianji" | "gushou" | "huming" | "yaoyin";
-export type NewBattleAction =
+export type BattleAction =
     | { type: "basic" | "guard" }
-    | { type: "skill"; skillId: number }
     | { type: "qingming"; move: RogueMove; enemyAction?: number }
     | { type: "potion"; itemUid: string };
-export interface NewBattleToken { battleId: string; revision: number; }
-export interface NewBattleItem { itemUid: string; itemId: number; }
-export interface NewBattleWeapon {
+export interface BattleToken { battleId: string; revision: number; }
+export interface BattleItem { itemUid: string; itemId: number; }
+export interface BattleWeapon {
     id: number; name: string; attack: number; defense: number; durability: number; maxDurability: number;
 }
-export interface NewBattleSkill {
-    id: number; name: string; kind: NewSkillKind; school: string; mpCost: number;
-    damagePercent: number; shieldPercent: number; shredPercent: number; markPercent: number;
-    conditionalPercent?: number; reductionPercent?: number; counterPercent?: number;
-}
-export interface NewBattlePassive { id: number; name: string; kind: NewPassiveKind; value: number; school?: string; }
-export interface NewBattleIntent { id: number; name: string; damage: number; block: number; charging: boolean; }
-export interface NewBattleSetup {
-    qingming?: QingmingBattleSetup;
-    rulesId: string;
-    earthRules?: { powerPercent: number; lowHpPercent: number };
+export interface BattleSetup {
+    qingming: QingmingBattleSetup; rulesId: string;
     player: { maxHp: number; maxMp: number; baseAttack: number; baseDefense: number };
-    weapon: NewBattleWeapon | null;
-    skills: NewBattleSkill[];
-    passives: NewBattlePassive[];
+    weapon: BattleWeapon | null;
     potions: Array<{ itemId: number; name: string; resource: "hp" | "mp"; amount: number }>;
-    build: { schools: string[]; actives: Array<{ skillId: number; level: number }>; passiveIds: number[] };
-    enemy: { id: number; name: string; maxHp: number; intents: NewBattleIntent[] };
+    enemy: { id: number; name: string; maxHp: number };
 }
-export interface NewBattleCarry {
-    hp: number; mp: number; weapon: NewBattleWeapon | null; pouch: Array<NewBattleItem | null>;
+export interface BattleCarry {
+    hp: number; mp: number; weapon: BattleWeapon | null; pouch: Array<BattleItem | null>;
 }
-export interface NewBattleState {
-    qingming?: RogueState;
-    version: 1;
-    battleId: string;
-    phase: NewBattlePhase;
-    revision: number;
-    round: number;
-    mainActions: number;
+export interface BattleState {
+    qingming: RogueState; version: 1; battleId: string;
+    phase: "player_input" | "victory" | "defeat"; revision: number; round: number; mainActions: number;
     player: { hp: number; maxHp: number; mp: number; maxMp: number; block: number };
-    enemy: { hp: number; maxHp: number; block: number; intentIndex: number };
-    weapon: NewBattleWeapon | null;
-    pouch: Array<NewBattleItem | null>;
-    potionUsed: boolean;
-    earth?: { power: boolean; gumai: boolean; potionSeen: boolean };
-    common?: { firstAttack: boolean; firstGuard: boolean; rescueUsed: boolean; potionSeen: boolean };
-    sword: {
-        momentum: number; keen: boolean; enhancement: number; firstBasicUsed: boolean; xifeng: boolean;
-        previousAttack: number | null; mark: { damage: number; ticks: number } | null;
-    };
+    enemy: { hp: number; maxHp: number; block: number };
+    weapon: BattleWeapon | null; pouch: Array<BattleItem | null>; potionUsed: boolean;
 }
-export type NewDamagePart = "body" | "keen" | "difeng" | "guanxi" | "mark" | "enemy" |
-    "xianji" | "lifeng" | "zhongyue" | "jieshan" | "counter";
-export type NewBattleEvent =
+export type BattleEvent =
     | { type: "action"; name: string }
-    | { type: "damage"; part: NewDamagePart; target: "player" | "enemy"; amount: number; absorbed: number; hpLoss: number }
-    | { type: "shield"; target: "player" | "enemy"; amount: number; source: string }
-    | { type: "shield_cleared"; target: "player" | "enemy"; amount: number }
+    | { type: "damage"; part: "body" | "enemy"; target: "player" | "enemy"; amount: number; absorbed: number; hpLoss: number }
     | { type: "resource"; resource: "hp" | "mp"; before: number; after: number }
     | { type: "potion"; itemUid: string; itemId: number; slot: number }
     | { type: "durability"; before: number; after: number }
-    | { type: "momentum"; before: number; after: number }
-    | { type: "keen"; active: boolean; amount: number }
-    | { type: "earth_power"; active: boolean }
-    | { type: "reduction"; amount: number }
-    | { type: "passive"; id: number; name: string }
-    | { type: "mark"; damage: number; ticks: number }
-    | { type: "intent"; id: number; name: string }
-    | { type: "round"; round: number }
     | { type: "ended"; result: "victory" | "defeat" };
-export interface NewBattlePreview {
-    token: NewBattleToken; name: string; mpCost: number; durabilityCost: number; shred: number;
-    body: number; keen: number; difeng: number; guanxi: number; mark: number; markTicks: number;
+export interface BattlePreview {
+    token: BattleToken; name: string; mpCost: number; durabilityCost: number; body: number;
     enemyHpLoss: number; playerHpLoss: number; shield: number; recovery: number;
     resource: "hp" | "mp" | null; potion: boolean;
-    momentumGain: number; keenEnhancement: number;
-    earthBonus?: number; commonBonus?: number; counter?: number; reduction?: number; powerUsed?: boolean;
 }
-export type NewBattleResult =
-    | { ok: true; state: NewBattleState; events: NewBattleEvent[]; preview: NewBattlePreview }
-    | { ok: false; state: NewBattleState; events: NewBattleEvent[]; preview: null; reason: string };
+export type BattleResult =
+    | { ok: true; state: BattleState; events: BattleEvent[]; preview: BattlePreview }
+    | { ok: false; state: BattleState; events: BattleEvent[]; preview: null; reason: string };

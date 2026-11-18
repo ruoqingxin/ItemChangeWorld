@@ -20,7 +20,7 @@
         {
           "_$id": "sbr037txt",
           "_$type": "GTextField",
-          "name": "warehouse0Text",
+          "name": "txt_warehouse0",
           "x": 0,
           "y": 4,
           "width": 300,
@@ -49,7 +49,7 @@
         {
           "_$id": "sbr039txt",
           "_$type": "GTextField",
-          "name": "warehouse1Text",
+          "name": "txt_warehouse1",
           "x": 0,
           "y": 4,
           "width": 300,
@@ -78,7 +78,7 @@
         {
           "_$id": "sbr041txt",
           "_$type": "GTextField",
-          "name": "warehouse2Text",
+          "name": "txt_warehouse2",
           "x": 0,
           "y": 4,
           "width": 300,
@@ -107,7 +107,7 @@
         {
           "_$id": "sbr043txt",
           "_$type": "GTextField",
-          "name": "warehouse3Text",
+          "name": "txt_warehouse3",
           "x": 0,
           "y": 4,
           "width": 300,
@@ -136,7 +136,7 @@
         {
           "_$id": "sbr045txt",
           "_$type": "GTextField",
-          "name": "warehouse4Text",
+          "name": "txt_warehouse4",
           "x": 0,
           "y": 4,
           "width": 300,
@@ -165,7 +165,7 @@
         {
           "_$id": "sbr047txt",
           "_$type": "GTextField",
-          "name": "warehouse5Text",
+          "name": "txt_warehouse5",
           "x": 0,
           "y": 4,
           "width": 300,

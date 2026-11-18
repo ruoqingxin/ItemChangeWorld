@@ -1,7 +1,7 @@
 import { UIUtils } from "src/script/games/utils/UIUtils";
 import { ElementAdapater } from "./ElementAdapater";
 
-const { regClass, classInfo, runInEditor, property } = Laya;
+const { regClass, classInfo, property } = Laya;
 export enum MapperTypeEnum {
     None,
     /**
@@ -221,7 +221,7 @@ export class ElementMapper extends Laya.Script {
         let designWidth = Laya.stage.designWidth;
         let designHeight = Laya.stage.designHeight;
         let padding = 0;
-        // Landscape pages use their authored relations without portrait top padding.
+
         if (designWidth <= designHeight && this.owner.width / this.owner.height <= designWidth / designHeight) {
             padding = Math.max(0, Math.min(ElementMapper.TOP_PADDING, this.owner.height - designHeight));
         }

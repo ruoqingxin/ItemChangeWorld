@@ -1,58 +1,44 @@
 import type { Tables } from "../../../config/schema";
-import { BattleConfigUtils } from "../../skillBattle/utils/BattleConfigUtils";
-import { BattleRules } from "../../skillBattle/utils/BattleRules";
-import type { NewSkillKind, NewPassiveKind } from "../../skillBattle/types/BattleTypes";
-import type { NewBuildConfig, NewBuildProfile } from "../types/BuildTypes";
+import type { BuildConfig } from "../types/BuildTypes";
+import type { RogueEnemyId } from "../../skillBattle/types/QingmingTypes";
+import { QingmingBuildRules } from "./QingmingBuildRules";
+import { QingmingConfig } from "../../skillBattle/utils/QingmingConfig";
+import { GuzongEnemyRules } from "../../skillBattle/utils/GuzongEnemyRules";
 
 export class BuildConfigUtils {
-    static read(tables: Tables): NewBuildConfig {
-        const setup = BattleConfigUtils.read(tables, BattleConfigUtils.defaults());
-        const rule = tables.new_build_rule.get(1);
-        if (!rule) throw new Error("双道构筑规则表缺失");
-        setup.rulesId = "stage2-approved-2026-11-09";
-        setup.earthRules = { powerPercent: rule.power_percent, lowHpPercent: rule.low_hp_percent };
-        setup.skills.push(...tables.new_earth_skill.getDataList().map(row => ({
-            id: row.id, name: row.name, kind: row.kind as NewSkillKind, school: "earth",
-            mpCost: row.mp_cost * 100, damagePercent: row.damage_percent, shieldPercent: row.shield_percent,
-            shredPercent: 0, markPercent: 0, conditionalPercent: row.conditional_percent,
-            reductionPercent: row.reduction_percent, counterPercent: row.counter_percent,
-        })));
-        setup.passives.forEach(row => row.school = "sword");
-        setup.passives.push(...tables.new_build_passive.getDataList().map(row => ({
-            id: row.id, name: row.name, kind: row.kind as NewPassiveKind, school: row.school, value: row.value,
-        })));
-        setup.build = { schools: ["sword", "earth"], actives: [], passiveIds: [] };
-        const qualification = (id: number, school: string, enabled: number) =>
-            ({ id, school, defaultEligible: enabled === 1, realm: 1 });
-        const enemies = tables.new_battle_enemy.getDataList();
-        if (enemies.length < 3) throw new Error("阶段2战斗夹具缺失");
-        const plan = [0, 1, 0, 2, 0, 1];
-        const config: NewBuildConfig = {
-            setup,
-            skills: [
-                ...tables.new_sword_skill.getDataList().map(r => qualification(r.id, "sword", r.default_eligible)),
-                ...tables.new_earth_skill.getDataList().map(r => qualification(r.id, "earth", r.default_eligible)),
-            ],
-            passives: [
-                ...tables.new_sword_passive.getDataList().map(r => qualification(r.id, "sword", r.default_eligible)),
-                ...tables.new_build_passive.getDataList().map(r => qualification(r.id, r.school, r.default_eligible)),
-            ],
-            rules: { commonMixPercent: rule.common_mix_percent, firstCost: rule.first_cost,
-                laterCost: rule.later_cost, normalDaoyun: rule.normal_daoyun,
-                eliteDaoyun: rule.elite_daoyun, forgoPoints: rule.forgo_points },
-            // This finite sequence is an explicit workflow fixture, not the R07 first map.
-            encounters: plan.map((index, i) => ({
-                id: `stage2-fixture-${i + 1}`,
-                enemy: BattleConfigUtils.read(tables, { ...BattleConfigUtils.defaults(), enemyId: enemies[index].id }).enemy,
-                elite: index === 2, borrow: [0, 2, 4].includes(i),
-            })),
+    static read(tables: Tables): BuildConfig {
+        QingmingConfig.load(tables);
+        GuzongEnemyRules.load(tables);
+        const value = (id: string): number => {
+            const row = tables.battle_rule.get(id);
+            if (!row || !Number.isSafeInteger(row.value) || row.value < 0) throw new Error(`整数战斗规则缺失：${id}`);
+            return row.value;
         };
-        BattleRules.validateSetup(setup);
-        return config;
+        const rule = tables.map_rule.get(1);
+        const first = tables.enemy.getDataList()[0];
+        if (!rule || !first || value("version") !== 1) throw new Error("战斗或地图规则缺失");
+        return {
+            qingming: {version: rule.map_version, battleRewards: value("battle_rewards"),
+                enemy: {hp: value("enemy_hp"), mp: value("enemy_mp"), attack: value("enemy_attack"), defense: value("enemy_defense")}},
+            setup: {
+                rulesId: rule.map_version,
+                player: {maxHp: value("player_hp"), maxMp: value("player_mp"),
+                    baseAttack: value("base_attack"), baseDefense: value("base_defense")},
+                weapon: {id: rule.weapon_id, name: tables.item.get(rule.weapon_id).name,
+                    attack: value("weapon_attack"), defense: value("weapon_defense"), durability: 60, maxDurability: 60},
+                potions: tables.potion.getDataList().map(p => ({itemId: p.id, name: p.name,
+                    resource: p.resource as "hp" | "mp", amount: p.amount})),
+                qingming: {enemyId: first.id as RogueEnemyId, enemyMp: value("enemy_mp"),
+                    enemyAttack: value("enemy_attack"), enemyDefense: value("enemy_defense"),
+                    seed: 17, loadout: QingmingBuildRules.empty(17)},
+                enemy: {id: 1, name: first.name, maxHp: value("enemy_hp")},
+            },
+            encounters: tables.map_node.getDataList().filter(n => n.enemy).map((n, i) => {
+                const enemyId: RogueEnemyId = n.kind === "boss" ? "tortoise" : n.kind === "elite" ? "gatekeeper" : "patrol";
+                return {id: `battle:${n.key}`, qingmingEnemy: enemyId,
+                    enemy: {id: i + 1, name: GuzongEnemyRules.enemies[enemyId].name, maxHp: value("enemy_hp")}};
+            }),
+        };
     }
 
-    static profile(config: NewBuildConfig, fixture = false): NewBuildProfile {
-        return { realm: 1, fixture, learnedSkills: fixture ? config.skills.filter(r => !r.defaultEligible).map(r => r.id) : [],
-            learnedPassives: fixture ? config.passives.filter(r => !r.defaultEligible).map(r => r.id) : [] };
-    }
 }

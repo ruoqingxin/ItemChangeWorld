@@ -35,7 +35,7 @@ export class UIMaterialColorUtils {
      * 会自动修改子节点
      * @param node 节点
      * @param color 颜色
-     * @returns 
+     * @returns
      */
     public static setNodeFilterColor(node: Laya.GWidget, color: string) {
         if (!color) {
@@ -83,7 +83,7 @@ export class UIMaterialColorUtils {
      * 会自动修改子节点
      * @param node 节点
      * @param gray 是否灰色
-     * @returns 
+     * @returns
      */
     public static setNodeFilterGray(node: Laya.GWidget, gray: boolean) {
         if (!gray) {

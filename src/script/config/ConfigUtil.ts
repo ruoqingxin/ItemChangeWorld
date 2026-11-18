@@ -8,7 +8,6 @@ export class ConfigUtil {
 
 }
 export class ConfigLoader {
-    private static dataMap = new Map<string, Uint8Array>();
     public static jsonFileNames: string[] = [];
     private static _configPath: string = "config/configbin.bin";
     private static configPackRes: PackRes = null;
@@ -17,7 +16,6 @@ export class ConfigLoader {
     }
 
     public static loadAllConfig(callback: Laya.Handler) {
-        var t = Date.now();
         this.loadConfigName();
         Laya.loader.load(this._configPath, Laya.Handler.create(this, (res) => {
             if (!res) {

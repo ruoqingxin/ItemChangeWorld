@@ -1,4 +1,4 @@
-const { regClass, property } = Laya;
+const { regClass } = Laya;
 
 @regClass()
 export class UIClickListener extends Laya.Script {

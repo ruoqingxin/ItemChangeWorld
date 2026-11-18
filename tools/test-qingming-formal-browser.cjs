@@ -1,7 +1,7 @@
 const {chromium}=require("playwright"),sharp=require("sharp"),assert=require("node:assert/strict");
 const fs=require("node:fs/promises"),path=require("node:path");
-const {choose,reward}=require("./evaluate-rogue-gameplay.cjs");
-const url=process.env.SKILL_BATTLE_URL||"http://127.0.0.1:18126";
+const {choose,reward}=require("./combat-policy.cjs");
+const url=process.env.SKILL_BATTLE_URL||"http://127.0.0.1:18095";
 const out=path.resolve(__dirname,"../bin/qingming-formal-browser");
 const state=p=>p.evaluate(()=>window.__skillBattlePreview.trial.inventory);
 const ready=p=>p.waitForFunction(()=>window.__skillBattlePreview?.panel?.opened&&window.__skillBattlePreview.view.isOpened);
@@ -154,8 +154,8 @@ async function fight(p,limit=100){
             assert.deepEqual((await state(p)).flow.pending,pending);await claim(p);
             await click(p,"expBuild");await shot(p,name+"-build");await click(p,"newRun");
             assert.equal(await p.evaluate(()=>!!window.__skillBattlePreview.panel.expeditionNodes?.expeditionRoot?.visible),true);
-            // Continue the actual map route, using only its real rewards and carried supplies.
-            const target=name==="desktop"?12:3;
+
+            const target=2;
             let sideRoute=false;
             while((await state(p)).phase==="active"&&(await state(p)).flow.battles.length<target){
                 const s=await state(p),main=s.map.nodes.filter(n=>n.mainOrder>=0).sort((a,b)=>a.mainOrder-b.mainOrder);

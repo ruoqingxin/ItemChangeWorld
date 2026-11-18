@@ -9,20 +9,11 @@ import { openSkillBattleScreen } from "../module/gameplay/utils/GameplayNavigati
 
 
 export class LobbyStage extends asgard.stage.BaseStage {
-    /**
-     * 进入大厅
-     */
-    private _launchLobby = true;
-
     constructor() {
         super(GameConst.appName, StageEnum.STAGE_LOBBY);
     }
 
     onEnter(): void {
-        this._launchLobby = true;
-        if (!this._launchLobby) {
-            return;
-        }
         // 清理旧的场景，打开主界 面
         let root: Laya.Sprite = Laya.Scene.root;
         for (let i = 0, n = root.numChildren; i < n; i++) {

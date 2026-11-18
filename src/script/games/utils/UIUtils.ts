@@ -27,7 +27,7 @@ export class UIUtils {
      * 获取子节点（包括自己）指定类型所有组件
      * @param node 节点
      * @param t 组件类型
-     * @returns 
+     * @returns
      */
     static getComponentsInChildren<T extends Laya.Component>(node: Laya.Node, t: new () => T): T[] {
         let comList: T[] = [];
@@ -73,7 +73,7 @@ export class UIUtils {
 
     /**
      * 自定义实现的对UI节点的拷贝
-     * @param node 
+     * @param node
      */
     static instantiateUINode<T extends Laya.GWidget | Laya.Prefab>(node: T): TNodeCopy<T> {
         if (node instanceof Laya.GWidget) {
@@ -126,7 +126,7 @@ export class UIUtils {
      * @param url 资源路径
      * @param width 宽 默认 = 0
      * @param height 高 默认 = 0
-     * @returns 
+     * @returns
      */
     static getHtmlPath(url: string, width: number = 0, height: number = 0) {
         if (width == 0 || height == 0) {
@@ -262,7 +262,7 @@ export class UIUtils {
      * @param image 目标图片节点
      * @param widthMax 最大宽度
      * @param fillAmount 进度
-     * @returns 
+     * @returns
      */
     public static setImageWidthFillAmount(image: Laya.GImage, widthMax: number, fillAmount: number) {
         image.width = widthMax * fillAmount;
@@ -272,7 +272,7 @@ export class UIUtils {
      * 设置图片水平翻转
      * @param image 目标图片节点
      * @param flip 是否翻转
-     * @returns 
+     * @returns
      */
     public static setImageFlipX(image: Laya.GImage, flip: boolean) {
         const mesh: Laya.FlipMesh = image.mesh as Laya.FlipMesh;
@@ -286,7 +286,7 @@ export class UIUtils {
      * 将两个点进行坐标转换
      * @param from 源节点
      * @param to 目标节点
-     * @returns 
+     * @returns
      */
     public static convertPos(from: Laya.GWidget, to: Laya.GWidget) {
         const point = new Laya.Point(from.width * from.anchorX, from.height * from.anchorY);
@@ -300,7 +300,7 @@ export class UIUtils {
      * @param x x
      * @param y y
      * @param to 目标节点
-     * @returns 
+     * @returns
      */
     public static convertScreenPosToLocal(x: number, y: number, to: Laya.Sprite, out: Laya.Point) {
         if (!out) {

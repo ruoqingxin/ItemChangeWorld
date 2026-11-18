@@ -6,7 +6,7 @@ import { openSkillBattleScreen } from "../../gameplay/utils/GameplayNavigation";
 
 export class SkillBattleBuildView extends UIBaseView {
     get layer(): UILayer { return UILayer.Second; }
-    get path(): string { return "ui/prefab/module/skillBattle/SkillBattleBuildView.lh"; }
+    get path(): string { return "ui/prefab/module/build/SkillBattleBuildView.lh"; }
     private panel: BattlePanel;
     protected onConstruct(): void {
         this.panel = GameplayPanelFactory.createPanel(this,"start",openSkillBattleScreen,"build");

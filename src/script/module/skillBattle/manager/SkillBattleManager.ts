@@ -1,166 +1,45 @@
-import { SkillBattleData } from "../data/SkillBattleData";
-import type {
-    ISkillActionResolution,
-    ISkillBattleAction,
-    ISkillBattleInputToken,
-    ISkillBattleSetup,
-    ISkillBattleState,
-    ISkillBattleCarry,
-} from "../types/SkillBattleTypes";
-import { SkillBattleDebugUtils } from "../utils/SkillBattleDebugUtils";
-import { SkillBattleFormulaUtils } from "../utils/SkillBattleFormulaUtils";
 import { BattleRules } from "../utils/BattleRules";
-import type { NewBattleAction, NewBattleCarry, NewBattleResult, NewBattleSetup,
-    NewBattleState, NewBattleToken } from "../types/BattleTypes";
+import type { BattleAction, BattleCarry, BattleResult, BattleSetup, BattleState, BattleToken } from "../types/BattleTypes";
 
 export class SkillBattleManager {
-    private static _ins: SkillBattleManager;
-
-    static ins(): SkillBattleManager {
-        if (!this._ins) {
-            this._ins = new SkillBattleManager();
-        }
-        return this._ins;
+    private static instance: SkillBattleManager;
+    static ins(): SkillBattleManager { return this.instance ||= new SkillBattleManager(); }
+    private currentState: BattleState | null = null;
+    private currentSetup: BattleSetup | null = null;
+    private committing = false;
+    beforeCommit: ((state: BattleState, action: BattleAction) => void) | null = null;
+    get state(): BattleState | null { return BattleRules.clone(this.currentState); }
+    get setup(): BattleSetup | null { return BattleRules.clone(this.currentSetup); }
+    start(setup: BattleSetup, battleId: string, carry?: BattleCarry): BattleState {
+        this.restore(setup, BattleRules.start(setup, battleId, carry));
+        return this.state;
     }
-
-    private readonly _data = new SkillBattleData();
-    private _battleSequence = 0;
-    beforeCommit: ((state: ISkillBattleState, action: ISkillBattleAction) => void) | null = null;
-    beforeNewCommit: ((state: NewBattleState, action: NewBattleAction) => void) | null = null;
-    private newCommitting = false;
-
-    get newState(): NewBattleState | null {
-        return this._data.newState ? BattleRules.clone(this._data.newState) : null;
-    }
-
-    get newSetup(): NewBattleSetup | null {
-        return this._data.newSetup ? BattleRules.clone(this._data.newSetup) : null;
-    }
-
-    startNewRules(setup: NewBattleSetup, battleId: string, carry?: NewBattleCarry): NewBattleState {
-        const state = BattleRules.start(setup, battleId, carry);
-        this.restoreNewRules(setup, state);
-        return this.newState!;
-    }
-
-    restoreNewRules(setup: NewBattleSetup, state: NewBattleState): void {
+    restore(setup: BattleSetup, state: BattleState): void {
         BattleRules.validateSetup(setup);
         BattleRules.validateState(setup, state);
-        this._data.newSetup = BattleRules.clone(setup);
-        this._data.newState = BattleRules.clone(state);
+        this.currentSetup = BattleRules.clone(setup); this.currentState = BattleRules.clone(state);
     }
-
-    previewNewAction(action: NewBattleAction): NewBattleResult {
-        if (!this._data.newSetup || !this._data.newState) throw new Error("请先开始剑道试炼");
-        return BattleRules.resolve(this._data.newSetup, this._data.newState, action);
+    preview(action: BattleAction): BattleResult {
+        if (!this.currentSetup || !this.currentState) throw new Error("当前没有战斗");
+        return BattleRules.resolve(this.currentSetup, this.currentState, action);
     }
-
-    confirmNewAction(action: NewBattleAction, token: NewBattleToken): NewBattleResult {
-        if (!this._data.newSetup || !this._data.newState) throw new Error("请先开始剑道试炼");
-        const current = this._data.newState;
-        const reject = (reason: string): NewBattleResult =>
-            ({ ok: false, reason, state: BattleRules.clone(current), events: [], preview: null });
-        if (this.newCommitting) return reject("行动正在提交");
-        if (!token || token.battleId !== current.battleId || token.revision !== current.revision)
+    confirm(action: BattleAction, token: BattleToken): BattleResult {
+        if (!this.currentSetup || !this.currentState) throw new Error("当前没有战斗");
+        const reject = (reason: string): BattleResult =>
+            ({ok: false, reason, state: this.state, events: [], preview: null});
+        if (this.committing) return reject("行动正在提交");
+        if (!token || token.battleId !== this.currentState.battleId || token.revision !== this.currentState.revision)
             return reject("预览已过期，请重新选择");
-        const ownedAction = BattleRules.clone(action);
-        const result = BattleRules.resolve(this._data.newSetup, current, ownedAction);
-        if (result.ok === false) return result;
-        this.newCommitting = true;
+        const owned = BattleRules.clone(action), result = this.preview(owned);
+        if (!result.ok) return result;
+        this.committing = true;
         try {
-            this.beforeNewCommit?.(BattleRules.clone(result.state), ownedAction);
-            this._data.newState = BattleRules.clone(result.state);
+            this.beforeCommit?.(BattleRules.clone(result.state), owned);
+            this.currentState = BattleRules.clone(result.state);
             return result;
         } catch (error) {
             return reject(`行动未提交：${(error as Error).message}`);
-        } finally {
-            this.newCommitting = false;
-        }
+        } finally { this.committing = false; }
     }
-
-    get state(): ISkillBattleState | null {
-        return this._data.state ? SkillBattleFormulaUtils.cloneState(this._data.state) : null;
-    }
-
-    get logs(): string[] {
-        return this._data.logs.slice();
-    }
-
-    get encounterOrder(): number { return this._data.setup?.order || 0; }
-
-    start(setup: ISkillBattleSetup, carry?: ISkillBattleCarry): ISkillBattleState {
-        const ownedSetup: ISkillBattleSetup = {
-            ...setup,
-            skills: setup.skills.map(row => ({ ...row })),
-            items: setup.items.map(row => ({ ...row })),
-            upgrades: setup.upgrades?.map(row => ({ ...row })),
-            enemy: { ...setup.enemy, intents: setup.enemy.intents.map(row => ({ ...row })) },
-        };
-        const battleId = `skill_battle_${++this._battleSequence}`;
-        const initial: ISkillBattleCarry = carry || {
-            playerHp: setup.playerMaxHp, playerMaxHp: setup.playerMaxHp, weaponId: setup.weaponId,
-            weaponDurability: setup.weaponDurability,
-            pouchSlots: [null, null, null, null, null],
-        };
-        if (!carry) ownedSetup.items.forEach(item => {
-            if (item.initialSlot) initial.pouchSlots[item.initialSlot - 1] = {
-                itemUid: `${battleId}_item_${item.initialSlot}`, itemId: item.itemId,
-            };
-        });
-        const state = SkillBattleFormulaUtils.startBattle(ownedSetup, battleId, initial);
-        this._data.setup = ownedSetup;
-        this._data.state = state;
-        this._data.logs = [SkillBattleDebugUtils.formatState(ownedSetup, state)];
-        return SkillBattleFormulaUtils.cloneState(state);
-    }
-
-    previewAction(action: ISkillBattleAction): ISkillActionResolution {
-        this.requireBattle();
-        return SkillBattleFormulaUtils.previewAction(this._data.setup!, this._data.state!, action);
-    }
-
-    confirmAction(action: ISkillBattleAction, token: ISkillBattleInputToken): ISkillActionResolution {
-        this.requireBattle();
-        const current = this._data.state!;
-        if (!token || token.battleId !== current.battleId || token.revision !== current.revision) {
-            return {
-                ok: false, reason: "预览已过期，请根据当前回合重新选择",
-                state: SkillBattleFormulaUtils.cloneState(current), events: [], preview: null,
-            };
-        }
-        const result = SkillBattleFormulaUtils.resolveAction(this._data.setup!, current, action);
-        if (result.ok) {
-            try {
-                this.beforeCommit?.(SkillBattleFormulaUtils.cloneState(result.state), { ...action });
-            } catch (error) {
-                return { ok: false, reason: `存档未成功，行动未提交：${(error as Error).message}`,
-                    state: SkillBattleFormulaUtils.cloneState(current), events: [], preview: null };
-            }
-            // Keep returned preview/results separate from the manager-owned snapshot.
-            this._data.state = SkillBattleFormulaUtils.cloneState(result.state);
-            this._data.logs.push(...result.events.map(event => SkillBattleDebugUtils.formatEvent(event)));
-        }
-        return result;
-    }
-
-    restore(setup: ISkillBattleSetup, state: ISkillBattleState): void {
-        this._data.setup = JSON.parse(JSON.stringify(setup));
-        this._data.state = SkillBattleFormulaUtils.cloneState(state);
-        this._data.logs = [SkillBattleDebugUtils.formatState(setup, state)];
-    }
-
-    printState(): string {
-        this.requireBattle();
-        return SkillBattleDebugUtils.formatState(this._data.setup!, this._data.state!);
-    }
-
-    reset(): void {
-        this._data.reset();
-    }
-
-    private requireBattle(): void {
-        if (!this._data.state || !this._data.setup) {
-            throw new Error("[SkillBattle] 请先调用 SkillBattleDebug.start(1)");
-        }
-    }
+    reset(): void { this.currentSetup = null; this.currentState = null; }
 }

@@ -6,7 +6,7 @@ export interface InventoryDragCallbacks {
     rotate(): void;
 }
 
-/** Captures one pointer; a second finger remains available for the rotate control. */
+
 export class InventoryDragController {
     private pointer: number | null = null;
     private origin: Laya.Point;

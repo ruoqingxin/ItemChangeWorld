@@ -1,6 +1,6 @@
 import { SubpackageLoader } from "./SubpackageLoader";
 
-const { regClass, property } = Laya;
+const { regClass } = Laya;
 
 // 请注意，不要引用任何script目录下的文件，该脚本环境与其互相独立
 // 务必注意代码隔离
@@ -28,4 +28,4 @@ export class Main extends Laya.Script {
             }
         });
     }
-} 
+}

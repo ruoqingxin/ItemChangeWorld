@@ -55,7 +55,7 @@ export class SubpackageLoader {
     /**
      * 判断某个子包是否加载完毕
      * @param sub 子包名称
-     * @returns 
+     * @returns
      */
     public isPackageLoaded(sub: string) {
         if (this._subpackages.indexOf(sub) == -1) {

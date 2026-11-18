@@ -1,11 +1,9 @@
 import { BattleRules as Core } from "../../skillBattle/utils/BattleRules";
 import { BuildRules as Build } from "../../build/utils/BuildRules";
-import type { NewBattleCarry, NewBattleResult } from "../../skillBattle/types/BattleTypes";
-import type { NewBuildProfile } from "../../build/types/BuildTypes";
-import type { InventoryCommand, InventoryConfig, InventoryItem, InventoryLocation, InventoryMove,
-    InventorySpace, InventoryState, InventoryTemplate, InventoryWarehousePlacement, InventoryWarehouseTarget } from "../types/InventoryTypes";
+import type { BattleCarry, BattleResult } from "../../skillBattle/types/BattleTypes";
+import type { InventoryCommand, InventoryConfig, InventoryItem, InventoryLocation, InventorySpace, InventoryState, InventoryTemplate, InventoryWarehousePlacement, InventoryWarehouseTarget } from "../types/InventoryTypes";
 
-/** Every instance, including spent and lost items, has exactly one authoritative location. */
+
 export class InventoryRules {
     static readonly WAREHOUSE_COLUMNS = 8;
     static readonly WAREHOUSE_ROWS = 7;
@@ -13,7 +11,7 @@ export class InventoryRules {
         const container = state.items.find(i => i.location.space === "container");
         return { current: state.items.filter(i => ["weapon","container","bag"].includes(i.location.space))
             .reduce((sum,i) => sum + (this.template(config,i).weight || 0),0),
-            limit: (config.weight?.base || 0) + (container ? this.template(config,container).weightLimit || 0 : 0) };
+            limit: config.weight.base + (container ? this.template(config,container).weightLimit : 0) };
     }
     static same(a: unknown, b: unknown): boolean { return JSON.stringify(a) === JSON.stringify(b); }
     static template(config: InventoryConfig, item: InventoryItem): InventoryTemplate {
@@ -31,8 +29,8 @@ export class InventoryRules {
         const t = container && this.template(config, container);
         return t ? [t.bagWidth, t.bagHeight] : [0, 0];
     }
-    static validateConfig(config: InventoryConfig, profile: NewBuildProfile): void {
-        Build.validateConfig(config.build, profile);
+    static validateConfig(config: InventoryConfig): void {
+        Build.validateConfig(config.build);
         const int = (n: number, min = 0, max = 100000000) => Number.isSafeInteger(n) && n >= min && n <= max;
         if (!config.spaces || !Object.values(config.spaces).every(v => int(v, 1)) ||
             config.spaces.battleWidth * config.spaces.battleHeight !== 5 ||
@@ -64,8 +62,8 @@ export class InventoryRules {
                 t.kind === "container" && (t.width !== 2 || t.height !== 2))
                 throw new Error("武器实体须为2×3六格，纳虚器本体须为2×2四格");
         }
-        if (config.weight && (!int(config.weight.base,1) || !int(config.weight.sourcePages,1,7) ||
-            config.templates.some(t => !int(t.weight!,1) || t.kind === "container" && !int(t.weightLimit!,1))))
+        if (!config.weight || !int(config.weight.base,1) || !int(config.weight.sourcePages,1,7) ||
+            config.templates.some(t => !int(t.weight,1) || t.kind === "container" && !int(t.weightLimit,1)))
             throw new Error("角色或背包承重配置无效");
         if (!config.build.setup.weapon || !Array.isArray(config.fixtures) || !config.fixtures.length ||
             new Set(config.fixtures.map(f => f.id)).size !== config.fixtures.length)
@@ -77,14 +75,14 @@ export class InventoryRules {
                 throw new Error("演练来源表无效");
         }
     }
-    static start(config: InventoryConfig, profile: NewBuildProfile, seed: number, runId: string): InventoryState {
-        this.validateConfig(config, profile);
-        Build.start(config.build, profile, seed, runId);
+    static start(config: InventoryConfig, seed: number, runId: string): InventoryState {
+        this.validateConfig(config);
+        Build.start(config.build, seed, runId);
         const items: InventoryItem[] = [];
         for (const f of config.fixtures) for (let n = 0; n < f.count; n++) {
             const t = config.templates.find(t => t.id === f.templateId)!;
             items.push({ uid: `${runId}:f${f.id}:${n}`, templateId: t.id,
-                location: f.node === 0 ? { space: "warehouse" } : { space: "ground", node: f.node - 1 },
+                location: { space: "warehouse" },
                 durability: t.kind === "weapon" ? f.durability : null });
         }
         const state: InventoryState = { runId, revision: 0, phase: "preparation", enteredAt: null, deadlineAt: null,
@@ -119,7 +117,7 @@ export class InventoryRules {
             }
             occupied.set(slot.page,grid); placed.set(slot.uid,{ ...slot });
         };
-        // Keep committed positions; only new arrivals use the first available space.
+
         for (const slot of state.warehouseLayout || []) if (byUid.has(slot.uid)) reserve(slot);
         for (const item of items) {
             if (placed.has(item.uid)) continue;
@@ -141,7 +139,7 @@ export class InventoryRules {
         return items.map(i => placed.get(i.uid)!);
     }
     static sourcePlacements(config: InventoryConfig, state: InventoryState, node = state.node): InventoryWarehousePlacement[] {
-        // Reserve fixed unknown loot too; returning an item must never overwrite an unrevealed item.
+
         const sources = (state as InventoryState & {
             map?: { sources: Array<{ node: number; entries: InventoryItem[] }> }
         }).map?.sources || [];
@@ -150,13 +148,13 @@ export class InventoryRules {
         return this.warehousePlacements(config,{ ...state,
             items: [...known,...reserved].map(i => ({ ...i,location: {space:"warehouse"} })),
             warehouseLayout: state.sourceLayouts?.find(s => s.node === node)?.slots || [],
-        },config.weight?.sourcePages || 7);
+        },config.weight.sourcePages);
     }
     static syncSources(config: InventoryConfig, state: InventoryState): void {
         if (!state.sourceLayouts) return;
         state.sourceLayouts = state.sourceLayouts.map(s => ({ node:s.node,slots:this.sourcePlacements(config,state,s.node) }));
     }
-    private static sourceTarget(config: InventoryConfig, state: InventoryState, item: InventoryItem, to: InventoryLocation): void {
+    private static sourceTarget(state: InventoryState, item: InventoryItem, to: InventoryLocation): void {
         const source = state.sourceLayouts?.find(s => s.node === to.node);
         if (!source || to.node !== state.interactionSource) throw new Error("请先打开当前节点的交互仓库");
         const slots = source.slots.filter(p => p.uid !== item.uid);
@@ -175,7 +173,7 @@ export class InventoryRules {
             throw new Error("仓库目标页无效");
         const present = new Set(state.items.filter(i => i.location.space === "warehouse").map(i => i.uid));
         if (!present.has(uid)) throw new Error("指定落格的物品必须移入仓库");
-        // Pin existing items before reserving the drop; unload overflow is packed around it.
+
         state.warehouseLayout = layout.filter(p => p.uid !== uid && present.has(p.uid));
         state.warehouseLayout.push({ uid, ...to });
     }
@@ -191,72 +189,7 @@ export class InventoryRules {
     }
     static containerPlan(config: InventoryConfig, state: InventoryState, uid: string | null):
         Extract<InventoryCommand,{ type: "equipContainer" }> {
-        if (config.weight) return this.weightedContainerPlan(config,state,uid);
-        this.movable(state);
-        const old = state.items.find(i => i.location.space === "container");
-        const next = uid ? this.item(state,uid) : null;
-        if (next) {
-            this.accessible(state,next.location);
-            if (this.template(config,next).kind !== "container" ||
-                !["bag",state.phase === "preparation" ? "warehouse" : "ground"].includes(next.location.space))
-                throw new Error("新纳虚器须来自背包、仓库或当前节点地面");
-        }
-        if (old?.uid === uid) throw new Error("已经装备此纳虚器");
-        if (!old && !next) throw new Error("没有纳虚器可卸下");
-        const outside: InventoryLocation = state.phase === "preparation" ? { space: "warehouse" } :
-            { space: "ground", node: state.node };
-        if (old || state.items.some(i => i.location.space === "bag")) this.accessible(state,outside);
-        const template = next && this.template(config,next), width = template?.bagWidth || 0,
-            height = template?.bagHeight || 0, items = state.items.filter(i => i.location.space === "bag" && i.uid !== next?.uid);
-        let targets = new Map<string,InventoryLocation>();
-        // Keep an already legal layout, including user-arranged layouts when upgrading.
-        if (items.every(i => {
-            const [w,h] = this.dimensions(this.template(config,i),i.location);
-            return i.location.x! + w <= width && i.location.y! + h <= height;
-        })) {
-            targets = new Map(items.map(i => [i.uid,Core.clone(i.location)]));
-        } else {
-            const rows = items.map((item,index) => ({ item, index, t: this.template(config,item) }));
-            let bestArea = -1, bestCount = -1;
-            // Try stable large-first orders and both preferred orientations to reduce fragmentation.
-            // This is bounded (at most 16 small-grid passes), not an optimal-packing search.
-            for (const order of ["area","side","width","height"] as const) for (const reverse of [false,true])
-                for (const rotateFirst of [false,true]) {
-                    const score = (t: InventoryTemplate) => order === "area" ? t.width * t.height :
-                        order === "side" ? Math.max(t.width,t.height) : order === "width" ? t.width : t.height;
-                    const sorted = rows.slice().sort((a,b) => score(b.t) - score(a.t) ||
-                        b.t.width * b.t.height - a.t.width * a.t.height ||
-                        (reverse ? b.index - a.index : a.index - b.index));
-                    const occupied = new Set<number>(), packed = new Map<string,InventoryLocation>();
-                    let area = 0;
-                    for (const { item, t } of sorted) {
-                        const preferred = !!item.location.rotated !== rotateFirst;
-                        const rotations = t.rotate && t.width !== t.height ? [preferred,!preferred] : [!!item.location.rotated];
-                        let to: InventoryLocation | null = null;
-                        for (let y = 0; y < height && !to; y++) for (let x = 0; x < width && !to; x++)
-                            for (const rotated of rotations) {
-                                const [w,h] = this.dimensions(t,{ space: "bag", rotated });
-                                if (x + w > width || y + h > height) continue;
-                                let free = true;
-                                for (let dy = 0; dy < h; dy++) for (let dx = 0; dx < w; dx++)
-                                    if (occupied.has((y + dy) * width + x + dx)) free = false;
-                                if (!free) continue;
-                                to = { space: "bag", x, y, rotated };
-                                for (let dy = 0; dy < h; dy++) for (let dx = 0; dx < w; dx++)
-                                    occupied.add((y + dy) * width + x + dx);
-                                break;
-                            }
-                        if (to) { packed.set(item.uid,to); area += t.width * t.height; }
-                    }
-                    if (area > bestArea || area === bestArea && packed.size > bestCount) {
-                        targets = packed; bestArea = area; bestCount = packed.size;
-                    }
-                }
-        }
-        return { type: "equipContainer", uid, ...(next ? { from: Core.clone(next.location) } : {}),
-            ...(old ? { oldTo: Core.clone(outside) } : {}),
-            contents: items.map(i => ({ uid: i.uid, from: Core.clone(i.location),
-                to: Core.clone(targets.get(i.uid) || outside) })) };
+        return this.weightedContainerPlan(config,state,uid);
     }
     private static weightedContainerPlan(config: InventoryConfig, state: InventoryState, uid: string | null, validate = true):
         Extract<InventoryCommand,{ type: "equipContainer" }> {
@@ -311,7 +244,7 @@ export class InventoryRules {
             ...(old?{oldTo:outside}:{}),contents:rows.map(i => ({uid:i.uid,from:Core.clone(i.location),
                 to:Core.clone(targets!.get(i.uid) || outside)})),
         };
-        if(validate)this.apply(config,{} as NewBuildProfile,state,plan,state.enteredAt || 0,1);
+        if(validate)this.apply(config,state,plan,state.enteredAt || 0);
         return plan;
     }
     private static accessible(state: InventoryState, location: InventoryLocation): void {
@@ -319,9 +252,6 @@ export class InventoryRules {
         if (location.space === "warehouse" && state.phase !== "preparation") throw new Error("局内不能访问局外仓库");
         if (location.space === "source" && (state.phase !== "active" || location.node !== state.node ||
             location.node !== state.interactionSource)) throw new Error("只能访问当前交互仓库");
-        if (location.space === "ground" && (state.phase !== "active" ||
-            location.node !== state.node || !state.revealed.includes(state.node)))
-            throw new Error("只能取放当前已揭示节点的物品");
     }
     private static source(state: InventoryState, uid: string, from: InventoryLocation): InventoryItem {
         const item = this.item(state, uid);
@@ -340,9 +270,9 @@ export class InventoryRules {
     private static consume(state: InventoryState, item: InventoryItem): void {
         item.location = { space: "consumed" }; state.consumed.push(item.uid);
     }
-    static carry(config: InventoryConfig, state: InventoryState): NewBattleCarry {
+    static carry(config: InventoryConfig, state: InventoryState): BattleCarry {
         const weapon = state.items.find(i => i.location.space === "weapon");
-        const pouch: NewBattleCarry["pouch"] = [null,null,null,null,null];
+        const pouch: BattleCarry["pouch"] = [null,null,null,null,null];
         for (const item of state.items.filter(i => i.location.space === "battle")) {
             const t = this.template(config,item);
             if (t.kind === "hp" || t.kind === "mp")
@@ -356,28 +286,23 @@ export class InventoryRules {
         for (const item of state.items) {
             const space = item.location.space;
             if (["warehouse","consumed","lost"].includes(space)) continue;
-            if (!["ground","source"].includes(space) && (result === "extract" || space === "safe")) {
+            if (space !== "source" && (result === "extract" || space === "safe")) {
                 item.location = { space: "warehouse" }; state.returned.push(item.uid);
             } else { item.location = { space: "lost" }; state.lost.push(item.uid); }
         }
     }
-    static apply(config: InventoryConfig, profile: NewBuildProfile, snapshot: InventoryState,
-        command: InventoryCommand, at: number, seed: number): { state: InventoryState; battle?: NewBattleResult } {
+    static apply(config: InventoryConfig, snapshot: InventoryState,
+        command: InventoryCommand, at: number): { state: InventoryState; battle?: BattleResult } {
         const state = Core.clone(snapshot);
         if (!command || state.phase === "ended") throw new Error("本次演练已结算");
         if (!Number.isSafeInteger(at) || at < 0) throw new Error("操作时间无效");
         if (state.deadlineAt !== null && (command.type === "timeout" ? at < state.deadlineAt : at >= state.deadlineAt))
             throw new Error("已到截止，须先结算超时");
-        let battle: NewBattleResult | undefined;
+        let battle: BattleResult | undefined;
         const warehouseTo = "warehouseTo" in command ? command.warehouseTo : undefined;
         const warehouseLayout = warehouseTo ? this.warehousePlacements(config,state) : undefined;
         let warehouseUid: string | undefined;
         switch (command.type) {
-            case "enter":
-                if (state.phase !== "preparation") throw new Error("不能重复入境");
-                state.flow = Build.start(config.build, profile, seed, state.runId);
-                state.phase = "active"; state.enteredAt = at; state.deadlineAt = at + 1200000;
-                break;
             case "move": {
                 this.movable(state);
                 const { uid, from, to } = command.move, item = this.source(state,uid,from);
@@ -385,7 +310,7 @@ export class InventoryRules {
                     throw new Error("装备本体须通过换装事务移动");
                 this.destination(state,to);
                 if (warehouseTo && to.space !== "warehouse") throw new Error("仓库落点只能用于入库");
-                if (to.space === "source") this.sourceTarget(config,state,item,to);
+                if (to.space === "source") this.sourceTarget(state,item,to);
                 else item.location = Core.clone(to);
                 warehouseUid = uid;
                 break;
@@ -411,7 +336,7 @@ export class InventoryRules {
                 if (old) {
                     if (!command.oldTo) throw new Error("请为原武器指定合法去向");
                     this.destination(state,command.oldTo);
-                    if(command.oldTo.space === "source") this.sourceTarget(config,state,old,command.oldTo);
+                    if(command.oldTo.space === "source") this.sourceTarget(state,old,command.oldTo);
                     else old.location = Core.clone(command.oldTo);
                     if (state.warehouseLayout && next && this.same(command.oldTo,command.from) && command.oldTo.space === "warehouse")
                         state.warehouseLayout = state.warehouseLayout.map(p => p.uid === next.uid ? { ...p, uid: old.uid } : p);
@@ -421,7 +346,7 @@ export class InventoryRules {
             }
             case "equipContainer": {
                 this.movable(state);
-                if(config.weight) {
+                {
                     const expected=this.weightedContainerPlan(config,state,command.uid,false);
                     if(!this.same(expected.contents,command.contents) || !this.same(expected.from,command.from) ||
                         !this.same(expected.oldTo,command.oldTo)) throw new Error("换包方案必须按原排列逐件退回当前交互仓库");
@@ -430,7 +355,7 @@ export class InventoryRules {
                 if (old && old.uid === command.uid) throw new Error("已经装备此纳虚器");
                 const next = command.uid ? this.source(state,command.uid,command.from!) : null;
                 if (next && (this.template(config,next).kind !== "container" ||
-                    !["bag",state.phase === "preparation" ? "warehouse" : config.weight ? "source" : "ground"].includes(next.location.space)))
+                    !["bag",state.phase === "preparation" ? "warehouse" : "source"].includes(next.location.space)))
                     throw new Error("新纳虚器须来自背包或当前可交互的来源");
                 if (!old && !next) throw new Error("没有纳虚器可卸下");
                 if (warehouseTo && (next || !old || command.oldTo?.space !== "warehouse"))
@@ -443,18 +368,18 @@ export class InventoryRules {
                 for (const m of command.contents) {
                     const item = this.source(state,m.uid,m.from);
                     this.destination(state,m.to);
-                    if(config.weight && m.to.space !== "bag" && !(state.phase === "preparation" ?
+                    if(m.to.space !== "bag" && !(state.phase === "preparation" ?
                         m.to.space === "warehouse" : m.to.space === "source" && m.to.node === state.interactionSource))
                         throw new Error("换包内容只能留包内或退回当前交互仓库");
-                    if(m.to.space === "source")this.sourceTarget(config,state,item,m.to);
+                    if(m.to.space === "source")this.sourceTarget(state,item,m.to);
                     else item.location = Core.clone(m.to);
                 }
                 if (old) {
                     const target: InventoryLocation = state.phase === "preparation" ? { space: "warehouse" } :
-                        config.weight ? { space: "source", node: state.interactionSource! } : { space: "ground", node: state.node };
+                        { space: "source", node: state.interactionSource! };
                     if (!this.same(command.oldTo,target)) throw new Error("旧纳虚器必须退回当前交互来源");
                     this.destination(state,target);
-                    if(target.space === "source")this.sourceTarget(config,state,old,target);
+                    if(target.space === "source")this.sourceTarget(state,old,target);
                     else old.location = target;
                     if (state.warehouseLayout && next && target.space === "warehouse")
                         state.warehouseLayout = state.warehouseLayout.map(p => p.uid === next.uid ? { ...p, uid: old.uid } : p);
@@ -485,45 +410,6 @@ export class InventoryRules {
                 this.consume(state,item);
                 break;
             }
-            case "visit":
-                this.movable(state);
-                if (state.phase !== "active" || state.flow?.pending || !Number.isInteger(command.node) ||
-                    command.node < 0 || command.node > state.flow!.battles.filter(b => b.state.phase === "victory").length)
-                    throw new Error("该隔离节点尚不可达");
-                state.node = command.node;
-                break;
-            case "reveal":
-                this.movable(state);
-                if (state.phase !== "active" || state.revealed.includes(state.node)) throw new Error("当前来源不可重复揭示");
-                state.revealed.push(state.node);
-                break;
-            case "build": {
-                if (state.phase !== "active" || !state.flow ||
-                    ["finish","extract","abandon","timeout"].includes(command.command.type))
-                    throw new Error("该操作须从整局事务提交");
-                if (command.command.type === "battle" && state.node !== state.flow.battles.length)
-                    throw new Error("请前往当前可战节点");
-                const result = Build.apply(config.build, profile, state.flow, command.command, at, this.carry(config,state));
-                state.flow = result.state; battle = result.battle;
-                if (command.command.type === "action") {
-                    if (!battle?.ok) throw new Error("战斗提交失败");
-                    state.hp = battle.state.player.hp; state.mp = battle.state.player.mp;
-                    const weapon = state.items.find(i => i.location.space === "weapon");
-                    if (weapon) weapon.durability = battle.state.weapon!.durability;
-                    if (command.command.action.type === "potion") {
-                        const item = this.item(state,command.command.action.itemUid);
-                        if (item.location.space !== "battle") throw new Error("战斗药品不属于斗法匣");
-                        this.consume(state,item);
-                    }
-                    if (state.flow.endReason === "defeat") this.settle(state,"defeat");
-                }
-                break;
-            }
-            case "extract": case "abandon": case "timeout":
-                if (state.phase !== "active" || !state.flow) throw new Error("当前未入境");
-                state.flow = Build.apply(config.build,profile,state.flow,{ type: command.type },at).state;
-                this.settle(state,command.type);
-                break;
             default: throw new Error("不支持的物品操作");
         }
         if (warehouseTo) {
@@ -549,7 +435,7 @@ export class InventoryRules {
         const equipped: string[] = [], grids: { [key: string]: Set<string> } = {};
         for (const item of state.items) {
             const t = this.template(config,item), l = item.location;
-            if (!l || !["warehouse","battle","safe","bag","weapon","container","ground","source","consumed","lost"].includes(l.space))
+            if (!l || !["warehouse","battle","safe","bag","weapon","container","source","consumed","lost"].includes(l.space))
                 throw new Error("物品归属无效");
             if (t.kind === "weapon" ? !Number.isInteger(item.durability) || item.durability! < 0 ||
                 item.durability! > config.build.setup.weapon!.maxDurability : item.durability !== null)
@@ -570,17 +456,17 @@ export class InventoryRules {
                 }
                 if (Object.keys(l).some(k => !["space","x","y","rotated"].includes(k))) throw new Error("网格归属字段无效");
             } else {
-                if (Object.keys(l).some(k => !["space",...(["ground","source"].includes(l.space) ? ["node"] : [])].includes(k)))
+                if (Object.keys(l).some(k => !["space",...(l.space === "source" ? ["node"] : [])].includes(k)))
                     throw new Error("列表或装备位不能保留格坐标");
-                if (["ground","source"].includes(l.space) && (!Number.isInteger(l.node) || l.node! < 0 ||
-                    l.node! > (config.groundNodeLimit ?? config.build.encounters.length))) throw new Error("物品来源节点无效");
+                if (l.space === "source" && (!Number.isInteger(l.node) || l.node! < 0 ||
+                    l.node! > config.nodeLimit)) throw new Error("物品来源节点无效");
                 if (l.space === "weapon" || l.space === "container") {
                     if (t.kind !== l.space || equipped.includes(l.space)) throw new Error("装备类型或数量不合法");
                     equipped.push(l.space);
                 }
             }
         }
-        if(config.weight) {
+        {
             const weight=this.weight(config,state);
             if (weight.current > weight.limit) throw new Error(`负重超限：${weight.current} / ${weight.limit}`);
             if(state.sourceLayouts) {
