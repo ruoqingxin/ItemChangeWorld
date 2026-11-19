@@ -131,7 +131,14 @@ async function fight(p,limit=100){
             const p=await context.newPage(),errors=[];p.touchMode=touch;
             p.on("pageerror",e=>{errors.push(e.message);console.error(e.stack);});
             await p.addInitScript(()=>{crypto.getRandomValues=a=>{a.fill(1);return a;};localStorage.setItem("other-app","keep");});
-            await p.goto(url);await ready(p);await click(p,"invPrimary");await shot(p,name+"-preparation");
+            await p.goto(url);await p.waitForFunction(()=>window.__skillBattlePreview?.view?.isOpened);
+            const portal=await p.evaluate(()=>{
+                const n=window.__skillBattlePreview.view.getElement("btn_realm"),r=document.querySelector("canvas").getBoundingClientRect();
+                const a=n.localToGlobal(new Laya.Point(n.width/2,n.height/2));
+                return{x:r.left+a.x*r.width/Laya.stage.width,y:r.top+a.y*r.height/Laya.stage.height};
+            });
+            if(touch)await p.touchscreen.tap(portal.x,portal.y);else await p.mouse.click(portal.x,portal.y);
+            await ready(p);await click(p,"invPrimary");await shot(p,name+"-preparation");
             await click(p,"invPrimary");assert.equal((await state(p)).flow.phase,"ready");
             assert.equal((await state(p)).flow.pending,null);
             await shot(p,name+"-map");

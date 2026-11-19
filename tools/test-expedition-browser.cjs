@@ -44,7 +44,9 @@ async function drag(p,from,to){
     try{for(const [name,width,height,touch]of [["desktop",1280,720,false],["wide",1560,720,false],["mobile",844,390,true]]){
         const context=await browser.newContext({viewport:{width,height},hasTouch:touch,isMobile:touch}),p=await context.newPage(),errors=[];
         p.touchMode=touch;p.on("pageerror",e=>errors.push(e.message));
-        await p.goto(url);await p.waitForFunction(()=>window.__skillBattlePreview?.panel?.opened);
+        await p.goto(url);await p.waitForFunction(()=>window.__skillBattlePreview?.view?.isOpened);
+        await click(p,"btn_realm");
+        await p.waitForFunction(()=>window.__skillBattlePreview?.panel?.opened);
         await click(p,"invPrimary");
         const small=await p.evaluate(()=>window.__skillBattlePreview.panel.visibleItems.findIndex(i=>i.templateId===309));
         assert.ok(small>=0);

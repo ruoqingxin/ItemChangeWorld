@@ -5,7 +5,8 @@ import { StageEnum } from "./StageEnum";
 import { UIManager } from "../games/ui/UIManager";
 import { UILayer } from "../games/ui/UILayer";
 import { GameplayManager } from "../module/gameplay/manager/GameplayManager";
-import { openSkillBattleScreen } from "../module/gameplay/utils/GameplayNavigation";
+import { openLobbyScreen, openSkillBattleScreen } from "../module/gameplay/utils/GameplayNavigation";
+import { LobbySettingsView } from "../module/lobby/view/LobbySettingsView";
 
 
 export class LobbyStage extends asgard.stage.BaseStage {
@@ -34,7 +35,10 @@ export class LobbyStage extends asgard.stage.BaseStage {
 
         asgard.events.EventsDispatcher.init(GameConst.appName);
 
-        openSkillBattleScreen(GameplayManager.getActive().screen);
+        LobbySettingsView.applySavedAudio();
+        const trial = GameplayManager.getActive();
+        if (!trial.error && (!trial.inventory || trial.inventory.phase === "preparation")) openLobbyScreen();
+        else openSkillBattleScreen(trial.screen);
     }
 
     onExit(): void {

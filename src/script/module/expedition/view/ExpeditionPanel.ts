@@ -270,7 +270,8 @@ export class ExpeditionPanel extends InventoryPanel {
             this.labels.resultTitle.text = "秘境构筑";
         if (s?.flow?.pending && this.buttons.invToggle) this.buttons.invToggle.visible = false;
         if (this.nodes?.inventoryRoot?.visible) {
-            this.label("invTitle", this.pageRole === "start" ? "末法寻仙 · 行前整备" : "末法寻仙 · 秘境行囊", 26, "#e3c98c");
+            this.label("invTitle", this.pageRole === "start" ? "末法寻仙 · 行前整备" :
+                s?.phase === "active" ? "末法寻仙 · 秘境行囊" : "末法寻仙 · 仓库", 26, "#e3c98c");
             this.label("invSourceTitle", s?.phase === "active" ? "来源仓库" : "仓库", 20, "#e3c98c");
             if (!s) this.label("invClock", "行前整备", 22);
             this.control("invPrimary", !s || s.phase === "ended" ? "开始整备" : s.phase === "preparation" ? "入境" :

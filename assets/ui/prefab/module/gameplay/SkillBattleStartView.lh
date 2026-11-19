@@ -7,6 +7,20 @@
   "height": 720,
   "_$child": [
     {
+      "_$id": "start_lobby_back", "_$type": "GWidget", "name": "btn_lobby_back",
+      "x": 812, "y": 16, "width": 144, "height": 40, "mouseEnabled": true, "zOrder": 10,
+      "relations": [{"_$type": "Relation", "target": {"_$ref": "sbr049root"}, "data": [6, 0]}],
+      "_$child": [
+        {"_$id": "start_lobby_back_skin", "_$type": "GImage", "name": "img_lobby_back_skin",
+          "width": 144, "height": 40, "autoSize": false, "mouseEnabled": false, "src": "ui/atlas/module/lobby/hud-strip.png"},
+        {"_$id": "start_lobby_back_icon", "_$type": "GImage", "name": "img_lobby_back_icon", "x": 14, "y": 10,
+          "width": 20, "height": 20, "autoSize": false, "mouseEnabled": false, "src": "ui/atlas/module/lobby/back.png"},
+        {"_$id": "start_lobby_back_text", "_$type": "GTextField", "name": "txt_lobby_back", "x": 40, "y": 4,
+          "width": 88, "height": 32, "text": "返回大厅", "fontSize": 18, "color": "#fff0c9",
+          "align": "center", "valign": "middle", "mouseEnabled": false}
+      ]
+    },
+    {
       "_$id": "region_18",
       "_$type": "GWidget",
       "name": "adapter",
@@ -173,6 +187,7 @@
         "_$ref": "region_18"
       },
       "elements": [
+        {"_$ref": "start_lobby_back"},
         {
           "_$ref": "region_18"
         },

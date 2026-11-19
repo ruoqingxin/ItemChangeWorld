@@ -11,6 +11,8 @@ import { SkillBattleConfirmView } from "../view/SkillBattleConfirmView";
 import { SkillBattleReportView } from "../../skillBattle/view/SkillBattleReportView";
 import { SkillBattleBuildInfoView } from "../../build/view/SkillBattleBuildInfoView";
 import type { SkillBattlePage } from "./GameplayLayout";
+import { LobbyView } from "../../lobby/view/LobbyView";
+import { LobbySettingsView } from "../../lobby/view/LobbySettingsView";
 
 export type SkillBattleScreen = SkillBattlePage;
 export let currentSkillBattleView: UIBaseView;
@@ -19,7 +21,18 @@ export function closeSkillBattleScreens(): void {
     const ui = UIManager.ins();
     for (const view of [SkillBattleStartView, SkillBattleBattleView, SkillBattleMapView,
         SkillBattleSettlementView, SkillBattleInventoryView, SkillBattleBuildView,
-        SkillBattleConfirmView, SkillBattleReportView, SkillBattleBuildInfoView]) ui.closeForm<UIBaseView>(view);
+        SkillBattleConfirmView, SkillBattleReportView, SkillBattleBuildInfoView,
+        LobbyView, LobbySettingsView]) ui.closeForm<UIBaseView>(view);
+}
+
+export function openLobbyScreen(): void {
+    const trial = GameplayManager.getActive();
+    if (trial.error || trial.inventory?.phase === "active" || trial.inventory?.phase === "ended") {
+        openSkillBattleScreen(trial.screen);
+        return;
+    }
+    closeSkillBattleScreens();
+    currentSkillBattleView = UIManager.ins().openForm(LobbyView);
 }
 
 export function openSkillBattleScreen(screen: SkillBattleScreen): void {
@@ -28,7 +41,7 @@ export function openSkillBattleScreen(screen: SkillBattleScreen): void {
     else if (state?.phase === "active" && state.flow?.phase === "battle") screen = "battle";
     else if (state?.phase === "active" && state.flow?.pending) screen = "build";
     else if (screen === "start" && state?.phase === "active") screen = "map";
-    else if (!state || state.phase === "preparation") screen = "start";
+    else if (!state || state.phase === "preparation") screen = screen === "inventory" ? "inventory" : "start";
     GameplayManager.onTrialExpired = () => openSkillBattleScreen("settlement");
     const ui = UIManager.ins();
     closeSkillBattleScreens();

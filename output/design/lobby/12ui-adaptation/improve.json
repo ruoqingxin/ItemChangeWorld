@@ -1,0 +1,44 @@
+{
+  "version": 2,
+  "scope": "page",
+  "createdAt": "2026-11-19T07:41:41.737Z",
+  "runDir": "E:\\NowChange\\ItemChangeWorld\\output\\design\\lobby\\12ui-adaptation",
+  "input": {
+    "kind": "url",
+    "value": "http://127.0.0.1:18095/"
+  },
+  "concept": "a better version of this product's own page. Redesign this existing product interface. Its layout, composition, section order, and proportions are yours to rework: this should read as a new design of the same product, not a retouch of the one it has. Give it a deliberate hierarchy, a real spacing rhythm, typography with range, restrained color, purposeful states, and surfaces and controls that belong to one system. Keep the product's logo, wordmark, and brand imagery as they are. Keep every real piece of content, data, and control the page carries: say the same things, in whatever arrangement serves them best, and invent nothing. These are conservation defaults, not a freeze: the brief above outranks them, and they outrank the page as it stands.",
+  "candidates": 4,
+  "retain": {
+    "include": [
+      "assets",
+      "content"
+    ],
+    "exclude": [
+      "layout",
+      "style"
+    ]
+  },
+  "retainFlag": "assets,content",
+  "conversionModel": "standard",
+  "responsiveQuality": "standard",
+  "viewport": {
+    "width": 1280,
+    "height": 720
+  },
+  "fullPage": false,
+  "bootstrap": [],
+  "bootstrapSha256": [],
+  "repo": "E:\\NowChange\\ItemChangeWorld",
+  "kitIgnore": {
+    "state": "not-ignored",
+    "relativeOutDir": "output/design/lobby/12ui-adaptation"
+  },
+  "planSourceConvert": false,
+  "pageLimit": 5,
+  "requestedPages": [],
+  "pageConcurrency": 3,
+  "referenceOrder": "current-first",
+  "pages": [],
+  "stages": {}
+}

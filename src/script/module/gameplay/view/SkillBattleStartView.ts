@@ -3,7 +3,7 @@ import { UIBaseView } from "../../../games/ui/UIBaseView";
 import { UILayer } from "../../../games/ui/UILayer";
 import { BattlePanel } from "../../skillBattle/view/BattlePanel";
 
-import { openSkillBattleScreen } from "../utils/GameplayNavigation";
+import { openLobbyScreen, openSkillBattleScreen } from "../utils/GameplayNavigation";
 import { UIManager } from "../../../games/ui/UIManager";
 import { ManualTestView } from "../../manualTest/view/ManualTestView";
 
@@ -16,6 +16,7 @@ export class SkillBattleStartView extends UIBaseView {
 
     protected onConstruct(): void {
         this.panel = GameplayPanelFactory.createPanel(this, "start", screen => openSkillBattleScreen(screen));
+        this.addClickListener(this.getElement("btn_lobby_back"), openLobbyScreen);
         const button = this.getElement<Laya.GWidget>("manualTestEntry");
         this.manualTestEntry = button;
         button.graphics.drawRect(0,0,146,40,"#26372f","#8caa96",1);
