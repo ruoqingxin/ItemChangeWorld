@@ -3,6 +3,7 @@ const sharp = require("sharp");
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
 const path = require("node:path");
+const { confirmStartup } = require("./lobby-save-test-utils.cjs");
 const url = process.env.SKILL_BATTLE_URL || "http://127.0.0.1:18095";
 const out = path.resolve(__dirname, "../output/design/lobby");
 const facilities = ["alchemy", "forge", "warehouse", "library", "realm", "market"];
@@ -122,7 +123,7 @@ async function assertLayout(page) {
         const buttons = facilities.map(name => ({ name, box: bounds(view.getElement("btn_" + name)) }));
         const hud = ["box_player", "box_wish", "btn_settings"].map(key => bounds(view.getElement(key)));
         for (const key of ["img_player_strip", "img_player_portrait", "img_player_frame", "txt_player_name",
-            "txt_player_realm", "img_wish_strip", "img_wish", "txt_wish", "txt_wish_amount",
+            "txt_player_realm", "img_wish_strip", "img_wish", "txt_wish_amount",
             "img_settings_skin", "img_settings"]) {
             const node = view.getElement(key), box = bounds(node);
             if (box.left < 0 || box.top < 0 || box.right > Laya.stage.width + 0.5 ||
@@ -135,8 +136,6 @@ async function assertLayout(page) {
         }
         if (hud.some((box, index) => hud.slice(index + 1).some(other => intersects(box, other))))
             issues.push("顶部信息栏相互重叠");
-        if (view.getElement("txt_wish_amount").text !== "—" ||
-            view.getElement("txt_player_realm").text !== "境界  —") issues.push("大厅误用了示意余额或境界");
         for (const name of facilities) {
             for (const key of ["btn_" + name, "img_" + name + "_building", "img_" + name + "_plate", "txt_" + name]) {
                 const node = view.getElement(key), box = bounds(node);
@@ -185,9 +184,10 @@ async function assertLayout(page) {
             page.touchMode = touch;
             page.on("pageerror", error => errors.push(error.message));
             await page.goto(url);
+            await confirmStartup(page);
             await waitLobby(page);
-            assert.equal(await page.evaluate(() => localStorage.getItem("nowchange.expedition.v1")), null,
-                "仅浏览大厅不会创建探索库存或存档");
+            assert.equal(await page.evaluate(() => window.__skillBattlePreview.trial.inventory.phase), "preparation",
+                "进入大厅前已确认创建整备存档");
             await assertLayout(page);
             await assertBuildingPixels(page);
             await screenshot(page, "lobby-" + name);
@@ -238,7 +238,6 @@ async function assertLayout(page) {
             await click(page, "btn_realm", "img_realm_building");
             await page.waitForFunction(() => window.__skillBattlePreview.panel?.opened);
             await screenshot(page, "lobby-preparation-" + name);
-            await click(page, "invPrimary");
             const saved = await page.evaluate(() => localStorage.getItem("nowchange.expedition.v1"));
             assert.ok(saved);
             await click(page, "btn_lobby_back");
@@ -246,6 +245,7 @@ async function assertLayout(page) {
             assert.equal(await page.evaluate(() => localStorage.getItem("nowchange.expedition.v1")), saved,
                 "返回大厅不修改已准备的物品或探索状态");
             await page.reload();
+            await confirmStartup(page);
             await waitLobby(page);
             assert.deepEqual(await page.evaluate(() => [Laya.SoundManager.musicMuted, Laya.SoundManager.soundMuted]), [true, true]);
             await click(page, "btn_realm");
@@ -253,6 +253,7 @@ async function assertLayout(page) {
             await click(page, "invPrimary");
             await page.waitForFunction(() => window.__skillBattlePreview.trial.inventory?.phase === "active");
             await page.reload();
+            await confirmStartup(page);
             await page.waitForFunction(() => window.__skillBattlePreview?.panel?.pageRole === "map");
             assert.equal(await page.evaluate(() => window.__skillBattlePreview.trial.inventory.phase), "active",
                 "刷新进行中的探索仍恢复原地图");

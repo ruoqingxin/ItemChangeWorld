@@ -13,6 +13,7 @@ import { SkillBattleBuildInfoView } from "../../build/view/SkillBattleBuildInfoV
 import type { SkillBattlePage } from "./GameplayLayout";
 import { LobbyView } from "../../lobby/view/LobbyView";
 import { LobbySettingsView } from "../../lobby/view/LobbySettingsView";
+import { LobbySaveView } from "../../lobby/view/LobbySaveView";
 import type { BattlePanel } from "../../skillBattle/view/BattlePanel";
 
 export type SkillBattleScreen = SkillBattlePage;
@@ -25,7 +26,13 @@ export function closeSkillBattleScreens(): void {
     for (const view of [SkillBattleStartView, SkillBattleBattleView, SkillBattleMapView,
         SkillBattleSettlementView, SkillBattleInventoryView, SkillBattleBuildView,
         SkillBattleConfirmView, SkillBattleReportView, SkillBattleBuildInfoView,
-        LobbyView, LobbySettingsView]) ui.closeForm<UIBaseView>(view);
+        LobbyView, LobbySettingsView, LobbySaveView]) ui.closeForm<UIBaseView>(view);
+}
+
+export function openGameEntry(): void {
+    closeSkillBattleScreens();
+    GameplayManager.onTrialExpired = () => {};
+    currentSkillBattleView = UIManager.ins().openForm(LobbySaveView);
 }
 
 export function closeInventoryScreen(): void {
@@ -41,6 +48,10 @@ export function closeInventoryScreen(): void {
 
 export function openLobbyScreen(): void {
     const trial = GameplayManager.getActive();
+    if (!trial.error && !trial.inventory) {
+        openGameEntry();
+        return;
+    }
     if (trial.error || trial.inventory?.phase === "active" || trial.inventory?.phase === "ended") {
         openSkillBattleScreen(trial.screen);
         return;

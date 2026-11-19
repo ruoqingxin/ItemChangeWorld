@@ -9,6 +9,14 @@ export class GameplayManager {
     private static expedition: ExpeditionRunManager;
     static onTrialExpired: () => void;
     static getActive(): ExpeditionRunManager { return this.getMapTrial(); }
+    static createInitialSave(): void {
+        const trial = this.getActive();
+        if (trial.error) throw new Error(trial.error);
+        if (trial.inventory) return;
+        const seed = new Uint32Array(1);
+        crypto.getRandomValues(seed);
+        trial.prepare(ExpeditionRunConfigUtils.read(ConfigUtil.Tables), seed[0] || 1);
+    }
     static getMapTrial(): ExpeditionRunManager {
         if (!this.expedition) {
             this.expedition = new ExpeditionRunManager(SkillBattleManager.ins(), window.localStorage,

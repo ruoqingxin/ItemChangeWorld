@@ -1,5 +1,6 @@
 const {chromium}=require("playwright"),sharp=require("sharp"),assert=require("node:assert/strict");
 const fs=require("node:fs/promises"),path=require("node:path");
+const {confirmStartup}=require("./lobby-save-test-utils.cjs");
 const url=process.env.SKILL_BATTLE_URL||"http://127.0.0.1:18095",out=path.resolve(__dirname,"../bin/expedition-browser");
 async function click(p,key,manual=false){
     const a=await p.evaluate(({key,manual})=>{
@@ -45,9 +46,9 @@ async function drag(p,from,to){
         const context=await browser.newContext({viewport:{width,height},hasTouch:touch,isMobile:touch}),p=await context.newPage(),errors=[];
         p.touchMode=touch;p.on("pageerror",e=>errors.push(e.message));
         await p.goto(url);await p.waitForFunction(()=>window.__skillBattlePreview?.view?.isOpened);
+        await confirmStartup(p);
         await click(p,"btn_realm");
         await p.waitForFunction(()=>window.__skillBattlePreview?.panel?.opened);
-        await click(p,"invPrimary");
         const small=await p.evaluate(()=>window.__skillBattlePreview.panel.visibleItems.findIndex(i=>i.templateId===309));
         assert.ok(small>=0);
         await drag(p,`invList${small}`,"invCell_bag_1");

@@ -140,9 +140,6 @@
           "_$ref": "wish_icon"
         },
         {
-          "_$ref": "wish_text"
-        },
-        {
           "_$ref": "wish_amount"
         },
         {

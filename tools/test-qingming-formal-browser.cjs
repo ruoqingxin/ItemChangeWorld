@@ -1,6 +1,7 @@
 const {chromium}=require("playwright"),sharp=require("sharp"),assert=require("node:assert/strict");
 const fs=require("node:fs/promises"),path=require("node:path");
 const {choose,reward}=require("./combat-policy.cjs");
+const {confirmStartup}=require("./lobby-save-test-utils.cjs");
 const url=process.env.SKILL_BATTLE_URL||"http://127.0.0.1:18095";
 const out=path.resolve(__dirname,"../bin/qingming-formal-browser");
 const state=p=>p.evaluate(()=>window.__skillBattlePreview.trial.inventory);
@@ -131,14 +132,14 @@ async function fight(p,limit=100){
             const p=await context.newPage(),errors=[];p.touchMode=touch;
             p.on("pageerror",e=>{errors.push(e.message);console.error(e.stack);});
             await p.addInitScript(()=>{crypto.getRandomValues=a=>{a.fill(1);return a;};localStorage.setItem("other-app","keep");});
-            await p.goto(url);await p.waitForFunction(()=>window.__skillBattlePreview?.view?.isOpened);
+            await p.goto(url);await confirmStartup(p);
             const portal=await p.evaluate(()=>{
                 const n=window.__skillBattlePreview.view.getElement("btn_realm"),r=document.querySelector("canvas").getBoundingClientRect();
                 const a=n.localToGlobal(new Laya.Point(n.width/2,n.height/2));
                 return{x:r.left+a.x*r.width/Laya.stage.width,y:r.top+a.y*r.height/Laya.stage.height};
             });
             if(touch)await p.touchscreen.tap(portal.x,portal.y);else await p.mouse.click(portal.x,portal.y);
-            await ready(p);await click(p,"invPrimary");await shot(p,name+"-preparation");
+            await ready(p);await shot(p,name+"-preparation");
             await click(p,"invPrimary");assert.equal((await state(p)).flow.phase,"ready");
             assert.equal((await state(p)).flow.pending,null);
             await shot(p,name+"-map");
@@ -153,11 +154,11 @@ async function fight(p,limit=100){
             const used=await p.evaluate(()=>window.__skillBattlePreview.trial.state);
             const slot=used.pouch.findIndex(i=>i?.itemId===302);await act(p,`pouch${slot}`);
             assert.equal(await p.evaluate(()=>window.__skillBattlePreview.trial.state.qingming.ap),2);
-            const saved=await state(p);await p.reload();await ready(p);assert.deepEqual(await state(p),saved);
+            const saved=await state(p);await p.reload();await confirmStartup(p);await ready(p);assert.deepEqual(await state(p),saved);
             await shot(p,name+"-restored");
             await fight(p);assert.equal((await state(p)).phase,"active");await shot(p,name+"-reward");
             const pending=(await state(p)).flow.pending;
-            const offered=await state(p);await p.reload();await ready(p);assert.deepEqual(await state(p),offered);
+            const offered=await state(p);await p.reload();await confirmStartup(p);await ready(p);assert.deepEqual(await state(p),offered);
             assert.deepEqual((await state(p)).flow.pending,pending);await claim(p);
             await click(p,"expBuild");await shot(p,name+"-build");await click(p,"newRun");
             assert.equal(await p.evaluate(()=>!!window.__skillBattlePreview.panel.expeditionNodes?.expeditionRoot?.visible),true);

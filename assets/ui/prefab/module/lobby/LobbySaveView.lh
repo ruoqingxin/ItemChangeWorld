@@ -1,0 +1,82 @@
+{
+  "_$ver": 1, "_$id": "save_root", "_$type": "GWidget", "name": "LobbySaveView",
+  "width": 1280, "height": 720, "mouseEnabled": true,
+  "_$child": [
+    {
+      "_$id": "save_background", "_$type": "GImage", "name": "img_save_background",
+      "width": 1280, "height": 720, "autoSize": false, "mouseEnabled": false,
+      "src": "ui/texture/lobby/lobby-courtyard.png", "color": "#6c7c71"
+    },
+    {
+      "_$id": "save_adapter", "_$type": "GWidget", "name": "adapter",
+      "width": 1280, "height": 720, "mouseThrough": true,
+      "relations": [{"_$type": "Relation", "target": {"_$ref": "save_root"}, "data": [1, 0, 2, 0]}],
+      "_$child": [
+        {
+          "_$id": "save_panel", "_$type": "GWidget", "name": "box_save_dialog",
+          "x": 380, "y": 184, "width": 520, "height": 352, "mouseEnabled": true,
+          "relations": [{"_$type": "Relation", "target": {"_$ref": "save_adapter"}, "data": [6, 0, 13, 0]}],
+          "_$child": [
+            {
+              "_$id": "save_panel_skin", "_$type": "GImage", "name": "img_save_panel",
+              "width": 520, "height": 352, "autoSize": false, "mouseEnabled": false,
+              "src": "ui/texture/lobby/settings-panel.png"
+            },
+            {
+              "_$id": "save_title", "_$type": "GTextField", "name": "txt_save_title",
+              "x": 44, "y": 24, "width": 432, "height": 42, "text": "创建存档",
+              "font": "KaiTi", "fontSize": 30, "color": "#fff0c9",
+              "align": "center", "valign": "middle", "mouseEnabled": false
+            },
+            {
+              "_$id": "save_detail", "_$type": "GTextField", "name": "txt_save_detail",
+              "x": 44, "y": 82, "width": 432, "height": 60, "text": "",
+              "font": "Microsoft YaHei", "fontSize": 20, "color": "#e4e2ca",
+              "align": "center", "valign": "middle", "wordWrap": true, "mouseEnabled": false
+            },
+            {
+              "_$id": "save_status", "_$type": "GTextField", "name": "txt_save_status",
+              "x": 44, "y": 152, "width": 432, "height": 52, "text": "",
+              "font": "Microsoft YaHei", "fontSize": 16, "color": "#b9c8b6",
+              "align": "center", "valign": "middle", "wordWrap": true, "mouseEnabled": false
+            },
+            {
+              "_$id": "save_error", "_$type": "GTextField", "name": "txt_save_error",
+              "x": 44, "y": 208, "width": 432, "height": 48, "text": "",
+              "font": "Microsoft YaHei", "fontSize": 16, "color": "#ffc4b6",
+              "align": "center", "valign": "middle", "wordWrap": true,
+              "overflow": "shrink", "mouseEnabled": false
+            },
+            {
+              "_$id": "save_confirm", "_$type": "GWidget", "name": "btn_save_confirm",
+              "x": 128, "y": 272, "width": 264, "height": 48, "mouseEnabled": true,
+              "_$child": [
+                {
+                  "_$id": "save_confirm_skin", "_$type": "GImage", "name": "img_save_confirm",
+                  "width": 264, "height": 48, "autoSize": false, "mouseEnabled": false,
+                  "src": "ui/atlas/module/lobby/hud-strip.png"
+                },
+                {
+                  "_$id": "save_confirm_label", "_$type": "GTextField", "name": "txt_save_confirm",
+                  "x": 12, "y": 4, "width": 240, "height": 40, "text": "创建存档并进入",
+                  "font": "Microsoft YaHei", "fontSize": 20, "color": "#fff0c9",
+                  "align": "center", "valign": "middle", "mouseEnabled": false
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "_$comp": [{
+    "_$type": "3593fc26-337e-42e3-92dc-1b9c2bb8f988",
+    "scriptPath": "../src/script/games/ui/components/ElementMapper.ts",
+    "adapter": {"_$ref": "save_adapter"}, "mapperType": 2,
+    "elements": [
+      {"_$ref": "save_background"}, {"_$ref": "save_adapter"}, {"_$ref": "save_panel"},
+      {"_$ref": "save_title"}, {"_$ref": "save_detail"}, {"_$ref": "save_status"},
+      {"_$ref": "save_error"}, {"_$ref": "save_confirm"}, {"_$ref": "save_confirm_label"}
+    ]
+  }]
+}

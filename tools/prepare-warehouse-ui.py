@@ -82,8 +82,9 @@ def main():
     draw.line((679, 20, 679, 588), fill="#152823")
     save(image, "popup-frame")
     for name, size in (
-        ("popup-equipment", (480, 238)), ("popup-safe", (152, 238)),
-        ("popup-battle", (480, 92)), ("popup-bag", (480, 230)),
+        ("popup-equipment", (432, 242)), ("popup-safe", (200, 320)),
+        ("popup-battle", (432, 92)), ("popup-bag", (480, 230)),
+        ("popup-backpack", (152, 174)),
         ("popup-source", (480, 576)),
     ):
         image = surface(size, 0.45, 0.17)

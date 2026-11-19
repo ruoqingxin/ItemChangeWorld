@@ -2,6 +2,7 @@ const { chromium } = require("playwright");
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
 const path = require("node:path");
+const { confirmStartup } = require("./lobby-save-test-utils.cjs");
 const url = process.env.SKILL_BATTLE_URL || "http://127.0.0.1:18095";
 const out = path.resolve(__dirname, "../output/design/warehouse");
 
@@ -165,24 +166,41 @@ async function checkMapModal(page) {
             page.on("pageerror", e => errors.push(e.message));
             await page.goto(url);
             await page.waitForFunction(() => window.__skillBattlePreview?.view?.isOpened);
+            await confirmStartup(page);
             await page.evaluate(() => { window.__warehouseUnderlay = window.__skillBattlePreview.view; });
             await click(page, "btn_warehouse");
             await warehouse(page);
+            const initialSave = await page.evaluate(() => localStorage.getItem("nowchange.expedition.v1"));
+            // 空态只在隔离内存中检查，正式流程已在进入大厅前创建整备档。
+            await page.evaluate(() => {
+                const v=window.__skillBattlePreview;
+                window.__warehouseSave=v.trial.data.save;
+                v.trial.data.save=null;
+                v.panel.refresh();
+            });
             assert.equal(await page.evaluate(() => window.__skillBattlePreview.view.getElement("box_warehouse_empty").visible), true);
-            assert.equal(await page.evaluate(() => localStorage.getItem("nowchange.expedition.v1")), null);
+            assert.equal(await page.evaluate(() => localStorage.getItem("nowchange.expedition.v1")), initialSave);
+            assert.deepEqual(await page.evaluate(() => {
+                const v=window.__skillBattlePreview.view;
+                const count=prefix=>v.uiElement.elementMapper.elements.filter(n=>
+                    n.name.startsWith(prefix) && !/(Bg|Text)$/.test(n.name) && n.visible).length;
+                return {
+                    warehouse:count("invSourceCell"),weapon:count("invEquipCell_weapon_"),
+                    container:count("invEquipCell_container_"),safe:count("invCell_safe_"),
+                    battle:count("invCell_battle_"),bag:count("invCell_bag_"),
+                    page:v.getElement("invPage").text,next:v.getElement("invNext").mouseEnabled,
+                };
+            }),{warehouse:56,weapon:6,container:4,safe:2,battle:5,bag:12,page:"第 1 页 · 1/1",next:false});
             assert.equal(await page.evaluate(() => window.__warehouseUnderlay.isOpened &&
                 window.__warehouseUnderlay.view.visible), true);
             await checkLayout(page);
             await page.screenshot({ path: path.join(out, name + "-empty.png") });
-            await click(page, "btn_lobby_back");
-            assert.equal(await page.evaluate(() =>
-                window.__skillBattlePreview.view === window.__warehouseUnderlay), true);
-            await click(page, "btn_realm");
-            await click(page, "invPrimary");
-            await page.waitForFunction(() => window.__skillBattlePreview.trial.inventory?.phase === "preparation");
-            await click(page, "btn_lobby_back");
-            await click(page, "btn_warehouse");
-            await warehouse(page);
+            await page.evaluate(() => {
+                const v=window.__skillBattlePreview;
+                v.trial.data.save=window.__warehouseSave;
+                delete window.__warehouseSave;
+                v.panel.refresh();
+            });
             assert.equal(await page.evaluate(() => window.__skillBattlePreview.view.getElement("box_warehouse_empty").visible), false);
             await checkLayout(page);
             await page.screenshot({ path: path.join(out, name + ".png") });

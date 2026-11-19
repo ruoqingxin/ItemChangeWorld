@@ -40,7 +40,8 @@ export class InventoryRules {
         const int = (n: number, min = 0, max = 100000000) => Number.isSafeInteger(n) && n >= min && n <= max;
         if (!config.spaces || !Object.values(config.spaces).every(v => int(v, 1)) ||
             config.spaces.battleWidth * config.spaces.battleHeight !== 5 ||
-            config.spaces.safeWidth * config.spaces.safeHeight !== 2 ||
+            ![[1,2],[2,2],[3,2],[3,3]].some(([w,h]) =>
+                config.spaces.safeWidth === w && config.spaces.safeHeight === h) ||
             !Array.isArray(config.templates) || !config.templates.length ||
             new Set(config.templates.map(t => t.id)).size !== config.templates.length)
             throw new Error("三空间配置无效");

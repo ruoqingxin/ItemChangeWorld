@@ -619,11 +619,13 @@
     "ui/atlas/module/inventory/storage-bag.png",
     "ui/atlas/module/inventory/sword-book.png",
     "ui/atlas/module/lobby/back.png",
+    "ui/atlas/module/lobby/close.png",
     "ui/atlas/module/lobby/player-portrait.png",
     "ui/atlas/module/warehouse/button-back.png",
     "ui/atlas/module/warehouse/button-close.png",
     "ui/atlas/module/warehouse/button-page.png",
     "ui/atlas/module/warehouse/button-square.png",
+    "ui/atlas/module/warehouse/popup-backpack.png",
     "ui/atlas/module/warehouse/popup-bag.png",
     "ui/atlas/module/warehouse/popup-battle.png",
     "ui/atlas/module/warehouse/popup-equipment.png",
@@ -694,7 +696,13 @@
     "ui/texture/inventory/backpack-body.png",
     "ui/texture/inventory/tooltip.png",
     "ui/texture/inventory/topbar.png",
-    "ui/texture/inventory/warehouse-body.png"
+    "ui/texture/inventory/warehouse-body.png",
+    "ui/texture/lobby/settings-panel.png"
+  ],
+  "ui/prefab/module/lobby/LobbySaveView.lh": [
+    "ui/atlas/module/lobby/hud-strip.png",
+    "ui/texture/lobby/lobby-courtyard.png",
+    "ui/texture/lobby/settings-panel.png"
   ],
   "ui/prefab/module/lobby/LobbySettingsView.lh": [
     "ui/atlas/module/lobby/check.png",
