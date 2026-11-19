@@ -57,6 +57,7 @@ export class BattlePanel {
         this.viewport = view.view;
         this.root = view.getElement<Laya.GWidget>("adapter", false) || view.view;
         visitRegion(view, view.view, child => {
+            if (child.name === "box_inventory_popup") return false;
             // 大厅返回按钮由所属界面管理，不参与战斗和储物区域的显隐。
             if (child.name === "btn_lobby_back") return false;
             this.elements[child.name] = child;

@@ -75,6 +75,23 @@ def button(name, size, primary=False):
 
 
 def main():
+    image = surface((1184, 608), 0.5, 0.35)
+    frame(image, True)
+    draw = ImageDraw.Draw(image)
+    draw.line((678, 20, 678, 588), fill="#64725c")
+    draw.line((679, 20, 679, 588), fill="#152823")
+    save(image, "popup-frame")
+    for name, size in (
+        ("popup-equipment", (480, 238)), ("popup-safe", (152, 238)),
+        ("popup-battle", (480, 92)), ("popup-bag", (480, 230)),
+        ("popup-source", (480, 576)),
+    ):
+        image = surface(size, 0.45, 0.17)
+        draw = ImageDraw.Draw(image)
+        draw.line((12, 39, size[0] - 13, 39), fill="#526456")
+        save(image, name)
+    button("button-square", (44, 44))
+    button("button-close", (144, 44))
     panel("carry-panel", (294, 524), (46, 274, 378))
     panel("bag-panel", (460, 524), (46, 390))
     panel("source-panel", (480, 524), (45, 472))

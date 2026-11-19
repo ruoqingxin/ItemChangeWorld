@@ -13,16 +13,30 @@ import { SkillBattleBuildInfoView } from "../../build/view/SkillBattleBuildInfoV
 import type { SkillBattlePage } from "./GameplayLayout";
 import { LobbyView } from "../../lobby/view/LobbyView";
 import { LobbySettingsView } from "../../lobby/view/LobbySettingsView";
+import type { BattlePanel } from "../../skillBattle/view/BattlePanel";
 
 export type SkillBattleScreen = SkillBattlePage;
 export let currentSkillBattleView: UIBaseView;
+let inventoryReturnView: UIBaseView | null = null;
 
 export function closeSkillBattleScreens(): void {
+    inventoryReturnView = null;
     const ui = UIManager.ins();
     for (const view of [SkillBattleStartView, SkillBattleBattleView, SkillBattleMapView,
         SkillBattleSettlementView, SkillBattleInventoryView, SkillBattleBuildView,
         SkillBattleConfirmView, SkillBattleReportView, SkillBattleBuildInfoView,
         LobbyView, LobbySettingsView]) ui.closeForm<UIBaseView>(view);
+}
+
+export function closeInventoryScreen(): void {
+    const previous = inventoryReturnView;
+    inventoryReturnView = null;
+    UIManager.ins().closeForm(SkillBattleInventoryView);
+    if (previous?.isOpened) {
+        currentSkillBattleView = previous;
+        const panel = (previous as UIBaseView & { panel?: BattlePanel }).panel;
+        if (panel) { panel.openHubScreen(); panel.resizeTo(previous.view); }
+    } else openLobbyScreen();
 }
 
 export function openLobbyScreen(): void {
@@ -44,11 +58,22 @@ export function openSkillBattleScreen(screen: SkillBattleScreen): void {
     else if (!state || state.phase === "preparation") screen = screen === "inventory" ? "inventory" : "start";
     GameplayManager.onTrialExpired = () => openSkillBattleScreen("settlement");
     const ui = UIManager.ins();
+    if (screen === "inventory") {
+        if (currentSkillBattleView instanceof SkillBattleInventoryView &&
+            currentSkillBattleView.isOpenedOrOpening) return;
+        if (!currentSkillBattleView?.isOpenedOrOpening) {
+            currentSkillBattleView = state?.phase === "active" ?
+                ui.openForm(SkillBattleMapView) : ui.openForm(LobbyView);
+        }
+        inventoryReturnView = currentSkillBattleView;
+        (inventoryReturnView as UIBaseView & { panel?: BattlePanel }).panel?.suspend();
+        currentSkillBattleView = ui.openForm(SkillBattleInventoryView);
+        return;
+    }
     closeSkillBattleScreens();
     if (screen === "start") currentSkillBattleView = ui.openForm(SkillBattleStartView);
     else if (screen === "battle") currentSkillBattleView = ui.openForm(SkillBattleBattleView);
     else if (screen === "map") currentSkillBattleView = ui.openForm(SkillBattleMapView);
-    else if (screen === "inventory") currentSkillBattleView = ui.openForm(SkillBattleInventoryView);
     else if (screen === "build") currentSkillBattleView = ui.openForm(SkillBattleBuildView);
     else currentSkillBattleView = ui.openForm(SkillBattleSettlementView);
 }

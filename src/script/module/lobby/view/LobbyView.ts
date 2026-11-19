@@ -97,7 +97,10 @@ export class LobbyView extends UIBaseView {
     }
 
     private onClickRealm(): void { this.openPreparation("start"); }
-    private onClickWarehouse(): void { this.openPreparation("inventory"); }
+    private onClickWarehouse(): void {
+        try { openSkillBattleScreen("inventory"); }
+        catch (error) { this.showNotice((error as Error).message); }
+    }
 
     private openPreparation(screen: "start" | "inventory"): void {
         if (this.opening) return;

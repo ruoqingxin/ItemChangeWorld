@@ -56,15 +56,25 @@ async function checkLayout(page) {
             const a = n.localToGlobal(new Laya.Point()), b = n.localToGlobal(new Laya.Point(n.width, n.height));
             return { x: a.x, y: a.y, right: b.x, bottom: b.y };
         };
-        const panels = ["invLeftPanel", "invBagPanel", "invRightPanel"].map(key => bounds(v.getElement(key)));
-        if (panels.some((p, i) => i && p.x < panels[i - 1].right)) problems.push("三栏重叠");
-        if (panels.some(p => Math.abs(p.y - panels[0].y) > 0.1 ||
-            Math.abs(p.bottom - panels[0].bottom) > 0.1)) problems.push("三栏上下未对齐");
+        const popup = bounds(v.getElement("box_inventory_popup"));
+        if (Math.abs((popup.x + popup.right) / 2 - Laya.stage.width / 2) > 0.5 ||
+            Math.abs((popup.y + popup.bottom) / 2 - Laya.stage.height / 2) > 0.5)
+            problems.push("弹窗未居中");
+        if (v.mapperType !== 2) problems.push("仓库未使用弹窗遮罩");
+        const visible = n => {
+            for (let p=n;p;p=p.parent) if(!p.visible)return false;
+            return true;
+        };
+        for (const key of ["invTitle","invClock","invToggle","invPrimary","invUse","invDrop",
+            "invCancel","invConfirm","invExtract","invAbandon"])
+            if (visible(v.getElement(key))) problems.push("冗余控件仍可见：" + key);
         for (const n of v.uiElement.elementMapper.elements) {
             if (n.name === "screenBackground") continue;
-            let visible = n.visible;
-            for (let p = n.parent; p; p = p.parent) visible &&= p.visible;
-            if (!visible) continue;
+            if (!visible(n)) continue;
+            // 被纳虚器视口裁切的内容不属于屏幕溢出。
+            let clipped = false;
+            for(let p=n.parent;p;p=p.parent) if(p.name === "bagItemsArea")clipped=true;
+            if(clipped)continue;
             const b = bounds(n);
             if (b.x < -0.5 || b.y < -0.5 || b.right > Laya.stage.width + 0.5 ||
                 b.bottom > Laya.stage.height + 0.5) problems.push(n.name + "超出屏幕");
@@ -77,11 +87,68 @@ async function checkLayout(page) {
         const first = v.getElement("invSourceCell0"), last = v.getElement("invSourceCell55");
         if (first.width !== 54 || last.x - first.x !== 7 * 56 ||
             last.y - first.y !== 6 * 56) problems.push("仓库格距发生变化");
-        const detail = bounds(v.getElement("invDetail")), bag = bounds(v.getElement("invCell_bag_0"));
-        if (bag.y + 6 * 56 > detail.y) problems.push("最大纳虚器容量遮挡详情");
+        const equip = bounds(v.getElement("equipmentArea")), bag = bounds(v.getElement("bagArea"));
+        if (equip.bottom >= bag.y) problems.push("装备与背包重叠");
         return problems;
     });
     assert.deepEqual(issues, []);
+}
+
+async function checkBagScrolling(page) {
+    const saved = await page.evaluate(() => localStorage.getItem("nowchange.expedition.v1"));
+    // 仅在浏览器内存中放入现有八列六行纳虚器，恢复后继续使用正式整备档。
+    await page.evaluate(() => {
+        const v=window.__skillBattlePreview;
+        window.__warehouseFixture=structuredClone(v.trial.data.save.state);
+        const state=v.trial.data.save.state;
+        state.items.find(i=>i.location.space==="container").templateId=1211;
+        state.items.find(i=>i.location.space==="bag").location.y=5;
+        v.panel.refresh();
+    });
+    await click(page,"btn_bag_down");
+    await click(page,"btn_bag_down");
+    assert.deepEqual(await page.evaluate(() => {
+        const v=window.__skillBattlePreview,p=v.panel,s=p.bagScroller;
+        const target=v.view.getElement("invCell_bag_41");
+        const point=p.root.globalToLocal(target.localToGlobal(new Laya.Point(27,27)));
+        const item=v.trial.inventory.items.find(i=>i.templateId===309);
+        const hit=p.hitDrag(point,{uid:item.uid,rotated:false,grabX:0.5,grabY:0.5});
+        const hidden=v.view.getElement("invCell_bag_0");
+        const clipped=p.root.globalToLocal(hidden.localToGlobal(new Laya.Point(27,27)));
+        const hiddenHit=p.hitDrag(clipped,{uid:item.uid,rotated:false,grabX:0.5,grabY:0.5});
+        return [s.posY,s.contentHeight,hit?.space,hit?.x,hit?.y,hiddenHit?.space==="bag"];
+    }),[168,334,"bag",1,5,false]);
+    await checkLayout(page);
+    await page.screenshot({path:path.join(out,page.touchMode?"mobile-scroll.png":"desktop-scroll.png")});
+    await page.evaluate(() => {
+        const v=window.__skillBattlePreview;
+        v.panel.bagScroller.posY=0;
+        v.trial.data.save.state=window.__warehouseFixture;
+        delete window.__warehouseFixture;
+        v.panel.refresh();
+    });
+    assert.equal(await page.evaluate(() => localStorage.getItem("nowchange.expedition.v1")),saved);
+}
+
+async function checkMapModal(page) {
+    await click(page,"btn_lobby_back");
+    await click(page,"btn_realm");
+    await click(page,"invPrimary");
+    await page.waitForFunction(() => window.__skillBattlePreview.view.path.endsWith("/SkillBattleMapView.lh"));
+    await page.evaluate(() => {window.__warehouseMap=window.__skillBattlePreview.view;});
+    await click(page,"expStorage");
+    await warehouse(page);
+    await checkLayout(page);
+    await click(page,"expLootPage7");
+    assert.equal(await page.evaluate(() => window.__skillBattlePreview.panel.inventoryPage),6);
+    await click(page,"expLootPage1");
+    await page.screenshot({path:path.join(out,page.touchMode?"mobile-active.png":"desktop-active.png")});
+    await click(page,"btn_lobby_back");
+    assert.equal(await page.evaluate(() => window.__skillBattlePreview.view===window.__warehouseMap &&
+        window.__warehouseMap.isOpened && window.__skillBattlePreview.panel.opened),true);
+    await click(page,"expStorage");
+    await warehouse(page);
+    await click(page,"btn_lobby_back");
 }
 
 (async () => {
@@ -98,18 +165,25 @@ async function checkLayout(page) {
             page.on("pageerror", e => errors.push(e.message));
             await page.goto(url);
             await page.waitForFunction(() => window.__skillBattlePreview?.view?.isOpened);
+            await page.evaluate(() => { window.__warehouseUnderlay = window.__skillBattlePreview.view; });
             await click(page, "btn_warehouse");
             await warehouse(page);
             assert.equal(await page.evaluate(() => window.__skillBattlePreview.view.getElement("box_warehouse_empty").visible), true);
             assert.equal(await page.evaluate(() => localStorage.getItem("nowchange.expedition.v1")), null);
+            assert.equal(await page.evaluate(() => window.__warehouseUnderlay.isOpened &&
+                window.__warehouseUnderlay.view.visible), true);
             await checkLayout(page);
             await page.screenshot({ path: path.join(out, name + "-empty.png") });
+            await click(page, "btn_lobby_back");
+            assert.equal(await page.evaluate(() =>
+                window.__skillBattlePreview.view === window.__warehouseUnderlay), true);
+            await click(page, "btn_realm");
             await click(page, "invPrimary");
             await page.waitForFunction(() => window.__skillBattlePreview.trial.inventory?.phase === "preparation");
-            assert.equal(await page.evaluate(() => window.__skillBattlePreview.view.getElement("box_warehouse_empty").visible), false);
             await click(page, "btn_lobby_back");
             await click(page, "btn_warehouse");
             await warehouse(page);
+            assert.equal(await page.evaluate(() => window.__skillBattlePreview.view.getElement("box_warehouse_empty").visible), false);
             await checkLayout(page);
             await page.screenshot({ path: path.join(out, name + ".png") });
             const sourceIndex = await page.evaluate(() =>
@@ -119,6 +193,11 @@ async function checkLayout(page) {
             assert.ok(await page.evaluate(() => window.__skillBattlePreview.view.getElement("invDetail").text.length > 0));
             await checkLayout(page);
             await page.screenshot({ path: path.join(out, name + "-selected.png") });
+            const beforeSelection=await page.evaluate(()=>localStorage.getItem("nowchange.expedition.v1"));
+            await click(page,"invList1");
+            await click(page,"invCell_bag_1");
+            assert.equal(await page.evaluate(()=>window.__skillBattlePreview.panel.draft),null);
+            assert.equal(await page.evaluate(()=>localStorage.getItem("nowchange.expedition.v1")),beforeSelection);
             await drag(page, "invList" + sourceIndex, "invCell_bag_1");
             assert.equal(await page.evaluate(() =>
                 window.__skillBattlePreview.trial.inventory.items.find(i => i.templateId === 309).location.space), "bag");
@@ -151,9 +230,13 @@ async function checkLayout(page) {
                     await page.screenshot({ path: path.join(out, `resize-${size.width}.png`) });
                 }
             }
+            if (name === "desktop" || name === "mobile") {
+                await checkBagScrolling(page);
+                await checkMapModal(page);
+            }
             assert.deepEqual(errors, []);
             await context.close();
-            console.log(`通过 ${name}：空状态、三栏适配、分类、物品详情、双向拖拽及存档保持。`);
+            console.log(`通过 ${name}：弹窗返回、空状态、适配、分类、物品详情、双向拖拽及存档保持。`);
         }
     } finally {
         await browser.close();
