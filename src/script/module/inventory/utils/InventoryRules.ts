@@ -1,6 +1,6 @@
 import { BattleRules as Core } from "../../skillBattle/utils/BattleRules";
 import { BuildRules as Build } from "../../build/utils/BuildRules";
-import type { BattleCarry, BattleResult } from "../../skillBattle/types/BattleTypes";
+import type { BattleCarry, BattleResult, BattleWeapon } from "../../skillBattle/types/BattleTypes";
 import type { InventoryCommand, InventoryConfig, InventoryItem, InventoryLocation, InventorySpace, InventoryState, InventoryTemplate, InventoryWarehousePlacement, InventoryWarehouseTarget } from "../types/InventoryTypes";
 
 
@@ -18,6 +18,12 @@ export class InventoryRules {
         const row = config.templates.find(t => t.id === item.templateId);
         if (!row) throw new Error("物品模板不存在");
         return row;
+    }
+    static weapon(config: InventoryConfig, item: InventoryItem): BattleWeapon {
+        const t = this.template(config,item);
+        if (t.kind !== "weapon") throw new Error("物品不是武器");
+        return {id:t.id,name:t.name,attack:t.weaponAttack,defense:t.weaponDefense,
+            durability:item.durability!,maxDurability:t.weaponDurability};
     }
     static dimensions(t: InventoryTemplate, l: InventoryLocation): [number, number] {
         return l.rotated ? [t.height, t.width] : [t.width, t.height];
@@ -39,14 +45,14 @@ export class InventoryRules {
             new Set(config.templates.map(t => t.id)).size !== config.templates.length)
             throw new Error("三空间配置无效");
         for (const t of config.templates) {
-            if (!int(t.id, 1) || !t.name || !["hp","mp","repair","stamina","book","material","weapon","container"].includes(t.kind) ||
+            if (!int(t.id, 101) || !t.name || !["hp","mp","mixed","shield","repair","stamina","book","material","weapon","container"].includes(t.kind) ||
                 !int(t.width, 1, 8) || !int(t.height, 1, 6) || t.stack !== 1 ||
                 ![t.rotate,t.battle,t.safe].every(v => typeof v === "boolean") ||
                 !int(t.bagWidth, 0, 8) || !int(t.bagHeight, 0, 6) ||
                 !/^(?:ui\/atlas\/module\/inventory\/[\w-]+|ui\/image\/naxu\/naxu-[a-z]+-q[1-6])\.png$/.test(t.icon) ||
                 (t.quality !== undefined && !int(t.quality, 1, 6)) ||
                 (["weapon","container"].includes(t.kind) && (t.safe || t.battle)) ||
-                (t.battle && !["hp","mp","repair"].includes(t.kind)) ||
+                (t.battle && !["hp","mp","mixed","shield"].includes(t.kind)) ||
                 (t.kind === "container" ? !t.bagWidth || !t.bagHeight : t.bagWidth !== 0 || t.bagHeight !== 0))
                 throw new Error("物品形状、类别或资源配置无效");
             if (t.weight !== undefined && !int(t.weight,1) || t.weightLimit !== undefined && !int(t.weightLimit) ||
@@ -54,9 +60,13 @@ export class InventoryRules {
                 t.kind === "stamina" && (!t.staminaRestore || t.battle) ||
                 t.kind !== "stamina" && !!t.staminaRestore)
                 throw new Error("物品重量、承重或体力药配置无效");
-            if (t.kind === "hp" || t.kind === "mp") {
-                if (!config.build.setup.potions.some(p => p.itemId === t.id && p.resource === t.kind) ||
-                    t.width !== 1 || t.height !== 1) throw new Error("实际药品与新核配置不匹配");
+            if (!int(t.recyclePrice) || ![t.weaponAttack,t.weaponDefense,t.weaponDurability].every(v=>int(v)) ||
+                (t.kind === "weapon" ? t.weaponDurability <= 0 : t.weaponAttack + t.weaponDefense + t.weaponDurability !== 0) ||
+                (t.kind === "repair" ? t.repairAmount !== -1 && !int(t.repairAmount,1) : t.repairAmount !== 0))
+                throw new Error("物品价格、武器属性或修理量无效");
+            if (["hp","mp","mixed","shield"].includes(t.kind)) {
+                if (!config.build.setup.potions.some(p => p.itemId === t.id && p.resource === t.kind))
+                    throw new Error("实际药品与新核配置不匹配");
             }
             if (t.kind === "weapon" && (t.width !== 2 || t.height !== 3) ||
                 t.kind === "container" && (t.width !== 2 || t.height !== 2))
@@ -71,7 +81,7 @@ export class InventoryRules {
         for (const f of config.fixtures) {
             const t = config.templates.find(t => t.id === f.templateId);
             if (!t || !int(f.id,1) || !int(f.count,1,30) || !int(f.node,0,config.build.encounters.length + 1) ||
-                !int(f.durability,0,config.build.setup.weapon.maxDurability))
+                !int(f.durability,0,t.kind === "weapon" ? t.weaponDurability : 0))
                 throw new Error("演练来源表无效");
         }
     }
@@ -275,11 +285,11 @@ export class InventoryRules {
         const pouch: BattleCarry["pouch"] = [null,null,null,null,null];
         for (const item of state.items.filter(i => i.location.space === "battle")) {
             const t = this.template(config,item);
-            if (t.kind === "hp" || t.kind === "mp")
+            if (["hp","mp","mixed","shield"].includes(t.kind))
                 pouch[item.location.y! * config.spaces.battleWidth + item.location.x!] = { itemUid: item.uid, itemId: t.id };
         }
         return { hp: state.hp, mp: state.mp, weapon: weapon ?
-            { ...Core.clone(config.build.setup.weapon!), durability: weapon.durability! } : null, pouch };
+            this.weapon(config,weapon) : null, pouch };
     }
     static settle(state: InventoryState, result: NonNullable<InventoryState["result"]>): void {
         state.result = result; state.phase = "ended";
@@ -395,17 +405,22 @@ export class InventoryRules {
                 if (t.kind === "repair") {
                     const weapon = state.items.find(i => i.location.space === "weapon");
                     if (!weapon) throw new Error("未装备武器，工具未消耗");
-                    const max = config.build.setup.weapon!.maxDurability;
+                    const max = this.template(config,weapon).weaponDurability;
                     if (weapon.durability! >= max) throw new Error("武器耐久已满，工具未消耗");
-                    weapon.durability = Math.min(max,weapon.durability! + config.spaces.repair);
+                    weapon.durability = t.repairAmount === -1 ? max : Math.min(max,weapon.durability! + t.repairAmount);
                 } else if (t.kind === "stamina") {
                     if (state.stamina === undefined || !config.staminaMax) throw new Error("当前没有探索体力");
                     if (state.stamina >= config.staminaMax) throw new Error("体力已满，药品未消耗");
                     state.stamina = Math.min(config.staminaMax,state.stamina + t.staminaRestore!);
-                } else if (t.kind === "hp" || t.kind === "mp") {
-                    const max = t.kind === "hp" ? config.build.setup.player.maxHp : config.build.setup.player.maxMp;
-                    if (state[t.kind] >= max) throw new Error(t.kind === "hp" ? "生命已满" : "灵力已满");
-                    state[t.kind] = Math.min(max,state[t.kind] + config.build.setup.potions.find(p => p.itemId === t.id)!.amount);
+                } else if (["hp","mp","mixed"].includes(t.kind)) {
+                    const effect = config.build.setup.potions.find(p => p.itemId === t.id)!;
+                    const hp = ["hp","mixed"].includes(t.kind) ? Math.min(effect.amount,config.build.setup.player.maxHp-state.hp) : 0;
+                    const mp = t.kind === "mp" ? Math.min(effect.amount,config.build.setup.player.maxMp-state.mp) :
+                        t.kind === "mixed" ? Math.min(effect.secondaryAmount,config.build.setup.player.maxMp-state.mp) : 0;
+                    if (!hp && !mp) throw new Error("生命灵力已满，药品未消耗");
+                    state.hp += hp; state.mp += mp;
+                } else if (t.kind === "shield") {
+                    throw new Error("护元散仅可在战斗中使用");
                 } else throw new Error("此物品不能使用；本阶段不开放学习");
                 this.consume(state,item);
                 break;
@@ -438,10 +453,10 @@ export class InventoryRules {
             if (!l || !["warehouse","battle","safe","bag","weapon","container","source","consumed","lost"].includes(l.space))
                 throw new Error("物品归属无效");
             if (t.kind === "weapon" ? !Number.isInteger(item.durability) || item.durability! < 0 ||
-                item.durability! > config.build.setup.weapon!.maxDurability : item.durability !== null)
+                item.durability! > t.weaponDurability : item.durability !== null)
                 throw new Error("实际耐久无效");
             if (["battle","safe","bag"].includes(l.space)) {
-                if (l.space === "battle" && !t.battle) throw new Error("斗法匣只收获准药品或修补工具");
+                if (l.space === "battle" && !t.battle) throw new Error("斗法匣只收获准战斗药品");
                 if (l.space === "safe" && !t.safe) throw new Error("归真匣禁止装备与纳虚器");
                 if (typeof l.rotated !== "boolean" || l.rotated && !t.rotate ||
                     !Number.isInteger(l.x) || !Number.isInteger(l.y) || l.x! < 0 || l.y! < 0)

@@ -3,7 +3,7 @@ import { BuildRules as Build } from "../../build/utils/BuildRules";
 import { InventoryRules as Inventory } from "../../inventory/utils/InventoryRules";
 import type { BattleResult } from "../../skillBattle/types/BattleTypes";
 import type { ExpeditionCommand, ExpeditionConfig, ExpeditionNode, ExpeditionSource, ExpeditionState } from "../types/ExpeditionRunTypes";
-import { isBattleNode } from "../types/ExpeditionRunTypes";
+import { EXPEDITION_LOOT_FAMILIES, isBattleNode } from "../types/ExpeditionRunTypes";
 import { GuzongEnemyRules } from "../../skillBattle/utils/GuzongEnemyRules";
 import type { RogueEnemyId } from "../../skillBattle/types/QingmingTypes";
 
@@ -54,10 +54,7 @@ export class ExpeditionRules {
             !Number.isSafeInteger(c.rules.limitMs) || c.rules.limitMs <= 0 ||
             !Number.isSafeInteger(c.rules.searchMs) || c.rules.searchMs < this.searchCheckpointMs)
             throw new Error("正式地图版本、节点或时限无效");
-        const weights = (values: number[]) => Array.isArray(values) && values.every(v =>
-            Number.isSafeInteger(v) && v >= 0) && values.reduce((a,b) => a+b,0) === 100;
-        if (!weights(c.rules.books) || c.rules.books.length !== 3 ||
-            !Number.isSafeInteger(c.rules.recoveryPercent) || c.rules.recoveryPercent < 1 || c.rules.recoveryPercent > 100 ||
+        if (!Number.isSafeInteger(c.rules.recoveryPercent) || c.rules.recoveryPercent < 1 || c.rules.recoveryPercent > 100 ||
             new Set(c.pools.map(p => p.id)).size !== c.pools.length ||
             new Set(c.pools.map(p => p.code)).size !== c.pools.length)
             throw new Error("恢复、补给或掉落条件权重无效");
@@ -105,22 +102,21 @@ export class ExpeditionRules {
             if (!Number.isSafeInteger(p.id) || p.id <= 0 || !/^[a-z][a-zA-Z]*$/.test(p.code) ||
                 ![p.min,p.max,p.minWeight,...p.durability].every(Number.isSafeInteger) ||
                 ![p.categories,p.qualities].every(w => w.every(n => Number.isSafeInteger(n) && n >= 0) &&
-                w.reduce((a,b) => a+b,0) === 100) || p.categories.length !== 9 || p.qualities.length !== 6 ||
+                w.reduce((a,b) => a+b,0) === 100) || p.categories.length !== EXPEDITION_LOOT_FAMILIES.length || p.qualities.length !== 6 ||
                 p.min < 1 || p.max > 4 || p.min > p.max || p.minWeight < 0 || p.minWeight > 100 ||
-                p.durability[0] < 0 || p.durability[1] > c.build.setup.weapon!.maxDurability ||
+                p.durability[0] < 0 || p.durability[1] > 100000000 ||
                 p.durability[0] > p.durability[1])
                 throw new Error(`掉落池配置无效：${p.id}`);
         }
         const familyKinds = new Map<string, string>([
-            ["hp","hp"],["mp","mp"],["repair","repair"],["herb","material"],["ore","material"],["small","material"],
-            ["weapon","weapon"],["bookSword","book"],["bookEarth","book"],["bookCommon","book"],
-            ...[1,2,3,4,5,6].map(q => [`container${q}`,"container"] as const),
+            ["hp","hp"],["mp","mp"],["mixed","mixed"],["shield","shield"],["repair","repair"],["stamina","stamina"],
+            ["herb","material"],["ore","material"],["beast","material"],["relic","material"],
+            ["weapon","weapon"],["book","book"],["container","container"],
         ]);
         const families = new Set(familyKinds.keys());
         for (const v of c.variants) {
             const template = c.templates.find(t => t.id === v.templateId);
             if (!template || template.kind !== familyKinds.get(v.family) ||
-                (template.kind === "container" && v.family !== `container${template.quality}`) ||
                 !Number.isSafeInteger(v.weight) || v.weight <= 0)
                 throw new Error(`掉落条目 ${v.family} 引用的物品编号或权重无效：${v.templateId}`);
             families.delete(v.family);
@@ -136,11 +132,13 @@ export class ExpeditionRules {
             present: [], visible: [], cleared: [], used: [], sources: [], warnings: [], warning: null } };
         let slot = 0;
         for (const item of state.items) {
-            const kind = Inventory.template(c,item).kind;
+            const template = Inventory.template(c,item), kind = template.kind;
             if(kind==="stamina")continue;
+            const rotated = template.height > c.spaces.battleHeight && template.rotate;
             item.location = kind === "weapon" || kind === "container" ? { space: kind } :
                 kind === "repair" ? { space: "bag", x: 0, y: 0, rotated: false } :
-                { space: "battle", x: slot++, y: 0, rotated: false };
+                { space: "battle", x: slot, y: 0, rotated };
+            if (item.location.space === "battle") slot += Inventory.dimensions(template,item.location)[0];
         }
         Inventory.validate(c,state);
         return state;
@@ -280,14 +278,19 @@ export class ExpeditionRules {
         const count = random.below(100) < pool.minWeight ? pool.min : pool.max;
         const entries: ExpeditionSource["entries"] = [];
         for (let i = 0; i < count; i++) {
-            let family = pool.code === "alchemy" && i < 2 ? ["hp","mp"][i] :
-                ["hp","mp","repair","herb","ore","small","book","container","weapon"][random.weighted(pool.categories)];
-            if (family === "book") family = ["bookSword","bookEarth","bookCommon"][random.weighted(c.rules.books)];
-            if (family === "container") family += random.weighted(pool.qualities) + 1;
-            const variants = c.variants.filter(v => v.family === family);
+            const family = pool.code === "alchemy" && i < 2 ? ["hp","mp"][i] :
+                EXPEDITION_LOOT_FAMILIES[random.weighted(pool.categories)];
+            const candidates = c.variants.filter(v => v.family === family);
+            const qualities = pool.qualities.map((weight,index) =>
+                candidates.some(v=>c.templates.find(t=>t.id===v.templateId)!.quality===index+1) ? weight : 0);
+            // 来源先抽现有品质；该类别没有来源偏好品质时，按条目权重抽取。
+            const quality = qualities.some(Boolean) ? random.weighted(qualities)+1 : null;
+            const variants = candidates.filter(v => quality === null || c.templates.find(t=>t.id===v.templateId)!.quality===quality);
             const templateId = variants[random.weighted(variants.map(v => v.weight))].templateId;
-            const durability = family === "weapon" ? pool.durability[0] +
-                random.below(pool.durability[1]-pool.durability[0]+1) : null;
+            const template = c.templates.find(t=>t.id===templateId)!;
+            const max = Math.min(pool.durability[1],template.weaponDurability);
+            const min = Math.min(pool.durability[0],max);
+            const durability = family === "weapon" ? min+random.below(max-min+1) : null;
             entries.push({ uid: `${s.runId}:loot:${node.key}:${i}`, templateId, durability,
                 location: { space: "source", node: s.node } });
         }

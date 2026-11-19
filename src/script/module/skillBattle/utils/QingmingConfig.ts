@@ -1,5 +1,6 @@
 import type { Tables } from "../../../config/schema";
-import { byBehaviorCode } from "../../../config/ConfigRows";
+import { byBehaviorCode, byConfigId } from "../../../config/ConfigRows";
+import { BUILD_FAMILIES, BUILD_TYPES, configCategory } from "../../../config/ConfigCategories";
 import type { RogueItem, RogueMove, RogueSetup, RogueState } from "../types/QingmingTypes";
 
 const MOVE_CODES = ["basic","guard","edge","wind","guide","fall","end","heal","mana","choose","next","retreat"] as const;
@@ -66,15 +67,23 @@ export class QingmingConfig {
             moves[row.code] = row.name;
             skills[row.code] = {name: row.name, cost: row.mp_cost, description: row.description};
         }
+        const mutations = new Map<number, RogueMove>();
+        for (const row of byConfigId(tables.build_mutation.getDataList(), "改招关系表")) {
+            const build = tables.build.get(row.id), skill = tables.skill.get(row.skill_id);
+            if (!build || configCategory(build.type, BUILD_TYPES, "构筑类型") !== "mutation" ||
+                !skill || !["edge","wind","guide","fall"].includes(skill.code))
+                throw new Error(`改招关系的构筑或技能引用无效：${row.id}`);
+            mutations.set(row.id, skill.code as RogueMove);
+        }
         for (const row of byBehaviorCode(tables.build.getDataList(), BUILD_CODES, "构筑表")) {
-            if (!row.name || !row.description || !["passive","mutation","core"].includes(row.type) ||
-                !["flying","wound","guard","neutral"].includes(row.family) ||
-                (row.type === "mutation" ? !["edge","wind","guide","fall"].includes(row.slot) : !!row.slot))
+            const type = configCategory(row.type, BUILD_TYPES, "构筑类型");
+            const family = configCategory(row.family, BUILD_FAMILIES, "构筑方向");
+            const slot = mutations.get(row.id);
+            if (!row.name || !row.description || (type === "mutation" ? !slot : !!slot))
                 throw new Error(`构筑配置无效：${row.code}`);
             items[row.code] = {
-                name: row.name, type: row.type as RogueItemDefinition["type"],
-                family: row.family as RogueItemDefinition["family"], description: row.description,
-                ...(row.slot ? {slot: row.slot as RogueMove} : {}),
+                name: row.name, type, family, description: row.description,
+                ...(slot ? {slot} : {}),
             };
         }
         this.moves = moves;

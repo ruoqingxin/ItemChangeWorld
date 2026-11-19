@@ -299,7 +299,9 @@ export class BattlePanel {
         const result=this.selection?.ok?this.selection:null,p=result?.preview,next=result?.state.qingming;
         this.text("previewTitle",p?p.name:"青冥剑典",440,396,560,30,20,colors.jade);
         const detail=!p?this.notice:p.potion?
-            `恢复${p.resource==="hp"?"生命":"灵力"} ${p.recovery}\n不消耗行动点`:
+            (p.resource==="shield"?`护盾 +${p.shield}`:p.resource==="mixed"?
+                `恢复生命 ${p.recovery} · 灵力 ${p.secondaryRecovery}`:`恢复${p.resource==="hp"?"生命":"灵力"} ${p.recovery}`)+
+                "\n不消耗行动点":
             `敌生命 -${p.enemyHpLoss} · 自身承伤 ${p.playerHpLoss}\n`+
             `灵力 ${s.player.mp} → ${next.player.mp} · 耐久 -${p.durabilityCost}\n`+
             `第${next.round}回合 · 行动${next.ap}/3 · 护盾${next.player.shield}\n`+
@@ -326,7 +328,8 @@ export class BattlePanel {
         });
         for(let i=0;i<5;i++) {
             const item=s.pouch[i],potion=item&&record.setup.potions.find(p=>p.itemId===item.itemId);
-            this.button(`pouch${i}`,potion?`${potion.resource==="hp"?"血药":"蓝药"} +${potion.amount}`:"空",
+            this.button(`pouch${i}`,potion?`${potion.name}\n${potion.resource==="mixed"?`血${potion.amount} 蓝${potion.secondaryAmount}`:
+                `${potion.resource==="shield"?"盾":potion.resource==="hp"?"血":"蓝"} +${potion.amount}`}`:"空",
                 440+i*112,540,102,62,enabled&&!!item&&!s.potionUsed,
                 this.selected?.type==="potion"&&this.selected.itemUid===item?.itemUid);
         }

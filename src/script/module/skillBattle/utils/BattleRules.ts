@@ -29,7 +29,9 @@ export class BattleRules {
                 setup.enemy.id, setup.enemy.maxHp].every(n => int(n, 1)) ||
             !Array.isArray(setup.potions) || !setup.potions.length ||
             new Set(setup.potions.map(p => p.itemId)).size !== setup.potions.length ||
-            setup.potions.some(p => !int(p.itemId, 1) || !p.name || !["hp", "mp"].includes(p.resource) || !int(p.amount, 1)))
+            setup.potions.some(p => !int(p.itemId, 1) || !p.name || !["hp","mp","mixed","shield"].includes(p.resource) ||
+                !int(p.amount, 1) || !int(p.secondaryAmount) ||
+                (p.resource === "mixed" ? p.secondaryAmount <= 0 : p.secondaryAmount !== 0)))
             throw new Error("战斗配置无效");
         if (setup.weapon && (!int(setup.weapon.id, 1) || !setup.weapon.name ||
             ![setup.weapon.attack, setup.weapon.defense, setup.weapon.durability, setup.weapon.maxDurability].every(n => int(n)) ||

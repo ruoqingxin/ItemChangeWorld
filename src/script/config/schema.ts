@@ -3,6 +3,215 @@
 import ByteBuf from './bright/serialization/ByteBuf'
 
 
+export enum EBuildFamily {
+    /**
+     * 飞剑
+     */
+    flying = 1,
+    /**
+     * 剑伤
+     */
+    wound = 2,
+    /**
+     * 御守
+     */
+    guard = 3,
+    /**
+     * 通用
+     */
+    neutral = 4,
+}
+
+export enum EBuildType {
+    /**
+     * 被动
+     */
+    passive = 1,
+    /**
+     * 改招
+     */
+    mutation = 2,
+    /**
+     * 核心
+     */
+    core = 3,
+}
+
+export enum EEnemyTier {
+    /**
+     * 普通
+     */
+    normal = 1,
+    /**
+     * 精英
+     */
+    elite = 2,
+    /**
+     * 首领
+     */
+    boss = 3,
+}
+
+export enum EItemKind {
+    /**
+     * 武器
+     */
+    weapon = 1,
+    /**
+     * 生命药
+     */
+    hp = 2,
+    /**
+     * 灵力药
+     */
+    mp = 3,
+    /**
+     * 双恢复药
+     */
+    mixed = 4,
+    /**
+     * 护盾药
+     */
+    shield = 5,
+    /**
+     * 修理补给
+     */
+    repair = 6,
+    /**
+     * 体力补给
+     */
+    stamina = 7,
+    /**
+     * 完整功法
+     */
+    book = 8,
+    /**
+     * 材料与收藏品
+     */
+    material = 9,
+    /**
+     * 纳虚器
+     */
+    container = 10,
+}
+
+export enum ELootFamily {
+    /**
+     * 生命药
+     */
+    hp = 1,
+    /**
+     * 灵力药
+     */
+    mp = 2,
+    /**
+     * 双恢复药
+     */
+    mixed = 3,
+    /**
+     * 护盾药
+     */
+    shield = 4,
+    /**
+     * 修理补给
+     */
+    repair = 5,
+    /**
+     * 体力补给
+     */
+    stamina = 6,
+    /**
+     * 草药
+     */
+    herb = 7,
+    /**
+     * 矿材
+     */
+    ore = 8,
+    /**
+     * 兽材
+     */
+    beast = 9,
+    /**
+     * 收藏品
+     */
+    relic = 10,
+    /**
+     * 完整功法
+     */
+    book = 11,
+    /**
+     * 纳虚器
+     */
+    container = 12,
+    /**
+     * 武器
+     */
+    weapon = 13,
+}
+
+export enum EMapNodeKind {
+    /**
+     * 出生
+     */
+    start = 1,
+    /**
+     * 普通战斗
+     */
+    normal = 2,
+    /**
+     * 精英战斗
+     */
+    elite = 3,
+    /**
+     * 首领战斗
+     */
+    boss = 4,
+    /**
+     * 搜索
+     */
+    search = 5,
+    /**
+     * 借法
+     */
+    borrow = 6,
+    /**
+     * 悟道
+     */
+    insight = 7,
+    /**
+     * 中转
+     */
+    transit = 8,
+    /**
+     * 恢复
+     */
+    recovery = 9,
+    /**
+     * 撤离
+     */
+    extract = 10,
+}
+
+export enum EPotionResource {
+    /**
+     * 生命
+     */
+    hp = 1,
+    /**
+     * 灵力
+     */
+    mp = 2,
+    /**
+     * 生命与灵力
+     */
+    mixed = 3,
+    /**
+     * 护盾
+     */
+    shield = 4,
+}
+
 export enum EQuality {
     /**
      * 无
@@ -42,15 +251,12 @@ export class Ibattle_ruleConfig {
         this.player_mp = _buf_.ReadInt()
         this.base_attack = _buf_.ReadInt()
         this.base_defense = _buf_.ReadInt()
-        this.weapon_attack = _buf_.ReadInt()
-        this.weapon_defense = _buf_.ReadInt()
         this.enemy_hp = _buf_.ReadInt()
         this.enemy_mp = _buf_.ReadInt()
         this.enemy_attack = _buf_.ReadInt()
         this.enemy_defense = _buf_.ReadInt()
         this.battle_rewards = _buf_.ReadInt()
         this.version = _buf_.ReadInt()
-        this.weapon_max_durability = _buf_.ReadInt()
     }
 
     /**
@@ -73,14 +279,6 @@ export class Ibattle_ruleConfig {
      * 基础防御
      */
     readonly base_defense: number
-    /**
-     * 武器攻击
-     */
-    readonly weapon_attack: number
-    /**
-     * 武器防御
-     */
-    readonly weapon_defense: number
     /**
      * 敌人基础生命，按类型及战次调整
      */
@@ -105,10 +303,25 @@ export class Ibattle_ruleConfig {
      * 整数规则版本
      */
     readonly version: number
+
+
+}
+
+export class Ibuild_mutationConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.id = _buf_.ReadInt()
+        this.skill_id = _buf_.ReadInt()
+    }
+
     /**
-     * 武器耐久上限
+     * 构筑编号，引用 build.id
      */
-    readonly weapon_max_durability: number
+    readonly id: number
+    /**
+     * 被替换技能编号，引用 skill.id
+     */
+    readonly skill_id: number
 
 
 }
@@ -119,9 +332,8 @@ export class IbuildConfig {
         this.id = _buf_.ReadInt()
         this.code = _buf_.ReadString()
         this.name = _buf_.ReadString()
-        this.type = _buf_.ReadString()
-        this.family = _buf_.ReadString()
-        this.slot = _buf_.ReadString()
+        this.type = _buf_.ReadInt()
+        this.family = _buf_.ReadInt()
         this.description = _buf_.ReadString()
     }
 
@@ -140,19 +352,44 @@ export class IbuildConfig {
     /**
      * 类型
      */
-    readonly type: string
+    readonly type: EBuildType
     /**
      * 机制方向
      */
-    readonly family: string
-    /**
-     * 改招槽位
-     */
-    readonly slot: string
+    readonly family: EBuildFamily
     /**
      * 效果
      */
     readonly description: string
+
+
+}
+
+export class IcontainerConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.id = _buf_.ReadInt()
+        this.width = _buf_.ReadInt()
+        this.height = _buf_.ReadInt()
+        this.weight_limit = _buf_.ReadInt()
+    }
+
+    /**
+     * 物品编号，引用 item.id
+     */
+    readonly id: number
+    /**
+     * 内部容量宽
+     */
+    readonly width: number
+    /**
+     * 内部容量高
+     */
+    readonly height: number
+    /**
+     * 装备后提供的背包承重
+     */
+    readonly weight_limit: number
 
 
 }
@@ -163,7 +400,7 @@ export class IenemyConfig {
         this.id = _buf_.ReadInt()
         this.code = _buf_.ReadString()
         this.name = _buf_.ReadString()
-        this.tier = _buf_.ReadString()
+        this.tier = _buf_.ReadInt()
         this.opening = _buf_.ReadInt()
         this.hint = _buf_.ReadString()
     }
@@ -183,7 +420,7 @@ export class IenemyConfig {
     /**
      * 级别
      */
-    readonly tier: string
+    readonly tier: EEnemyTier
     /**
      * 初始护盾防御百分比
      */
@@ -204,7 +441,6 @@ export class Iinventory_ruleConfig {
         this.battle_height = _buf_.ReadInt()
         this.safe_width = _buf_.ReadInt()
         this.safe_height = _buf_.ReadInt()
-        this.repair = _buf_.ReadInt()
         this.base_weight = _buf_.ReadInt()
         this.source_pages = _buf_.ReadInt()
     }
@@ -230,10 +466,6 @@ export class Iinventory_ruleConfig {
      */
     readonly safe_height: number
     /**
-     * 修补耐久
-     */
-    readonly repair: number
-    /**
      * 角色基础承重
      */
     readonly base_weight: number
@@ -245,36 +477,56 @@ export class Iinventory_ruleConfig {
 
 }
 
+export class Iinventory_startConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.id = _buf_.ReadInt()
+        this.item_id = _buf_.ReadInt()
+        this.count = _buf_.ReadInt()
+        this.durability = _buf_.ReadInt()
+    }
+
+    /**
+     * 固定起始条目编号
+     */
+    readonly id: number
+    /**
+     * 引用 item.id
+     */
+    readonly item_id: number
+    /**
+     * 起始件数
+     */
+    readonly count: number
+    /**
+     * 武器初始耐久，其余为 0
+     */
+    readonly durability: number
+
+
+}
+
 export class IitemConfig {
 
     constructor(_buf_: ByteBuf) {
         this.id = _buf_.ReadInt()
         this.name = _buf_.ReadString()
-        this.kind = _buf_.ReadString()
+        this.kind = _buf_.ReadInt()
         this.width = _buf_.ReadInt()
         this.height = _buf_.ReadInt()
         this.rotate = _buf_.ReadInt()
         this.battle = _buf_.ReadInt()
         this.safe = _buf_.ReadInt()
         this.stack = _buf_.ReadInt()
-        this.potion_id = _buf_.ReadInt()
-        this.bag_width = _buf_.ReadInt()
-        this.bag_height = _buf_.ReadInt()
         this.icon = _buf_.ReadString()
         this.quality = _buf_.ReadInt()
         this.weight = _buf_.ReadInt()
-        this.weight_limit = _buf_.ReadInt()
-        this.stamina_restore = _buf_.ReadInt()
         this.recycle_price = _buf_.ReadInt()
         this.enabled = _buf_.ReadInt()
-        this.weapon_attack = _buf_.ReadInt()
-        this.weapon_defense = _buf_.ReadInt()
-        this.weapon_durability = _buf_.ReadInt()
-        this.repair_amount = _buf_.ReadInt()
     }
 
     /**
-     * 固定物品编号；停用也不复用
+     * 固定编号；1–100 预留货币
      */
     readonly id: number
     /**
@@ -284,7 +536,7 @@ export class IitemConfig {
     /**
      * 类别
      */
-    readonly kind: string
+    readonly kind: EItemKind
     /**
      * 宽格
      */
@@ -310,18 +562,6 @@ export class IitemConfig {
      */
     readonly stack: number
     /**
-     * 药效编号；0 表示无
-     */
-    readonly potion_id: number
-    /**
-     * 容量宽
-     */
-    readonly bag_width: number
-    /**
-     * 容量高
-     */
-    readonly bag_height: number
-    /**
      * 图片键
      */
     readonly icon: string
@@ -334,14 +574,6 @@ export class IitemConfig {
      */
     readonly weight: number
     /**
-     * 装备背包承重
-     */
-    readonly weight_limit: number
-    /**
-     * 战外体力恢复
-     */
-    readonly stamina_restore: number
-    /**
      * 回收基价（愿力）
      */
     readonly recycle_price: number
@@ -349,22 +581,6 @@ export class IitemConfig {
      * 已投放 1，待投放 0
      */
     readonly enabled: number
-    /**
-     * 武器攻击
-     */
-    readonly weapon_attack: number
-    /**
-     * 武器防御
-     */
-    readonly weapon_defense: number
-    /**
-     * 武器耐久上限
-     */
-    readonly weapon_durability: number
-    /**
-     * 修理量，-1 表示修满
-     */
-    readonly repair_amount: number
 
 
 }
@@ -374,16 +590,12 @@ export class Imap_nodeConfig {
     constructor(_buf_: ByteBuf) {
         this.id = _buf_.ReadInt()
         this.key = _buf_.ReadString()
-        this.kind = _buf_.ReadString()
+        this.kind = _buf_.ReadInt()
         this.name = _buf_.ReadString()
         this.pool_id = _buf_.ReadInt()
         this.main_order = _buf_.ReadInt()
         this.x = _buf_.ReadFloat()
         this.y = _buf_.ReadFloat()
-        this.icon = _buf_.ReadString()
-        this.search_min = _buf_.ReadInt()
-        this.search_max = _buf_.ReadInt()
-        this.search_weight = _buf_.ReadInt()
     }
 
     /**
@@ -397,7 +609,7 @@ export class Imap_nodeConfig {
     /**
      * 类别
      */
-    readonly kind: string
+    readonly kind: EMapNodeKind
     /**
      * 功能名
      */
@@ -419,13 +631,87 @@ export class Imap_nodeConfig {
      */
     readonly y: number
 
-    readonly icon: string
 
-    readonly search_min: number
+}
 
-    readonly search_max: number
+export class Imap_pool_categoryConfig {
 
-    readonly search_weight: number
+    constructor(_buf_: ByteBuf) {
+        this.id = _buf_.ReadInt()
+        this.pool_id = _buf_.ReadInt()
+        this.family = _buf_.ReadInt()
+        this.weight = _buf_.ReadInt()
+    }
+
+    /**
+     * 固定类别权重编号
+     */
+    readonly id: number
+    /**
+     * 引用 map_pool.id
+     */
+    readonly pool_id: number
+    /**
+     * 掉落类别
+     */
+    readonly family: ELootFamily
+    /**
+     * 类别权重
+     */
+    readonly weight: number
+
+
+}
+
+export class Imap_pool_qualityConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.id = _buf_.ReadInt()
+        this.pool_id = _buf_.ReadInt()
+        this.quality = _buf_.ReadInt()
+        this.weight = _buf_.ReadInt()
+    }
+
+    /**
+     * 固定品质权重编号
+     */
+    readonly id: number
+    /**
+     * 引用 map_pool.id
+     */
+    readonly pool_id: number
+    /**
+     * 物品品质
+     */
+    readonly quality: EQuality
+    /**
+     * 品质权重
+     */
+    readonly weight: number
+
+
+}
+
+export class Imap_pool_weaponConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.id = _buf_.ReadInt()
+        this.dur_min = _buf_.ReadInt()
+        this.dur_max = _buf_.ReadInt()
+    }
+
+    /**
+     * 掉落池编号，引用 map_pool.id
+     */
+    readonly id: number
+    /**
+     * 武器初始耐久下限
+     */
+    readonly dur_min: number
+    /**
+     * 武器初始耐久上限
+     */
+    readonly dur_max: number
 
 
 }
@@ -438,23 +724,6 @@ export class Imap_poolConfig {
         this.min_count = _buf_.ReadInt()
         this.max_count = _buf_.ReadInt()
         this.min_weight = _buf_.ReadInt()
-        this.dur_min = _buf_.ReadInt()
-        this.dur_max = _buf_.ReadInt()
-        this.hp = _buf_.ReadInt()
-        this.mp = _buf_.ReadInt()
-        this.repair = _buf_.ReadInt()
-        this.herb = _buf_.ReadInt()
-        this.ore = _buf_.ReadInt()
-        this.small = _buf_.ReadInt()
-        this.book = _buf_.ReadInt()
-        this.container = _buf_.ReadInt()
-        this.weapon = _buf_.ReadInt()
-        this.q1 = _buf_.ReadInt()
-        this.q2 = _buf_.ReadInt()
-        this.q3 = _buf_.ReadInt()
-        this.q4 = _buf_.ReadInt()
-        this.q5 = _buf_.ReadInt()
-        this.q6 = _buf_.ReadInt()
     }
 
     /**
@@ -477,56 +746,6 @@ export class Imap_poolConfig {
      * 较少权重
      */
     readonly min_weight: number
-    /**
-     * 耐久下限
-     */
-    readonly dur_min: number
-    /**
-     * 耐久上限
-     */
-    readonly dur_max: number
-
-    readonly hp: number
-
-    readonly mp: number
-
-    readonly repair: number
-
-    readonly herb: number
-
-    readonly ore: number
-
-    readonly small: number
-
-    readonly book: number
-
-    readonly container: number
-
-    readonly weapon: number
-    /**
-     * 白
-     */
-    readonly q1: number
-    /**
-     * 绿
-     */
-    readonly q2: number
-    /**
-     * 蓝
-     */
-    readonly q3: number
-    /**
-     * 紫
-     */
-    readonly q4: number
-    /**
-     * 金
-     */
-    readonly q5: number
-    /**
-     * 红
-     */
-    readonly q6: number
 
 
 }
@@ -539,14 +758,6 @@ export class Imap_ruleConfig {
         this.limit_ms = _buf_.ReadInt()
         this.search_ms = _buf_.ReadInt()
         this.recovery_percent = _buf_.ReadInt()
-        this.book_sword = _buf_.ReadInt()
-        this.book_earth = _buf_.ReadInt()
-        this.book_common = _buf_.ReadInt()
-        this.weapon_id = _buf_.ReadInt()
-        this.container_id = _buf_.ReadInt()
-        this.hp_id = _buf_.ReadInt()
-        this.mp_id = _buf_.ReadInt()
-        this.repair_id = _buf_.ReadInt()
         this.stamina_max = _buf_.ReadInt()
         this.move_cost = _buf_.ReadInt()
         this.normal_cost = _buf_.ReadInt()
@@ -589,38 +800,6 @@ export class Imap_ruleConfig {
      * 恢复百分比
      */
     readonly recovery_percent: number
-    /**
-     * 剑书权重
-     */
-    readonly book_sword: number
-    /**
-     * 土书权重
-     */
-    readonly book_earth: number
-    /**
-     * 通用书权重
-     */
-    readonly book_common: number
-    /**
-     * 初始武器的物品编号
-     */
-    readonly weapon_id: number
-    /**
-     * 初始容器的物品编号
-     */
-    readonly container_id: number
-    /**
-     * 初始血药的物品编号
-     */
-    readonly hp_id: number
-    /**
-     * 初始蓝药的物品编号
-     */
-    readonly mp_id: number
-    /**
-     * 初始修补工具的物品编号
-     */
-    readonly repair_id: number
     /**
      * 体力上限
      */
@@ -689,11 +868,45 @@ export class Imap_ruleConfig {
 
 }
 
+export class Imap_searchConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.id = _buf_.ReadInt()
+        this.icon = _buf_.ReadString()
+        this.min_count = _buf_.ReadInt()
+        this.max_count = _buf_.ReadInt()
+        this.weight = _buf_.ReadInt()
+    }
+
+    /**
+     * 节点编号，引用 map_node.id
+     */
+    readonly id: number
+    /**
+     * 搜索点图片键
+     */
+    readonly icon: string
+    /**
+     * 本类搜索点下限
+     */
+    readonly min_count: number
+    /**
+     * 本类搜索点上限
+     */
+    readonly max_count: number
+    /**
+     * 余量抽取权重
+     */
+    readonly weight: number
+
+
+}
+
 export class Imap_variantConfig {
 
     constructor(_buf_: ByteBuf) {
         this.id = _buf_.ReadInt()
-        this.family = _buf_.ReadString()
+        this.family = _buf_.ReadInt()
         this.item_id = _buf_.ReadInt()
         this.weight = _buf_.ReadInt()
     }
@@ -705,7 +918,7 @@ export class Imap_variantConfig {
     /**
      * 类别
      */
-    readonly family: string
+    readonly family: ELootFamily
     /**
      * 引用物品表固定编号
      */
@@ -718,11 +931,30 @@ export class Imap_variantConfig {
 
 }
 
+export class Ipotion_itemConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.id = _buf_.ReadInt()
+        this.potion_id = _buf_.ReadInt()
+    }
+
+    /**
+     * 物品编号，引用 item.id
+     */
+    readonly id: number
+    /**
+     * 药效编号，引用 potion.id
+     */
+    readonly potion_id: number
+
+
+}
+
 export class IpotionConfig {
 
     constructor(_buf_: ByteBuf) {
         this.id = _buf_.ReadInt()
-        this.resource = _buf_.ReadString()
+        this.resource = _buf_.ReadInt()
         this.amount = _buf_.ReadInt()
         this.secondary_amount = _buf_.ReadInt()
     }
@@ -734,7 +966,7 @@ export class IpotionConfig {
     /**
      * 恢复资源
      */
-    readonly resource: string
+    readonly resource: EPotionResource
     /**
      * 固定恢复量（点）
      */
@@ -743,6 +975,25 @@ export class IpotionConfig {
      * 双恢复的灵力恢复量
      */
     readonly secondary_amount: number
+
+
+}
+
+export class IrepairConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.id = _buf_.ReadInt()
+        this.amount = _buf_.ReadInt()
+    }
+
+    /**
+     * 物品编号，引用 item.id
+     */
+    readonly id: number
+    /**
+     * 修理量，-1 表示修满
+     */
+    readonly amount: number
 
 
 }
@@ -777,6 +1028,54 @@ export class IskillConfig {
      * 效果
      */
     readonly description: string
+
+
+}
+
+export class IstaminaConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.id = _buf_.ReadInt()
+        this.amount = _buf_.ReadInt()
+    }
+
+    /**
+     * 物品编号，引用 item.id
+     */
+    readonly id: number
+    /**
+     * 战外体力恢复量
+     */
+    readonly amount: number
+
+
+}
+
+export class IweaponConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.id = _buf_.ReadInt()
+        this.attack = _buf_.ReadInt()
+        this.defense = _buf_.ReadInt()
+        this.durability = _buf_.ReadInt()
+    }
+
+    /**
+     * 物品编号，引用 item.id
+     */
+    readonly id: number
+    /**
+     * 武器攻击
+     */
+    readonly attack: number
+    /**
+     * 武器防御
+     */
+    readonly defense: number
+    /**
+     * 武器耐久上限
+     */
+    readonly durability: number
 
 
 }
@@ -1254,6 +1553,479 @@ export class map_rule {
 
 }
 
+export class weapon {
+    private _dataMap: Map<number, IweaponConfig>
+
+    private _dataList: IweaponConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, IweaponConfig>()
+        this._dataList = []
+
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: IweaponConfig
+            _v = new IweaponConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, IweaponConfig> {this.load(); return this._dataMap; }
+
+    getDataList(): IweaponConfig[] { this.load();return this._dataList; }
+
+    get(key: number): IweaponConfig | undefined {
+		this.load();
+        return this._dataMap.get(key);
+    }
+
+}
+
+export class potion_item {
+    private _dataMap: Map<number, Ipotion_itemConfig>
+
+    private _dataList: Ipotion_itemConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, Ipotion_itemConfig>()
+        this._dataList = []
+
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Ipotion_itemConfig
+            _v = new Ipotion_itemConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, Ipotion_itemConfig> {this.load(); return this._dataMap; }
+
+    getDataList(): Ipotion_itemConfig[] { this.load();return this._dataList; }
+
+    get(key: number): Ipotion_itemConfig | undefined {
+		this.load();
+        return this._dataMap.get(key);
+    }
+
+}
+
+export class repair {
+    private _dataMap: Map<number, IrepairConfig>
+
+    private _dataList: IrepairConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, IrepairConfig>()
+        this._dataList = []
+
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: IrepairConfig
+            _v = new IrepairConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, IrepairConfig> {this.load(); return this._dataMap; }
+
+    getDataList(): IrepairConfig[] { this.load();return this._dataList; }
+
+    get(key: number): IrepairConfig | undefined {
+		this.load();
+        return this._dataMap.get(key);
+    }
+
+}
+
+export class stamina {
+    private _dataMap: Map<number, IstaminaConfig>
+
+    private _dataList: IstaminaConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, IstaminaConfig>()
+        this._dataList = []
+
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: IstaminaConfig
+            _v = new IstaminaConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, IstaminaConfig> {this.load(); return this._dataMap; }
+
+    getDataList(): IstaminaConfig[] { this.load();return this._dataList; }
+
+    get(key: number): IstaminaConfig | undefined {
+		this.load();
+        return this._dataMap.get(key);
+    }
+
+}
+
+export class container {
+    private _dataMap: Map<number, IcontainerConfig>
+
+    private _dataList: IcontainerConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, IcontainerConfig>()
+        this._dataList = []
+
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: IcontainerConfig
+            _v = new IcontainerConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, IcontainerConfig> {this.load(); return this._dataMap; }
+
+    getDataList(): IcontainerConfig[] { this.load();return this._dataList; }
+
+    get(key: number): IcontainerConfig | undefined {
+		this.load();
+        return this._dataMap.get(key);
+    }
+
+}
+
+export class build_mutation {
+    private _dataMap: Map<number, Ibuild_mutationConfig>
+
+    private _dataList: Ibuild_mutationConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, Ibuild_mutationConfig>()
+        this._dataList = []
+
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Ibuild_mutationConfig
+            _v = new Ibuild_mutationConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, Ibuild_mutationConfig> {this.load(); return this._dataMap; }
+
+    getDataList(): Ibuild_mutationConfig[] { this.load();return this._dataList; }
+
+    get(key: number): Ibuild_mutationConfig | undefined {
+		this.load();
+        return this._dataMap.get(key);
+    }
+
+}
+
+export class map_search {
+    private _dataMap: Map<number, Imap_searchConfig>
+
+    private _dataList: Imap_searchConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, Imap_searchConfig>()
+        this._dataList = []
+
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Imap_searchConfig
+            _v = new Imap_searchConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, Imap_searchConfig> {this.load(); return this._dataMap; }
+
+    getDataList(): Imap_searchConfig[] { this.load();return this._dataList; }
+
+    get(key: number): Imap_searchConfig | undefined {
+		this.load();
+        return this._dataMap.get(key);
+    }
+
+}
+
+export class map_pool_category {
+    private _dataMap: Map<number, Imap_pool_categoryConfig>
+
+    private _dataList: Imap_pool_categoryConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, Imap_pool_categoryConfig>()
+        this._dataList = []
+
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Imap_pool_categoryConfig
+            _v = new Imap_pool_categoryConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, Imap_pool_categoryConfig> {this.load(); return this._dataMap; }
+
+    getDataList(): Imap_pool_categoryConfig[] { this.load();return this._dataList; }
+
+    get(key: number): Imap_pool_categoryConfig | undefined {
+		this.load();
+        return this._dataMap.get(key);
+    }
+
+}
+
+export class map_pool_quality {
+    private _dataMap: Map<number, Imap_pool_qualityConfig>
+
+    private _dataList: Imap_pool_qualityConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, Imap_pool_qualityConfig>()
+        this._dataList = []
+
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Imap_pool_qualityConfig
+            _v = new Imap_pool_qualityConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, Imap_pool_qualityConfig> {this.load(); return this._dataMap; }
+
+    getDataList(): Imap_pool_qualityConfig[] { this.load();return this._dataList; }
+
+    get(key: number): Imap_pool_qualityConfig | undefined {
+		this.load();
+        return this._dataMap.get(key);
+    }
+
+}
+
+export class map_pool_weapon {
+    private _dataMap: Map<number, Imap_pool_weaponConfig>
+
+    private _dataList: Imap_pool_weaponConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, Imap_pool_weaponConfig>()
+        this._dataList = []
+
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Imap_pool_weaponConfig
+            _v = new Imap_pool_weaponConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, Imap_pool_weaponConfig> {this.load(); return this._dataMap; }
+
+    getDataList(): Imap_pool_weaponConfig[] { this.load();return this._dataList; }
+
+    get(key: number): Imap_pool_weaponConfig | undefined {
+		this.load();
+        return this._dataMap.get(key);
+    }
+
+}
+
+export class inventory_start {
+    private _dataMap: Map<number, Iinventory_startConfig>
+
+    private _dataList: Iinventory_startConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, Iinventory_startConfig>()
+        this._dataList = []
+
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Iinventory_startConfig
+            _v = new Iinventory_startConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, Iinventory_startConfig> {this.load(); return this._dataMap; }
+
+    getDataList(): Iinventory_startConfig[] { this.load();return this._dataList; }
+
+    get(key: number): Iinventory_startConfig | undefined {
+		this.load();
+        return this._dataMap.get(key);
+    }
+
+}
+
 type ByteBufLoader = (file: string) => ByteBuf
 
 export class Tables {
@@ -1279,6 +2051,28 @@ export class Tables {
     get map_variant(): map_variant  { return this._map_variant;}
     private _map_rule: map_rule
     get map_rule(): map_rule  { return this._map_rule;}
+    private _weapon: weapon
+    get weapon(): weapon  { return this._weapon;}
+    private _potion_item: potion_item
+    get potion_item(): potion_item  { return this._potion_item;}
+    private _repair: repair
+    get repair(): repair  { return this._repair;}
+    private _stamina: stamina
+    get stamina(): stamina  { return this._stamina;}
+    private _container: container
+    get container(): container  { return this._container;}
+    private _build_mutation: build_mutation
+    get build_mutation(): build_mutation  { return this._build_mutation;}
+    private _map_search: map_search
+    get map_search(): map_search  { return this._map_search;}
+    private _map_pool_category: map_pool_category
+    get map_pool_category(): map_pool_category  { return this._map_pool_category;}
+    private _map_pool_quality: map_pool_quality
+    get map_pool_quality(): map_pool_quality  { return this._map_pool_quality;}
+    private _map_pool_weapon: map_pool_weapon
+    get map_pool_weapon(): map_pool_weapon  { return this._map_pool_weapon;}
+    private _inventory_start: inventory_start
+    get inventory_start(): inventory_start  { return this._inventory_start;}
 
     static getTableNames(): string[] {
         let names: string[] = [];
@@ -1293,6 +2087,17 @@ export class Tables {
         names.push('map_pool');
         names.push('map_variant');
         names.push('map_rule');
+        names.push('weapon');
+        names.push('potion_item');
+        names.push('repair');
+        names.push('stamina');
+        names.push('container');
+        names.push('build_mutation');
+        names.push('map_search');
+        names.push('map_pool_category');
+        names.push('map_pool_quality');
+        names.push('map_pool_weapon');
+        names.push('inventory_start');
         return names;
     }
 
@@ -1308,6 +2113,17 @@ export class Tables {
         this._map_pool = new map_pool(loader('map_pool'))
         this._map_variant = new map_variant(loader('map_variant'))
         this._map_rule = new map_rule(loader('map_rule'))
+        this._weapon = new weapon(loader('weapon'))
+        this._potion_item = new potion_item(loader('potion_item'))
+        this._repair = new repair(loader('repair'))
+        this._stamina = new stamina(loader('stamina'))
+        this._container = new container(loader('container'))
+        this._build_mutation = new build_mutation(loader('build_mutation'))
+        this._map_search = new map_search(loader('map_search'))
+        this._map_pool_category = new map_pool_category(loader('map_pool_category'))
+        this._map_pool_quality = new map_pool_quality(loader('map_pool_quality'))
+        this._map_pool_weapon = new map_pool_weapon(loader('map_pool_weapon'))
+        this._inventory_start = new inventory_start(loader('inventory_start'))
 
 
     }

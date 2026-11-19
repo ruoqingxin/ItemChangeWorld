@@ -5,6 +5,10 @@ export function isBattleNode(node: { kind: string }): boolean {
     return node.kind === "normal" || node.kind === "elite" || node.kind === "boss";
 }
 
+export const EXPEDITION_LOOT_FAMILIES = [
+    "hp","mp","mixed","shield","repair","stamina","herb","ore","beast","relic","book","container","weapon",
+] as const;
+
 export interface ExpeditionNode {
     id: number; key: string; kind: string; name: string; poolId: number;
     mainOrder: number; x: number; y: number;
@@ -21,7 +25,6 @@ export interface ExpeditionConfig extends InventoryConfig {
     mapVersion: string; nodes: ExpeditionNode[];
     pools: ExpeditionPool[]; variants: Array<{ family: string; templateId: number; weight: number }>;
     rules: { limitMs: number; searchMs: number; recoveryPercent: number;
-        books: number[];
         staminaMax: number; moveCost: number; normalCost: number; eliteCost: number; bossCost: number; searchCost: number;
         moveHpPercent: number; searchHpPercent: number; transitMin: number; transitMax: number; searchMin: number; searchMax: number;
         normalMin: number; normalMax: number; eliteMin: number; eliteMax: number;

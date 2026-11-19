@@ -229,7 +229,7 @@ export class QingmingRules {
         s.momentum += gain;
         if (gain) { this.count(s, "momentum", gain, "events"); this.log(s, `积势 ${s.momentum}/3`); }
     }
-    private static shield(s: RogueState, amount: number): void {
+    static shield(s: RogueState, amount: number): void {
         const n = Math.max(0, Math.min(Math.round(amount * (this.risky(s) ? 0.75 : 1)), s.setup.player.defense * 6 - s.player.shield));
         s.player.shield += n; this.count(s, "shield", n); this.log(s, `护盾+${n}`);
     }

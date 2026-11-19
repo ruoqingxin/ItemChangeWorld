@@ -1,43 +1,76 @@
-import type { Tables } from "../../../config/schema";
+import { EMapNodeKind, EQuality, Tables } from "../../../config/schema";
 import { byConfigId } from "../../../config/ConfigRows";
+import { configCategory, LOOT_FAMILIES, MAP_NODE_KINDS } from "../../../config/ConfigCategories";
 import { InventoryConfigUtils } from "../../inventory/utils/InventoryConfigUtils";
 
 import { ExpeditionRules } from "./ExpeditionRules";
 import type { ExpeditionConfig } from "../types/ExpeditionRunTypes";
+import { EXPEDITION_LOOT_FAMILIES } from "../types/ExpeditionRunTypes";
 
 
 export class ExpeditionRunConfigUtils {
     static read(tables: Tables): ExpeditionConfig {
         const base = InventoryConfigUtils.read(tables), r = tables.map_rule.get(1);
         if (!r) throw new Error("正式地图规则表缺失");
-        const nodes = byConfigId(tables.map_node.getDataList(), "地图节点表").map(n => ({
-            id: n.id, key: n.key, kind: n.kind, name: n.name, poolId: n.pool_id,
-            mainOrder: n.main_order, x: n.x, y: n.y,
-            ...(n.kind === "search" ? { icon: n.icon, searchMin: n.search_min,
-                searchMax: n.search_max, searchWeight: n.search_weight } : {}),
+        const searches = new Map(byConfigId(tables.map_search.getDataList(), "搜索参数表").map(row => {
+            if (tables.map_node.get(row.id)?.kind !== EMapNodeKind.search)
+                throw new Error(`搜索参数引用的节点无效：${row.id}`);
+            return [row.id, row] as const;
         }));
-        const startingItems = [[r.weapon_id,"weapon"],[r.container_id,"container"],[r.hp_id,"hp"],
-            [r.mp_id,"mp"],[r.repair_id,"repair"]] as const;
-        for (const [id, kind] of startingItems) {
-            const item = tables.item.get(id);
-            if (item?.kind !== kind || item.enabled !== 1)
-                throw new Error(`起始物品编号 ${id} 未指向已投放的 ${kind} 类物品`);
+        const nodes = byConfigId(tables.map_node.getDataList(), "地图节点表").map(n => {
+            const search = searches.get(n.id);
+            if (n.kind === EMapNodeKind.search && !search)
+                throw new Error(`搜索节点缺少专属参数：${n.id}`);
+            return {
+                id: n.id, key: n.key, kind: configCategory(n.kind, MAP_NODE_KINDS, "地图节点类别"), name: n.name, poolId: n.pool_id,
+                mainOrder: n.main_order, x: n.x, y: n.y,
+                ...(search ? { icon: search.icon, searchMin: search.min_count,
+                    searchMax: search.max_count, searchWeight: search.weight } : {}),
+            };
+        });
+        const categories = new Map<number, Map<string, number>>();
+        for (const row of byConfigId(tables.map_pool_category.getDataList(), "掉落类别权重表")) {
+            const family = configCategory(row.family, LOOT_FAMILIES, "掉落类别");
+            if (!tables.map_pool.get(row.pool_id) || !Number.isSafeInteger(row.weight) || row.weight < 0)
+                throw new Error(`掉落类别权重或掉落池引用无效：${row.id}`);
+            const weights = categories.get(row.pool_id) ?? new Map<string, number>();
+            if (weights.has(family)) throw new Error(`掉落池类别权重重复：${row.pool_id}/${family}`);
+            weights.set(family, row.weight); categories.set(row.pool_id, weights);
         }
+        const qualities = new Map<number, Map<EQuality, number>>();
+        for (const row of byConfigId(tables.map_pool_quality.getDataList(), "掉落品质权重表")) {
+            if (!tables.map_pool.get(row.pool_id) || !Number.isSafeInteger(row.quality) ||
+                row.quality < EQuality.normal || row.quality > EQuality.legendary ||
+                !Number.isSafeInteger(row.weight) || row.weight < 0)
+                throw new Error(`掉落品质权重或掉落池引用无效：${row.id}`);
+            const weights = qualities.get(row.pool_id) ?? new Map<EQuality, number>();
+            if (weights.has(row.quality)) throw new Error(`掉落池品质权重重复：${row.pool_id}/${row.quality}`);
+            weights.set(row.quality, row.weight); qualities.set(row.pool_id, weights);
+        }
+        const weaponRanges = new Map(byConfigId(tables.map_pool_weapon.getDataList(), "武器掉落耐久表").map(row => {
+            const weaponWeight = categories.get(row.id)?.get("weapon");
+            if (!tables.map_pool.get(row.id) || !weaponWeight ||
+                !Number.isSafeInteger(row.dur_min) || row.dur_min < 0 ||
+                !Number.isSafeInteger(row.dur_max) || row.dur_max < row.dur_min)
+                throw new Error(`武器掉落耐久或掉落池引用无效：${row.id}`);
+            return [row.id, row] as const;
+        }));
+        const pools = byConfigId(tables.map_pool.getDataList(), "掉落池表").map(p => {
+            const category = categories.get(p.id), quality = qualities.get(p.id), weapon = weaponRanges.get(p.id);
+            if (category?.size !== EXPEDITION_LOOT_FAMILIES.length || quality?.size !== 6 ||
+                (category.get("weapon")! > 0 && !weapon))
+                throw new Error(`掉落池缺少类别、品质或武器耐久配置：${p.id}`);
+            return {id:p.id,code:p.code,min:p.min_count,max:p.max_count,minWeight:p.min_weight,
+                durability:[weapon?.dur_min ?? 0,weapon?.dur_max ?? 0] as [number,number],
+                categories:EXPEDITION_LOOT_FAMILIES.map(family=>category.get(family)!),
+                qualities:[1,2,3,4,5,6].map(q=>quality.get(q)!)};
+        });
         const config: ExpeditionConfig = { ...base,
-            fixtures: [[r.weapon_id,1,base.build.setup.weapon!.maxDurability],[r.container_id,1,0],
-                [r.hp_id,2,0],[r.mp_id,2,0],[r.repair_id,1,0]]
-                .concat(base.templates.filter(t=>t.kind==="stamina").map(t=>[t.id,1,0]))
-                .map(([templateId,count,durability],i) => ({ id:i+1,templateId,count,durability,node:0 })),
             mapVersion: r.map_version, nodes,
             variants: byConfigId(tables.map_variant.getDataList(), "掉落条目表").map(v =>
-                ({ family:v.family,templateId:v.item_id,weight:v.weight })),
-            pools: byConfigId(tables.map_pool.getDataList(), "掉落池表").map(p => ({
-                id:p.id,code:p.code,min:p.min_count,max:p.max_count,minWeight:p.min_weight,durability:[p.dur_min,p.dur_max],
-                categories:[p.hp,p.mp,p.repair,p.herb,p.ore,p.small,p.book,p.container,p.weapon],
-                qualities:[p.q1,p.q2,p.q3,p.q4,p.q5,p.q6],
-            })),
+                ({ family:configCategory(v.family, LOOT_FAMILIES, "掉落类别"),templateId:v.item_id,weight:v.weight })),
+            pools,
             rules: { limitMs:r.limit_ms,searchMs:r.search_ms,recoveryPercent:r.recovery_percent,
-                books:[r.book_sword,r.book_earth,r.book_common],
                 staminaMax:r.stamina_max,moveCost:r.move_cost,normalCost:r.normal_cost,eliteCost:r.elite_cost,
                 bossCost:r.boss_cost,searchCost:r.search_cost,moveHpPercent:r.move_hp_percent,searchHpPercent:r.search_hp_percent,
                 transitMin:r.transit_min,transitMax:r.transit_max,searchMin:r.search_min,searchMax:r.search_max,

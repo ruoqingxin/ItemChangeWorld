@@ -50,7 +50,7 @@ test("承重限制、修补与体力药按实际实例消费",()=>{
     s.items.find(i=>i.location.space==="weapon").durability=1;
     const repaired=I.apply(c,s,{type:"use",uid:tool.uid,from:tool.location},1000).state;
     assert.equal(I.item(repaired,tool.uid).location.space,"consumed");
-    assert.equal(repaired.items.find(i=>i.location.space==="weapon").durability,21);
+    assert.equal(repaired.items.find(i=>i.location.space==="weapon").durability,36);
     const prep=start(),stamina=prep.items.find(i=>I.template(c,i).kind==="stamina");
     const carrying=move(prep,stamina,{space:"bag",x:1,y:0,rotated:false}),active=enter(carrying);
     active.stamina=1;
@@ -60,6 +60,86 @@ test("承重限制、修补与体力药按实际实例消费",()=>{
     const limited=structuredClone(c);limited.weight.base=1;
     limited.templates.filter(t=>t.kind==="container").forEach(t=>t.weightLimit=1);
     assert.throws(()=>I.validate(limited,heavy),/负重/);
+});
+test("八把武器的换装属性、逐件耐久上限与两档修理有效",()=>{
+    for(const t of c.templates.filter(t=>t.kind==="weapon")){
+        let s=start();
+        const item={uid:"new-weapon",templateId:t.id,durability:t.weaponDurability,location:{space:"warehouse"}};
+        s.items.push(item);
+        s=I.apply(c,s,{type:"equipWeapon",uid:item.uid,from:item.location,oldTo:{space:"warehouse"}},1000).state;
+        assert.deepEqual(I.carry(c,s).weapon,{id:t.id,name:t.name,attack:t.weaponAttack,defense:t.weaponDefense,
+            durability:t.weaponDurability,maxDurability:t.weaponDurability});
+        s=enter(s);I.item(s,item.uid).durability=1;
+        const tool=s.items.find(i=>i.templateId===307);
+        s=I.apply(c,s,{type:"use",uid:tool.uid,from:tool.location},1000).state;
+        assert.equal(I.item(s,item.uid).durability,36);
+        const full={uid:"full-repair",templateId:308,durability:null,location:{space:"bag",x:1,y:0,rotated:false}};
+        s.items.push(full);
+        s=I.apply(c,s,{type:"use",uid:full.uid,from:full.location},1000).state;
+        assert.equal(I.item(s,item.uid).durability,t.weaponDurability);
+        const unused={...full,uid:"unused"};s.items.push(unused);
+        const before=structuredClone(s);
+        assert.throws(()=>I.apply(c,s,{type:"use",uid:unused.uid,from:unused.location},1000),/已满/);
+        assert.deepEqual(s,before);
+        I.item(s,item.uid).durability=t.weaponDurability+1;
+        assert.throws(()=>I.validate(c,s),/实际耐久/);
+    }
+});
+test("两格药品占据完整网格，旋转后仅一个实际用药实例",()=>{
+    const config=structuredClone(c);
+    config.fixtures.find(f=>f.templateId===301).templateId=303;
+    config.fixtures.find(f=>f.templateId===303).count=1;
+    config.fixtures.find(f=>f.templateId===302).templateId=304;
+    config.fixtures.find(f=>f.templateId===304).count=1;
+    let s=R.start(config,17,"wide-potion");
+    const item=s.items.find(i=>i.templateId===303);
+    assert.deepEqual(item.location,{space:"battle",x:0,y:0,rotated:false});
+    assert.deepEqual(s.items.find(i=>i.templateId===304).location,{space:"battle",x:2,y:0,rotated:true});
+    assert.equal(I.carry(config,s).pouch.filter(Boolean).length,2);
+    const before=structuredClone(s);
+    assert.throws(()=>I.apply(config,s,{type:"move",move:{uid:item.uid,from:item.location,
+        to:{space:"battle",x:4,y:0,rotated:false}}},1000),/尺寸|越界/);
+    assert.deepEqual(s,before);
+    s=R.apply(config,s,{type:"enter"},1000,17).state;s.hp=400;
+    s=I.apply(config,s,{type:"use",uid:item.uid,from:item.location},1000).state;
+    assert.equal(s.hp,960);assert.equal(I.item(s,item.uid).location.space,"consumed");
+    assert.equal(I.carry(config,s).pouch[0],null);assert.equal(I.carry(config,s).pouch[1],null);
+});
+test("战外双恢复按各自缺口消费，护盾药不在战外消耗",()=>{
+    const base=enter(start());
+    const mixed={uid:"mixed",templateId:305,durability:null,location:{space:"safe",x:0,y:0,rotated:false}};
+    base.items.push(mixed);base.hp=950;base.mp=115;
+    const used=I.apply(c,base,{type:"use",uid:mixed.uid,from:mixed.location},1000).state;
+    assert.equal(used.hp,1000);assert.equal(used.mp,120);
+    assert.equal(I.item(used,mixed.uid).location.space,"consumed");
+    base.hp=1000;base.mp=120;
+    assert.throws(()=>I.apply(c,base,{type:"use",uid:mixed.uid,from:mixed.location},1000),/已满/);
+    mixed.templateId=306;
+    assert.throws(()=>I.apply(c,base,{type:"use",uid:mixed.uid,from:mixed.location},1000),/仅可在战斗/);
+    assert.equal(I.item(base,mixed.uid).location.space,"safe");
+});
+test("全部新物品可从当前来源产出，草药矿材兽材按来源区分",()=>{
+    const base=start(),seen=new Set();
+    for(const pool of c.pools){
+        const node=c.nodes.find(n=>n.poolId===pool.id);
+        assert.ok(node);
+        for(let seed=1;seed<=2048;seed++){
+            const s=structuredClone(base);s.node=node.id;R.makeSource(c,s,seed);
+            const entries=R.source(s).entries;
+            if(pool.code==="alchemy"){
+                assert.equal(I.template(c,entries[0]).kind,"hp");
+                assert.equal(I.template(c,entries[1]).kind,"mp");
+            }
+            for(const item of entries){
+                const t=I.template(c,item);seen.add(t.id);
+                if(pool.code==="herb")assert.ok(t.id>=901&&t.id<=906);
+                if(pool.code==="ore")assert.ok(t.id>=907&&t.id<=912);
+                if(pool.code==="beast")assert.ok(!(t.id>=919&&t.id<=924));
+                if(t.kind==="weapon")assert.ok(item.durability>=0&&item.durability<=t.weaponDurability);
+            }
+        }
+    }
+    assert.deepEqual([...seen].sort((a,b)=>a-b),c.templates.map(t=>t.id));
 });
 test("失败保护归真匣与撤离返还装备",()=>{
     const s=start(),p=s.items.find(i=>I.template(c,i).kind==="hp");

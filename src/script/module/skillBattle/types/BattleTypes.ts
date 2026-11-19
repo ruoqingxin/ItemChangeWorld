@@ -17,7 +17,7 @@ export interface BattleSetup {
     qingming: QingmingBattleSetup; rulesId: string;
     player: { maxHp: number; maxMp: number; baseAttack: number; baseDefense: number };
     weapon: BattleWeapon | null;
-    potions: Array<{ itemId: number; name: string; resource: "hp" | "mp"; amount: number }>;
+    potions: Array<{ itemId: number; name: string; resource: "hp" | "mp" | "mixed" | "shield"; amount: number; secondaryAmount: number }>;
     enemy: { id: number; name: string; maxHp: number };
 }
 export interface BattleCarry {
@@ -40,7 +40,7 @@ export type BattleEvent =
 export interface BattlePreview {
     token: BattleToken; name: string; mpCost: number; durabilityCost: number; body: number;
     enemyHpLoss: number; playerHpLoss: number; shield: number; recovery: number;
-    resource: "hp" | "mp" | null; potion: boolean;
+    resource: "hp" | "mp" | "mixed" | "shield" | null; secondaryRecovery: number; potion: boolean;
 }
 export type BattleResult =
     | { ok: true; state: BattleState; events: BattleEvent[]; preview: BattlePreview }

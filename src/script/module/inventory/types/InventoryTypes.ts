@@ -6,10 +6,11 @@ export type InventorySpace = "warehouse" | "battle" | "safe" | "bag" | "weapon" 
     "source" | "consumed" | "lost";
 export interface InventoryLocation { space: InventorySpace; x?: number; y?: number; rotated?: boolean; node?: number; }
 export interface InventoryTemplate {
-    id: number; name: string; kind: "hp" | "mp" | "repair" | "stamina" | "book" | "material" | "weapon" | "container";
+    id: number; name: string; kind: "hp" | "mp" | "mixed" | "shield" | "repair" | "stamina" | "book" | "material" | "weapon" | "container";
     width: number; height: number; rotate: boolean; battle: boolean; safe: boolean; stack: number;
     bagWidth: number; bagHeight: number; icon: string; quality: EQuality;
     weight: number; weightLimit: number; staminaRestore: number;
+    weaponAttack: number; weaponDefense: number; weaponDurability: number; repairAmount: number; recyclePrice: number;
 }
 export interface InventoryItem { uid: string; templateId: number; location: InventoryLocation; durability: number | null; }
 export interface InventoryWarehousePlacement { uid: string; page: number; x: number; y: number; rotated: boolean; }
@@ -19,7 +20,7 @@ export interface InventoryConfig {
     nodeLimit: number;
     weight: { base: number; sourcePages: number };
     staminaMax: number;
-    spaces: { battleWidth: number; battleHeight: number; safeWidth: number; safeHeight: number; repair: number };
+    spaces: { battleWidth: number; battleHeight: number; safeWidth: number; safeHeight: number };
     fixtures: Array<{ id: number; templateId: number; count: number; node: number; durability: number }>;
 }
 export interface InventoryState {

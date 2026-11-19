@@ -1,5 +1,6 @@
 import type { Tables } from "../../../config/schema";
 import { byBehaviorCode } from "../../../config/ConfigRows";
+import { configCategory, ENEMY_TIERS } from "../../../config/ConfigCategories";
 import type { RogueEnemyId, RogueEnemyIntent, RogueFoeState, RogueMove, RogueSetup, RogueState } from "../types/QingmingTypes";
 import { QingmingConfig as C } from "./QingmingConfig";
 
@@ -14,10 +15,11 @@ export class GuzongEnemyRules {
     static load(tables: Tables): void {
         const enemies = {} as Record<RogueEnemyId, EnemyDefinition>;
         for (const row of byBehaviorCode(tables.enemy.getDataList(), ENEMY_CODES, "敌人表")) {
-            if (!row.name || !row.hint || !["普通","精英","首领"].includes(row.tier) ||
+            const tier = configCategory(row.tier, ENEMY_TIERS, "敌人级别");
+            if (!row.name || !row.hint ||
                 !Number.isSafeInteger(row.opening) || row.opening < 0 || row.opening > 600)
                 throw new Error(`敌人配置无效：${row.code}`);
-            enemies[row.code] = {id: row.id, name: row.name, tier: row.tier as EnemyDefinition["tier"],
+            enemies[row.code] = {id: row.id, name: row.name, tier,
                 hint: row.hint, opening: row.opening};
         }
         for (const [tier, count] of [["普通",7],["精英",5],["首领",3]] as const) {

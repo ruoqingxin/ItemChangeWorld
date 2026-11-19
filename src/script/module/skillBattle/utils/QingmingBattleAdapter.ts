@@ -86,24 +86,33 @@ export class QingmingBattleAdapter {
             const s = R.clone(snapshot), old = s.qingming, events: BattleEvent[] = [];
             const preview: BattlePreview = {
                 token: {battleId:s.battleId,revision:s.revision}, name: "", mpCost: 0, durabilityCost: 0, body: 0,
-                enemyHpLoss: 0, playerHpLoss: 0, shield: 0, recovery: 0, resource: null, potion: false,
+                enemyHpLoss: 0, playerHpLoss: 0, shield: 0, recovery: 0, resource: null, secondaryRecovery: 0, potion: false,
             };
             if (action?.type === "potion") {
                 if (s.potionUsed) throw new Error("本回合药品机会已使用");
                 const slot = s.pouch.findIndex(p => p?.itemUid === action.itemUid);
                 const potion = setup.potions.find(p => p.itemId === s.pouch[slot]?.itemId);
                 if (slot < 0 || !potion) throw new Error("药品不在斗法匣或已消耗");
-                const key = potion.resource, actor = old.player, max = key === "hp" ? actor.maxHp : actor.maxMp;
-                const gain = Math.min(potion.amount,max-actor[key]);
-                if (gain <= 0) throw new Error("当前资源已满");
-                preview.name = potion.name; preview.potion = true; preview.resource = key; preview.recovery = gain;
-                events.push({type:"potion",itemUid:action.itemUid,itemId:potion.itemId,slot},
-                    {type:"resource",resource:key,before:actor[key],after:actor[key]+gain});
-                actor[key] += gain; old.potionUsed = true; old.revision++;
-                const count = key === "hp" ? "healUsed" : "manaUsed";
-                old.fight[count]++; old.totals[count]++;
+                const actor = old.player;
+                const hp = ["hp","mixed"].includes(potion.resource) ? Math.min(potion.amount,actor.maxHp-actor.hp) : 0;
+                const mp = potion.resource === "mp" ? Math.min(potion.amount,actor.maxMp-actor.mp) :
+                    potion.resource === "mixed" ? Math.min(potion.secondaryAmount,actor.maxMp-actor.mp) : 0;
+                const shieldBefore = actor.shield;
+                if (potion.resource === "shield") R.shield(old,potion.amount);
+                const shield = actor.shield-shieldBefore;
+                if (hp + mp + shield <= 0) throw new Error("当前资源或护盾已满");
+                preview.name = potion.name; preview.potion = true; preview.resource = potion.resource;
+                preview.recovery = potion.resource === "mp" ? mp : hp; preview.secondaryRecovery = potion.resource === "mixed" ? mp : 0;
+                preview.shield = shield;
+                events.push({type:"potion",itemUid:action.itemUid,itemId:potion.itemId,slot});
+                for (const [key,gain,count] of [["hp",hp,"healUsed"],["mp",mp,"manaUsed"]] as const) {
+                    if (!gain) continue;
+                    events.push({type:"resource",resource:key,before:actor[key],after:actor[key]+gain});
+                    actor[key] += gain; old.fight[count]++; old.totals[count]++;
+                }
+                old.potionUsed = true; old.revision++;
                 s.pouch[slot] = null;
-                old.logs.push(`[回${old.round}] ${potion.name} +${gain}`);
+                old.logs.push(`[回${old.round}] ${potion.name}：生命+${hp}，灵力+${mp}，护盾+${shield}`);
                 if(old.logs.length>400)old.logs.shift();
             } else {
                 const move = action?.type === "qingming" ? action.move :

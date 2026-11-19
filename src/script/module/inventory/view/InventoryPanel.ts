@@ -428,7 +428,7 @@ export class InventoryPanel extends BuildPanel {
                 state.lost.includes(i.uid) : state.consumed.includes(i.uid));
         else list = list.filter(i => {
             const t = Rules.template(save.config,i);
-            return this.filter === "all" || this.filter === "medicine" && ["hp","mp","repair","stamina"].includes(t.kind) ||
+            return this.filter === "all" || this.filter === "medicine" && ["hp","mp","mixed","shield","repair","stamina"].includes(t.kind) ||
                 this.filter === "materials" && ["material","book"].includes(t.kind) ||
                 this.filter === "equipment" && ["weapon","container"].includes(t.kind);
         });
@@ -475,7 +475,7 @@ export class InventoryPanel extends BuildPanel {
         this.control("invCancel","取消",!!this.uid || !!this.draft);
         this.control("invConfirm","确认提交",!!this.draft && !this.draftError);
         this.control("invUse","使用",editable && state.phase === "active" && !!selected && !this.draft &&
-            ["hp","mp","repair","stamina"].includes(Rules.template(save.config,selected).kind) &&
+            ["hp","mp","mixed","repair","stamina"].includes(Rules.template(save.config,selected).kind) &&
             (Rules.template(save.config,selected).kind!=="stamina" || state.stamina!<save.config.staminaMax!));
         this.control("invDrop",state.phase === "preparation" ? "放回仓库" : activeSource ? "退回来源" : "放到地面",editable && !!selected &&
             (state.phase === "preparation" || activeSource ? state.phase==="preparation" || state.interactionSource===state.node : revealed));
@@ -815,10 +815,11 @@ export class InventoryPanel extends BuildPanel {
         for (const item of archive.state.items.filter(i => i.location.space === "battle")) {
             const t = Rules.template(archive.config,item);
             const index = item.location.y! * archive.config.spaces.battleWidth + item.location.x!;
-            if (t.kind === "repair") {
-                this.button(`pouch${index}`,"修补工具\n战外使用",454 + index * 112,540,102,62,false);
-            }
             const button = this.buttons[`pouch${index}`], frame = this.elements[`pouchQuality${index}`] as Laya.GImage;
+            const [width] = Rules.dimensions(t,item.location);
+            for (let offset=1;offset<width;offset++) {
+                this.button(`pouch${index+offset}`,`${t.name}\n占用格`,440+(index+offset)*112,540,102,62,false);
+            }
             const point = this.position(button);
             this.place(frame,point.x + 3,point.y + (button.height - 30) / 2); frame.size(30,30);
             this.qualityImage(frame,t);
@@ -840,8 +841,10 @@ export class InventoryPanel extends BuildPanel {
         const [w,h] = Rules.dimensions(t,{ ...item.location, rotated: this.rotated });
         const qualityName = ["","普通","优秀","精良","稀有","史诗","传说"][this.quality(t)];
         return `${t.name} · ${qualityName} · ${w}×${h}${this.rotated ? " · 旋转" : ""}\n${this.locationName(item.location)}${item.durability !== null ?
-            ` · 耐久 ${item.durability}` : ""}${t.weight!==undefined?` · 重量 ${t.weight}`:""}\n${
+            ` · 耐久 ${item.durability}/${t.weaponDurability}` : ""}${t.weight!==undefined?` · 重量 ${t.weight}`:""}\n${
             t.kind==="container"?`背包承重 +${t.weightLimit || 0}\n`:""}${
-            t.kind==="stamina"?`战外恢复体力 ${t.staminaRestore}\n`:""}${t.safe ? "归真匣合规，仍需尺寸适配" : "禁止归真匣"}${t.kind === "book" ? "\n书籍本阶段仅携入带出，不学习" : ""}`;
+            t.kind==="weapon"?`攻击 +${t.weaponAttack} · 防御 +${t.weaponDefense}\n`:""}${
+            t.kind==="repair"?`战外修理${t.repairAmount===-1?"至满耐久":` +${t.repairAmount}`}\n`:""}${
+            t.kind==="stamina"?`战外恢复体力 ${t.staminaRestore}\n`:""}${t.safe ? "归真匣合规，仍需尺寸适配" : "禁止归真匣"}${t.kind === "book" ? "\n完整功法典籍，永久学习尚未开放" : ""}`;
     }
 }
