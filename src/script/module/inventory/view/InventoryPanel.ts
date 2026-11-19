@@ -75,6 +75,11 @@ export class InventoryPanel extends BuildPanel {
             }
             return false;
         });
+        // 仓库专属空状态按需绑定，其他储物界面继续使用各自的预制体。
+        for (const name of ["box_warehouse_empty", "box_warehouse_source_empty"]) {
+            const node = view.getElement<Laya.GWidget>(name, false);
+            if (node) this.nodes[name] = node;
+        }
     }
     suspend(): void {
         super.suspend();
@@ -348,6 +353,8 @@ export class InventoryPanel extends BuildPanel {
         const root = this.nodes.inventoryRoot; root.visible = true;
         for (const key of Object.keys(this.nodes)) if (key !== "inventoryRoot") this.nodes[key].visible = false;
         for (const key of ["invLeftPanel","invBagPanel","invBagTopbar","invRightPanel","invLock"]) this.nodes[key].visible = true;
+        for (const key of ["box_warehouse_empty", "box_warehouse_source_empty"])
+            if (this.nodes[key]) this.nodes[key].visible = !state && !session.error;
         this.label("invTitle","末法寻仙 · 储物演练",26,"#e3c98c");
         this.label("invClock",actual?.phase === "active" ? this.timeText() : actual?.phase === "preparation" ? "整备" : "演练库存",22);
         this.label("invEquipTitle","装备",18,"#c2dbdd");

@@ -6,6 +6,11 @@ const path = require("node:path");
 const url = process.env.SKILL_BATTLE_URL || "http://127.0.0.1:18095";
 const out = path.resolve(__dirname, "../output/design/lobby");
 const facilities = ["alchemy", "forge", "warehouse", "library", "realm", "market"];
+const skins = [
+    "img_player_strip", "img_player_portrait", "img_player_frame",
+    "img_wish_strip", "img_wish", "img_settings_skin", "img_settings",
+    ...facilities.map(name => `img_${name}_plate`),
+];
 
 async function checkEditorSnapshot() {
     const prefab = path.resolve(__dirname, "../assets/ui/prefab/module/lobby/LobbyView.lh");
@@ -51,6 +56,10 @@ async function waitLobby(page) {
         const image = window.__skillBattlePreview.view.getElement(`img_${name}_building`, false);
         return image?.visible && image.texture?.bitmap && image.texture.width > 0 && image.texture.height > 0;
     }), facilities);
+    await page.waitForFunction(keys => keys.every(key => {
+        const image = window.__skillBattlePreview.view.getElement(key, false);
+        return image?.visible && image.texture?.bitmap && image.texture.width > 0 && image.texture.height > 0;
+    }), skins);
 }
 
 async function assertBuildingPixels(page) {
@@ -112,6 +121,22 @@ async function assertLayout(page) {
             a.top < b.bottom - 0.5 && a.bottom > b.top + 0.5;
         const buttons = facilities.map(name => ({ name, box: bounds(view.getElement("btn_" + name)) }));
         const hud = ["box_player", "box_wish", "btn_settings"].map(key => bounds(view.getElement(key)));
+        for (const key of ["img_player_strip", "img_player_portrait", "img_player_frame", "txt_player_name",
+            "txt_player_realm", "img_wish_strip", "img_wish", "txt_wish", "txt_wish_amount",
+            "img_settings_skin", "img_settings"]) {
+            const node = view.getElement(key), box = bounds(node);
+            if (box.left < 0 || box.top < 0 || box.right > Laya.stage.width + 0.5 ||
+                box.bottom > Laya.stage.height + 0.5) issues.push(key + "顶部控件超出视口");
+            if (node instanceof Laya.GTextField) {
+                node.textIns.typeset(true);
+                if (node.textIns.textWidth > node.width + 1 || node.textIns.textHeight > node.height + 1)
+                    issues.push(key + "顶部文字溢出");
+            }
+        }
+        if (hud.some((box, index) => hud.slice(index + 1).some(other => intersects(box, other))))
+            issues.push("顶部信息栏相互重叠");
+        if (view.getElement("txt_wish_amount").text !== "—" ||
+            view.getElement("txt_player_realm").text !== "境界  —") issues.push("大厅误用了示意余额或境界");
         for (const name of facilities) {
             for (const key of ["btn_" + name, "img_" + name + "_building", "img_" + name + "_plate", "txt_" + name]) {
                 const node = view.getElement(key), box = bounds(node);
@@ -175,6 +200,17 @@ async function assertLayout(page) {
                 }
                 await click(page, "btn_alchemy");
                 assert.equal(await page.evaluate(() => window.__skillBattlePreview.view.getElement("txt_notice").text), "炼丹炉尚未开放");
+                assert.equal(await page.evaluate(() => {
+                    const view = window.__skillBattlePreview.view;
+                    const notice = view.getElement("box_notice");
+                    const corner = notice.localToGlobal(new Laya.Point());
+                    return ["alchemy", "forge", "warehouse", "library", "realm", "market"].every(name => {
+                        const plate = view.getElement(`img_${name}_plate`);
+                        const bottom = plate.localToGlobal(new Laya.Point(plate.width, plate.height));
+                        return bottom.y <= corner.y;
+                    });
+                }), true, "提示条不会覆盖建筑名称牌");
+                await screenshot(page, "lobby-notice-" + name);
             }
             for (const [key, message] of [
                 ["btn_alchemy", "炼丹炉尚未开放"], ["btn_forge", "炼器室尚未开放"],

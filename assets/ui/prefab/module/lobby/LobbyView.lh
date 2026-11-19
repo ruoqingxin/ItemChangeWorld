@@ -5,218 +5,918 @@
   "name": "LobbyView",
   "width": 1280,
   "height": 720,
+  "_$comp": [
+    {
+      "_$type": "3593fc26-337e-42e3-92dc-1b9c2bb8f988",
+      "scriptPath": "../src/script/games/ui/components/ElementMapper.ts",
+      "adapter": {
+        "_$ref": "lobby_adapter"
+      },
+      "elements": [
+        {
+          "_$ref": "lobby_adapter"
+        },
+        {
+          "_$ref": "lobby_scene"
+        },
+        {
+          "_$ref": "lobby_background"
+        },
+        {
+          "_$ref": "lobby_alchemy"
+        },
+        {
+          "_$ref": "alchemy_plate"
+        },
+        {
+          "_$ref": "alchemy_text"
+        },
+        {
+          "_$ref": "lobby_forge"
+        },
+        {
+          "_$ref": "forge_plate"
+        },
+        {
+          "_$ref": "forge_text"
+        },
+        {
+          "_$ref": "lobby_warehouse"
+        },
+        {
+          "_$ref": "warehouse_plate"
+        },
+        {
+          "_$ref": "warehouse_text"
+        },
+        {
+          "_$ref": "lobby_library"
+        },
+        {
+          "_$ref": "library_plate"
+        },
+        {
+          "_$ref": "library_text"
+        },
+        {
+          "_$ref": "lobby_realm"
+        },
+        {
+          "_$ref": "realm_plate"
+        },
+        {
+          "_$ref": "realm_text"
+        },
+        {
+          "_$ref": "lobby_market"
+        },
+        {
+          "_$ref": "market_plate"
+        },
+        {
+          "_$ref": "market_text"
+        },
+        {
+          "_$ref": "alchemy_building"
+        },
+        {
+          "_$ref": "forge_building"
+        },
+        {
+          "_$ref": "warehouse_building"
+        },
+        {
+          "_$ref": "library_building"
+        },
+        {
+          "_$ref": "realm_building"
+        },
+        {
+          "_$ref": "market_building"
+        },
+        {
+          "_$ref": "alchemy_art"
+        },
+        {
+          "_$ref": "forge_art"
+        },
+        {
+          "_$ref": "warehouse_art"
+        },
+        {
+          "_$ref": "library_art"
+        },
+        {
+          "_$ref": "realm_art"
+        },
+        {
+          "_$ref": "market_art"
+        },
+        {
+          "_$ref": "lobby_player"
+        },
+        {
+          "_$ref": "player_strip"
+        },
+        {
+          "_$ref": "player_portrait"
+        },
+        {
+          "_$ref": "player_frame"
+        },
+        {
+          "_$ref": "player_name"
+        },
+        {
+          "_$ref": "player_realm"
+        },
+        {
+          "_$ref": "lobby_wish"
+        },
+        {
+          "_$ref": "wish_strip"
+        },
+        {
+          "_$ref": "wish_icon"
+        },
+        {
+          "_$ref": "wish_text"
+        },
+        {
+          "_$ref": "wish_amount"
+        },
+        {
+          "_$ref": "lobby_settings"
+        },
+        {
+          "_$ref": "settings_skin"
+        },
+        {
+          "_$ref": "settings_icon"
+        },
+        {
+          "_$ref": "lobby_notice"
+        },
+        {
+          "_$ref": "notice_skin"
+        },
+        {
+          "_$ref": "notice_text"
+        }
+      ],
+      "prefabs": null,
+      "mapperType": 4
+    }
+  ],
   "_$child": [
     {
-      "_$id": "lobby_adapter", "_$type": "GWidget", "name": "adapter",
-      "width": 1280, "height": 720, "mouseThrough": true,
-      "relations": [{"_$type": "Relation", "target": {"_$ref": "lobby_root"}, "data": [1, 0, 2, 0]}],
+      "_$id": "lobby_adapter",
+      "_$type": "GWidget",
+      "name": "adapter",
+      "width": 1280,
+      "height": 720,
+      "mouseThrough": true,
+      "relations": [
+        {
+          "_$type": "Relation",
+          "target": {
+            "_$ref": "lobby_root"
+          },
+          "data": [
+            1,
+            0,
+            2,
+            0
+          ]
+        }
+      ],
       "_$child": [
         {
-          "_$id": "lobby_scene", "_$type": "GWidget", "name": "box_courtyard",
-          "width": 1280, "height": 720, "mouseThrough": true,
+          "_$id": "lobby_scene",
+          "_$type": "GWidget",
+          "name": "box_courtyard",
+          "width": 1280,
+          "height": 720,
+          "mouseThrough": true,
           "_$child": [
-            {"_$id": "lobby_background", "_$type": "GImage", "name": "img_courtyard",
-              "width": 1280, "height": 720, "autoSize": false, "mouseEnabled": false,
-              "src": "ui/texture/lobby/lobby-courtyard.png"},
             {
-              "_$id": "lobby_alchemy", "_$type": "GWidget", "name": "btn_alchemy",
-              "x": 123.6, "y": 108.5442, "width": 268.8, "height": 257.4558, "mouseEnabled": true,
+              "_$id": "lobby_background",
+              "_$type": "GImage",
+              "name": "img_courtyard",
+              "width": 1280,
+              "height": 720,
+              "_mouseState": 1,
+              "src": "ui/texture/lobby/lobby-courtyard.png",
+              "autoSize": false
+            },
+            {
+              "_$id": "lobby_alchemy",
+              "_$type": "GWidget",
+              "name": "btn_alchemy",
+              "x": 124,
+              "y": 109,
+              "width": 269,
+              "height": 257,
+              "_mouseState": 2,
               "_$child": [
-                {"_$id": "alchemy_art", "_$type": "GWidget", "name": "box_alchemy_art",
-                  "width": 320, "height": 256.495, "scaleX": 0.84, "scaleY": 0.84, "mouseEnabled": false,
+                {
+                  "_$id": "alchemy_art",
+                  "_$type": "GWidget",
+                  "name": "box_alchemy_art",
+                  "width": 320,
+                  "height": 256,
+                  "scaleX": 0.84,
+                  "scaleY": 0.84,
+                  "_mouseState": 1,
                   "_$child": [
-                {"_$id": "alchemy_shadow", "_$type": "GImage", "name": "img_alchemy_shadow",
-                  "x": 12, "y": 236, "width": 296, "height": 32, "autoSize": false, "mouseEnabled": false,
-                  "src": "ui/atlas/module/lobby/building-shadow.png"},
-                {"_$id": "alchemy_building", "_$type": "GImage", "name": "img_alchemy_building",
-                  "width": 320, "height": 256.495, "autoSize": false, "mouseEnabled": false,
-                  "src": "ui/texture/lobby/building-alchemy.png"}]},
-                {"_$id": "alchemy_plate", "_$type": "GImage", "name": "img_alchemy_plate",
-                  "x": 58.4, "y": 217.4558, "width": 152, "height": 40, "autoSize": false, "mouseEnabled": false,
-                  "src": "ui/atlas/module/lobby/facility-nameplate.png"},
-                {"_$id": "alchemy_text", "_$type": "GTextField", "name": "txt_alchemy",
-                  "x": 70.4, "y": 219.4558, "width": 128, "height": 36, "font": "KaiTi", "fontSize": 23,
-                  "text": "炼丹炉", "align": "center", "valign": "middle", "color": "#fff0c9", "mouseEnabled": false, "overflow": "shrink"}
+                    {
+                      "_$id": "alchemy_shadow",
+                      "_$type": "GImage",
+                      "name": "img_alchemy_shadow",
+                      "x": 12,
+                      "y": 236,
+                      "width": 296,
+                      "height": 32,
+                      "_mouseState": 1,
+                      "src": "ui/atlas/module/lobby/building-shadow.png",
+                      "autoSize": false
+                    },
+                    {
+                      "_$id": "alchemy_building",
+                      "_$type": "GImage",
+                      "name": "img_alchemy_building",
+                      "width": 320,
+                      "height": 256,
+                      "_mouseState": 1,
+                      "src": "ui/texture/lobby/building-alchemy.png",
+                      "autoSize": false
+                    }
+                  ]
+                },
+                {
+                  "_$id": "alchemy_plate",
+                  "_$type": "GImage",
+                  "name": "img_alchemy_plate",
+                  "x": 58,
+                  "y": 217,
+                  "width": 152,
+                  "height": 40,
+                  "_mouseState": 1,
+                  "src": "ui/atlas/module/lobby/facility-nameplate.png",
+                  "autoSize": false
+                },
+                {
+                  "_$id": "alchemy_text",
+                  "_$type": "GTextField",
+                  "name": "txt_alchemy",
+                  "x": 70,
+                  "y": 219,
+                  "width": 128,
+                  "height": 36,
+                  "_mouseState": 1,
+                  "text": "炼丹炉",
+                  "font": "KaiTi",
+                  "fontSize": 23,
+                  "color": "#fff0c9",
+                  "align": "center",
+                  "valign": "middle",
+                  "overflow": "shrink"
+                }
               ]
             },
             {
-              "_$id": "lobby_forge", "_$type": "GWidget", "name": "btn_forge",
-              "x": 78, "y": 377.897, "width": 324, "height": 254.103, "mouseEnabled": true,
+              "_$id": "lobby_forge",
+              "_$type": "GWidget",
+              "name": "btn_forge",
+              "x": 78,
+              "y": 378,
+              "width": 324,
+              "height": 254,
+              "_mouseState": 2,
               "_$child": [
-                {"_$id": "forge_art", "_$type": "GWidget", "name": "box_forge_art",
-                  "width": 360, "height": 235.67, "scaleX": 0.9, "scaleY": 0.9, "mouseEnabled": false,
+                {
+                  "_$id": "forge_art",
+                  "_$type": "GWidget",
+                  "name": "box_forge_art",
+                  "width": 360,
+                  "height": 236,
+                  "scaleX": 0.9,
+                  "scaleY": 0.9,
+                  "_mouseState": 1,
                   "_$child": [
-                {"_$id": "forge_shadow", "_$type": "GImage", "name": "img_forge_shadow",
-                  "x": 12, "y": 216, "width": 336, "height": 32, "autoSize": false, "mouseEnabled": false,
-                  "src": "ui/atlas/module/lobby/building-shadow.png"},
-                {"_$id": "forge_building", "_$type": "GImage", "name": "img_forge_building",
-                  "width": 360, "height": 235.67, "autoSize": false, "mouseEnabled": false,
-                  "src": "ui/texture/lobby/building-forge.png"}]},
-                {"_$id": "forge_plate", "_$type": "GImage", "name": "img_forge_plate",
-                  "x": 86, "y": 214.103, "width": 152, "height": 40, "autoSize": false, "mouseEnabled": false,
-                  "src": "ui/atlas/module/lobby/facility-nameplate.png"},
-                {"_$id": "forge_text", "_$type": "GTextField", "name": "txt_forge",
-                  "x": 98, "y": 216.103, "width": 128, "height": 36, "font": "KaiTi", "fontSize": 23,
-                  "text": "炼器室", "align": "center", "valign": "middle", "color": "#fff0c9", "mouseEnabled": false, "overflow": "shrink"}
+                    {
+                      "_$id": "forge_shadow",
+                      "_$type": "GImage",
+                      "name": "img_forge_shadow",
+                      "x": 12,
+                      "y": 216,
+                      "width": 336,
+                      "height": 32,
+                      "_mouseState": 1,
+                      "src": "ui/atlas/module/lobby/building-shadow.png",
+                      "autoSize": false
+                    },
+                    {
+                      "_$id": "forge_building",
+                      "_$type": "GImage",
+                      "name": "img_forge_building",
+                      "width": 360,
+                      "height": 236,
+                      "_mouseState": 1,
+                      "src": "ui/texture/lobby/building-forge.png",
+                      "autoSize": false
+                    }
+                  ]
+                },
+                {
+                  "_$id": "forge_plate",
+                  "_$type": "GImage",
+                  "name": "img_forge_plate",
+                  "x": 86,
+                  "y": 214,
+                  "width": 152,
+                  "height": 40,
+                  "_mouseState": 1,
+                  "src": "ui/atlas/module/lobby/facility-nameplate.png",
+                  "autoSize": false
+                },
+                {
+                  "_$id": "forge_text",
+                  "_$type": "GTextField",
+                  "name": "txt_forge",
+                  "x": 98,
+                  "y": 216,
+                  "width": 128,
+                  "height": 36,
+                  "_mouseState": 1,
+                  "text": "炼器室",
+                  "font": "KaiTi",
+                  "fontSize": 23,
+                  "color": "#fff0c9",
+                  "align": "center",
+                  "valign": "middle",
+                  "overflow": "shrink"
+                }
               ]
             },
             {
-              "_$id": "lobby_warehouse", "_$type": "GWidget", "name": "btn_warehouse",
-              "x": 507.44, "y": 434.07112, "width": 285.12, "height": 233.92888, "mouseEnabled": true,
+              "_$id": "lobby_warehouse",
+              "_$type": "GWidget",
+              "name": "btn_warehouse",
+              "x": 507,
+              "y": 434,
+              "width": 285,
+              "height": 234,
+              "_mouseState": 2,
               "_$child": [
-                {"_$id": "warehouse_art", "_$type": "GWidget", "name": "box_warehouse_art",
-                  "width": 324, "height": 218.101, "scaleX": 0.88, "scaleY": 0.88, "mouseEnabled": false,
+                {
+                  "_$id": "warehouse_art",
+                  "_$type": "GWidget",
+                  "name": "box_warehouse_art",
+                  "width": 324,
+                  "height": 218,
+                  "scaleX": 0.88,
+                  "scaleY": 0.88,
+                  "_mouseState": 1,
                   "_$child": [
-                {"_$id": "warehouse_shadow", "_$type": "GImage", "name": "img_warehouse_shadow",
-                  "x": 12, "y": 198, "width": 300, "height": 32, "autoSize": false, "mouseEnabled": false,
-                  "src": "ui/atlas/module/lobby/building-shadow.png"},
-                {"_$id": "warehouse_building", "_$type": "GImage", "name": "img_warehouse_building",
-                  "width": 324, "height": 218.101, "autoSize": false, "mouseEnabled": false,
-                  "src": "ui/texture/lobby/building-warehouse.png"}]},
-                {"_$id": "warehouse_plate", "_$type": "GImage", "name": "img_warehouse_plate",
-                  "x": 66.56, "y": 193.92888, "width": 152, "height": 40, "autoSize": false, "mouseEnabled": false,
-                  "src": "ui/atlas/module/lobby/facility-nameplate.png"},
-                {"_$id": "warehouse_text", "_$type": "GTextField", "name": "txt_warehouse",
-                  "x": 78.56, "y": 195.92888, "width": 128, "height": 36, "font": "KaiTi", "fontSize": 23,
-                  "text": "仓库", "align": "center", "valign": "middle", "color": "#fff0c9", "mouseEnabled": false, "overflow": "shrink"}
+                    {
+                      "_$id": "warehouse_shadow",
+                      "_$type": "GImage",
+                      "name": "img_warehouse_shadow",
+                      "x": 12,
+                      "y": 198,
+                      "width": 300,
+                      "height": 32,
+                      "_mouseState": 1,
+                      "src": "ui/atlas/module/lobby/building-shadow.png",
+                      "autoSize": false
+                    },
+                    {
+                      "_$id": "warehouse_building",
+                      "_$type": "GImage",
+                      "name": "img_warehouse_building",
+                      "width": 324,
+                      "height": 218,
+                      "_mouseState": 1,
+                      "src": "ui/texture/lobby/building-warehouse.png",
+                      "autoSize": false
+                    }
+                  ]
+                },
+                {
+                  "_$id": "warehouse_plate",
+                  "_$type": "GImage",
+                  "name": "img_warehouse_plate",
+                  "x": 67,
+                  "y": 194,
+                  "width": 152,
+                  "height": 40,
+                  "_mouseState": 1,
+                  "src": "ui/atlas/module/lobby/facility-nameplate.png",
+                  "autoSize": false
+                },
+                {
+                  "_$id": "warehouse_text",
+                  "_$type": "GTextField",
+                  "name": "txt_warehouse",
+                  "x": 79,
+                  "y": 196,
+                  "width": 128,
+                  "height": 36,
+                  "_mouseState": 1,
+                  "text": "仓库",
+                  "font": "KaiTi",
+                  "fontSize": 23,
+                  "color": "#fff0c9",
+                  "align": "center",
+                  "valign": "middle",
+                  "overflow": "shrink"
+                }
               ]
             },
             {
-              "_$id": "lobby_library", "_$type": "GWidget", "name": "btn_library",
-              "x": 884.24, "y": 113.60744, "width": 275.52, "height": 266.39256, "mouseEnabled": true,
+              "_$id": "lobby_library",
+              "_$type": "GWidget",
+              "name": "btn_library",
+              "x": 884,
+              "y": 114,
+              "width": 276,
+              "height": 266,
+              "_mouseState": 2,
               "_$child": [
-                {"_$id": "library_art", "_$type": "GWidget", "name": "box_library_art",
-                  "width": 328, "height": 267.134, "scaleX": 0.84, "scaleY": 0.84, "mouseEnabled": false,
+                {
+                  "_$id": "library_art",
+                  "_$type": "GWidget",
+                  "name": "box_library_art",
+                  "width": 328,
+                  "height": 267,
+                  "scaleX": 0.84,
+                  "scaleY": 0.84,
+                  "_mouseState": 1,
                   "_$child": [
-                {"_$id": "library_shadow", "_$type": "GImage", "name": "img_library_shadow",
-                  "x": 12, "y": 247, "width": 304, "height": 32, "autoSize": false, "mouseEnabled": false,
-                  "src": "ui/atlas/module/lobby/building-shadow.png"},
-                {"_$id": "library_building", "_$type": "GImage", "name": "img_library_building",
-                  "width": 328, "height": 267.134, "autoSize": false, "mouseEnabled": false,
-                  "src": "ui/texture/lobby/building-library.png"}]},
-                {"_$id": "library_plate", "_$type": "GImage", "name": "img_library_plate",
-                  "x": 61.76, "y": 226.39256, "width": 152, "height": 40, "autoSize": false, "mouseEnabled": false,
-                  "src": "ui/atlas/module/lobby/facility-nameplate.png"},
-                {"_$id": "library_text", "_$type": "GTextField", "name": "txt_library",
-                  "x": 73.76, "y": 228.39256, "width": 128, "height": 36, "font": "KaiTi", "fontSize": 23,
-                  "text": "功法阁", "align": "center", "valign": "middle", "color": "#fff0c9", "mouseEnabled": false, "overflow": "shrink"}
+                    {
+                      "_$id": "library_shadow",
+                      "_$type": "GImage",
+                      "name": "img_library_shadow",
+                      "x": 12,
+                      "y": 247,
+                      "width": 304,
+                      "height": 32,
+                      "_mouseState": 1,
+                      "src": "ui/atlas/module/lobby/building-shadow.png",
+                      "autoSize": false
+                    },
+                    {
+                      "_$id": "library_building",
+                      "_$type": "GImage",
+                      "name": "img_library_building",
+                      "width": 328,
+                      "height": 267,
+                      "_mouseState": 1,
+                      "src": "ui/texture/lobby/building-library.png",
+                      "autoSize": false
+                    }
+                  ]
+                },
+                {
+                  "_$id": "library_plate",
+                  "_$type": "GImage",
+                  "name": "img_library_plate",
+                  "x": 62,
+                  "y": 226,
+                  "width": 152,
+                  "height": 40,
+                  "_mouseState": 1,
+                  "src": "ui/atlas/module/lobby/facility-nameplate.png",
+                  "autoSize": false
+                },
+                {
+                  "_$id": "library_text",
+                  "_$type": "GTextField",
+                  "name": "txt_library",
+                  "x": 74,
+                  "y": 228,
+                  "width": 128,
+                  "height": 36,
+                  "_mouseState": 1,
+                  "text": "功法阁",
+                  "font": "KaiTi",
+                  "fontSize": 23,
+                  "color": "#fff0c9",
+                  "align": "center",
+                  "valign": "middle",
+                  "overflow": "shrink"
+                }
               ]
             },
             {
-              "_$id": "lobby_realm", "_$type": "GWidget", "name": "btn_realm",
-              "x": 456.96, "y": 99.10072, "width": 366.08, "height": 310.89928, "mouseEnabled": true,
+              "_$id": "lobby_realm",
+              "_$type": "GWidget",
+              "name": "btn_realm",
+              "x": 457,
+              "y": 99,
+              "width": 366,
+              "height": 311,
+              "_mouseState": 2,
               "_$child": [
-                {"_$id": "realm_art", "_$type": "GWidget", "name": "box_realm_art",
-                  "width": 352, "height": 258.557, "scaleX": 1.04, "scaleY": 1.04, "mouseEnabled": false,
+                {
+                  "_$id": "realm_art",
+                  "_$type": "GWidget",
+                  "name": "box_realm_art",
+                  "width": 352,
+                  "height": 259,
+                  "scaleX": 1.04,
+                  "scaleY": 1.04,
+                  "_mouseState": 1,
                   "_$child": [
-                {"_$id": "realm_shadow", "_$type": "GImage", "name": "img_realm_shadow",
-                  "x": 12, "y": 238, "width": 328, "height": 32, "autoSize": false, "mouseEnabled": false,
-                  "src": "ui/atlas/module/lobby/building-shadow.png"},
-                {"_$id": "realm_building", "_$type": "GImage", "name": "img_realm_building",
-                  "width": 352, "height": 258.557, "autoSize": false, "mouseEnabled": false,
-                  "src": "ui/texture/lobby/building-realm.png"}]},
-                {"_$id": "realm_plate", "_$type": "GImage", "name": "img_realm_plate",
-                  "x": 107.04, "y": 270.89928, "width": 152, "height": 40, "autoSize": false, "mouseEnabled": false,
-                  "src": "ui/atlas/module/lobby/facility-nameplate.png"},
-                {"_$id": "realm_text", "_$type": "GTextField", "name": "txt_realm",
-                  "x": 119.04, "y": 272.89928, "width": 128, "height": 36, "font": "KaiTi", "fontSize": 23,
-                  "text": "忆境入口", "align": "center", "valign": "middle", "color": "#fff0c9", "mouseEnabled": false, "overflow": "shrink"}
+                    {
+                      "_$id": "realm_shadow",
+                      "_$type": "GImage",
+                      "name": "img_realm_shadow",
+                      "x": 12,
+                      "y": 238,
+                      "width": 328,
+                      "height": 32,
+                      "_mouseState": 1,
+                      "src": "ui/atlas/module/lobby/building-shadow.png",
+                      "autoSize": false
+                    },
+                    {
+                      "_$id": "realm_building",
+                      "_$type": "GImage",
+                      "name": "img_realm_building",
+                      "width": 352,
+                      "height": 259,
+                      "_mouseState": 1,
+                      "src": "ui/texture/lobby/building-realm.png",
+                      "autoSize": false
+                    }
+                  ]
+                },
+                {
+                  "_$id": "realm_plate",
+                  "_$type": "GImage",
+                  "name": "img_realm_plate",
+                  "x": 107,
+                  "y": 271,
+                  "width": 152,
+                  "height": 40,
+                  "_mouseState": 1,
+                  "src": "ui/atlas/module/lobby/facility-nameplate.png",
+                  "autoSize": false
+                },
+                {
+                  "_$id": "realm_text",
+                  "_$type": "GTextField",
+                  "name": "txt_realm",
+                  "x": 119,
+                  "y": 273,
+                  "width": 128,
+                  "height": 36,
+                  "_mouseState": 1,
+                  "text": "忆境入口",
+                  "font": "KaiTi",
+                  "fontSize": 23,
+                  "color": "#fff0c9",
+                  "align": "center",
+                  "valign": "middle",
+                  "overflow": "shrink"
+                }
               ]
             },
             {
-              "_$id": "lobby_market", "_$type": "GWidget", "name": "btn_market",
-              "x": 864.4, "y": 403.69476, "width": 331.2, "height": 244.30524, "mouseEnabled": true,
+              "_$id": "lobby_market",
+              "_$type": "GWidget",
+              "name": "btn_market",
+              "x": 864,
+              "y": 404,
+              "width": 331,
+              "height": 244,
+              "_mouseState": 2,
               "_$child": [
-                {"_$id": "market_art", "_$type": "GWidget", "name": "box_market_art",
-                  "width": 360, "height": 219.897, "scaleX": 0.92, "scaleY": 0.92, "mouseEnabled": false,
+                {
+                  "_$id": "market_art",
+                  "_$type": "GWidget",
+                  "name": "box_market_art",
+                  "width": 360,
+                  "height": 220,
+                  "scaleX": 0.92,
+                  "scaleY": 0.92,
+                  "_mouseState": 1,
                   "_$child": [
-                {"_$id": "market_shadow", "_$type": "GImage", "name": "img_market_shadow",
-                  "x": 12, "y": 200, "width": 336, "height": 32, "autoSize": false, "mouseEnabled": false,
-                  "src": "ui/atlas/module/lobby/building-shadow.png"},
-                {"_$id": "market_building", "_$type": "GImage", "name": "img_market_building",
-                  "width": 360, "height": 219.897, "autoSize": false, "mouseEnabled": false,
-                  "src": "ui/texture/lobby/building-market.png"}]},
-                {"_$id": "market_plate", "_$type": "GImage", "name": "img_market_plate",
-                  "x": 89.6, "y": 204.30524, "width": 152, "height": 40, "autoSize": false, "mouseEnabled": false,
-                  "src": "ui/atlas/module/lobby/facility-nameplate.png"},
-                {"_$id": "market_text", "_$type": "GTextField", "name": "txt_market",
-                  "x": 101.6, "y": 206.30524, "width": 128, "height": 36, "font": "KaiTi", "fontSize": 23,
-                  "text": "坊市", "align": "center", "valign": "middle", "color": "#fff0c9", "mouseEnabled": false, "overflow": "shrink"}
+                    {
+                      "_$id": "market_shadow",
+                      "_$type": "GImage",
+                      "name": "img_market_shadow",
+                      "x": 12,
+                      "y": 200,
+                      "width": 336,
+                      "height": 32,
+                      "_mouseState": 1,
+                      "src": "ui/atlas/module/lobby/building-shadow.png",
+                      "autoSize": false
+                    },
+                    {
+                      "_$id": "market_building",
+                      "_$type": "GImage",
+                      "name": "img_market_building",
+                      "width": 360,
+                      "height": 220,
+                      "_mouseState": 1,
+                      "src": "ui/texture/lobby/building-market.png",
+                      "autoSize": false
+                    }
+                  ]
+                },
+                {
+                  "_$id": "market_plate",
+                  "_$type": "GImage",
+                  "name": "img_market_plate",
+                  "x": 90,
+                  "y": 204,
+                  "width": 152,
+                  "height": 40,
+                  "_mouseState": 1,
+                  "src": "ui/atlas/module/lobby/facility-nameplate.png",
+                  "autoSize": false
+                },
+                {
+                  "_$id": "market_text",
+                  "_$type": "GTextField",
+                  "name": "txt_market",
+                  "x": 102,
+                  "y": 206,
+                  "width": 128,
+                  "height": 36,
+                  "_mouseState": 1,
+                  "text": "坊市",
+                  "font": "KaiTi",
+                  "fontSize": 23,
+                  "color": "#fff0c9",
+                  "align": "center",
+                  "valign": "middle",
+                  "overflow": "shrink"
+                }
               ]
             }
           ]
         },
         {
-          "_$id": "lobby_player", "_$type": "GWidget", "name": "box_player",
-          "x": 16, "y": 12, "width": 232, "height": 72, "mouseEnabled": false,
+          "_$id": "lobby_player",
+          "_$type": "GWidget",
+          "name": "box_player",
+          "x": 16,
+          "y": 11,
+          "width": 242,
+          "height": 78,
+          "_mouseState": 1,
+          "relations": [
+            {
+              "_$type": "Relation",
+              "target": {
+                "_$ref": "lobby_adapter"
+              },
+              "data": [
+                10,
+                0
+              ]
+            }
+          ],
           "_$child": [
-            {"_$id": "player_strip", "_$type": "GImage", "name": "img_player_strip", "x": 26, "y": 10,
-              "width": 206, "height": 52, "autoSize": false, "mouseEnabled": false, "src": "ui/atlas/module/lobby/hud-strip.png"},
-            {"_$id": "player_portrait", "_$type": "GImage", "name": "img_player_portrait",
-              "width": 72, "height": 72, "autoSize": false, "mouseEnabled": false, "src": "ui/atlas/module/lobby/player-portrait.png"},
-            {"_$id": "player_name", "_$type": "GTextField", "name": "txt_player_name", "x": 86, "y": 18,
-              "width": 120, "height": 36, "text": "林澈", "font": "KaiTi", "fontSize": 27,
-              "color": "#fff0c9", "valign": "middle", "mouseEnabled": false, "overflow": "shrink"}
+            {
+              "_$id": "player_strip",
+              "_$type": "GImage",
+              "name": "img_player_strip",
+              "x": 40,
+              "y": 8,
+              "width": 202,
+              "height": 54,
+              "_mouseState": 1,
+              "src": "ui/atlas/module/lobby/player-info-strip.png",
+              "autoSize": false
+            },
+            {
+              "_$id": "player_portrait",
+              "_$type": "GImage",
+              "name": "img_player_portrait",
+              "x": 6,
+              "y": 6,
+              "width": 64,
+              "height": 64,
+              "_mouseState": 1,
+              "src": "ui/atlas/module/lobby/player-portrait.png",
+              "autoSize": false
+            },
+            {
+              "_$id": "player_frame",
+              "_$type": "GImage",
+              "name": "img_player_frame",
+              "width": 76,
+              "height": 78,
+              "_mouseState": 1,
+              "src": "ui/atlas/module/lobby/avatar-frame.png",
+              "autoSize": false
+            },
+            {
+              "_$id": "player_name",
+              "_$type": "GTextField",
+              "name": "txt_player_name",
+              "x": 88,
+              "y": 6,
+              "width": 130,
+              "height": 32,
+              "_mouseState": 1,
+              "text": "林澈",
+              "font": "KaiTi",
+              "fontSize": 27,
+              "color": "#fff0c9",
+              "valign": "middle",
+              "overflow": "shrink"
+            },
+            {
+              "_$id": "player_realm",
+              "_$type": "GTextField",
+              "name": "txt_player_realm",
+              "x": 88,
+              "y": 36,
+              "width": 130,
+              "height": 24,
+              "_mouseState": 1,
+              "text": "境界  —",
+              "font": "KaiTi",
+              "fontSize": 16,
+              "color": "#d5dfc8",
+              "valign": "middle",
+              "overflow": "shrink"
+            }
           ]
         },
         {
-          "_$id": "lobby_wish", "_$type": "GWidget", "name": "box_wish",
-          "x": 1038, "y": 18, "width": 158, "height": 48, "mouseEnabled": false,
-          "relations": [{"_$type": "Relation", "target": {"_$ref": "lobby_adapter"}, "data": [9, 0]}],
+          "_$id": "lobby_wish",
+          "_$type": "GWidget",
+          "name": "box_wish",
+          "x": 453,
+          "y": 24,
+          "width": 208,
+          "height": 48,
+          "_mouseState": 1,
+          "relations": [
+            {
+              "_$type": "Relation",
+              "target": {
+                "_$ref": "lobby_adapter"
+              },
+              "data": [
+                10,
+                0
+              ]
+            }
+          ],
           "_$child": [
-            {"_$id": "wish_strip", "_$type": "GImage", "name": "img_wish_strip",
-              "width": 158, "height": 48, "autoSize": false, "mouseEnabled": false, "src": "ui/atlas/module/lobby/hud-strip.png"},
-            {"_$id": "wish_icon", "_$type": "GImage", "name": "img_wish", "x": 18, "y": 8,
-              "width": 32, "height": 32, "autoSize": false, "mouseEnabled": false, "src": "ui/atlas/module/lobby/wish.png"},
-            {"_$id": "wish_text", "_$type": "GTextField", "name": "txt_wish", "x": 60, "y": 7,
-              "width": 78, "height": 34, "text": "愿力", "font": "KaiTi", "fontSize": 25,
-              "color": "#fff0c9", "valign": "middle", "mouseEnabled": false, "overflow": "shrink"}
+            {
+              "_$id": "wish_strip",
+              "_$type": "GImage",
+              "name": "img_wish_strip",
+              "width": 832,
+              "height": 192,
+              "scaleX": 0.25,
+              "scaleY": 0.25,
+              "_mouseState": 1,
+              "src": "ui/atlas/module/lobby/currency-strip.png"
+            },
+            {
+              "_$id": "wish_icon",
+              "_$type": "GImage",
+              "name": "img_wish",
+              "x": 20,
+              "y": 8,
+              "width": 32,
+              "height": 32,
+              "_mouseState": 1,
+              "src": "ui/atlas/module/lobby/wish.png",
+              "autoSize": false
+            },
+            {
+              "_$id": "wish_amount",
+              "_$type": "GTextField",
+              "name": "txt_wish_amount",
+              "x": 69,
+              "y": 7,
+              "width": 110,
+              "height": 34,
+              "_mouseState": 1,
+              "text": "0",
+              "font": "KaiTi",
+              "fontSize": 24,
+              "color": "#fff0c9",
+              "align": "center",
+              "valign": "middle",
+              "overflow": "shrink"
+            }
           ]
         },
         {
-          "_$id": "lobby_settings", "_$type": "GWidget", "name": "btn_settings",
-          "x": 1210, "y": 14, "width": 54, "height": 54, "mouseEnabled": true,
-          "relations": [{"_$type": "Relation", "target": {"_$ref": "lobby_adapter"}, "data": [9, 0]}],
+          "_$id": "lobby_settings",
+          "_$type": "GWidget",
+          "name": "btn_settings",
+          "x": 1193,
+          "y": 24,
+          "width": 48,
+          "height": 48,
+          "_mouseState": 2,
+          "relations": [
+            {
+              "_$type": "Relation",
+              "target": {
+                "_$ref": "lobby_adapter"
+              },
+              "data": [
+                9,
+                0
+              ]
+            }
+          ],
           "_$child": [
-            {"_$id": "settings_skin", "_$type": "GImage", "name": "img_settings_skin",
-              "width": 54, "height": 54, "autoSize": false, "mouseEnabled": false, "src": "ui/atlas/module/lobby/icon-button.png"},
-            {"_$id": "settings_icon", "_$type": "GImage", "name": "img_settings", "x": 11, "y": 11,
-              "width": 32, "height": 32, "autoSize": false, "mouseEnabled": false, "src": "ui/atlas/module/lobby/settings.png"}
+            {
+              "_$id": "settings_skin",
+              "_$type": "GImage",
+              "name": "img_settings_skin",
+              "width": 48,
+              "height": 48,
+              "_mouseState": 1,
+              "src": "ui/atlas/module/lobby/icon-button.png",
+              "autoSize": false
+            },
+            {
+              "_$id": "settings_icon",
+              "_$type": "GImage",
+              "name": "img_settings",
+              "x": 11,
+              "y": 11,
+              "width": 26,
+              "height": 26,
+              "_mouseState": 1,
+              "src": "ui/atlas/module/lobby/settings.png",
+              "autoSize": false
+            }
           ]
         },
         {
-          "_$id": "lobby_notice", "_$type": "GWidget", "name": "box_notice",
-          "x": 410, "y": 652, "width": 460, "height": 48, "mouseEnabled": false, "visible": false,
-          "relations": [{"_$type": "Relation", "target": {"_$ref": "lobby_adapter"}, "data": [6, 0, 16, 0]}],
+          "_$id": "lobby_notice",
+          "_$type": "GWidget",
+          "name": "box_notice",
+          "x": 410,
+          "y": 672,
+          "width": 460,
+          "height": 40,
+          "visible": false,
+          "_mouseState": 1,
+          "relations": [
+            {
+              "_$type": "Relation",
+              "target": {
+                "_$ref": "lobby_adapter"
+              },
+              "data": [
+                6,
+                0,
+                16,
+                0
+              ]
+            }
+          ],
           "_$child": [
-            {"_$id": "notice_skin", "_$type": "GImage", "name": "img_notice_skin", "width": 460, "height": 48,
-              "autoSize": false, "mouseEnabled": false, "src": "ui/atlas/module/lobby/hud-strip.png"},
-            {"_$id": "notice_text", "_$type": "GTextField", "name": "txt_notice", "x": 20, "y": 4,
-              "width": 420, "height": 40, "text": "", "font": "Microsoft YaHei", "fontSize": 18, "color": "#fff0c9",
-              "align": "center", "valign": "middle", "wordWrap": true, "overflow": "shrink", "mouseEnabled": false}
+            {
+              "_$id": "notice_skin",
+              "_$type": "GImage",
+              "name": "img_notice_skin",
+              "width": 460,
+              "height": 40,
+              "_mouseState": 1,
+              "src": "ui/atlas/module/lobby/notice-strip.png",
+              "autoSize": false
+            },
+            {
+              "_$id": "notice_text",
+              "_$type": "GTextField",
+              "name": "txt_notice",
+              "x": 20,
+              "y": 4,
+              "width": 420,
+              "height": 32,
+              "_mouseState": 1,
+              "text": "",
+              "font": "Microsoft YaHei",
+              "fontSize": 18,
+              "color": "#fff0c9",
+              "align": "center",
+              "valign": "middle",
+              "overflow": "shrink",
+              "wordWrap": true
+            }
           ]
         }
       ]
     }
-  ],
-  "_$comp": [{
-    "_$type": "3593fc26-337e-42e3-92dc-1b9c2bb8f988",
-    "scriptPath": "../src/script/games/ui/components/ElementMapper.ts",
-    "adapter": {"_$ref": "lobby_adapter"}, "mapperType": 4,
-    "elements": [
-      {"_$ref": "lobby_adapter"}, {"_$ref": "lobby_scene"}, {"_$ref": "lobby_background"},
-      {"_$ref": "lobby_alchemy"}, {"_$ref": "alchemy_plate"}, {"_$ref": "alchemy_text"},
-      {"_$ref": "lobby_forge"}, {"_$ref": "forge_plate"}, {"_$ref": "forge_text"},
-      {"_$ref": "lobby_warehouse"}, {"_$ref": "warehouse_plate"}, {"_$ref": "warehouse_text"},
-      {"_$ref": "lobby_library"}, {"_$ref": "library_plate"}, {"_$ref": "library_text"},
-      {"_$ref": "lobby_realm"}, {"_$ref": "realm_plate"}, {"_$ref": "realm_text"},
-      {"_$ref": "lobby_market"}, {"_$ref": "market_plate"}, {"_$ref": "market_text"},
-      {"_$ref": "alchemy_building"}, {"_$ref": "forge_building"}, {"_$ref": "warehouse_building"},
-      {"_$ref": "library_building"}, {"_$ref": "realm_building"}, {"_$ref": "market_building"},
-      {"_$ref": "alchemy_art"}, {"_$ref": "forge_art"}, {"_$ref": "warehouse_art"},
-      {"_$ref": "library_art"}, {"_$ref": "realm_art"}, {"_$ref": "market_art"},
-      {"_$ref": "lobby_player"}, {"_$ref": "player_name"}, {"_$ref": "lobby_wish"},
-      {"_$ref": "lobby_settings"}, {"_$ref": "lobby_notice"}, {"_$ref": "notice_text"}
-    ]
-  }]
+  ]
 }

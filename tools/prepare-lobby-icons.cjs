@@ -4,14 +4,14 @@ const { randomUUID } = require("node:crypto");
 const sharp = require("sharp");
 const { icons } = require("lucide");
 
-// 使用 Lucide 原始路径生成透明位图，供原生界面引用。
+// 使用 Lucide 生成设置页的通用图标；大厅愿力与齿轮由青玉原画切图维护。
 (async () => {
     const directory = path.resolve(__dirname, "../assets/ui/atlas/module/lobby");
     await fs.mkdir(directory, { recursive: true });
     await fs.copyFile(path.join(path.dirname(require.resolve("lucide/package.json")), "LICENSE"),
         path.join(directory, "LICENSE-lucide.txt"));
     for (const [name, icon] of Object.entries({
-        settings: "Settings", close: "X", wish: "Sparkles", music: "Music",
+        close: "X", music: "Music",
         sound: "Volume2", check: "Check", back: "ArrowLeft",
     })) {
         const nodes = icons[icon];

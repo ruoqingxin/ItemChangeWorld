@@ -12,11 +12,11 @@
       "relations": [{"_$type": "Relation", "target": {"_$ref": "page_SkillBattleInventoryView"}, "data": [6, 0]}],
       "_$child": [
         {"_$id": "inventory_lobby_back_skin", "_$type": "GImage", "name": "img_lobby_back_skin",
-          "width": 144, "height": 40, "autoSize": false, "mouseEnabled": false, "src": "ui/atlas/module/lobby/hud-strip.png"},
+          "width": 144, "height": 40, "autoSize": false, "mouseEnabled": false, "src": "ui/atlas/module/warehouse/button-back.png"},
         {"_$id": "inventory_lobby_back_icon", "_$type": "GImage", "name": "img_lobby_back_icon", "x": 14, "y": 10,
           "width": 20, "height": 20, "autoSize": false, "mouseEnabled": false, "src": "ui/atlas/module/lobby/back.png"},
         {"_$id": "inventory_lobby_back_text", "_$type": "GTextField", "name": "txt_lobby_back", "x": 40, "y": 4,
-          "width": 88, "height": 32, "text": "返回大厅", "fontSize": 18, "color": "#fff0c9",
+          "width": 88, "height": 32, "text": "返回大厅", "font": "KaiTi", "fontSize": 18, "color": "#fff0c9",
           "align": "center", "valign": "middle", "mouseEnabled": false}
       ]
     },
@@ -65,6 +65,18 @@
           ]
         },
         {
+          "_$id": "warehouse_header_band", "_$type": "GImage", "name": "img_warehouse_header",
+          "width": 1280, "height": 64, "autoSize": false, "mouseEnabled": false,
+          "src": "ui/atlas/module/warehouse/header-band.png",
+          "relations": [{"_$type": "Relation", "target": {"_$ref": "region_36"}, "data": [1, 0]}]
+        },
+        {
+          "_$id": "warehouse_footer_band", "_$type": "GImage", "name": "img_warehouse_footer",
+          "y": 628, "width": 1280, "height": 92, "autoSize": false, "mouseEnabled": false,
+          "src": "ui/atlas/module/warehouse/footer-band.png",
+          "relations": [{"_$type": "Relation", "target": {"_$ref": "region_36"}, "data": [1, 0, 15, 0]}]
+        },
+        {
           "_$id": "invstart_1",
           "_$prefab": "fe47cb4b-cc80-4083-a729-f683d864ad30",
           "relations": [
@@ -84,23 +96,166 @@
           "_$child": [
             {
               "_$override": "invstart_6",
-              "text": "末法寻仙 · 秘境行囊"
+              "text": "末法寻仙 · 秘境行囊", "font": "KaiTi"
             },
             {
               "_$override": "invstart_7",
-              "text": "20:00"
+              "text": "20:00", "font": "KaiTi"
             },
             {
               "_$override": [
                 "region_11",
                 "invstart_13"
               ],
-              "text": "当前地面"
+              "text": "当前地面", "font": "KaiTi"
             },
             {
               "_$override": "invstart_874",
-              "text": "地图"
+              "text": "地图", "font": "KaiTi"
+            },
+            {
+              "_$override": ["region_5", "invstart_2"],
+              "src": "ui/atlas/module/warehouse/carry-panel.png"
+            },
+            {
+              "_$override": "region_7",
+              "y": 72
+            },
+            {
+              "_$override": ["region_7", "invstart_3"],
+              "src": "ui/atlas/module/warehouse/bag-panel.png", "y": 0, "height": 524
+            },
+            {
+              "_$override": ["region_7", "invstart_4"],
+              "alpha": 0
+            },
+            {
+              "_$override": ["region_7", "invstart_12"],
+              "x": 16, "y": 16, "width": 428, "font": "KaiTi"
+            },
+            {
+              "_$override": ["region_7", "region_6"],
+              "y": 52
+            },
+            {
+              "_$override": ["region_7", "invstart_14"],
+              "x": 16, "y": 402, "width": 428, "height": 104, "font": "KaiTi"
+            },
+            {
+              "_$override": ["region_11", "invstart_5"],
+              "src": "ui/atlas/module/warehouse/source-panel.png"
+            },
+            {
+              "_$override": ["region_5", "invstart_11"],
+              "width": 148, "height": 88, "font": "KaiTi"
+            },
+            {
+              "_$override": ["region_5", "invstart_8"], "font": "KaiTi"
+            },
+            {
+              "_$override": ["region_5", "invstart_9"], "font": "KaiTi"
+            },
+            {
+              "_$override": ["region_5", "invstart_10"], "font": "KaiTi"
+            },
+            {
+              "_$override": ["region_5", "invstart_17"], "font": "KaiTi", "width": 144
+            },
+            {
+              "_$override": ["region_5", "invstart_18"], "font": "KaiTi"
+            },
+            {
+              "_$override": ["region_7", "invstart_19"], "font": "KaiTi"
+            },
+            {
+              "_$override": ["region_11", "invstart_16"], "font": "KaiTi"
+            },
+            {
+              "_$override": ["region_11", "invstart_841"], "font": "KaiTi"
+            },
+            {
+              "_$override": ["region_11", "invstart_844"], "font": "KaiTi"
+            },
+            {
+              "_$override": ["region_11", "invstart_847"], "font": "KaiTi"
+            },
+            {
+              "_$override": ["region_11", "invstart_850"], "font": "KaiTi"
+            },
+            {
+              "_$override": "invstart_862", "font": "KaiTi"
+            },
+            {
+              "_$override": "invstart_865", "font": "KaiTi"
+            },
+            {
+              "_$override": "invstart_868", "font": "KaiTi"
+            },
+            {
+              "_$override": "invstart_871", "font": "KaiTi"
+            },
+            {
+              "_$override": "invstart_15", "font": "KaiTi"
+            },
+            {
+              "_$override": "invstart_858", "src": "ui/atlas/module/warehouse/button-rotate.png"
+            },
+            {
+              "_$override": "invstart_861", "src": "ui/atlas/module/warehouse/button-cancel.png"
+            },
+            {
+              "_$override": "invstart_864", "src": "ui/atlas/module/warehouse/button-confirm.png"
+            },
+            {
+              "_$override": "invstart_867", "src": "ui/atlas/module/warehouse/button-action.png"
+            },
+            {
+              "_$override": "invstart_870", "src": "ui/atlas/module/warehouse/button-action.png"
+            },
+            {
+              "_$override": "invstart_873", "src": "ui/atlas/module/warehouse/button-primary.png"
+            },
+            {
+              "_$override": ["region_11", "invstart_840"], "src": "ui/atlas/module/warehouse/tab.png"
+            },
+            {
+              "_$override": ["region_11", "invstart_843"], "src": "ui/atlas/module/warehouse/tab.png"
+            },
+            {
+              "_$override": ["region_11", "invstart_846"], "src": "ui/atlas/module/warehouse/tab.png"
+            },
+            {
+              "_$override": ["region_11", "invstart_849"], "src": "ui/atlas/module/warehouse/tab-wide.png"
+            },
+            {
+              "_$override": ["region_11", "invstart_852"], "src": "ui/atlas/module/warehouse/button-page.png"
+            },
+            {
+              "_$override": ["region_11", "invstart_855"], "src": "ui/atlas/module/warehouse/button-page.png"
             }
+          ]
+        },
+        {
+          "_$id": "warehouse_empty", "_$type": "GWidget", "name": "box_warehouse_empty",
+          "x": 318, "y": 72, "width": 460, "height": 524, "mouseEnabled": false, "visible": false,
+          "relations": [{"_$type": "Relation", "target": {"_$ref": "region_36"}, "data": [6, 0, 13, 0]}],
+          "_$child": [
+            {"_$id": "warehouse_empty_icon", "_$type": "GImage", "name": "img_warehouse_empty",
+              "x": 174, "y": 136, "width": 112, "height": 112, "alpha": 0.38, "autoSize": false,
+              "mouseEnabled": false, "src": "ui/image/naxu/naxu-pouch-q1.png"},
+            {"_$id": "warehouse_empty_title", "_$type": "GTextField", "name": "txt_warehouse_empty",
+              "x": 40, "y": 264, "width": 380, "height": 36, "font": "KaiTi", "fontSize": 24,
+              "text": "尚未开始整备", "color": "#d5d8bc", "align": "center", "valign": "middle", "mouseEnabled": false}
+          ]
+        },
+        {
+          "_$id": "warehouse_source_empty", "_$type": "GWidget", "name": "box_warehouse_source_empty",
+          "x": 784, "y": 72, "width": 480, "height": 524, "mouseEnabled": false, "visible": false,
+          "relations": [{"_$type": "Relation", "target": {"_$ref": "region_36"}, "data": [9, 0, 13, 0]}],
+          "_$child": [
+            {"_$id": "warehouse_empty_status", "_$type": "GTextField", "name": "txt_warehouse_empty_status",
+              "x": 16, "y": 238, "width": 440, "height": 36, "font": "KaiTi", "fontSize": 20,
+              "text": "暂无整备库存", "color": "#9baea1", "align": "center", "valign": "middle", "mouseEnabled": false}
           ]
         },
         {
@@ -8039,6 +8194,12 @@
         },
         {
           "_$ref": "invstart_946"
+        },
+        {
+          "_$ref": "warehouse_empty"
+        },
+        {
+          "_$ref": "warehouse_source_empty"
         }
       ],
       "mapperType": 4
