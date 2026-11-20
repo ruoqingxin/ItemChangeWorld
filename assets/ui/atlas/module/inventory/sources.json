@@ -27,12 +27,6 @@
       "note": ""
     },
     {
-      "file": "ui/atlas/module/inventory/fire-ring.png",
-      "source": "E:\\NowChange\\ItemChangeWorld\\art\\reference\\cultivation\\items\\fire-ring.png",
-      "sha256": "e4602d9d0d0296c06cad0a0532043553127f8e0a056335bd6f94f21ef713b11b",
-      "note": ""
-    },
-    {
       "file": "ui/atlas/module/inventory/gold-sword.png",
       "source": "E:\\NowChange\\ItemChangeWorld\\art\\reference\\cultivation\\items\\blue-blade.png",
       "sha256": "9f1c760c2ea8fd4abea830ab126688d6b8e62dede57b79da9474f3ffc310fdc4",
@@ -51,39 +45,15 @@
       "note": ""
     },
     {
-      "file": "ui/atlas/module/inventory/selection.png",
-      "source": "E:\\NowChange\\ItemChangeWorld\\art\\reference\\cultivation\\grids\\selection-overlay.png",
-      "sha256": "11097e716701e33c5d3d2a8c90290d9bab7bc3c8d65520ac2681ee12612d8d79",
-      "note": ""
-    },
-    {
-      "file": "ui/atlas/module/inventory/equipment-cell.png",
-      "source": "E:\\NowChange\\ItemChangeWorld\\art\\reference\\cultivation\\grids\\equipment-cell.png",
-      "sha256": "0995d3307a6c943a9ac5dfff6789f9a20c7422abc6b20e25a8b45847cd0baf12",
-      "note": ""
-    },
-    {
       "file": "ui/atlas/module/inventory/item-frame.png",
       "source": "E:\\NowChange\\ItemChangeWorld\\art\\reference\\cultivation\\frames\\quality-1.png",
       "sha256": "93abb6ef8314d46cb4141fc2db4db80e640a61e413a0b4109c5909b523df238f",
       "note": ""
     },
     {
-      "file": "ui/atlas/module/inventory/item-frame-selected.png",
-      "source": "E:\\NowChange\\ItemChangeWorld\\art\\reference\\cultivation\\frames\\compact-quality-2.png",
-      "sha256": "715dff4eacb9ad3b007bc8a7091836ad61d8109c62ca5f00884eaeb31b53690f",
-      "note": ""
-    },
-    {
       "file": "ui/texture/inventory/warehouse-body.png",
       "source": "E:\\NowChange\\ItemChangeWorld\\art\\reference\\cultivation\\panels\\warehouse-body.png",
       "sha256": "19e3f20789f467648921d1736b033e6d5f0f1cbc078c6c6b9da53124d63dbeb0",
-      "note": ""
-    },
-    {
-      "file": "ui/texture/inventory/backpack-body.png",
-      "source": "E:\\NowChange\\ItemChangeWorld\\art\\reference\\cultivation\\panels\\backpack-body.png",
-      "sha256": "b0b71baaa0056962e66841ff313307e406f23fd44133d4bfe5bba0195fc5e4b8",
       "note": ""
     },
     {
@@ -157,12 +127,6 @@
       "source": "E:\\资源\\修仙宗门搜打撤\\extracted_assets\\images\\sprites\\itemui_983e94da1a7aea0ae4d3f64e92b7582a_item_149_155045131931138061.png",
       "sha256": "995265369fdbf4a4e9b8785781bfb7ead436ff03329ef2348fa146b180a4d921",
       "note": "矿晶外观，普通矿材占格仍由配置决定"
-    },
-    {
-      "file": "ui/atlas/module/inventory/storage-bag.png",
-      "source": "E:\\资源\\修仙宗门搜打撤\\extracted_assets\\images\\sprites\\itemui_983e94da1a7aea0ae4d3f64e92b7582a_item_121_765490611520116238.png",
-      "sha256": "30f98351413d83ba83d0694ccef6bba2832be43fb7cd82686aee6fffd12fc0ab",
-      "note": "包裹外观暂代纳虚囊；不是正式最终法宝图"
     },
     {
       "file": "ui/atlas/module/inventory/arrow.png",
