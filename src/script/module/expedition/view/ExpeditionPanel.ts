@@ -278,7 +278,7 @@ export class ExpeditionPanel extends InventoryPanel {
                 s.flow?.pending ? "领取借法" : "地图", !this.expedition.error);
             for (const key of ["invNodePrev", "invNodeNext"]) this.nodes[key].visible = false;
             if (s?.phase === "active") {
-                if (!this.popupLayout) this.button("invToggle", "地图", 630, 16, 128, 46);
+                this.button("invToggle", "地图", 630, 16, 128, 46);
                 const c = this.expedition.archive!.config, n = Rules.node(c, s.node, s), box = Rules.source(s);
                 this.label("invSourceTitle", n.name + (box && box.revealed < box.entries.length ?
                     ` · 搜索 ${Math.floor(box.progressMs / Rules.searchDuration(c, s) * 100)}%` : " · 交互仓库"), 20, "#e3c98c");

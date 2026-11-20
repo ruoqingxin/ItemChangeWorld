@@ -198,6 +198,52 @@ export class InventoryRules {
         if (!state.sourceLayouts) return;
         state.sourceLayouts = state.sourceLayouts.map(s => ({ node:s.node,slots:this.sourcePlacements(config,state,s.node) }));
     }
+    static sortedStorage(config: InventoryConfig, state: InventoryState, page: number): InventoryWarehousePlacement[] {
+        this.movable(state);
+        const active=state.phase==="active";
+        if(active&&(state.interactionSource!==state.node||!state.sourceLayouts?.some(s=>s.node===state.node)))
+            throw new Error("请先打开当前交互仓库");
+        const layout=active?this.sourcePlacements(config,state):this.warehousePlacements(config,state);
+        const pages=active?config.weight.sourcePages:Math.max(1,...layout.map(p=>p.page+1));
+        if(!Number.isSafeInteger(page)||page<0||page>=pages)throw new Error("仓库页码无效");
+        const items=new Map(state.items.filter(i=>active?
+            i.location.space==="source"&&i.location.node===state.node:i.location.space==="warehouse").map(i=>[i.uid,i]));
+        const occupied=new Set<number>();
+        const reserve=(slot: InventoryWarehousePlacement,w: number,h: number): void=>{
+            for(let y=0;y<h;y++)for(let x=0;x<w;x++)occupied.add((slot.y+y)*8+slot.x+x);
+        };
+        // 未揭示物保留原位置，只对当前页实际可见的物品压紧排列。
+        for(const slot of layout.filter(p=>p.page===page&&!items.has(p.uid))){
+            const source=(state as InventoryState & {map?:{sources:Array<{node:number;entries:InventoryItem[]}>}})
+                .map?.sources.find(s=>s.node===state.node);
+            const item=source?.entries.find(i=>i.uid===slot.uid);
+            if(!item)throw new Error("来源物品预留记录缺失");
+            reserve(slot,...this.dimensions(this.template(config,item),{space:"source",rotated:slot.rotated}));
+        }
+        const candidates=layout.filter(p=>p.page===page&&items.has(p.uid)).sort((a,b)=>{
+            const ta=this.template(config,items.get(a.uid)!),tb=this.template(config,items.get(b.uid)!);
+            return tb.width*tb.height-ta.width*ta.height||(tb.quality||1)-(ta.quality||1)||ta.id-tb.id||
+                (a.uid<b.uid?-1:a.uid>b.uid?1:0);
+        });
+        const targets=new Map<string,InventoryWarehousePlacement>();
+        for(const slot of candidates){
+            const t=this.template(config,items.get(slot.uid)!);
+            let found: InventoryWarehousePlacement | null=null;
+            for(const rotated of t.rotate&&t.width!==t.height?[slot.rotated,!slot.rotated]:[slot.rotated]){
+                const [w,h]=this.dimensions(t,{space:"warehouse",rotated});
+                for(let y=0;y+h<=7&&!found;y++)for(let x=0;x+w<=8&&!found;x++){
+                    let free=true;
+                    for(let dy=0;dy<h;dy++)for(let dx=0;dx<w;dx++)if(occupied.has((y+dy)*8+x+dx))free=false;
+                    if(free)found={uid:slot.uid,page,x,y,rotated};
+                }
+                if(found)break;
+            }
+            if(!found)throw new Error("当前页无法完整整理，原物品位置已保留");
+            reserve(found,...this.dimensions(t,{space:"warehouse",rotated:found.rotated}));
+            targets.set(slot.uid,found);
+        }
+        return layout.map(slot=>targets.get(slot.uid)||slot);
+    }
     private static sourceTarget(state: InventoryState, item: InventoryItem, to: InventoryLocation): void {
         const source = state.sourceLayouts?.find(s => s.node === to.node);
         if (!source || to.node !== state.interactionSource) throw new Error("请先打开当前节点的交互仓库");
@@ -394,6 +440,12 @@ export class InventoryRules {
                 if (item.location.space !== "warehouse") throw new Error("只能整理仓库中的物品");
                 const layout = this.warehousePlacements(config,state);
                 this.placeWarehouse(state,item.uid,command.to,layout);
+                break;
+            }
+            case "sortStorage": {
+                const layout=this.sortedStorage(config,state,command.page);
+                if(state.phase==="active")state.sourceLayouts!.find(s=>s.node===state.node)!.slots=layout;
+                else state.warehouseLayout=layout;
                 break;
             }
             case "equipWeapon": {

@@ -233,7 +233,7 @@ async function assertLayout(page) {
             await page.waitForFunction(() => window.__skillBattlePreview.view.path.endsWith("/SkillBattleInventoryView.lh") &&
                 window.__skillBattlePreview.view.isOpened);
             await screenshot(page, "lobby-warehouse-" + name);
-            await click(page, "btn_lobby_back");
+            await click(page, "btn_close");
             await waitLobby(page);
             await click(page, "btn_realm", "img_realm_building");
             await page.waitForFunction(() => window.__skillBattlePreview.panel?.opened);

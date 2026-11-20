@@ -10,6 +10,51 @@ const test=(name,fn)=>{fn();groups++;console.log("通过 "+name);};
 const start=(seed=17)=>R.start(c,seed,"inventory-map");
 const enter=s=>R.apply(c,s,{type:"enter"},1000,17).state;
 const move=(s,item,to)=>I.apply(c,s,{type:"move",move:{uid:item.uid,from:item.location,to}},1000).state;
+test("当前页整理保留其他页、携带物品，重复整理位置稳定",()=>{
+    const s=start(),outside=s.items.filter(i=>i.location.space==="warehouse");
+    s.warehouseLayout=I.warehousePlacements(c,s);
+    const first=s.warehouseLayout.find(p=>p.uid===outside[0].uid);
+    first.x=7;first.y=6;
+    const other=s.warehouseLayout.find(p=>p.uid===outside[1].uid);other.page=1;
+    const before=structuredClone(s),result=I.apply(c,s,{type:"sortStorage",page:0},1000).state;
+    assert.deepEqual(s,before);assert.equal(result.revision,s.revision+1);
+    assert.deepEqual(result.items,s.items);
+    assert.deepEqual(result.warehouseLayout.find(p=>p.uid===other.uid),other);
+    assert.ok(!I.same(result.warehouseLayout,s.warehouseLayout));
+    assert.deepEqual(I.sortedStorage(c,result,0),result.warehouseLayout);
+    assert.throws(()=>I.apply(c,s,{type:"sortStorage",page:7},1000),/页码/);
+});
+test("局内整理保留未知物位置和来源进度，不解锁其他来源",()=>{
+    const s=enter(start()),node=s.node,t=c.templates.find(t=>t.kind==="material"&&t.width===1&&t.height===1);
+    const known={uid:"sort-known",templateId:t.id,durability:null,location:{space:"source",node}},
+        unknown={...known,uid:"sort-unknown"};
+    s.items.push(known);s.map.sources.push({node,entries:[known,unknown],opened:true,revealed:1,progressMs:120});
+    s.interactionSource=node;s.sourceLayouts.push({node,slots:I.sourcePlacements(c,s)});
+    s.sourceLayouts[0].slots.find(p=>p.uid===known.uid).x=7;
+    const before=structuredClone(s),result=I.apply(c,s,{type:"sortStorage",page:0},1000).state;
+    assert.deepEqual(result.map.sources,before.map.sources);
+    assert.deepEqual(result.sourceLayouts[0].slots.find(p=>p.uid===unknown.uid),
+        before.sourceLayouts[0].slots.find(p=>p.uid===unknown.uid));
+    assert.equal(result.items.some(i=>i.uid===unknown.uid),false);
+    assert.deepEqual(result.items,s.items);assert.deepEqual(s,before);
+    s.interactionSource=null;assert.throws(()=>I.apply(c,s,{type:"sortStorage",page:0},1000),/交互仓库/);
+    assert.throws(()=>I.apply(c,before,{type:"sortStorage",page:0},before.deadlineAt),/截止/);
+});
+test("整理一次保存与完整重放，写失败及过期修订不改档",()=>{
+    const saved=new Map();let fail=false,writes=0;
+    const storage={getItem:k=>saved.get(k)??null,setItem:(k,v)=>{
+        if(fail)throw new Error("模拟写失败");writes++;saved.set(k,v);
+    },removeItem:k=>saved.delete(k)};
+    const restore=()=>new Session(new BattleManager(),storage,()=>1000,c),session=restore();
+    session.prepare(c,17);
+    const before=session.archive,raw=saved.get(Session.key),token=session.token,cmd={type:"sortStorage",page:0};
+    fail=true;assert.throws(()=>session.inventoryCommand(cmd,token),/写失败/);
+    assert.deepEqual(session.archive,before);assert.equal(saved.get(Session.key),raw);
+    fail=false;session.inventoryCommand(cmd,token);assert.equal(writes,2);
+    assert.equal(session.inventory.revision,before.state.revision+1);
+    assert.deepEqual(restore().archive,session.archive);
+    assert.throws(()=>session.inventoryCommand(cmd,token),/过期/);
+});
 test("整批收取只处理当前页，空间不足保留原物且不动装备药匣",()=>{
     const s=start(),t=c.templates.find(t=>t.kind==="material"&&t.width===1&&t.height===1);
     for(let i=0;i<24;i++)s.items.push({uid:"bulk-"+i,templateId:t.id,durability:null,location:{space:"warehouse"}});

@@ -11,6 +11,8 @@ import { InventoryGridItemCtrl } from "../ctrl/InventoryGridItemCtrl";
 import { InventoryItemCtrl } from "../ctrl/InventoryItemCtrl";
 import type { InventoryAction, InventoryCommand, InventoryConfig, InventoryItem, InventoryLocation, InventorySpace, InventoryState } from "../types/InventoryTypes";
 import { openSkillBattleScreen } from "../../gameplay/utils/GameplayNavigation";
+import { UIManager } from "../../../games/ui/UIManager";
+import { ItemDetailView } from "./ItemDetailView";
 
 type GridName = "safe" | "battle" | "bag" | "source";
 type DropTarget = InventoryLocation & {page?: number};
@@ -52,26 +54,32 @@ export class WarehousePanel {
     private autoRotateKey = "";
     private presentedRunId = "";
     private readonly bagScrollBar: Laya.GScrollBar;
-    private readonly detailName: Laya.GTextField;
+    private detailView: ItemDetailView | null = null;
+    private readonly safeSpecs = [
+        {name:"普通归真匣",cols:2,rows:1},
+        {name:"优秀归真匣",cols:2,rows:2},
+        {name:"精良归真匣",cols:3,rows:2},
+        {name:"稀有归真匣",cols:3,rows:3},
+    ];
+    private safeIndex = 0;
 
     constructor(view: UIBaseView, readonly inventorySession: ExpeditionRunManager,
         private readonly lists: Record<GridName,List<InventoryGridItemCtrl>>) {
         this.root = view.getElement("box_inventory_popup");
         for(const n of view.uiElement.elementMapper.elements)if(n)this.nodes[n.name]=n as Laya.GWidget;
-        this.detailName=this.nodes.box_inventory_detail.getChildByName("txt_detail_name") as Laya.GTextField;
         for(const list of Object.values(this.lists))list.setClickListener(this,this.onClickGridCell);
         this.drag = new InventoryDragController(this.root,{
             begin:(key,point)=>this.beginDrag(key,point),move:point=>this.moveDrag(point),
             release:()=>this.releaseDrag(),cancel:()=>this.cancelDrag(),rotate:()=>this.rotateDrag(),
         });
-        for(const name of ["invReveal","btn_take_all","btn_store_all","btn_sell",
-            "btn_detail_close",...Array.from({length:7},(_,i)=>"expLootPage"+(i+1))]) {
+        for(const name of ["btn_take_all","btn_store_all","btn_sell","btn_sort","btn_safe_left","btn_safe_right",
+            ...Array.from({length:7},(_,i)=>"expLootPage"+(i+1))]) {
             const node=this.nodes[name];this.buttons[name]=node;
             node.on(Laya.Event.CLICK,this,()=>this.onClick(name));
-            if(name.startsWith("inv")||name.startsWith("expLootPage")){
+            if(name.startsWith("expLootPage")){
                 this.captions.set(node,node.getChildAt(1) as Laya.GTextField);
                 this.skins.set(node,node.getChildAt(0) as Laya.GImage);
-                if(name.startsWith("expLootPage"))this.pageLocks.set(node,node.getChildAt(2) as Laya.GImage);
+                this.pageLocks.set(node,node.getChildAt(2) as Laya.GImage);
             }
         }
         for(const name of ["invWeapon","invContainer"]){
@@ -88,23 +96,24 @@ export class WarehousePanel {
         bag.scroller=this.bagScroller;bag.layout.foldInvisibles=true;
         this.bagScrollBar=this.nodes.box_bag_scrollbar as Laya.GScrollBar;
         this.bagScrollBar.setOwner(this.bagScroller,true);
-        for(const name of ["btn_lobby_back","btn_sell","invReveal","btn_take_all","btn_store_all"]){
+        for(const name of ["btn_close","btn_sell","btn_sort","btn_safe_left","btn_safe_right","btn_take_all","btn_store_all"]){
             const node=this.nodes[name];
             this.bindControlSkin(node,node.getChildAt(0) as Laya.GImage,
-                name==="btn_take_all"||name==="btn_store_all"?"square":"button");
+                name==="btn_take_all"||name==="btn_store_all"||name.startsWith("btn_safe_")?"square":"button");
         }
         this.bindControlSkin(this.bagScrollBar._gripButton,this.bagScrollBar._gripButton as Laya.GImage,"scroll");
         this.bagScroller.step=56;
-        bag.on(Laya.UIEvent.Scroll,this,this.refreshScroll);
+        bag.on(Laya.UIEvent.Scroll,this,this.onBagScroll);
         this.root.on(Laya.Event.RESIZE,this,this.onResize);
         view.view.on(Laya.Event.RESIZE,this,this.onResize);
         this.config=InventoryConfigUtils.read(ConfigUtil.Tables);
     }
     getNode(name: string): Laya.GWidget { return this.nodes[name]; }
     openHubScreen(): void {
+        this.notice="";
         const runId=this.inventorySession.inventory?.runId || "";
         if(runId!==this.presentedRunId){
-            this.presentedRunId=runId;this.inventoryPage=0;this.selected="";
+            this.presentedRunId=runId;this.inventoryPage=0;this.selected="";this.safeIndex=0;
             for(const ctrl of this.itemCtrls.values())ctrl.rootNode.destroy();
             this.itemCtrls.clear();
         }
@@ -112,6 +121,7 @@ export class WarehousePanel {
     }
     resizeTo(_view: Laya.GWidget): void { this.onResize(); }
     suspend(): void {
+        this.closeDetail();
         this.releaseControl();this.drag.cancel();this.opened=false;Laya.timer.clearAll(this);
         try { this.inventorySession.pauseSearch(); } catch { /* 写失败由现有存档入口继续提示。 */ }
     }
@@ -129,13 +139,12 @@ export class WarehousePanel {
         } catch(e){this.notice=(e as Error).message;this.updateNotice();}
     }
     private label(name: string,value: string): void {
-        const n=this.nodes[name] as Laya.GTextField;if(!n)return;
+        const n=this.nodes[name] as Laya.GTextField;
         n.text=value;n.visible=true;
     }
     private caption(node: Laya.GWidget,value: string): void {
         const text=this.captions.get(node)!;
-        text.text=value;text.visible=true;text.font="Microsoft YaHei";text.fontSize=node.height<=32?15:17;
-        text.align="center";text.valign="middle";
+        text.text=value;text.visible=true;
     }
     private enabled(node: Laya.GWidget,value: boolean): void {
         node.mouseEnabled=value;node.alpha=value?1:0.35;
@@ -165,19 +174,31 @@ export class WarehousePanel {
         if(this.held||this.drag.suppressClick())return;
         this.notice="";
         try {
-            if(name==="btn_detail_close")this.selected="";
-            else if(name==="btn_take_all"||name==="btn_store_all")this.transferAll(name==="btn_take_all");
+            this.closeDetail();
+            if(name==="btn_take_all"||name==="btn_store_all")this.transferAll(name==="btn_take_all");
+            else if(name==="btn_sort")this.sortStorage();
+            else if(name==="btn_safe_left"||name==="btn_safe_right"){
+                this.safeIndex=Math.max(0,Math.min(this.safeSpecs.length-1,this.safeIndex+(name==="btn_safe_right"?1:-1)));
+                this.selected="";
+            }
             else if(name==="btn_sell")this.notice="出售暂未开放";
-            else if(name==="invReveal"){
-                if(this.inventorySession.searching)this.inventorySession.pauseSearch();
-                else this.inventorySession.startSearch();
-            } else if(name.startsWith("expLootPage")){
+            else if(name.startsWith("expLootPage")){
                 const page=Number(name.slice(11))-1;
                 if(page<0||page>=this.availablePages)return;
                 this.inventoryPage=page;
             }
         } catch(e){this.notice=(e as Error).message;}
         this.refresh();
+    }
+    private sortStorage(): void {
+        this.inventorySession.pauseSearch();
+        const state=this.inventorySession.inventory;
+        if(!state)return;
+        const layout=Rules.sortedStorage(this.config,state,this.inventoryPage);
+        const current=state.phase==="active"?Rules.sourcePlacements(this.config,state):Rules.warehousePlacements(this.config,state);
+        if(Rules.same(layout,current)){this.notice="当前页已整理";return;}
+        this.inventorySession.inventoryCommand({type:"sortStorage",page:this.inventoryPage},this.inventorySession.token);
+        this.selected="";
     }
     private transferAll(intoBag: boolean): void {
         this.inventorySession.pauseSearch();
@@ -193,7 +214,7 @@ export class WarehousePanel {
         if(plan.remaining)this.notice+=`，剩余 ${plan.remaining} 件（${plan.reason}）`;
     }
     private onClickGridCell(_index: number,_ctrl: InventoryGridItemCtrl): void {
-        if(!this.held&&!this.drag.suppressClick()){this.selected="";this.refresh();}
+        if(!this.held&&!this.drag.suppressClick()){this.closeDetail();this.refresh();}
     }
     private setupGrid(name: GridName,cols: number,count: number): void {
         const list=this.lists[name],node=list.rootNode;
@@ -218,21 +239,25 @@ export class WarehousePanel {
         this.state=save?.state||null;this.config=save?.config||this.config;
         const projection=this.state&&Rules.bagProjection(this.config,this.state);
         this.displayState=projection?.state||null;this.overflow=projection?.overflow||[];
-        const spaces=this.config.spaces,capacity=this.state?Rules.bagCapacity(this.config,this.state):
-            this.config.fixtures.map(f=>this.config.templates.find(t=>t.id===f.templateId))
-                .filter(t=>t?.kind==="container").map(t=>t.bagWidth*t.bagHeight)[0]||0;
-        this.setupGrid("safe",spaces.safeWidth,spaces.safeWidth*spaces.safeHeight);
+        const safeSpec=this.safeSpecs[this.safeIndex],capacity=this.state?Rules.bagCapacity(this.config,this.state):0;
+        this.setupGrid("safe",safeSpec.cols,safeSpec.cols*safeSpec.rows);
         this.setupGrid("battle",5,5);this.setupGrid("bag",7,capacity);this.setupGrid("source",8,56);
         const safe=this.nodes.box_safe_content,safeList=this.lists.safe.rootNode;
         safeList.pos((safe.width-safeList.width)/2,(safe.height-safeList.height)/2);
-        const battle=this.nodes.battleItemsArea,battleList=this.lists.battle.rootNode;
+        safeList.alpha=this.safeIndex===0?1:0.4;
+        const safeLock=this.nodes.img_safe_lock;
+        safeLock.visible=this.safeIndex!==0;
+        safeLock.pos((safe.width-safeLock.width)/2,(safe.height-safeLock.height)/2);
+        this.label("invSafeTitle",safeSpec.name);
+        this.enabled(this.nodes.btn_safe_left,this.safeIndex>0&&!this.held);
+        this.enabled(this.nodes.btn_safe_right,this.safeIndex<this.safeSpecs.length-1&&!this.held);
+        const battle=this.nodes.box_battle_content,battleList=this.lists.battle.rootNode;
         battleList.pos((battle.width-battleList.width)/2,(battle.height-battleList.height)/2);
-        this.label("invSafeTitle","归真匣");
-        this.label("txt_safe_size",`${spaces.safeWidth}×${spaces.safeHeight}`);
         this.label("invBattleTitle","斗法匣");
-        this.label("txt_battle_capacity","5 格");
         const weight=this.state?Rules.weight(this.config,this.state):null;
-        this.label("invBagTitle",`${capacity} 格${weight?` · 负重 ${weight.current}/${weight.limit}`:""}`);
+        this.label("txt_bagWeightLimit",weight?`负重：${weight.current}/${weight.limit}`:"负重：0/0");
+        this.nodes.img_bag_empty.visible=capacity===0;
+        this.nodes.bagItemsArea.visible=capacity>0;
         this.label("invSourceTitle",this.state?.phase==="active"?"来源仓库":"仓库");
         for(const key of Object.keys(this.nodes))if(/^inv(?:Item|List)\d+$/.test(key)){
             delete this.nodes[key];delete this.buttons[key];
@@ -242,7 +267,6 @@ export class WarehousePanel {
         this.renderEquipment();
         this.renderCarried();
         this.renderSource();
-        this.renderDetail();
         this.updateNotice();
         (this.nodes.bagItemsArea as Laya.GPanel).layout.refresh(true);
         this.refreshScroll();
@@ -257,8 +281,6 @@ export class WarehousePanel {
             ctrl.update({template:t,width:110,height:space==="weapon"?166:110,rotated:false,selected:this.selected===item.uid},0);
             this.itemRotations.set(item.uid,false);
         }
-        const weapon=this.state?.items.find(i=>i.location.space==="weapon");
-        this.label("invWeaponName",weapon?Rules.template(this.config,weapon).name:"未装备武器");
     }
     private createItem(): InventoryItemCtrl {
         const prefab=Laya.loader.getRes("ui/prefab/common/inventory/InventoryItem.lh") as Laya.Prefab;
@@ -277,10 +299,11 @@ export class WarehousePanel {
     }
     private renderCarried(): void {
         const state=this.displayState;
-        this.gridItems=state?.items.filter(i=>["battle","safe","bag"].includes(i.location.space))||[];
+        this.gridItems=state?.items.filter(i=>["battle","safe","bag"].includes(i.location.space)&&
+            (i.location.space!=="safe"||this.safeIndex===0))||[];
         for(const [i,item] of this.gridItems.entries()){
             const space=item.location.space as "safe"|"battle"|"bag",grid=this.lists[space].rootNode;
-            const parent=space==="bag"?this.nodes.bagItemsArea:space==="safe"?this.nodes.box_safe_content:this.nodes.battleItemsArea;
+            const parent=space==="bag"?this.nodes.bagItemsArea:space==="safe"?this.nodes.box_safe_content:this.nodes.box_battle_content;
             this.renderItem(item,"invItem"+i,parent,grid.x+item.location.x!*56,grid.y+item.location.y!*56,!!item.location.rotated);
         }
     }
@@ -310,28 +333,14 @@ export class WarehousePanel {
             skin.src=`ui/atlas/module/warehouse/graphite/page-${locked?"locked":i===this.inventoryPage+1?"selected":"normal"}.png`;
             skin.color="#ffffff";
         }
-        this.label("txt_inventory_page_status",`${items.length} 件 · 第 ${this.inventoryPage+1}/${pages} 页`);
-        const source=active?(state as typeof state & {map:{sources:Array<{node:number;entries:unknown[];revealed:number}>}})
-            .map.sources.find(s=>s.node===state.node):null;
-        const reveal=this.nodes.invReveal;reveal.visible=!!source&&source.revealed<source.entries.length;
-        if(reveal.visible){
-            this.caption(reveal,`${this.inventorySession.searching?"暂停搜索":"继续搜索"} · ${source.revealed}/${source.entries.length}`);
-            this.enabled(reveal,!this.held);
-        }
     }
-    private renderDetail(): void {
-        const item=this.state?.items.find(i=>i.uid===this.selected),box=this.nodes.box_inventory_detail;
-        box.visible=!!item&&!this.held;
-        if(!item)return;
-        const t=Rules.template(this.config,item),[w,h]=Rules.dimensions(t,{space:"bag",rotated:!!this.itemRotations.get(item.uid)});
-        const quality=["","普通","优秀","精良","稀有","史诗","传说"][t.quality||1];
-        this.detailName.text=t.name;
-        this.label("invDetail",`${quality} · ${w}×${h}\n重量 ${t.weight}${
-            item.durability!==null?`\n耐久 ${item.durability}/${t.weaponDurability}\n攻击 +${t.weaponAttack} · 防御 +${t.weaponDefense}`:""}${
-            t.kind==="container"?`\n容量 ${t.bagWidth*t.bagHeight} 格 · 承重 +${t.weightLimit}`:""}\n${t.safe?"可放归真匣":"禁止归真匣"}`);
+    private closeDetail(): void {
+        this.detailView?.close();
+        this.detailView=null;
+        this.selected="";
     }
     private updateNotice(): void {
-        this.label("txt_inventory_notice",this.inventorySession.error||this.notice||
+        this.label("txt_inventory_feedback",this.inventorySession.error||this.notice||
             (this.overflow.length?`${this.overflow.length} 件物品需要先取出，再完成七列整理`:""));
     }
     private refreshScroll(): void {
@@ -339,19 +348,32 @@ export class WarehousePanel {
         const overflow=content>view+1;
         this.bagScrollBar.setDisplayPerc(content>0?Math.min(1,view/content):1);
         this.bagScrollBar.setScrollPerc(overflow?this.bagScroller.posY/(content-view):0);
+        this.bagScrollBar.visible=this.nodes.bagItemsArea.visible;
         this.bagScrollBar.mouseEnabled=overflow&&!this.held;
         this.bagScrollBar.alpha=overflow?1:0.3;
         const editable=!this.held&&this.state?.phase!=="ended"&&this.state?.flow?.phase!=="battle";
         this.enabled(this.nodes.btn_take_all,!!editable&&this.visibleItems.length>0&&
             !!this.state&&Rules.bagCapacity(this.config,this.state)>0);
         this.enabled(this.nodes.btn_store_all,!!editable&&!!this.state?.items.some(i=>i.location.space==="bag"));
+        this.enabled(this.nodes.btn_sort,!!editable&&this.visibleItems.length>0);
+    }
+    private onBagScroll(): void {
+        this.closeDetail();
+        this.refreshScroll();
     }
     private bindItem(node: Laya.GWidget): void {
         node.on(Laya.Event.MOUSE_DOWN,this,(event:Laya.Event)=>this.drag.arm(node.name,event));
         node.on(Laya.Event.CLICK,this,()=>{
             if(this.held||this.drag.suppressClick())return;
             const item=this.itemForNode(node.name);
-            if(item){this.selected=item.uid;this.notice="";this.refresh();}
+            if(item){
+                this.closeDetail();this.selected=item.uid;this.notice="";this.refresh();
+                this.detailView=UIManager.ins().openForm(ItemDetailView,{
+                    template:Rules.template(this.config,item),durability:item.durability,
+                    rotated:!!this.itemRotations.get(item.uid),anchor:node,
+                    closed:()=>{this.selected="";this.detailView=null;if(this.opened)this.refresh();},
+                });
+            }
         });
     }
     private itemForNode(name: string): InventoryItem | undefined {
@@ -367,10 +389,11 @@ export class WarehousePanel {
         if(!this.state||this.state.phase==="ended"||this.state.flow?.phase==="battle")return false;
         const item=this.itemForNode(key),node=this.nodes[key];if(!item)return false;
         const origin=this.position(node);
+        this.closeDetail();
         this.held={uid:item.uid,node,point,grabX:(point.x-origin.x)/node.width,grabY:(point.y-origin.y)/node.height,
             rotated:!!this.itemRotations.get(item.uid),previous:this.selected,token:this.inventorySession.token,
             target:null,command:null,valid:false,error:""};
-        this.selected=item.uid;this.nodes.box_inventory_detail.visible=false;
+        this.selected=item.uid;
         if(!this.floating){this.floating=this.createItem();this.nodes.box_drag_feedback.addChild(this.floating.rootNode);}
         return true;
     }
@@ -379,13 +402,14 @@ export class WarehousePanel {
         const name=space==="warehouse"||space==="source"?"source":space as GridName;
         const grid=this.lists[name].rootNode;
         const [cols,rows]=name==="source"?[8,7]:name==="bag"?[7,Math.ceil(Rules.bagCapacity(this.config,this.displayState!)/7)]:
-            name==="safe"?[this.config.spaces.safeWidth,this.config.spaces.safeHeight]:[5,1];
+            name==="safe"?[this.safeSpecs[this.safeIndex].cols,this.safeSpecs[this.safeIndex].rows]:[5,1];
         return {...this.position(grid),cols,rows,size:56};
     }
     hitDrag(point: Laya.Point,h: Pick<HeldItem,"uid"|"rotated"|"grabX"|"grabY">=this.held!): DropTarget | null {
         const item=Rules.item(this.state!,h.uid),t=Rules.template(this.config,item);
         const [w,height]=Rules.dimensions(t,{space:"bag",rotated:h.rotated});
         for(const space of ["safe","battle","bag","source"] as const){
+            if(space==="safe"&&this.safeIndex!==0)continue;
             if(space==="bag"){
                 const p=this.position(this.nodes.bagItemsArea),v=this.nodes.bagItemsArea;
                 if(point.x<p.x||point.x>=p.x+v.width||point.y<p.y||point.y>=p.y+v.height)continue;
@@ -469,7 +493,7 @@ export class WarehousePanel {
     }
     private renderHeld(): void {
         const h=this.held;if(!h)return;
-        this.nodes.box_inventory_detail.visible=false;h.node.alpha=0.16;
+        h.node.alpha=0.16;
         const t=Rules.template(this.config,Rules.item(this.state!,h.uid)),[w,height]=Rules.dimensions(t,{space:"bag",rotated:h.rotated});
         this.floating.update({template:t,width:w*56-2,height:height*56-2,rotated:h.rotated,
             selected:true,outline:h.valid?"#76ffad":"#ff6262"},0);

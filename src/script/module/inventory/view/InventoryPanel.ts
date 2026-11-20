@@ -4,8 +4,6 @@ import { EQuality } from "../../../config/schema";
 import { BattleRules as Core } from "../../skillBattle/utils/BattleRules";
 
 import { InventoryRules as Rules } from "../utils/InventoryRules";
-import { InventoryConfigUtils } from "../utils/InventoryConfigUtils";
-import { ConfigUtil } from "../../../config/ConfigUtil";
 import type { ExpeditionRunManager } from "../../expedition/manager/ExpeditionRunManager";
 import type { BuildToken } from "../../build/types/BuildTypes";
 import type { InventoryCommand, InventoryConfig, InventoryItem, InventoryLocation, InventorySpace, InventoryState, InventoryTemplate } from "../types/InventoryTypes";
@@ -45,13 +43,9 @@ export class InventoryPanel extends BuildPanel {
     private dragController: InventoryDragController;
     private presentedRunId = "";
     protected held: HeldInventoryItem | null = null;
-    protected popupLayout = false;
     private bagScroller: Laya.Scroller;
-    private popupPortrait: Laya.GWidget;
-    private popupDetail: Laya.GWidget;
     private bagUp: Laya.GWidget;
     private bagDown: Laya.GWidget;
-    private emptyInventoryConfig: InventoryConfig;
     constructor(view: UIBaseView, readonly inventorySession: InventoryPanelSession,
         navigate: (screen: SkillBattlePage) => void, screen: "start" | "battle" | "settlement",
         page: SkillBattlePage = screen) {
@@ -59,10 +53,9 @@ export class InventoryPanel extends BuildPanel {
         const root = view.getElement<Laya.GWidget>("inventoryRoot",false);
         if (screen === "battle") return;
         if (!root) return;
-        this.popupLayout = !!view.getElement("box_inventory_popup", false);
         for (const name of ["bagItemsArea", "safeItemsArea", "battleItemsArea"])
             this.itemAreas[name] = view.getElement<Laya.GWidget>(name);
-        if (!this.popupLayout && this.itemAreas.bagItemsArea instanceof Laya.GPanel) {
+        if (this.itemAreas.bagItemsArea instanceof Laya.GPanel) {
             const viewport=this.itemAreas.bagItemsArea;
             const scroller=new Laya.Scroller();
             scroller.direction=Laya.ScrollDirection.Vertical;
@@ -76,29 +69,6 @@ export class InventoryPanel extends BuildPanel {
             this.bagUp.on(Laya.Event.CLICK,this,()=>this.scrollBag(-112));
             this.bagDown.on(Laya.Event.CLICK,this,()=>this.scrollBag(112));
             viewport.on(Laya.UIEvent.Scroll,this,this.refreshBagScroll);
-        }
-        if (this.popupLayout) {
-            this.emptyInventoryConfig = InventoryConfigUtils.read(ConfigUtil.Tables);
-            this.popupPortrait = view.getElement("box_inventory_portrait");
-            this.popupDetail = view.getElement("box_inventory_detail");
-            this.nodes.invDetail = view.getElement("invDetail");
-            view.getElement("btn_detail_close").on(Laya.Event.CLICK, this, () => {
-                this.clearSelection();
-                this.refresh();
-            });
-            this.bagUp = view.getElement("btn_bag_up");
-            this.bagDown = view.getElement("btn_bag_down");
-            this.bagScroller = new Laya.Scroller();
-            this.bagScroller.direction = Laya.ScrollDirection.Vertical;
-            this.bagScroller.barDisplay = Laya.ScrollBarDisplay.Hidden;
-            this.bagScroller.touchEffect = Laya.ScrollTouchEffect.Off;
-            this.bagScroller.bouncebackEffect = Laya.ScrollBounceBackEffect.Off;
-            const viewport = this.itemAreas.bagItemsArea as Laya.GPanel;
-            viewport.layout.foldInvisibles = true;
-            viewport.scroller = this.bagScroller;
-            viewport.on(Laya.UIEvent.Scroll, this, this.refreshBagScroll);
-            this.bagUp.on(Laya.Event.CLICK, this, () => this.scrollBag(-112));
-            this.bagDown.on(Laya.Event.CLICK, this, () => this.scrollBag(112));
         }
         this.dragController = new InventoryDragController(this.root,{
             begin: (key,point) => this.beginDrag(key,point),
@@ -142,7 +112,6 @@ export class InventoryPanel extends BuildPanel {
         if (this.modalOpen || this.resetConfirm || this.overlay) { super.refresh(); return; }
         if (this.nodes) for (const key of Object.keys(this.nodes)) this.nodes[key].visible = false;
         super.refresh();
-        if (this.popupLayout) this.refreshPopup();
     }
     private scrollBag(delta: number): void {
         if (this.held) return;
@@ -159,75 +128,6 @@ export class InventoryPanel extends BuildPanel {
             this.bagScroller.contentHeight - this.bagScroller.viewHeight - 1;
         this.bagUp.alpha = this.bagUp.mouseEnabled ? 1 : 0.3;
         this.bagDown.alpha = this.bagDown.mouseEnabled ? 1 : 0.3;
-    }
-    private refreshPopup(): void {
-        const state = this.inventorySession.inventory;
-        if (!state) this.refreshEmptyInventory();
-        const selected = state?.items.find(item => item.uid === (this.held?.uid || this.uid));
-        for (const key of ["invTitle","invClock","invNodePrev","invNodeNext","invAbandon","invToggle",
-            "invPrimary","invDrop","invUse","invCancel","invConfirm","invExtract"])
-            if (this.nodes[key]) this.nodes[key].visible = false;
-        this.popupPortrait.visible = true;
-        this.popupDetail.visible = !!selected && !this.held;
-        this.nodes.invDetail.visible = !!selected;
-        if (selected) this.label("invDetail", this.describeItem(selected), 16, "#d9e1d4");
-        for (const [space,key] of [["weapon","invWeaponName"],["container","invContainerName"]] as const) {
-            const item = state?.items.find(i => i.location.space === space);
-            this.label(key, item ? Rules.template(this.inventorySession.archive!.config,item).name :
-                space === "weapon" ? "武器" : "纳虚器", 16, "#b4c4b6");
-        }
-        const config = this.inventorySession.archive?.config || this.emptyInventoryConfig;
-        this.label("invSafeTitle",`归真匣 · ${config.spaces.safeWidth}×${config.spaces.safeHeight}`,18,"#b5d7ba");
-        this.label("invProtection","非装备物品\n失败后保留",16,"#9faf9f");
-        this.label("invBattleTitle","斗法匣",18,"#d8ceac");
-        for (const [kind,count] of [["armor",6],["accessory",4]] as const)
-            for (let i=0;i<count;i++) this.nodes[`img_${kind}_cell_${i}`].visible = true;
-        this.label("txt_armor_name","防具",16,"#b4c4b6");
-        this.label("txt_accessory_name","饰品",16,"#8ea096");
-        this.label("txt_backpack_title","背包",18,"#c2dbdd");
-        this.nodes.img_backpack_well.visible = true;
-        this.nodes.invRotate.visible = !!this.held;
-        for (const key of ["img_safe_well","img_battle_well"]) this.nodes[key].visible = true;
-        this.nodes.invSourceTitle.width = 446;
-        if (state?.phase === "active") {
-            this.nodes.invReveal.pos(16,50);
-            this.nodes.invReveal.size(180,30);
-            const pages = this.nodes.expLootPage1.parent as Laya.GWidget;
-            for (let i=1;i<=7;i++) this.nodes[`expLootPage${i}`].pos((i-1)*64,0);
-            pages.visible = true;
-        }
-        // 刷新视口后再更新翻动按钮，背包容量仍由当前纳虚器配置决定。
-        (this.itemAreas.bagItemsArea as Laya.GPanel).layout.refresh(true);
-        this.refreshBagScroll();
-    }
-    private refreshEmptyInventory(): void {
-        const config = this.emptyInventoryConfig;
-        for (const [space, count] of [["weapon", 6], ["container", 4]] as const)
-            for (let i=0;i<count;i++) this.nodes[`invEquipCell_${space}_${i}`].visible = true;
-        const initialContainer = config.fixtures.map(f => config.templates.find(t => t.id === f.templateId))
-            .find(t => t?.kind === "container");
-        const areas = [
-            ["safe", config.spaces.safeWidth, config.spaces.safeHeight],
-            ["battle", config.spaces.battleWidth, config.spaces.battleHeight],
-            ["bag", initialContainer?.bagWidth || 0, initialContainer?.bagHeight || 0],
-        ] as const;
-        for (const [space, cols, rows] of areas) {
-            const first = this.nodes[`invCell_${space}_0`], pitch = first.width + 2;
-            const origin = space === "safe" ? this.popupSafeOrigin(cols,rows) : this.position(first);
-            for (let i=0;i<cols*rows;i++) {
-                const cell = this.nodes[`invCell_${space}_${i}`];
-                this.control(cell.name,"",false);
-                cell.alpha = space === "bag" ? 0.6 : 1;
-                this.place(cell,origin.x+i%cols*pitch,origin.y+Math.floor(i/cols)*pitch);
-            }
-        }
-        // 初始仓库开放一页，空格独立于整备存档存在，浏览不发放物品。
-        for (let i=0;i<Rules.WAREHOUSE_COLUMNS*Rules.WAREHOUSE_ROWS;i++)
-            this.nodes[`invSourceCell${i}`].visible = true;
-        this.inventoryPage = 0;
-        this.visibleItems = []; this.gridItems = [];
-        this.label("invPage","第 1 页 · 1/1",17,"#b9c9cf");
-        this.control("invPrev","<",false); this.control("invNext",">",false);
     }
     openHubScreen(): void {
         this.resetPresentation();
@@ -313,7 +213,6 @@ export class InventoryPanel extends BuildPanel {
         }
         if (key === "invWeapon" || key === "invContainer") {
             const space = key === "invWeapon" ? "weapon" : "container", equipped = state.items.find(i => i.location.space === space);
-            if (this.popupLayout) { if (equipped) this.selectItem(equipped); else this.clearSelection(); return; }
             if (!this.uid) { if (equipped) this.selectItem(equipped); return; }
             const i = Rules.item(state,this.uid), t = Rules.template(session.archive!.config,i);
             if (t.kind !== space) throw new Error(space === "weapon" ? "请选择一件武器" : "请选择一个纳虚器本体");
@@ -333,13 +232,12 @@ export class InventoryPanel extends BuildPanel {
         if (item) {
             const i = this.gridItems[Number(item[1])];
             if (!i) return;
-            if (!this.popupLayout && this.uid && this.uid !== i.uid) this.target({ ...i.location, rotated: this.rotated });
+            if (this.uid && this.uid !== i.uid) this.target({ ...i.location, rotated: this.rotated });
             else this.selectItem(Rules.item(state,i.uid));
             return;
         }
         const cell = /^invCell_(battle|safe|bag)_(\d+)$/.exec(key);
         if (cell) {
-            if (this.popupLayout) { this.clearSelection(); return; }
             const [width] = Rules.size(session.archive!.config,this.projection()!,cell[1] as InventorySpace);
             this.target({ space: cell[1] as InventorySpace, x: Number(cell[2]) % width,
                 y: Math.floor(Number(cell[2]) / width), rotated: this.rotated });
@@ -494,7 +392,7 @@ export class InventoryPanel extends BuildPanel {
         const session = this.inventorySession, save = session.archive, actual = save?.state;
         if (actual?.phase === "ended" && this.draft) this.clearSelection();
         const state = this.projection();
-        if (!this.popupLayout) this.backdrop();
+        this.backdrop();
         const root = this.nodes.inventoryRoot; root.visible = true;
         for (const key of Object.keys(this.nodes)) if (key !== "inventoryRoot") this.nodes[key].visible = false;
         for (const key of ["invLeftPanel","invBagPanel","invBagTopbar","invRightPanel","invLock"]) this.nodes[key].visible = true;
@@ -504,7 +402,7 @@ export class InventoryPanel extends BuildPanel {
         this.label("invClock",actual?.phase === "active" ? this.timeText() : actual?.phase === "preparation" ? "整备" : "演练库存",22);
         this.label("invEquipTitle","装备",18,"#c2dbdd");
         this.label("invBattleTitle","斗法匣 · 5 格",18,"#e3c98c");
-        const safeConfig = save?.config || this.emptyInventoryConfig;
+        const safeConfig = save?.config;
         this.label("invSafeTitle",`归真匣 · ${safeConfig ?
             safeConfig.spaces.safeWidth * safeConfig.spaces.safeHeight : 2} 格`,18,"#a5d8b9");
         this.label("invProtection","归真匣保护非装备。\n其余携带物失败损失。",16,"#bbcbd0");
@@ -644,7 +542,7 @@ export class InventoryPanel extends BuildPanel {
             const victories = state.flow!.battles.filter(b => b.state.phase === "victory").length;
             this.control("invNodePrev","<",editable && state.node > 0 && !state.flow?.pending && !this.draft);
             this.control("invNodeNext",">",editable && state.node < victories && !state.flow?.pending && !this.draft);
-            if (!this.popupLayout) this.button("invToggle","构筑",630,16,128,46,editable && !this.draft);
+            this.button("invToggle","构筑",630,16,128,46,editable && !this.draft);
         }
         if(this.itemAreas.bagItemsArea instanceof Laya.GPanel){
             this.itemAreas.bagItemsArea.layout.refresh(true);this.refreshBagScroll();
@@ -721,15 +619,7 @@ export class InventoryPanel extends BuildPanel {
         if (space === "warehouse" || space === "source") return this.sourceGeometry();
         const [cols,rows] = Rules.size(this.inventorySession.archive!.config,this.projection()!,space);
         const cell = this.nodes[`invCell_${space}_0`];
-        if (this.popupLayout && space === "safe")
-            return { ...this.popupSafeOrigin(cols,rows), size: cell.width + 2, cols, rows };
         return { ...this.position(cell), size: cell.width + 2, cols, rows };
-    }
-    private popupSafeOrigin(cols: number, rows: number): Laya.Point {
-        const area = this.itemAreas.safeItemsArea, origin = this.position(area);
-        const pitch = this.nodes.invCell_safe_0.width + 2;
-        return new Laya.Point(origin.x + (area.width - (cols * pitch - 2)) / 2,
-            origin.y + 56 + (3 - rows) * pitch / 2);
     }
     private sourceGeometry() {
         const first = this.nodes.invSourceCell0, last = this.nodes.invSourceCell55, size = first.width + 2;
@@ -988,7 +878,6 @@ export class InventoryPanel extends BuildPanel {
         this.control("invRotate","\u21bb",t.rotate);
         this.label("invDetail",this.describeItem(Rules.item(this.inventorySession.inventory!,h.uid)),18,"#d9e1e5");
         this.label("invNotice",h.error || "",18,h.valid ? "#a7e5bf" : "#ffb4a8");
-        if (this.popupLayout) this.refreshPopup();
     }
     protected renderBattle(): void {
         super.renderBattle();
@@ -1028,6 +917,6 @@ export class InventoryPanel extends BuildPanel {
             t.kind==="weapon"?`攻击 +${t.weaponAttack} · 防御 +${t.weaponDefense}\n`:""}${
             t.kind==="repair"?`战外修理${t.repairAmount===-1?"至满耐久":` +${t.repairAmount}`}\n`:""}${
             t.kind==="stamina"?`战外恢复体力 ${t.staminaRestore}\n`:""}${t.safe ?
-                this.popupLayout ? "可放归真匣" : "归真匣合规，仍需尺寸适配" : "禁止归真匣"}${t.kind === "book" ? "\n完整功法典籍，永久学习尚未开放" : ""}`;
+                "归真匣合规，仍需尺寸适配" : "禁止归真匣"}${t.kind === "book" ? "\n完整功法典籍，永久学习尚未开放" : ""}`;
     }
 }

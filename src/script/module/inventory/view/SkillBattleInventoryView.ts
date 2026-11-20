@@ -9,7 +9,6 @@ export class SkillBattleInventoryView extends UIBaseView {
     get layer(): UILayer { return UILayer.Second; }
     get path(): string { return "ui/prefab/module/inventory/SkillBattleInventoryView.lh"; }
     private panel: WarehousePanel;
-    private lobbyBack: Laya.GWidget;
     protected onConstruct(): void {
         this.configurePanelBackgrounds(this.view);
         const lists = {
@@ -23,15 +22,11 @@ export class SkillBattleInventoryView extends UIBaseView {
             list.rootNode.itemTemplate=Laya.loader.getRes("ui/prefab/common/inventory/InventoryGridCell.lh");
         }
         this.panel = new WarehousePanel(this,GameplayManager.getMapTrial(),lists);
-        this.lobbyBack = this.getElement("btn_lobby_back");
-        this.addClickListener(this.lobbyBack, closeInventoryScreen);
+        this.addClickListener(this.getElement("btn_close"), closeInventoryScreen);
     }
     private configurePanelBackgrounds(root: Laya.GWidget): void {
         const grids: Record<string,number[]> = {
-            "jade/panel":[20,20,20,20,0], "jade/detail-panel":[18,18,18,18,0],
-            "jade/title-bar":[8,24,8,24,0], "jade/page-normal":[12,12,12,12,0],
-            "jade/page-selected":[12,12,12,12,0], "jade/button-square":[12,12,12,12,0],
-            "graphite/panel":[20,20,20,20,0], "graphite/detail-frame":[20,20,20,20,0],
+            "graphite/panel":[20,20,20,20,0],
             "graphite/scroll-track":[8,4,8,4,0],
         };
         for(const state of ["normal","pressed","disabled"]){
@@ -56,7 +51,6 @@ export class SkillBattleInventoryView extends UIBaseView {
     onOpen(): void {
         this.panel.openHubScreen();
         this.panel.resizeTo(this.view);
-        this.lobbyBack.visible = true;
     }
     protected onClose(): void { this.panel?.suspend(); }
 }

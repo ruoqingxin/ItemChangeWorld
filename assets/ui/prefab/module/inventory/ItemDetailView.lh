@@ -1,0 +1,152 @@
+{
+  "_$ver": 1,
+  "_$id": "page_ItemDetailView",
+  "_$type": "GWidget",
+  "name": "ItemDetailView",
+  "width": 1280,
+  "height": 720,
+  "mouseThrough": true,
+  "_$comp": [
+    {
+      "_$type": "3593fc26-337e-42e3-92dc-1b9c2bb8f988",
+      "scriptPath": "../src/script/games/ui/components/ElementMapper.ts",
+      "mapperType": 3,
+      "adapter": {
+        "_$ref": "item_detail_adapter"
+      },
+      "elements": [
+        {
+          "_$ref": "item_detail_adapter"
+        },
+        {
+          "_$ref": "item_detail_panel"
+        },
+        {
+          "_$ref": "item_detail_title"
+        },
+        {
+          "_$ref": "item_detail_text"
+        },
+        {
+          "_$ref": "item_detail_close"
+        }
+      ]
+    }
+  ],
+  "_$child": [
+    {
+      "_$id": "item_detail_adapter",
+      "_$type": "GWidget",
+      "name": "adapter",
+      "width": 1280,
+      "height": 720,
+      "mouseThrough": true,
+      "relations": [
+        {
+          "_$type": "Relation",
+          "target": {
+            "_$ref": "page_ItemDetailView"
+          },
+          "data": [
+            1,
+            0,
+            2,
+            0
+          ]
+        }
+      ],
+      "_$child": [
+        {
+          "_$id": "item_detail_panel",
+          "_$type": "GWidget",
+          "name": "box_item_detail",
+          "width": 360,
+          "height": 240,
+          "mouseEnabled": true,
+          "mouseThrough": false,
+          "_$child": [
+            {
+              "_$id": "item_detail_fill",
+              "_$type": "GImage",
+              "name": "img_detail_fill",
+              "x": 5,
+              "y": 5,
+              "width": 350,
+              "height": 230,
+              "src": "ui/atlas/module/warehouse/graphite/detail-fill.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "item_detail_frame",
+              "_$type": "GImage",
+              "name": "img_detail_frame",
+              "width": 360,
+              "height": 240,
+              "src": "ui/atlas/module/warehouse/graphite/detail-frame.png",
+              "autoSize": false,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "item_detail_title",
+              "_$type": "GTextField",
+              "name": "txt_item_name",
+              "x": 20,
+              "y": 22,
+              "width": 276,
+              "height": 30,
+              "font": "KaiTi",
+              "fontSize": 22,
+              "color": "#e7e1d4",
+              "valign": "middle",
+              "overflow": "shrink",
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "item_detail_text",
+              "_$type": "GTextField",
+              "name": "txt_item_detail",
+              "x": 20,
+              "y": 64,
+              "width": 292,
+              "height": 156,
+              "font": "Microsoft YaHei",
+              "fontSize": 16,
+              "color": "#bbc3bd",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "leading": 8,
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "item_detail_close",
+              "_$type": "GWidget",
+              "name": "btn_close",
+              "x": 316,
+              "y": 8,
+              "width": 32,
+              "height": 32,
+              "mouseEnabled": true,
+              "tooltips": "关闭详情",
+              "_$child": [
+                {
+                  "_$id": "item_detail_close_image",
+                  "_$type": "GImage",
+                  "name": "img_close",
+                  "x": 8,
+                  "y": 8,
+                  "width": 16,
+                  "height": 16,
+                  "src": "ui/atlas/module/warehouse/graphite/close.png",
+                  "autoSize": false,
+                  "color": "#c4c7bf",
+                  "mouseEnabled": false
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -41,6 +41,7 @@ export type InventoryAction =
     | { type: "move"; move: InventoryMove; warehouseTo?: InventoryWarehouseTarget }
     | { type: "moveBatch"; moves: InventoryMove[] }
     | { type: "arrangeWarehouse"; uid: string; from: InventoryLocation; to: InventoryWarehouseTarget }
+    | { type: "sortStorage"; page: number }
     | { type: "equipWeapon"; uid: string | null; from?: InventoryLocation; oldTo?: InventoryLocation; warehouseTo?: InventoryWarehouseTarget }
     | { type: "equipContainer"; uid: string | null; from?: InventoryLocation; oldTo?: InventoryLocation; contents: InventoryMove[];
         warehouseTo?: InventoryWarehouseTarget }
