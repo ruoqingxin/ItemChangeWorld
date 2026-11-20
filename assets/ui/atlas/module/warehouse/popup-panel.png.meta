@@ -4,6 +4,13 @@
     "textureType": 2,
     "sRGB": true,
     "premultiplyAlpha": true,
+    "sizeGrid": [
+      44,
+      12,
+      8,
+      12,
+      0
+    ],
     "generateMipmap": false
   }
 }

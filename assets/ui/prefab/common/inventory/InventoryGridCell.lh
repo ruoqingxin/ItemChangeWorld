@@ -1,0 +1,24 @@
+{
+  "_$id": "warehouse_grid_cell",
+  "_$type": "GWidget",
+  "name": "InventoryGridCell",
+  "x": 0,
+  "y": 0,
+  "width": 54,
+  "height": 54,
+  "mouseThrough": false,
+  "_$child": [
+    {
+      "_$id": "warehouse_cell_image",
+      "_$type": "GImage",
+      "name": "img_cell",
+      "width": 54,
+      "height": 54,
+      "src": "ui/atlas/module/inventory/cell.png",
+      "autoSize": false,
+      "mouseEnabled": false
+    }
+  ],
+  "_$ver": 1,
+  "mouseEnabled": true
+}

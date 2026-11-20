@@ -34,7 +34,7 @@
       "name": "invBagTitle",
       "x": 8,
       "y": 4,
-      "width": 444,
+      "width": 364,
       "height": 30,
       "_mouseState": 1,
       "text": "纳虚器",
@@ -42,6 +42,80 @@
       "color": "#ecefe7",
       "overflow": "shrink",
       "letterSpacing": 0
+    },
+    {
+      "_$id": "inventory_bag_scroll_up",
+      "_$type": "GWidget",
+      "name": "btn_bag_scroll_up",
+      "x": 380,
+      "y": 2,
+      "width": 32,
+      "height": 32,
+      "_mouseState": 2,
+      "_$child": [
+        {
+          "_$id": "inventory_bag_scroll_up_skin",
+          "_$type": "GImage",
+          "name": "img_bag_scroll_up_skin",
+          "width": 32,
+          "height": 32,
+          "_mouseState": 1,
+          "src": "ui/atlas/module/warehouse/button-square.png",
+          "autoSize": false
+        },
+        {
+          "_$id": "inventory_bag_scroll_up_arrow",
+          "_$type": "GImage",
+          "name": "img_bag_scroll_up_arrow",
+          "x": 16,
+          "y": 16,
+          "width": 14,
+          "height": 18,
+          "anchorX": 0.5,
+          "anchorY": 0.5,
+          "rotation": 90,
+          "_mouseState": 1,
+          "src": "ui/atlas/module/inventory/arrow.png",
+          "autoSize": false
+        }
+      ]
+    },
+    {
+      "_$id": "inventory_bag_scroll_down",
+      "_$type": "GWidget",
+      "name": "btn_bag_scroll_down",
+      "x": 420,
+      "y": 2,
+      "width": 32,
+      "height": 32,
+      "_mouseState": 2,
+      "_$child": [
+        {
+          "_$id": "inventory_bag_scroll_down_skin",
+          "_$type": "GImage",
+          "name": "img_bag_scroll_down_skin",
+          "width": 32,
+          "height": 32,
+          "_mouseState": 1,
+          "src": "ui/atlas/module/warehouse/button-square.png",
+          "autoSize": false
+        },
+        {
+          "_$id": "inventory_bag_scroll_down_arrow",
+          "_$type": "GImage",
+          "name": "img_bag_scroll_down_arrow",
+          "x": 16,
+          "y": 16,
+          "width": 14,
+          "height": 18,
+          "anchorX": 0.5,
+          "anchorY": 0.5,
+          "rotation": 270,
+          "_mouseState": 1,
+          "src": "ui/atlas/module/inventory/arrow.png",
+          "autoSize": false
+        }
+      ]
     },
     {
       "_$id": "invstart_14",
@@ -60,7 +134,7 @@
     },
     {
       "_$id": "region_6",
-      "_$type": "GWidget",
+      "_$type": "GPanel",
       "name": "bagItemsArea",
       "x": 8,
       "y": 44,

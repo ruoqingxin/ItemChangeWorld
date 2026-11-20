@@ -7,6 +7,38 @@ import type { InventoryCommand, InventoryConfig, InventoryItem, InventoryLocatio
 export class InventoryRules {
     static readonly WAREHOUSE_COLUMNS = 8;
     static readonly WAREHOUSE_ROWS = 7;
+    static readonly BAG_COLUMNS = 7;
+    static bagCapacity(config: InventoryConfig, state: InventoryState): number {
+        const container = state.items.find(i => i.location.space === "container");
+        const t = container && this.template(config,container);
+        return t ? t.bagWidth * t.bagHeight : 0;
+    }
+    static bagProjection(config: InventoryConfig, snapshot: InventoryState): { state: InventoryState; overflow: string[] } {
+        const state = Core.clone(snapshot), overflow: string[] = [];
+        if (state.bagColumns === 7) return {state,overflow};
+        state.bagColumns = 7;
+        const capacity = this.bagCapacity(config,state), occupied = new Set<number>();
+        const items = state.items.filter(i => i.location.space === "bag")
+            .sort((a,b) => a.location.y! - b.location.y! || a.location.x! - b.location.x! || a.uid.localeCompare(b.uid));
+        for (const item of items) {
+            const t = this.template(config,item), preferred = !!item.location.rotated;
+            let found: InventoryLocation | null = null;
+            for (const rotated of t.rotate && t.width !== t.height ? [preferred,!preferred] : [preferred]) {
+                const [w,h] = this.dimensions(t,{space:"bag",rotated});
+                for (let y=0;y<Math.ceil(capacity/7)&&!found;y++) for (let x=0;x+w<=7&&!found;x++) {
+                    const cells: number[] = [];
+                    for(let dy=0;dy<h;dy++) for(let dx=0;dx<w;dx++) cells.push((y+dy)*7+x+dx);
+                    if(cells.some(v=>v>=capacity||occupied.has(v)))continue;
+                    cells.forEach(v=>occupied.add(v));found={space:"bag",x,y,rotated};
+                }
+                if(found)break;
+            }
+            // 无法重排的原物仍可取出，浏览界面不能因此丢物或改写原档。
+            item.location = found || {space:"bag",x:0,y:Math.ceil(capacity/7)+overflow.length*3,rotated:preferred};
+            if(!found)overflow.push(item.uid);
+        }
+        return {state,overflow};
+    }
     static weight(config: InventoryConfig, state: InventoryState): { current: number; limit: number } {
         const container = state.items.find(i => i.location.space === "container");
         return { current: state.items.filter(i => ["weapon","container","bag"].includes(i.location.space))
@@ -33,14 +65,15 @@ export class InventoryRules {
         if (space === "safe") return [config.spaces.safeWidth, config.spaces.safeHeight];
         const container = state.items.find(i => i.location.space === "container");
         const t = container && this.template(config, container);
-        return t ? [t.bagWidth, t.bagHeight] : [0, 0];
+        return t ? state.bagColumns === 7 ? [7,Math.ceil(t.bagWidth*t.bagHeight/7)] :
+            [t.bagWidth, t.bagHeight] : [0, 0];
     }
     static validateConfig(config: InventoryConfig): void {
         Build.validateConfig(config.build);
         const int = (n: number, min = 0, max = 100000000) => Number.isSafeInteger(n) && n >= min && n <= max;
         if (!config.spaces || !Object.values(config.spaces).every(v => int(v, 1)) ||
             config.spaces.battleWidth * config.spaces.battleHeight !== 5 ||
-            ![[1,2],[2,2],[3,2],[3,3]].some(([w,h]) =>
+            ![[2,1],[2,2],[3,2],[3,3]].some(([w,h]) =>
                 config.spaces.safeWidth === w && config.spaces.safeHeight === h) ||
             !Array.isArray(config.templates) || !config.templates.length ||
             new Set(config.templates.map(t => t.id)).size !== config.templates.length)
@@ -216,7 +249,11 @@ export class InventoryRules {
             {space:"source",node:state.interactionSource!};
         const rows = state.items.filter(i => i.location.space === "bag" && i.uid !== uid)
             .sort((a,b) => a.location.y! - b.location.y! || a.location.x! - b.location.x! || a.uid.localeCompare(b.uid));
-        const t = next && this.template(config,next), width = t?.bagWidth || 0, height = t?.bagHeight || 0;
+        const t = next && this.template(config,next), capacity = t ? t.bagWidth*t.bagHeight : 0;
+        const width = t ? state.bagColumns === 7 ? 7 : t.bagWidth : 0;
+        const height = t ? state.bagColumns === 7 ? Math.ceil(capacity/7) : t.bagHeight : 0;
+        const inside = (x: number,y: number,w: number,h: number) => x+w<=width && y+h<=height &&
+            (!state.bagColumns || (y+h-1)*width+x+w<=capacity);
         const limit = config.weight!.base + (t?.weightLimit || 0);
         const equippedWeight = state.items.filter(i => i.location.space === "weapon")
             .reduce((n,i) => n + this.template(config,i).weight!,0) + (t?.weight || 0);
@@ -224,7 +261,7 @@ export class InventoryRules {
             if (items.reduce((n,i) => n + this.template(config,i).weight!,equippedWeight) > limit) return null;
             if (items.every(i => {
                 const [w,h] = this.dimensions(this.template(config,i),i.location);
-                return i.location.x!+w<=width && i.location.y!+h<=height;
+                return inside(i.location.x!,i.location.y!,w,h);
             })) return new Map(items.map(i => [i.uid,Core.clone(i.location)]));
             const occupied = new Set<number>(), targets = new Map<string,InventoryLocation>();
             for (const i of items) {
@@ -233,6 +270,7 @@ export class InventoryRules {
                 for (const rotated of it.rotate && it.width !== it.height ? [preferred,!preferred] : [preferred]) {
                     const [w,h] = this.dimensions(it,{space:"bag",rotated});
                     for (let y=0;y+h<=height&&!found;y++) for (let x=0;x+w<=width&&!found;x++) {
+                        if(!inside(x,y,w,h))continue;
                         const cells: number[] = [];
                         for(let dy=0;dy<h;dy++) for(let dx=0;dx<w;dx++) cells.push((y+dy)*width+x+dx);
                         if(cells.some(v=>occupied.has(v)))continue;
@@ -304,6 +342,14 @@ export class InventoryRules {
     }
     static apply(config: InventoryConfig, snapshot: InventoryState,
         command: InventoryCommand, at: number): { state: InventoryState; battle?: BattleResult } {
+        if(command?.type === "reflowBag") {
+            this.movable(snapshot);
+            if(!["move","arrangeWarehouse","equipWeapon","equipContainer"].includes(command.action?.type))
+                throw new Error("背包重排只能与物品整理一并提交");
+            const projection=this.bagProjection(config,snapshot);
+            if(projection.overflow.length)throw new Error("七列背包空间不足，请先取出待整理物品");
+            return this.apply(config,projection.state,command.action,at);
+        }
         const state = Core.clone(snapshot);
         if (!command || state.phase === "ended") throw new Error("本次演练已结算");
         if (!Number.isSafeInteger(at) || at < 0) throw new Error("操作时间无效");
@@ -439,6 +485,7 @@ export class InventoryRules {
         return { state, battle };
     }
     static validate(config: InventoryConfig, state: InventoryState): void {
+        if(state.bagColumns !== undefined && state.bagColumns !== 7)throw new Error("背包列数无效");
         if (!state.items.length || new Set(state.items.map(i => i.uid)).size !== state.items.length ||
             !Number.isSafeInteger(state.revision) || state.revision < 0) throw new Error("物品 UID 或修订无效");
         if (state.warehouseLayout !== undefined) {
@@ -464,6 +511,9 @@ export class InventoryRules {
                     throw new Error("物品坐标或旋转无效");
                 const [w,h] = this.dimensions(t,l), [width,height] = this.size(config,state,l.space);
                 if (l.x! + w > width || l.y! + h > height) throw new Error("尺寸不足或落点超出边界");
+                if(l.space === "bag" && state.bagColumns === 7 &&
+                    (l.y!+h-1)*width+l.x!+w>this.bagCapacity(config,state))
+                    throw new Error("背包末行未开放格子不可放入");
                 const grid = grids[l.space] ||= new Set();
                 for (let y = l.y!; y < l.y! + h; y++) for (let x = l.x!; x < l.x! + w; x++) {
                     const key = `${x}:${y}`;

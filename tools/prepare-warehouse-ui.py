@@ -1,5 +1,6 @@
 """从大厅已确认的青玉素材制作仓库面板与定尺寸控件。"""
 
+import argparse
 import json
 import uuid
 from pathlib import Path
@@ -14,15 +15,18 @@ RESAMPLE = Image.Resampling.LANCZOS
 JADE = Image.open(LOBBY / "player-info-strip.png").convert("RGBA")
 
 
-def save(image, name):
+def save(image, name, size_grid=None):
     TARGET.mkdir(parents=True, exist_ok=True)
     path = TARGET / f"{name}.png"
     image.save(path, optimize=True)
     meta = path.with_suffix(".png.meta")
     data = json.loads(meta.read_text(encoding="utf-8")) if meta.exists() else {"uuid": str(uuid.uuid4())}
-    data["importer"] = {
+    importer = data.setdefault("importer", {})
+    importer.update({
         "textureType": 2, "sRGB": True, "premultiplyAlpha": True, "generateMipmap": False,
-    }
+    })
+    if size_grid is not None:
+        importer["sizeGrid"] = size_grid
     meta.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
 
 
@@ -74,23 +78,34 @@ def button(name, size, primary=False):
     save(image, name)
 
 
+def popup_panel():
+    # 标题下沿和两侧留白保持固定，只有中心底色随面板尺寸伸缩。
+    image = surface((64, 64), 0.45, 0.17)
+    save(image, "popup-panel-plain", [8, 8, 8, 8, 0])
+    ImageDraw.Draw(image).line((12, 39, 51, 39), fill="#526456")
+    save(image, "popup-panel", [44, 12, 8, 12, 0])
+
+
+def equipment_hints():
+    # 从现有物品提取低对比单色提示，空位与真实装备保持明显区别。
+    sources = {
+        "weapon": "ui/atlas/module/inventory/gold-sword.png",
+        "armor": "ui/atlas/module/expedition/map-ui-icon-guard.png",
+        "accessory": "ui/atlas/module/inventory/fire-ring.png",
+        "container": "ui/atlas/module/inventory/storage-bag.png",
+    }
+    for name, source in sources.items():
+        icon = Image.open(ROOT / "assets" / source).convert("RGBA")
+        icon = icon.crop(icon.getbbox())
+        icon.thumbnail((72, 88) if name == "weapon" else (64, 64), RESAMPLE)
+        gray = icon.convert("L").point(lambda value: int(108 + value * 0.23))
+        hint = Image.merge("RGBA", (gray, gray, gray, icon.getchannel("A")))
+        save(hint, f"slot-{name}")
+
+
 def main():
-    image = surface((1184, 608), 0.5, 0.35)
-    frame(image, True)
-    draw = ImageDraw.Draw(image)
-    draw.line((678, 20, 678, 588), fill="#64725c")
-    draw.line((679, 20, 679, 588), fill="#152823")
-    save(image, "popup-frame")
-    for name, size in (
-        ("popup-equipment", (432, 242)), ("popup-safe", (200, 320)),
-        ("popup-battle", (432, 92)), ("popup-bag", (480, 230)),
-        ("popup-backpack", (152, 174)),
-        ("popup-source", (480, 576)),
-    ):
-        image = surface(size, 0.45, 0.17)
-        draw = ImageDraw.Draw(image)
-        draw.line((12, 39, size[0] - 13, 39), fill="#526456")
-        save(image, name)
+    popup_panel()
+    equipment_hints()
     button("button-square", (44, 44))
     button("button-close", (144, 44))
     panel("carry-panel", (294, 524), (46, 274, 378))
@@ -119,4 +134,14 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--popup-panel", action="store_true", help="只生成共用的小尺寸九宫背景")
+    parser.add_argument("--equipment-hints", action="store_true", help="只生成装备空位提示图标")
+    args = parser.parse_args()
+    if args.popup_panel:
+        popup_panel()
+        print("仓库共用背景已生成：64×64，九宫上右下左为 44/12/8/12。")
+    elif args.equipment_hints:
+        equipment_hints()
+    else:
+        main()

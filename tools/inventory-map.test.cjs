@@ -9,6 +9,117 @@ const test=(name,fn)=>{fn();groups++;console.log("通过 "+name);};
 const start=(seed=17)=>R.start(c,seed,"inventory-map");
 const enter=s=>R.apply(c,s,{type:"enter"},1000,17).state;
 const move=(s,item,to)=>I.apply(c,s,{type:"move",move:{uid:item.uid,from:item.location,to}},1000).state;
+test("归真匣四种规格的边界、碰撞、禁入与存档重放",()=>{
+    assert.deepEqual([c.spaces.safeWidth,c.spaces.safeHeight],[2,1]);
+    for(const [width,height] of [[2,1],[2,2],[3,2],[3,3]]){
+        const config=structuredClone(c);
+        config.spaces.safeWidth=width;config.spaces.safeHeight=height;
+        const saved=new Map(),storage={getItem:k=>saved.get(k)??null,setItem:(k,v)=>saved.set(k,v),removeItem:k=>saved.delete(k)};
+        const restore=()=>new Session(new BattleManager(),storage,()=>1000,config);
+        const session=restore();session.prepare(config,17);
+        const potion=session.inventory.items.find(i=>I.template(config,i).kind==="hp");
+        const to={space:"safe",x:width-1,y:height-1,rotated:false};
+        session.inventoryCommand({type:"move",move:{uid:potion.uid,from:potion.location,to}});
+        assert.deepEqual(I.item(session.inventory,potion.uid).location,to);
+        assert.deepEqual(restore().archive,session.archive);
+        const other=session.inventory.items.find(i=>I.template(config,i).kind==="mp");
+        const archive=session.archive;
+        assert.throws(()=>I.apply(config,session.inventory,{type:"move",move:{uid:other.uid,from:other.location,to}},1000),/相交/);
+        assert.throws(()=>I.apply(config,session.inventory,{type:"move",move:{uid:other.uid,from:other.location,
+            to:{space:"safe",x:width,y:0,rotated:false}}},1000),/越界|尺寸|网格/);
+        assert.throws(()=>I.apply(config,session.inventory,{type:"equipWeapon",uid:null,oldTo:to},1000));
+        assert.deepEqual(session.archive,archive);
+    }
+    for(const [width,height] of [[1,2],[1,1],[2,3],[4,2]]){
+        const config=structuredClone(c);config.spaces.safeWidth=width;config.spaces.safeHeight=height;
+        assert.throws(()=>I.validateConfig(config),/三空间配置无效/);
+    }
+});
+test("七列背包保留六档总容量，末行禁放与原档重放",()=>{
+    for(const id of [1201,1203,1205,1207,1209,1211]){
+        const config=structuredClone(c);
+        config.fixtures.find(f=>f.templateId===1201).templateId=id;
+        const saved=new Map(),storage={getItem:k=>saved.get(k)??null,setItem:(k,v)=>saved.set(k,v),removeItem:k=>saved.delete(k)};
+        const restore=()=>new Session(new BattleManager(),storage,()=>1000,config);
+        let session=restore();session.prepare(config,17);
+        const original=session.archive,raw=saved.get(Session.key);
+        const projection=I.bagProjection(config,session.inventory),capacity=I.bagCapacity(config,session.inventory);
+        assert.equal(projection.overflow.length,0);assert.equal(saved.get(Session.key),raw);
+        assert.deepEqual(session.archive,original);
+        assert.deepEqual(I.size(config,projection.state,"bag"),[7,Math.ceil(capacity/7)]);
+        const item=projection.state.items.find(i=>i.templateId===309);
+        const to={space:"bag",x:(capacity-1)%7,y:Math.floor((capacity-1)/7),rotated:false};
+        const command={type:"reflowBag",action:{type:"move",move:{uid:item.uid,from:item.location,to}}};
+        session.inventoryCommand(command);
+        assert.equal(I.bagCapacity(config,session.inventory),capacity);
+        assert.deepEqual(I.item(session.inventory,item.uid).location,to);
+        assert.equal(session.inventory.bagColumns,7);
+        session=restore();assert.equal(session.error,"");assert.deepEqual(session.inventory.bagColumns,7);
+        assert.deepEqual(session.archive.commands.at(-1).command,command);
+        const before=session.archive;
+        if(capacity%7)assert.throws(()=>I.apply(config,session.inventory,{type:"move",move:{
+            uid:item.uid,from:to,to:{space:"bag",x:capacity%7,y:Math.floor(capacity/7),rotated:false}}},1000),/末行/);
+        assert.throws(()=>I.apply(config,session.inventory,{type:"reflowBag",action:{type:"enter"}},1000),/整理一并提交/);
+        assert.deepEqual(session.archive,before);
+    }
+});
+test("七列多格碰撞、旋转、换包与无法重排时保留原物",()=>{
+    let s=start();
+    const item=s.items.find(i=>i.templateId===309);
+    const p=I.bagProjection(c,s);
+    const mixed={uid:"wide",templateId:304,durability:null,location:{space:"warehouse"}};
+    p.state.items.push(mixed);
+    let arranged=I.apply(c,p.state,{type:"move",move:{uid:item.uid,from:item.location,
+        to:{space:"bag",x:6,y:0,rotated:false}}},1000).state;
+    assert.throws(()=>I.apply(c,arranged,{type:"move",move:{uid:mixed.uid,from:mixed.location,
+        to:{space:"bag",x:6,y:0,rotated:true}}},1000),/边界/);
+    arranged=I.apply(c,arranged,{type:"move",move:{uid:mixed.uid,from:mixed.location,
+        to:{space:"bag",x:2,y:1,rotated:true}}},1000).state;
+    assert.deepEqual(I.dimensions(I.template(c,mixed),I.item(arranged,mixed.uid).location),[2,1]);
+    assert.throws(()=>I.apply(c,arranged,{type:"move",move:{uid:item.uid,from:I.item(arranged,item.uid).location,
+        to:{space:"bag",x:3,y:1,rotated:false}}},1000),/相交/);
+    const plan=I.containerPlan(c,arranged,null),removed=I.apply(c,arranged,plan,1000).state;
+    assert.equal(removed.items.filter(i=>i.location.space==="bag").length,0);
+    s.items.filter(i=>i.location.space==="bag").forEach(i=>i.location={space:"warehouse"});
+    for(let i=0;i<2;i++)s.items.push({uid:"packed-weapon-"+i,templateId:101,durability:c.templates.find(t=>t.id===101).weaponDurability,
+        location:{space:"bag",x:i*2,y:0,rotated:false}});
+    I.validate(c,s);
+    const before=structuredClone(s),projection=I.bagProjection(c,s);
+    assert.equal(projection.overflow.length,1);assert.deepEqual(s,before);
+    assert.throws(()=>I.apply(c,s,{type:"reflowBag",action:{type:"arrangeWarehouse",uid:item.uid,
+        from:item.location,to:{page:0,x:3,y:3,rotated:false}}},1000),/先取出/);
+    const overflow=I.item(s,projection.overflow[0]);
+    s=I.apply(c,s,{type:"move",move:{uid:overflow.uid,from:overflow.location,to:{space:"warehouse"}}},1000).state;
+    assert.equal(I.bagProjection(c,s).overflow.length,0);assert.equal(s.items.length,before.items.length);
+});
+test("七列整理和移动同笔保存，写失败、碰撞与过期均不发布",()=>{
+    const saved=new Map();let fail=false;
+    const storage={getItem:k=>saved.get(k)??null,setItem:(k,v)=>{
+        if(fail)throw new Error("模拟写失败");saved.set(k,v);
+    },removeItem:k=>saved.delete(k)};
+    const session=new Session(new BattleManager(),storage,()=>1000,c);session.prepare(c,17);
+    const projected=I.bagProjection(c,session.inventory).state;
+    const item=projected.items.find(i=>i.templateId===309),token=session.token;
+    const command={type:"reflowBag",action:{type:"move",move:{uid:item.uid,from:item.location,
+        to:{space:"bag",x:1,y:0,rotated:false}}}};
+    const before=session.archive,raw=saved.get(Session.key);
+    session.previewMove(command,token);
+    assert.deepEqual(session.archive,before);assert.equal(saved.get(Session.key),raw);
+    fail=true;assert.throws(()=>session.inventoryCommand(command,token),/写失败/);
+    assert.deepEqual(session.archive,before);assert.equal(saved.get(Session.key),raw);
+    fail=false;
+    assert.throws(()=>session.inventoryCommand({...command,action:{...command.action,move:{...command.action.move,
+        to:{space:"bag",x:0,y:0,rotated:false}}}},token),/相交/);
+    assert.deepEqual(session.archive,before);assert.equal(saved.get(Session.key),raw);
+    session.inventoryCommand(command,token);
+    assert.equal(session.inventory.bagColumns,7);
+    assert.equal(session.inventory.revision,before.state.revision+1);
+    assert.equal(session.archive.commands.length,before.commands.length+1);
+    const committed=session.archive,committedRaw=saved.get(Session.key);
+    assert.throws(()=>session.inventoryCommand(command,token),/过期|修订/);
+    assert.deepEqual(session.archive,committed);assert.equal(saved.get(Session.key),committedRaw);
+    assert.deepEqual(new Session(new BattleManager(),storage,()=>1000,c).archive,committed);
+});
 test("网格碰撞、越界、归真匣限制与失败原子性",()=>{
     const s=start(),p=s.items.find(i=>I.template(c,i).kind==="hp"),before=structuredClone(s);
     assert.throws(()=>move(s,p,{space:"battle",x:1,y:0,rotated:false}),/相交/);

@@ -6,7 +6,9 @@
     "ui/texture/inventory/warehouse-body.png"
   ],
   "ui/prefab/common/inventory/InventoryBag.lh": [
+    "ui/atlas/module/inventory/arrow.png",
     "ui/atlas/module/inventory/cell.png",
+    "ui/atlas/module/warehouse/button-square.png",
     "ui/texture/inventory/topbar.png"
   ],
   "ui/prefab/common/inventory/InventoryCarry.lh": [
@@ -14,6 +16,9 @@
     "ui/atlas/module/inventory/gold-sword.png",
     "ui/atlas/module/inventory/item-frame.png",
     "ui/atlas/module/inventory/lock.png"
+  ],
+  "ui/prefab/common/inventory/InventoryGridCell.lh": [
+    "ui/atlas/module/inventory/cell.png"
   ],
   "ui/prefab/common/inventory/InventoryItem.lh": [
     "ui/atlas/module/inventory/herb-sprig.png",
@@ -593,7 +598,6 @@
     "ui/texture/inventory/warehouse-body.png"
   ],
   "ui/prefab/module/inventory/SkillBattleInventoryView.lh": [
-    "ui/atlas/module/expedition/handpainted/inventory-search-spinner.png",
     "ui/atlas/module/inventory/arrow.png",
     "ui/atlas/module/inventory/blue-flask.png",
     "ui/atlas/module/inventory/cell.png",
@@ -621,19 +625,16 @@
     "ui/atlas/module/lobby/back.png",
     "ui/atlas/module/lobby/close.png",
     "ui/atlas/module/lobby/player-portrait.png",
-    "ui/atlas/module/warehouse/button-back.png",
     "ui/atlas/module/warehouse/button-close.png",
     "ui/atlas/module/warehouse/button-page.png",
     "ui/atlas/module/warehouse/button-square.png",
-    "ui/atlas/module/warehouse/popup-backpack.png",
-    "ui/atlas/module/warehouse/popup-bag.png",
-    "ui/atlas/module/warehouse/popup-battle.png",
-    "ui/atlas/module/warehouse/popup-equipment.png",
-    "ui/atlas/module/warehouse/popup-frame.png",
-    "ui/atlas/module/warehouse/popup-safe.png",
-    "ui/atlas/module/warehouse/popup-source.png",
+    "ui/atlas/module/warehouse/popup-panel-plain.png",
+    "ui/atlas/module/warehouse/popup-panel.png",
+    "ui/atlas/module/warehouse/slot-accessory.png",
+    "ui/atlas/module/warehouse/slot-armor.png",
+    "ui/atlas/module/warehouse/slot-container.png",
+    "ui/atlas/module/warehouse/slot-weapon.png",
     "ui/atlas/module/warehouse/tab-wide.png",
-    "ui/atlas/module/warehouse/tab.png",
     "ui/image/expeditionNodes/clean/node-alchemy.png",
     "ui/image/expeditionNodes/clean/node-battle-loot.png",
     "ui/image/expeditionNodes/clean/node-beast.png",
@@ -692,6 +693,7 @@
     "ui/image/naxu/naxu-pouch-q1.png",
     "ui/image/naxu/naxu-ring-q4.png",
     "ui/image/naxu/naxu-seal-q4.png",
+    "ui/prefab/common/inventory/InventoryGridCell.lh",
     "ui/prefab/common/inventory/InventoryItem.lh",
     "ui/texture/inventory/backpack-body.png",
     "ui/texture/inventory/tooltip.png",

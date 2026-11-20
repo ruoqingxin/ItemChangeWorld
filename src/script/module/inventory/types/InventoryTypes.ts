@@ -33,9 +33,10 @@ export interface InventoryState {
     sourceLayouts?: Array<{ node: number; slots: InventoryWarehousePlacement[] }>;
     interactionSource?: number | null;
     stamina?: number;
+    bagColumns?: 7;
 }
 export interface InventoryMove { uid: string; from: InventoryLocation; to: InventoryLocation; }
-export type InventoryCommand =
+export type InventoryAction =
     | { type: "enter" }
     | { type: "move"; move: InventoryMove; warehouseTo?: InventoryWarehouseTarget }
     | { type: "arrangeWarehouse"; uid: string; from: InventoryLocation; to: InventoryWarehouseTarget }
@@ -45,4 +46,5 @@ export type InventoryCommand =
     | { type: "use"; uid: string; from: InventoryLocation }
     | { type: "extract" | "abandon" | "timeout" }
     | { type: "build"; command: BuildCommand };
+export type InventoryCommand = InventoryAction | { type: "reflowBag"; action: InventoryAction };
 export type InventoryWeapon = BattleWeapon;

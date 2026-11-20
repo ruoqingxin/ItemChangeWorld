@@ -1,0 +1,430 @@
+import type { UIBaseView } from "../../../games/ui/UIBaseView";
+import type { List } from "../../../games/uilib/List";
+import type { BuildToken } from "../../build/types/BuildTypes";
+import type { ExpeditionRunManager } from "../../expedition/manager/ExpeditionRunManager";
+import { InventoryRules as Rules } from "../utils/InventoryRules";
+import { InventoryConfigUtils } from "../utils/InventoryConfigUtils";
+import { ConfigUtil } from "../../../config/ConfigUtil";
+import { InventoryDragController } from "../ctrl/InventoryDragController";
+import { InventoryGridItemCtrl } from "../ctrl/InventoryGridItemCtrl";
+import { InventoryItemCtrl } from "../ctrl/InventoryItemCtrl";
+import type { InventoryAction, InventoryCommand, InventoryConfig, InventoryItem, InventoryLocation, InventorySpace, InventoryState } from "../types/InventoryTypes";
+import { openSkillBattleScreen } from "../../gameplay/utils/GameplayNavigation";
+
+type GridName = "safe" | "battle" | "bag" | "source";
+type DropTarget = InventoryLocation & {page?: number};
+interface HeldItem {
+    uid: string; node: Laya.GWidget; point: Laya.Point; grabX: number; grabY: number; rotated: boolean;
+    previous: string; token: BuildToken; target: DropTarget | null; command: InventoryCommand | null;
+    valid: boolean; error: string;
+}
+
+export class WarehousePanel {
+    readonly pageRole = "inventory";
+    readonly nodes: Record<string,Laya.GWidget> = {};
+    readonly buttons: Record<string,Laya.GWidget> = {};
+    readonly root: Laya.GWidget;
+    readonly bagScroller = new Laya.Scroller();
+    opened = false;
+    inventoryPage = 0;
+    visibleItems: InventoryItem[] = [];
+    gridItems: InventoryItem[] = [];
+    private config: InventoryConfig;
+    private state: InventoryState | null;
+    private displayState: InventoryState | null;
+    private overflow: string[] = [];
+    private selected = "";
+    private notice = "";
+    private held: HeldItem | null = null;
+    private readonly drag: InventoryDragController;
+    private readonly itemCtrls = new Map<string,InventoryItemCtrl>();
+    private readonly itemRotations = new Map<string,boolean>();
+    private readonly equipment = new Map<string,InventoryItemCtrl>();
+    private readonly captions = new Map<Laya.GWidget,Laya.GTextField>();
+    private readonly skins = new Map<Laya.GWidget,Laya.GImage>();
+    private readonly pageLocks = new Map<Laya.GWidget,Laya.GImage>();
+    private readonly equipmentHints = new Map<string,Laya.GWidget>();
+    private availablePages = 1;
+    private floating: InventoryItemCtrl;
+    private autoRotateKey = "";
+    private presentedRunId = "";
+
+    constructor(view: UIBaseView, readonly inventorySession: ExpeditionRunManager,
+        private readonly lists: Record<GridName,List<InventoryGridItemCtrl>>) {
+        this.root = view.getElement("box_inventory_popup");
+        for(const n of view.uiElement.elementMapper.elements)if(n)this.nodes[n.name]=n as Laya.GWidget;
+        for(const list of Object.values(this.lists))list.setClickListener(this,this.onClickGridCell);
+        this.drag = new InventoryDragController(this.root,{
+            begin:(key,point)=>this.beginDrag(key,point),move:point=>this.moveDrag(point),
+            release:()=>this.releaseDrag(),cancel:()=>this.cancelDrag(),rotate:()=>this.rotateDrag(),
+        });
+        for(const name of ["invReveal","btn_bag_up","btn_bag_down",
+            "btn_detail_close",...Array.from({length:7},(_,i)=>"expLootPage"+(i+1))]) {
+            const node=this.nodes[name];this.buttons[name]=node;
+            node.on(Laya.Event.CLICK,this,()=>this.onClick(name));
+            if(name.startsWith("inv")||name.startsWith("expLootPage")){
+                this.captions.set(node,node.getChildAt(1) as Laya.GTextField);
+                this.skins.set(node,node.getChildAt(0) as Laya.GImage);
+                if(name.startsWith("expLootPage"))this.pageLocks.set(node,node.getChildAt(2) as Laya.GImage);
+            }
+        }
+        for(const name of ["invWeapon","invContainer"]){
+            const node=this.nodes[name],ctrl=new InventoryItemCtrl();
+            ctrl.setComponents(node,0);this.equipment.set(name,ctrl);this.bindItem(node);
+            this.equipmentHints.set(name,node.parent.getChildByName(
+                name==="invWeapon"?"img_weapon_hint":"img_container_hint") as Laya.GWidget);
+        }
+        this.bagScroller.direction=Laya.ScrollDirection.Vertical;
+        this.bagScroller.barDisplay=Laya.ScrollBarDisplay.Hidden;
+        this.bagScroller.touchEffect=Laya.ScrollTouchEffect.Off;
+        this.bagScroller.bouncebackEffect=Laya.ScrollBounceBackEffect.Off;
+        const bag=this.nodes.bagItemsArea as Laya.GPanel;
+        bag.scroller=this.bagScroller;bag.layout.foldInvisibles=true;
+        bag.on(Laya.UIEvent.Scroll,this,this.refreshScroll);
+        this.root.on(Laya.Event.RESIZE,this,this.onResize);
+        view.view.on(Laya.Event.RESIZE,this,this.onResize);
+        this.config=InventoryConfigUtils.read(ConfigUtil.Tables);
+    }
+    getNode(name: string): Laya.GWidget { return this.nodes[name]; }
+    openHubScreen(): void {
+        const runId=this.inventorySession.inventory?.runId || "";
+        if(runId!==this.presentedRunId){
+            this.presentedRunId=runId;this.inventoryPage=0;this.selected="";
+            for(const ctrl of this.itemCtrls.values())ctrl.rootNode.destroy();
+            this.itemCtrls.clear();
+        }
+        this.opened=true;this.refresh();Laya.timer.loop(50,this,this.tick);
+    }
+    resizeTo(_view: Laya.GWidget): void { this.onResize(); }
+    suspend(): void {
+        this.drag.cancel();this.opened=false;Laya.timer.clearAll(this);
+        try { this.inventorySession.pauseSearch(); } catch { /* 写失败由现有存档入口继续提示。 */ }
+    }
+    private onResize(): void {
+        this.drag.cancel();
+        if(this.opened)Laya.timer.callLater(this,this.refresh);
+    }
+    private tick(): void {
+        if(!this.opened||this.held)return;
+        try {
+            if(this.inventorySession.expire()){openSkillBattleScreen("settlement");return;}
+            const revision=this.inventorySession.token.revision;
+            if(this.inventorySession.searching)this.inventorySession.advanceSearch();
+            if(revision!==this.inventorySession.token.revision||this.inventorySession.searching)this.refresh();
+        } catch(e){this.notice=(e as Error).message;this.updateNotice();}
+    }
+    private label(name: string,value: string): void {
+        const n=this.nodes[name] as Laya.GTextField;if(!n)return;
+        n.text=value;n.visible=true;
+    }
+    private caption(node: Laya.GWidget,value: string): void {
+        const text=this.captions.get(node)!;
+        text.text=value;text.visible=true;text.font="KaiTi";text.fontSize=node.height<=32?16:18;
+        text.align="center";text.valign="middle";
+    }
+    private enabled(node: Laya.GWidget,value: boolean): void {
+        node.mouseEnabled=value;node.alpha=value?1:0.35;
+    }
+    private onClick(name: string): void {
+        if(this.held||this.drag.suppressClick())return;
+        this.notice="";
+        try {
+            if(name==="btn_detail_close")this.selected="";
+            else if(name==="btn_bag_up"||name==="btn_bag_down")
+                this.bagScroller.setPosY(this.bagScroller.posY+(name==="btn_bag_up"?-112:112));
+            else if(name==="invReveal"){
+                if(this.inventorySession.searching)this.inventorySession.pauseSearch();
+                else this.inventorySession.startSearch();
+            } else if(name.startsWith("expLootPage")){
+                const page=Number(name.slice(11))-1;
+                if(page<0||page>=this.availablePages)return;
+                this.inventoryPage=page;
+            }
+        } catch(e){this.notice=(e as Error).message;}
+        this.refresh();
+    }
+    private onClickGridCell(_index: number,_ctrl: InventoryGridItemCtrl): void {
+        if(!this.held&&!this.drag.suppressClick()){this.selected="";this.refresh();}
+    }
+    private setupGrid(name: GridName,cols: number,count: number): void {
+        const list=this.lists[name],node=list.rootNode;
+        node.layout.type=Laya.LayoutType.FlowX;node.layout.columns=cols;
+        node.layout.columnGap=2;node.layout.rowGap=2;
+        node.size(cols*56-2,Math.max(0,Math.ceil(count/cols)*56-2));
+        const prefix=name==="source"?"invSourceCell":`invCell_${name}_`;
+        for(const key of Object.keys(this.nodes))if(key.startsWith(prefix))delete this.nodes[key];
+        const changed=list.arrayLen!==count;
+        if(changed)list.array=Array.from({length:count},(_,i)=>({name:prefix+i}));
+        node.layout.refresh(true);
+        for(let i=0;i<node.numChildren;i++){
+            const cell=node.getChildAt(i) as Laya.GWidget;
+            if(!cell.name.startsWith(prefix))continue;
+            this.nodes[cell.name]=cell;
+        }
+    }
+    refresh(): void {
+        const save=this.inventorySession.archive;
+        this.state=save?.state||null;this.config=save?.config||this.config;
+        const projection=this.state&&Rules.bagProjection(this.config,this.state);
+        this.displayState=projection?.state||null;this.overflow=projection?.overflow||[];
+        const spaces=this.config.spaces,capacity=this.state?Rules.bagCapacity(this.config,this.state):
+            this.config.fixtures.map(f=>this.config.templates.find(t=>t.id===f.templateId))
+                .filter(t=>t?.kind==="container").map(t=>t.bagWidth*t.bagHeight)[0]||0;
+        this.setupGrid("safe",spaces.safeWidth,spaces.safeWidth*spaces.safeHeight);
+        this.setupGrid("battle",5,5);this.setupGrid("bag",7,capacity);this.setupGrid("source",8,56);
+        const safe=this.nodes.box_safe_content,safeList=this.lists.safe.rootNode;
+        safeList.pos((safe.width-safeList.width)/2,(safe.height-safeList.height)/2);
+        const battle=this.nodes.battleItemsArea,battleList=this.lists.battle.rootNode;
+        battleList.pos((battle.width-battleList.width)/2,32);
+        this.label("invSafeTitle",`归真匣 · ${spaces.safeWidth}×${spaces.safeHeight}`);
+        this.label("invBattleTitle","斗法匣 · 5 格");
+        const weight=this.state?Rules.weight(this.config,this.state):null;
+        this.label("invBagTitle",`纳虚器 · ${capacity} 格${weight?` · ${weight.current}/${weight.limit}`:""}`);
+        this.label("invSourceTitle",this.state?.phase==="active"?"来源仓库":"仓库");
+        for(const key of Object.keys(this.nodes))if(/^inv(?:Item|List)\d+$/.test(key)){
+            delete this.nodes[key];delete this.buttons[key];
+        }
+        for(const ctrl of this.itemCtrls.values())ctrl.rootNode.visible=false;
+        this.itemRotations.clear();
+        this.renderEquipment();
+        this.renderCarried();
+        this.renderSource();
+        this.renderDetail();
+        this.updateNotice();
+        (this.nodes.bagItemsArea as Laya.GPanel).layout.refresh(true);
+        this.refreshScroll();
+        if(this.held)this.renderHeld();
+    }
+    private renderEquipment(): void {
+        for(const [space,name] of [["weapon","invWeapon"],["container","invContainer"]] as const){
+            const item=this.state?.items.find(i=>i.location.space===space),ctrl=this.equipment.get(name)!;
+            this.equipmentHints.get(name)!.visible=!item;
+            if(!item){ctrl.clear();continue;}
+            const t=Rules.template(this.config,item);
+            ctrl.update({template:t,width:110,height:space==="weapon"?166:110,rotated:false,selected:this.selected===item.uid},0);
+            this.itemRotations.set(item.uid,false);
+        }
+        const weapon=this.state?.items.find(i=>i.location.space==="weapon");
+        this.label("invWeaponName",weapon?Rules.template(this.config,weapon).name:"未装备武器");
+    }
+    private createItem(): InventoryItemCtrl {
+        const prefab=Laya.loader.getRes("ui/prefab/common/inventory/InventoryItem.lh") as Laya.Prefab;
+        const ctrl=new InventoryItemCtrl();ctrl.setComponents(prefab.create() as Laya.GWidget,0);
+        return ctrl;
+    }
+    private renderItem(item: InventoryItem,name: string,parent: Laya.GWidget,x: number,y: number,rotated: boolean): void {
+        let ctrl=this.itemCtrls.get(item.uid);
+        if(!ctrl){ctrl=this.createItem();this.itemCtrls.set(item.uid,ctrl);this.bindItem(ctrl.rootNode);}
+        const node=ctrl.rootNode;
+        node.name=name;this.nodes[name]=node;this.buttons[name]=node;
+        if(node.parent!==parent)parent.addChild(node);
+        const t=Rules.template(this.config,item),[w,h]=Rules.dimensions(t,{space:"bag",rotated});
+        ctrl.update({template:t,width:w*56-2,height:h*56-2,rotated,selected:this.selected===item.uid},0);
+        node.pos(x,y);this.itemRotations.set(item.uid,rotated);
+    }
+    private renderCarried(): void {
+        const state=this.displayState;
+        this.gridItems=state?.items.filter(i=>["battle","safe","bag"].includes(i.location.space))||[];
+        for(const [i,item] of this.gridItems.entries()){
+            const space=item.location.space as "safe"|"battle"|"bag",grid=this.lists[space].rootNode;
+            const parent=space==="bag"?this.nodes.bagItemsArea:space==="safe"?this.nodes.box_safe_content:this.nodes.battleItemsArea;
+            this.renderItem(item,"invItem"+i,parent,grid.x+item.location.x!*56,grid.y+item.location.y!*56,!!item.location.rotated);
+        }
+    }
+    private renderSource(): void {
+        const state=this.state,active=state?.phase==="active",space=active?"source":"warehouse";
+        const items=state?.items.filter(i=>i.location.space===space&&(!active||i.location.node===state.node))||[];
+        const slots=state?(active?Rules.sourcePlacements(this.config,state):Rules.warehousePlacements(this.config,state)):[];
+        const pages=active?this.config.weight.sourcePages:Math.max(1,...slots.map(s=>s.page+1));
+        this.availablePages=pages;
+        this.inventoryPage=Math.min(this.inventoryPage,pages-1);
+        const byUid=new Map(items.map(i=>[i.uid,i]));
+        const visible=slots.filter(s=>s.page===this.inventoryPage&&byUid.has(s.uid)&&(!active||state.interactionSource===state.node));
+        this.visibleItems=visible.map(s=>byUid.get(s.uid)!);
+        visible.forEach((slot,index)=>this.renderItem(byUid.get(slot.uid)!,"invList"+index,this.nodes.sourceItemsArea,
+            slot.x*56,slot.y*56,slot.rotated));
+        for(let i=1;i<=7;i++){
+            const button=this.nodes["expLootPage"+i],locked=i>pages;button.visible=true;
+            this.caption(button,String(i));
+            this.captions.get(button)!.visible=!locked;
+            this.pageLocks.get(button)!.visible=locked;
+            button.mouseEnabled=!locked&&!this.held;button.alpha=this.held?0.6:1;
+            this.skins.get(button)!.alpha=locked?0.55:1;
+            this.skins.get(button)!.color=i===this.inventoryPage+1?"#e5d9a6":"#ffffff";
+        }
+        this.label("txt_inventory_page_status",`${items.length} 件 · 第 ${this.inventoryPage+1}/${pages} 页`);
+        const source=active?(state as typeof state & {map:{sources:Array<{node:number;entries:unknown[];revealed:number}>}})
+            .map.sources.find(s=>s.node===state.node):null;
+        const reveal=this.nodes.invReveal;reveal.visible=!!source&&source.revealed<source.entries.length;
+        if(reveal.visible){
+            this.caption(reveal,`${this.inventorySession.searching?"暂停搜索":"继续搜索"} · ${source.revealed}/${source.entries.length}`);
+            this.enabled(reveal,!this.held);
+        }
+    }
+    private renderDetail(): void {
+        const item=this.state?.items.find(i=>i.uid===this.selected),box=this.nodes.box_inventory_detail;
+        box.visible=!!item&&!this.held;
+        if(!item)return;
+        const t=Rules.template(this.config,item),[w,h]=Rules.dimensions(t,{space:"bag",rotated:!!this.itemRotations.get(item.uid)});
+        const quality=["","普通","优秀","精良","稀有","史诗","传说"][t.quality||1];
+        this.label("invDetail",`${t.name} · ${quality} · ${w}×${h}\n重量 ${t.weight}${
+            item.durability!==null?`\n耐久 ${item.durability}/${t.weaponDurability}\n攻击 +${t.weaponAttack} · 防御 +${t.weaponDefense}`:""}${
+            t.kind==="container"?`\n容量 ${t.bagWidth*t.bagHeight} 格 · 承重 +${t.weightLimit}`:""}\n${t.safe?"可放归真匣":"禁止归真匣"}`);
+    }
+    private updateNotice(): void {
+        this.label("txt_inventory_notice",this.inventorySession.error||this.notice||
+            (this.overflow.length?`${this.overflow.length} 件物品需要先取出，再完成七列整理`:""));
+    }
+    private refreshScroll(): void {
+        this.enabled(this.nodes.btn_bag_up,!this.held&&this.bagScroller.posY>0);
+        this.enabled(this.nodes.btn_bag_down,!this.held&&this.bagScroller.posY<
+            this.bagScroller.contentHeight-this.bagScroller.viewHeight-1);
+    }
+    private bindItem(node: Laya.GWidget): void {
+        node.on(Laya.Event.MOUSE_DOWN,this,(event:Laya.Event)=>this.drag.arm(node.name,event));
+        node.on(Laya.Event.CLICK,this,()=>{
+            if(this.held||this.drag.suppressClick())return;
+            const item=this.itemForNode(node.name);
+            if(item){this.selected=item.uid;this.notice="";this.refresh();}
+        });
+    }
+    private itemForNode(name: string): InventoryItem | undefined {
+        if(name==="invWeapon"||name==="invContainer")return this.state?.items.find(i=>
+            i.location.space===(name==="invWeapon"?"weapon":"container"));
+        return /^invList\d+$/.test(name)?this.visibleItems[Number(name.slice(7))]:
+            /^invItem\d+$/.test(name)?this.gridItems[Number(name.slice(7))]:undefined;
+    }
+    private workingState(): InventoryState { return this.overflow.length?this.state!:this.displayState!; }
+    private beginDrag(key: string,point: Laya.Point): boolean {
+        try { this.inventorySession.pauseSearch(); }
+        catch(e){this.notice=(e as Error).message;this.updateNotice();return false;}
+        if(!this.state||this.state.phase==="ended"||this.state.flow?.phase==="battle")return false;
+        const item=this.itemForNode(key),node=this.nodes[key];if(!item)return false;
+        const origin=this.position(node);
+        this.held={uid:item.uid,node,point,grabX:(point.x-origin.x)/node.width,grabY:(point.y-origin.y)/node.height,
+            rotated:!!this.itemRotations.get(item.uid),previous:this.selected,token:this.inventorySession.token,
+            target:null,command:null,valid:false,error:""};
+        this.selected=item.uid;this.nodes.box_inventory_detail.visible=false;
+        if(!this.floating){this.floating=this.createItem();this.nodes.box_drag_feedback.addChild(this.floating.rootNode);}
+        return true;
+    }
+    position(node: Laya.GWidget): Laya.Point { return this.root.globalToLocal(node.localToGlobal(new Laya.Point())); }
+    gridGeometry(space: InventorySpace) {
+        const name=space==="warehouse"||space==="source"?"source":space as GridName;
+        const grid=this.lists[name].rootNode;
+        const [cols,rows]=name==="source"?[8,7]:name==="bag"?[7,Math.ceil(Rules.bagCapacity(this.config,this.displayState!)/7)]:
+            name==="safe"?[this.config.spaces.safeWidth,this.config.spaces.safeHeight]:[5,1];
+        return {...this.position(grid),cols,rows,size:56};
+    }
+    hitDrag(point: Laya.Point,h: Pick<HeldItem,"uid"|"rotated"|"grabX"|"grabY">=this.held!): DropTarget | null {
+        const item=Rules.item(this.state!,h.uid),t=Rules.template(this.config,item);
+        const [w,height]=Rules.dimensions(t,{space:"bag",rotated:h.rotated});
+        for(const space of ["safe","battle","bag","source"] as const){
+            if(space==="bag"){
+                const p=this.position(this.nodes.bagItemsArea),v=this.nodes.bagItemsArea;
+                if(point.x<p.x||point.x>=p.x+v.width||point.y<p.y||point.y>=p.y+v.height)continue;
+            }
+            const g=this.gridGeometry(space);
+            if(point.x<g.x||point.x>=g.x+g.cols*56||point.y<g.y||point.y>=g.y+g.rows*56)continue;
+            return {space:space==="source"?(this.state!.phase==="active"?"source":"warehouse"):space,
+                ...(space==="source"?{page:this.inventoryPage,...(this.state!.phase==="active"?{node:this.state!.node}:{})}:{}),
+                x:Math.round((point.x-g.x-h.grabX*w*56)/56),
+                y:Math.round((point.y-g.y-h.grabY*height*56)/56),rotated:h.rotated};
+        }
+        for(const [space,name] of [["weapon","invWeapon"],["container","invContainer"]] as const){
+            const node=this.nodes[name],p=this.position(node);
+            if(point.x>=p.x&&point.x<p.x+node.width&&point.y>=p.y&&point.y<p.y+node.height)return {space};
+        }
+        return null;
+    }
+    private commandFor(h: HeldItem,to: DropTarget): InventoryCommand | null {
+        const state=this.workingState(),item=Rules.item(state,h.uid),t=Rules.template(this.config,item);
+        const {space,x,y,rotated,page,node}=to;
+        let action: InventoryAction;
+        if(space==="weapon"){
+            if(t.kind!=="weapon")throw new Error("武器位只能放武器");
+            if(item.location.space==="weapon")return null;
+            action=Rules.weaponPlan(this.config,state,item.uid);
+        } else if(space==="container"){
+            if(t.kind!=="container")throw new Error("背包位只能放纳虚器");
+            if(item.location.space==="container")return null;
+            action=Rules.containerPlan(this.config,state,item.uid);
+        } else {
+            if(this.overflow.length&&space==="bag")throw new Error("请先取出待整理物品");
+            const to:InventoryLocation=space==="warehouse"?{space}:space==="source"?
+                {space,node,x,y:y!+page!*7,rotated}:{space,x,y,rotated};
+            const warehouseTo=space==="warehouse"?{page:page!,x:x!,y:y!,rotated:!!rotated}:undefined;
+            if(item.location.space==="warehouse"&&space==="warehouse")
+                action={type:"arrangeWarehouse",uid:item.uid,from:item.location,to:warehouseTo!};
+            else if(item.location.space==="weapon")action={type:"equipWeapon",uid:null,oldTo:to,...(warehouseTo?{warehouseTo}:{})};
+            else if(item.location.space==="container"){
+                if(space!==(state.phase==="active"?"source":"warehouse"))throw new Error("背包本体只能卸回当前交互仓库");
+                action={...Rules.containerPlan(this.config,state,null),...(warehouseTo?{warehouseTo}:{})};
+            } else action={type:"move",move:{uid:item.uid,from:item.location,to},...(warehouseTo?{warehouseTo}:{})};
+        }
+        const touchesBag=action.type==="equipContainer"||action.type==="move"&&
+            (action.move.from.space==="bag"||action.move.to.space==="bag")||action.type==="equipWeapon"&&
+            (action.from?.space==="bag"||action.oldTo?.space==="bag");
+        return !this.state!.bagColumns&&!this.overflow.length&&touchesBag?{type:"reflowBag",action}:action;
+    }
+    private moveDrag(point: Laya.Point): void {
+        const h=this.held;if(!h)return;
+        h.point=point;h.valid=false;h.command=null;h.error="";
+        try {
+            if(this.inventorySession.expire()){this.drag.cancel();openSkillBattleScreen("settlement");return;}
+            h.target=this.hitDrag(point);
+            if(!h.target)throw new Error("落点不在储物区域");
+            h.command=this.commandFor(h,h.target);
+            if(h.command)this.inventorySession.previewMove(h.command,h.token);
+            h.valid=true;
+        } catch(e){h.error=(e as Error).message;}
+        this.renderHeld();
+        const key=h.target?`${h.target.space}:${h.target.x}:${h.target.y}`:"";
+        if(key!==this.autoRotateKey){
+            Laya.timer.clear(this,this.autoRotate);this.autoRotateKey=key;
+            if(!h.valid&&Rules.template(this.config,Rules.item(this.state!,h.uid)).rotate)
+                Laya.timer.once(400,this,this.autoRotate);
+        }
+    }
+    private autoRotate(): void {
+        const h=this.held;if(!h||h.valid)return;
+        const next={...h,rotated:!h.rotated,grabX:h.rotated?h.grabY:1-h.grabY,grabY:h.rotated?1-h.grabX:h.grabX};
+        try {
+            const target=this.hitDrag(h.point,next);if(!target||target.space!==h.target?.space)return;
+            const command=this.commandFor(next,target);
+            if(command)this.inventorySession.previewMove(command,h.token);
+            this.rotateDrag();
+        } catch { /* 悬停旋转只在另一方向可放时触发。 */ }
+    }
+    private rotateDrag(): void {
+        const h=this.held;if(!h||!Rules.template(this.config,Rules.item(this.state!,h.uid)).rotate)return;
+        const oldX=h.grabX;h.grabX=h.rotated?h.grabY:1-h.grabY;h.grabY=h.rotated?1-oldX:oldX;
+        h.rotated=!h.rotated;Laya.timer.clear(this,this.autoRotate);this.moveDrag(h.point);
+    }
+    private renderHeld(): void {
+        const h=this.held;if(!h)return;
+        this.nodes.box_inventory_detail.visible=false;h.node.alpha=0.16;
+        const t=Rules.template(this.config,Rules.item(this.state!,h.uid)),[w,height]=Rules.dimensions(t,{space:"bag",rotated:h.rotated});
+        this.floating.update({template:t,width:w*56-2,height:height*56-2,rotated:h.rotated,
+            selected:true,outline:h.valid?"#76ffad":"#ff6262"},0);
+        this.floating.rootNode.pos(h.point.x-h.grabX*w*56,h.point.y-h.grabY*height*56);
+        this.notice=h.error;this.updateNotice();this.refreshScroll();
+    }
+    private releaseDrag(): void {
+        const h=this.held;if(!h)return;
+        this.held=null;Laya.timer.clear(this,this.autoRotate);this.autoRotateKey="";
+        this.floating.rootNode.visible=false;this.selected=h.previous;
+        try {
+            if(!h.valid)throw new Error(h.error);
+            if(h.command){this.inventorySession.inventoryCommand(h.command,h.token);this.selected="";}
+            this.notice="";
+        } catch(e){this.notice=(e as Error).message;}
+        this.refresh();
+    }
+    private cancelDrag(): void {
+        if(!this.held)return;
+        this.selected=this.held.previous;this.held=null;this.autoRotateKey="";
+        Laya.timer.clear(this,this.autoRotate);if(this.floating)this.floating.rootNode.visible=false;
+        if(this.opened)this.refresh();
+    }
+}

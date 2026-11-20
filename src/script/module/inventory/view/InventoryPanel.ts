@@ -11,7 +11,7 @@ import type { BuildToken } from "../../build/types/BuildTypes";
 import type { InventoryCommand, InventoryConfig, InventoryItem, InventoryLocation, InventorySpace, InventoryState, InventoryTemplate } from "../types/InventoryTypes";
 import { BuildPanel } from "../../build/view/BuildPanel";
 import { InventoryDragController } from "../ctrl/InventoryDragController";
-import { pagePosition, placeInPage, visitRegion } from "../../gameplay/utils/GameplayLayout";
+import { visitRegion } from "../../gameplay/utils/GameplayLayout";
 import type { SkillBattlePage } from "../../gameplay/utils/GameplayLayout";
 
 interface InventorySelection {
@@ -62,6 +62,21 @@ export class InventoryPanel extends BuildPanel {
         this.popupLayout = !!view.getElement("box_inventory_popup", false);
         for (const name of ["bagItemsArea", "safeItemsArea", "battleItemsArea"])
             this.itemAreas[name] = view.getElement<Laya.GWidget>(name);
+        if (!this.popupLayout && this.itemAreas.bagItemsArea instanceof Laya.GPanel) {
+            const viewport=this.itemAreas.bagItemsArea;
+            const scroller=new Laya.Scroller();
+            scroller.direction=Laya.ScrollDirection.Vertical;
+            scroller.barDisplay=Laya.ScrollBarDisplay.Hidden;
+            scroller.touchEffect=Laya.ScrollTouchEffect.Off;
+            scroller.bouncebackEffect=Laya.ScrollBounceBackEffect.Off;
+            viewport.layout.foldInvisibles=true;viewport.scroller=scroller;this.bagScroller=scroller;
+            const panel=viewport.parent;
+            this.bagUp=panel.getChildByName("btn_bag_scroll_up") as Laya.GWidget;
+            this.bagDown=panel.getChildByName("btn_bag_scroll_down") as Laya.GWidget;
+            this.bagUp.on(Laya.Event.CLICK,this,()=>this.scrollBag(-112));
+            this.bagDown.on(Laya.Event.CLICK,this,()=>this.scrollBag(112));
+            viewport.on(Laya.UIEvent.Scroll,this,this.refreshBagScroll);
+        }
         if (this.popupLayout) {
             this.emptyInventoryConfig = InventoryConfigUtils.read(ConfigUtil.Tables);
             this.popupPortrait = view.getElement("box_inventory_portrait");
@@ -137,6 +152,8 @@ export class InventoryPanel extends BuildPanel {
     private refreshBagScroll(): void {
         if (!this.bagScroller) return;
         const enabled = !this.held;
+        const overflow=this.bagScroller.contentHeight>this.bagScroller.viewHeight;
+        this.bagUp.visible=overflow;this.bagDown.visible=overflow;
         this.bagUp.mouseEnabled = enabled && this.bagScroller.posY > 0;
         this.bagDown.mouseEnabled = enabled && this.bagScroller.posY <
             this.bagScroller.contentHeight - this.bagScroller.viewHeight - 1;
@@ -404,11 +421,14 @@ export class InventoryPanel extends BuildPanel {
             "确认清除");
     }
     protected position(node: Laya.GWidget): Laya.Point {
-        return this.popupLayout ? this.root.globalToLocal(node.localToGlobal(new Laya.Point())) : pagePosition(node,this.root);
+        return this.root.globalToLocal(node.localToGlobal(new Laya.Point()));
     }
     protected place(node: Laya.GWidget, x: number, y: number): void {
-        if (!this.popupLayout) { placeInPage(node,this.root,x,y); return; }
         const point = node.parent.globalToLocal(this.root.localToGlobal(new Laya.Point(x,y)));
+        // GPanel 的局部坐标不包含内容滚动，落回子节点坐标时补上滚动偏移。
+        if(node.parent instanceof Laya.GPanel&&node.parent.scroller){
+            point.x+=node.parent.scroller.posX;point.y+=node.parent.scroller.posY;
+        }
         node.pos(point.x,point.y);
     }
     protected label(key: string, text: string, size = 18, color = "#e8edf0"): void {
@@ -519,12 +539,15 @@ export class InventoryPanel extends BuildPanel {
             const { cols,rows,size,x: startX,y: startY } = this.gridGeometry(space);
             if (space === "bag") {
                 const weight=Rules.weight(save.config,state);
-                this.label("invBagTitle",`纳虚器${cols ? ` · ${cols}×${rows}` : ""} · ${weight.current}/${weight.limit}`,20);
+                this.label("invBagTitle",`纳虚器 · ${Rules.bagCapacity(save.config,state)} 格 · ${weight.current}/${weight.limit}`,20);
                 if (!cols) this.label("invEmptyBag","未装备纳虚器",22,"#c2cbcf");
             }
             for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
+                if(space === "bag" && y*cols+x >= Rules.bagCapacity(save.config,state))continue;
                 const key = `invCell_${space}_${y * cols + x}`, cell = this.nodes[key];
-                this.control(key,"",editable); this.place(cell,startX + x * size,startY + y * size);
+                this.control(key,"",editable);
+                if(space==="bag")cell.pos(x*size,y*size);
+                else this.place(cell,startX + x * size,startY + y * size);
             }
             for (const item of state.items.filter(i => i.location.space === space)) {
                 const key = `invItem${count++}`, n = this.nodes[key], t = Rules.template(save.config,item);
@@ -533,7 +556,9 @@ export class InventoryPanel extends BuildPanel {
                 if (area && n.parent !== area) area.addChild(n);
                 const [w,h] = Rules.dimensions(t,item.location);
                 this.control(key,"",editable,item.uid === this.uid);
-                this.place(n,startX + item.location.x! * size,startY + item.location.y! * size); n.size(w * size - 2,h * size - 2);
+                if(space==="bag")n.pos(item.location.x!*size,item.location.y!*size);
+                else this.place(n,startX + item.location.x! * size,startY + item.location.y! * size);
+                n.size(w * size - 2,h * size - 2);
                 this.qualityFrame(n,t,item.uid === this.uid);
                 this.icon(n,t.icon,n.width - 12,n.height - 12,6,6,!!item.location.rotated);
                 const caption = this.child(n, 3) as Laya.GTextField;
@@ -620,6 +645,9 @@ export class InventoryPanel extends BuildPanel {
             this.control("invNodePrev","<",editable && state.node > 0 && !state.flow?.pending && !this.draft);
             this.control("invNodeNext",">",editable && state.node < victories && !state.flow?.pending && !this.draft);
             if (!this.popupLayout) this.button("invToggle","构筑",630,16,128,46,editable && !this.draft);
+        }
+        if(this.itemAreas.bagItemsArea instanceof Laya.GPanel){
+            this.itemAreas.bagItemsArea.layout.refresh(true);this.refreshBagScroll();
         }
         if (this.held) this.renderHeld();
     }
@@ -713,7 +741,7 @@ export class InventoryPanel extends BuildPanel {
         const state = this.projection()!, config = this.inventorySession.archive!.config;
         const t = Rules.template(config,Rules.item(state,h.uid)), [w,height] = Rules.dimensions(t,{ space: "bag", rotated: h.rotated });
         for (const space of ["battle","safe","bag"] as const) {
-            if (space === "bag" && this.popupLayout && !this.insideBagViewport(point)) continue;
+            if (space === "bag" && this.itemAreas.bagItemsArea instanceof Laya.GPanel && !this.insideBagViewport(point)) continue;
             const g = this.gridGeometry(space);
             if (point.x >= g.x && point.x < g.x + g.cols * g.size && point.y >= g.y && point.y < g.y + g.rows * g.size)
                 return { space, x: Math.round((point.x - h.grabX * w * g.size - g.x) / g.size),
@@ -825,6 +853,9 @@ export class InventoryPanel extends BuildPanel {
         if (to.space === "safe" && !t.safe) throw new Error("归真匣禁止装备与纳虚器");
         const [w,h] = Rules.dimensions(t,to), [cols,rows] = Rules.size(config,state,to.space);
         if (to.x! < 0 || to.y! < 0 || to.x! + w > cols || to.y! + h > rows) throw new Error("尺寸不足或落点超出边界");
+        if(to.space==="bag"&&state.bagColumns===7&&
+            (to.y!+h-1)*cols+to.x!+w>Rules.bagCapacity(config,state))
+            throw new Error("背包末行超出实际容量");
         for (const other of state.items.filter(i => i.uid !== item.uid && i.location.space === to.space)) {
             const l = other.location, [ow,oh] = Rules.dimensions(Rules.template(config,other),l);
             if (to.x! < l.x! + ow && to.x! + w > l.x! && to.y! < l.y! + oh && to.y! + h > l.y!)
@@ -934,7 +965,7 @@ export class InventoryPanel extends BuildPanel {
             for (let y = 0; y < (equipment ? grid.rows : height); y++) for (let x = 0; x < (equipment ? grid.cols : w); x++) {
                 const cx = equipment ? x : to!.x! + x, cy = equipment ? y : to!.y! + y;
                 if (cx < 0 || cy < 0 || cx >= grid.cols || cy >= grid.rows) continue;
-                if (this.popupLayout && to?.space === "bag" &&
+                if (this.itemAreas.bagItemsArea instanceof Laya.GPanel && to?.space === "bag" &&
                     !this.insideBagViewport(new Laya.Point(grid.x + cx * grid.size,grid.y + cy * grid.size),grid.size - 2)) continue;
                 const cell = this.nodes[`invDragCell${index++}`] as Laya.GImage;
                 this.place(cell,grid.x + cx * grid.size,grid.y + cy * grid.size);
