@@ -1,0 +1,16 @@
+{
+  "uuid": "3b790bf7-8e83-4b68-b24f-3aca6a2af7c7",
+  "importer": {
+    "textureType": 2,
+    "sRGB": true,
+    "premultiplyAlpha": true,
+    "generateMipmap": false,
+    "sizeGrid": [
+      20,
+      20,
+      20,
+      20,
+      0
+    ]
+  }
+}

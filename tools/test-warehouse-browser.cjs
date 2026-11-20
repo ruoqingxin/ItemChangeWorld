@@ -60,10 +60,18 @@ async function presentation(page){
         };
         const errors=[];
         if(find(p.root,"sourceFiltersArea"))errors.push("顶部筛选仍存在");
-        for(const name of ["invLeftPanel","img_battle_well","invBagPanel","img_backpack_well"]){
+        for(const name of ["invLeftPanel","img_battle_well","invBagPanel"]){
             const n=find(p.root,name);
-            if(!n?.src.endsWith("popup-panel-plain.png"))errors.push(name+"未用无线底图");
+            if(!n?.src.endsWith("warehouse/graphite/panel.png"))errors.push(name+"未用银灰底图");
         }
+        if(find(p.root,"img_backpack_well"))errors.push("背包装备仍使用独立底板");
+        for(const name of ["btn_take_all","btn_store_all"])
+            if(!p.nodes[name]?.tooltips)errors.push(name+"缺少用途提示");
+        const take=p.nodes.btn_take_all,store=p.nodes.btn_store_all;
+        if(take.getChildAt(1).rotation!==0||store.getChildAt(1).rotation!==0)
+            errors.push("整批移动箭头方向错误");
+        if(!take.getChildAt(1).src.endsWith("graphite/arrow-left.png"))errors.push("取物箭头未向左");
+        if(!store.getChildAt(1).src.endsWith("graphite/arrow-right.png"))errors.push("回仓箭头未向右");
         for(const [kind,count]of [["weapon",6],["armor",6],["accessory",4],["container",4]]){
             const cells=find(p.root,"box_"+kind+"_cells"),hint=find(p.root,"img_"+kind+"_hint");
             if(cells?.numChildren!==count)errors.push(kind+"装备格不完整");
@@ -88,6 +96,22 @@ async function layout(page){
         const safe=p.nodes.box_safe_content,s=p.lists.safe.rootNode,b=p.lists.battle.rootNode;
         if(Math.abs(s.x-(safe.width-s.width)/2)>0.5||Math.abs(s.y-(safe.height-s.height)/2)>0.5)result.push("归真匣双向居中");
         if(Math.abs(b.x-(p.nodes.battleItemsArea.width-b.width)/2)>0.5)result.push("斗法匣水平居中");
+        if(Math.abs(b.y-(p.nodes.battleItemsArea.height-b.height)/2)>0.5)result.push("斗法匣垂直居中");
+        const bagSlot=bounds(p.nodes.invContainer),bagFrame=bounds(p.nodes.bagArea);
+        const bagGrid=bounds(p.nodes.bagItemsArea);
+        if(bagSlot.x<bagFrame.x||bagSlot.r>bagFrame.r||bagSlot.y<bagFrame.y||bagSlot.b>bagFrame.b)
+            result.push("背包装备未并入背包区域");
+        if(Math.abs(bagSlot.y-bagGrid.y)>0.5||bagSlot.r>bagGrid.x)result.push("背包装备与内容未对齐");
+        const source=bounds(p.nodes.sourceItemsArea),pages=bounds(p.nodes.sourcePagesArea);
+        if(Math.abs(pages.x-source.x)>0.5||Math.abs(pages.r-source.r)>0.5||
+            Math.abs(pages.y-source.b-12)>0.5)result.push("仓库分页未贴齐网格");
+        const take=bounds(p.nodes.btn_take_all),store=bounds(p.nodes.btn_store_all);
+        if(take.x<bagFrame.r||store.r>source.x)result.push("转移按钮未放在双侧区域之间");
+        for(const name of ["btn_sell","btn_lobby_back"]){
+            const n=bounds(p.nodes[name]);
+            if(n.x<bagFrame.x||n.r>bagGrid.x||n.y<bagSlot.b||n.b>bagFrame.b)
+                result.push(name+"未放在左下方");
+        }
         for(const [name,list]of Object.entries(p.lists)){
             for(let i=0;i<list.arrayLen;i++){
                 const n=list.rootNode.getChildAt(i),cols=name==="source"?8:name==="bag"?7:name==="battle"?5:p.config.spaces.safeWidth;
@@ -149,7 +173,7 @@ async function scrolling(page,name){
         s.items.find(i=>i.location.space==="bag").location={space:"bag",x:5,y:6,rotated:false};v.panel.refresh();
     });
     try{
-        for(let i=0;i<3;i++)await click(page,"btn_bag_down");
+        await scrollBag(page,1);
         assert.deepEqual(await page.evaluate(()=>{
             const p=window.__skillBattlePreview.panel,n=p.getNode("invCell_bag_47");
             const point=p.root.globalToLocal(n.localToGlobal(new Laya.Point(27,27)));
@@ -162,6 +186,51 @@ async function scrolling(page,name){
             v.trial.data.save=window.__warehouseFixture;delete window.__warehouseFixture;v.panel.refresh();});
     }
     assert.equal(await page.evaluate(()=>localStorage.getItem("nowchange.expedition.v1")),saved);
+}
+async function scrollBag(page,percent){
+    await page.waitForTimeout(120);
+    const points=await page.evaluate(percent=>{
+        const p=window.__skillBattlePreview.panel,bar=p.nodes.box_bag_scrollbar,grip=bar._gripButton;
+        const canvas=document.querySelector("canvas").getBoundingClientRect();
+        const client=point=>({x:canvas.left+point.x*canvas.width/Laya.stage.width,
+            y:canvas.top+point.y*canvas.height/Laya.stage.height});
+        return {a:client(grip.localToGlobal(new Laya.Point(grip.width/2,grip.height/2))),
+            b:client(bar.localToGlobal(new Laya.Point(bar.width/2,
+                bar._bar.y+(bar._bar.height-grip.height)*percent+grip.height/2)))};
+    },percent);
+    if(page.touchMode){
+        const cdp=await page.context().newCDPSession(page);
+        await cdp.send("Input.dispatchTouchEvent",{type:"touchStart",touchPoints:[{...points.a,id:1}]});
+        for(let i=1;i<=12;i++)await cdp.send("Input.dispatchTouchEvent",{type:"touchMove",touchPoints:[{
+            x:points.a.x+(points.b.x-points.a.x)*i/12,y:points.a.y+(points.b.y-points.a.y)*i/12,id:1}]});
+        await cdp.send("Input.dispatchTouchEvent",{type:"touchEnd",touchPoints:[]});await cdp.detach();
+    }else{
+        await page.mouse.move(points.a.x,points.a.y);await page.mouse.down();
+        await page.mouse.move(points.b.x,points.b.y,{steps:12});await page.mouse.up();
+    }
+    await page.waitForTimeout(150);
+}
+async function bulkTransfer(page){
+    const before=await page.evaluate(()=>window.__skillBattlePreview.trial.archive);
+    await click(page,"btn_take_all");
+    const picked=await page.evaluate(()=>window.__skillBattlePreview.trial.archive);
+    const count=before.state.items.filter(i=>i.location.space==="warehouse").length;
+    assert.equal(picked.commands.length,before.commands.length+1);
+    assert.equal(picked.state.revision,before.state.revision+1);
+    assert.equal(picked.state.items.filter(i=>i.location.space==="bag").length,
+        before.state.items.filter(i=>i.location.space==="bag").length+count);
+    for(const space of ["safe","battle","weapon","container"])
+        assert.deepEqual(picked.state.items.filter(i=>i.location.space===space),before.state.items.filter(i=>i.location.space===space));
+    const noSale=await page.evaluate(()=>localStorage.getItem("nowchange.expedition.v1"));
+    await click(page,"btn_sell");
+    assert.equal(await page.evaluate(()=>localStorage.getItem("nowchange.expedition.v1")),noSale);
+    await click(page,"btn_store_all");
+    const stored=await page.evaluate(()=>window.__skillBattlePreview.trial.archive);
+    assert.equal(stored.commands.length,picked.commands.length+1);
+    assert.equal(stored.state.items.filter(i=>i.location.space==="bag").length,0);
+    assert.equal(stored.state.items.length,before.state.items.length);
+    await page.reload();await confirmStartup(page);await click(page,"btn_warehouse");await warehouse(page);
+    assert.deepEqual(await page.evaluate(()=>window.__skillBattlePreview.trial.archive),stored);
 }
 (async()=>{
     await fs.mkdir(out,{recursive:true});
@@ -207,6 +276,7 @@ async function scrolling(page,name){
                 assert.equal(await page.evaluate(uid=>window.__skillBattlePreview.trial.inventory.items.find(i=>i.uid===uid).location.space,uid),"container");
                 await presentation(page);
             }
+            await bulkTransfer(page);
             const saved=await page.evaluate(()=>localStorage.getItem("nowchange.expedition.v1"));
             await click(page,"btn_lobby_back");await click(page,"btn_warehouse");await warehouse(page);
             assert.equal(await page.evaluate(()=>localStorage.getItem("nowchange.expedition.v1")),saved);
@@ -226,7 +296,7 @@ async function scrolling(page,name){
             assert.equal(await page.evaluate(()=>window.__skillBattlePreview.panel.inventoryPage),6);
             await click(page,"btn_lobby_back");assert.equal(await page.evaluate(()=>window.__skillBattlePreview.panel.pageRole),"map");
             assert.deepEqual(errors,[]);await context.close();
-            console.log(`通过 ${name}：七页锁定、无线底图、空位图标、七列容量、双向居中、拖拽换包及原档重放。`);
+            console.log(`通过 ${name}：七页排版、左右整批转移、背包滑动条、七列容量、双向居中、拖拽换包及原档重放。`);
         }
     }finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

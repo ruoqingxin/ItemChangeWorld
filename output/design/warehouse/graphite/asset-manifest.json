@@ -1,0 +1,350 @@
+[
+  {
+    "name": "button-normal",
+    "sourceBounds": [
+      125,
+      173,
+      680,
+      340
+    ],
+    "size": [
+      160,
+      48
+    ],
+    "sizeGrid": [
+      6,
+      38,
+      16,
+      38,
+      0
+    ]
+  },
+  {
+    "name": "button-pressed",
+    "sourceBounds": [
+      805,
+      173,
+      1360,
+      340
+    ],
+    "size": [
+      160,
+      48
+    ],
+    "sizeGrid": [
+      6,
+      38,
+      16,
+      38,
+      0
+    ]
+  },
+  {
+    "name": "button-disabled",
+    "sourceBounds": [
+      1485,
+      173,
+      2045,
+      340
+    ],
+    "size": [
+      160,
+      48
+    ],
+    "sizeGrid": [
+      6,
+      38,
+      16,
+      38,
+      0
+    ]
+  },
+  {
+    "name": "square-normal",
+    "sourceBounds": [
+      2278,
+      117,
+      2551,
+      393
+    ],
+    "size": [
+      64,
+      64
+    ],
+    "sizeGrid": [
+      8,
+      18,
+      20,
+      18,
+      0
+    ]
+  },
+  {
+    "name": "square-pressed",
+    "sourceBounds": [
+      274,
+      502,
+      547,
+      777
+    ],
+    "size": [
+      64,
+      64
+    ],
+    "sizeGrid": [
+      8,
+      18,
+      20,
+      18,
+      0
+    ]
+  },
+  {
+    "name": "square-disabled",
+    "sourceBounds": [
+      947,
+      502,
+      1221,
+      777
+    ],
+    "size": [
+      64,
+      64
+    ],
+    "sizeGrid": [
+      8,
+      18,
+      20,
+      18,
+      0
+    ]
+  },
+  {
+    "name": "arrow-left",
+    "sourceBounds": [
+      1666,
+      528,
+      1819,
+      766
+    ],
+    "size": [
+      64,
+      64
+    ],
+    "sizeGrid": null
+  },
+  {
+    "name": "arrow-right",
+    "sourceBounds": [
+      2346,
+      528,
+      2500,
+      766
+    ],
+    "size": [
+      64,
+      64
+    ],
+    "sizeGrid": null
+  },
+  {
+    "name": "scroll-track",
+    "sourceBounds": [
+      386,
+      873,
+      433,
+      1158
+    ],
+    "size": [
+      16,
+      128
+    ],
+    "sizeGrid": [
+      8,
+      4,
+      8,
+      4,
+      0
+    ]
+  },
+  {
+    "name": "scroll-normal",
+    "sourceBounds": [
+      1029,
+      888,
+      1125,
+      1136
+    ],
+    "size": [
+      24,
+      72
+    ],
+    "sizeGrid": [
+      8,
+      6,
+      8,
+      6,
+      0
+    ]
+  },
+  {
+    "name": "scroll-pressed",
+    "sourceBounds": [
+      1698,
+      888,
+      1797,
+      1136
+    ],
+    "size": [
+      24,
+      72
+    ],
+    "sizeGrid": [
+      8,
+      6,
+      8,
+      6,
+      0
+    ]
+  },
+  {
+    "name": "page-normal",
+    "sourceBounds": [
+      2229,
+      907,
+      2583,
+      1122
+    ],
+    "size": [
+      120,
+      80
+    ],
+    "sizeGrid": [
+      10,
+      12,
+      10,
+      12,
+      0
+    ]
+  },
+  {
+    "name": "page-selected",
+    "sourceBounds": [
+      234,
+      1233,
+      590,
+      1449
+    ],
+    "size": [
+      120,
+      80
+    ],
+    "sizeGrid": [
+      10,
+      12,
+      10,
+      12,
+      0
+    ]
+  },
+  {
+    "name": "page-locked",
+    "sourceBounds": [
+      905,
+      1233,
+      1265,
+      1449
+    ],
+    "size": [
+      120,
+      80
+    ],
+    "sizeGrid": [
+      10,
+      12,
+      10,
+      12,
+      0
+    ]
+  },
+  {
+    "name": "close",
+    "sourceBounds": [
+      1630,
+      1247,
+      1848,
+      1443
+    ],
+    "size": [
+      64,
+      64
+    ],
+    "sizeGrid": null
+  },
+  {
+    "name": "sell",
+    "sourceBounds": [
+      2278,
+      1231,
+      2500,
+      1455
+    ],
+    "size": [
+      64,
+      64
+    ],
+    "sizeGrid": null
+  },
+  {
+    "name": "panel",
+    "size": [
+      128,
+      128
+    ],
+    "sizeGrid": [
+      20,
+      20,
+      20,
+      20,
+      0
+    ]
+  },
+  {
+    "name": "cell",
+    "size": [
+      108,
+      108
+    ],
+    "sizeGrid": null
+  },
+  {
+    "name": "detail-frame",
+    "size": [
+      128,
+      128
+    ],
+    "sizeGrid": [
+      20,
+      20,
+      20,
+      20,
+      0
+    ]
+  },
+  {
+    "name": "detail-fill",
+    "size": [
+      8,
+      8
+    ],
+    "sizeGrid": null
+  },
+  {
+    "name": "lock",
+    "size": [
+      64,
+      72
+    ],
+    "sizeGrid": null
+  }
+]

@@ -14,7 +14,7 @@
       "name": "img_cell",
       "width": 54,
       "height": 54,
-      "src": "ui/atlas/module/inventory/cell.png",
+      "src": "ui/atlas/module/warehouse/jade/cell.png",
       "autoSize": false,
       "mouseEnabled": false
     }

@@ -1,0 +1,358 @@
+[
+  {
+    "name": "panel",
+    "sourceBounds": [
+      200,
+      40,
+      575,
+      414
+    ],
+    "trimBounds": [
+      10,
+      11,
+      364,
+      363
+    ],
+    "size": [
+      128,
+      128
+    ],
+    "sizeGrid": [
+      20,
+      20,
+      20,
+      20,
+      0
+    ]
+  },
+  {
+    "name": "title-bar",
+    "sourceBounds": [
+      790,
+      177,
+      1317,
+      281
+    ],
+    "trimBounds": [
+      9,
+      8,
+      519,
+      96
+    ],
+    "size": [
+      256,
+      44
+    ],
+    "sizeGrid": [
+      8,
+      24,
+      8,
+      24,
+      0
+    ]
+  },
+  {
+    "name": "cell",
+    "sourceBounds": [
+      1554,
+      66,
+      1883,
+      391
+    ],
+    "trimBounds": [
+      8,
+      11,
+      323,
+      318
+    ],
+    "size": [
+      108,
+      108
+    ],
+    "sizeGrid": null
+  },
+  {
+    "name": "avatar-frame",
+    "sourceBounds": [
+      2181,
+      48,
+      2554,
+      411
+    ],
+    "trimBounds": [
+      13,
+      13,
+      373,
+      353
+    ],
+    "size": [
+      192,
+      192
+    ],
+    "sizeGrid": null
+  },
+  {
+    "name": "hint-weapon",
+    "sourceBounds": [
+      290,
+      435,
+      503,
+      784
+    ],
+    "trimBounds": [
+      14,
+      12,
+      201,
+      337
+    ],
+    "size": [
+      96,
+      144
+    ],
+    "sizeGrid": null
+  },
+  {
+    "name": "hint-armor",
+    "sourceBounds": [
+      877,
+      447,
+      1236,
+      778
+    ],
+    "trimBounds": [
+      13,
+      15,
+      342,
+      311
+    ],
+    "size": [
+      128,
+      128
+    ],
+    "sizeGrid": null
+  },
+  {
+    "name": "hint-accessory",
+    "sourceBounds": [
+      1577,
+      473,
+      1858,
+      762
+    ],
+    "trimBounds": [
+      16,
+      14,
+      265,
+      277
+    ],
+    "size": [
+      128,
+      128
+    ],
+    "sizeGrid": null
+  },
+  {
+    "name": "hint-container",
+    "sourceBounds": [
+      2228,
+      456,
+      2521,
+      768
+    ],
+    "trimBounds": [
+      14,
+      15,
+      283,
+      300
+    ],
+    "size": [
+      128,
+      128
+    ],
+    "sizeGrid": null
+  },
+  {
+    "name": "page-normal",
+    "sourceBounds": [
+      151,
+      863,
+      625,
+      1043
+    ],
+    "trimBounds": [
+      10,
+      15,
+      464,
+      171
+    ],
+    "size": [
+      128,
+      64
+    ],
+    "sizeGrid": [
+      12,
+      12,
+      12,
+      12,
+      0
+    ]
+  },
+  {
+    "name": "page-selected",
+    "sourceBounds": [
+      814,
+      863,
+      1292,
+      1043
+    ],
+    "trimBounds": [
+      13,
+      15,
+      468,
+      169
+    ],
+    "size": [
+      128,
+      64
+    ],
+    "sizeGrid": [
+      12,
+      12,
+      12,
+      12,
+      0
+    ]
+  },
+  {
+    "name": "lock",
+    "sourceBounds": [
+      1594,
+      817,
+      1841,
+      1092
+    ],
+    "trimBounds": [
+      13,
+      11,
+      236,
+      260
+    ],
+    "size": [
+      64,
+      72
+    ],
+    "sizeGrid": null
+  },
+  {
+    "name": "button-square",
+    "sourceBounds": [
+      2230,
+      815,
+      2525,
+      1088
+    ],
+    "trimBounds": [
+      12,
+      9,
+      282,
+      262
+    ],
+    "size": [
+      64,
+      64
+    ],
+    "sizeGrid": [
+      12,
+      12,
+      12,
+      12,
+      0
+    ]
+  },
+  {
+    "name": "arrow-up",
+    "sourceBounds": [
+      268,
+      1213,
+      506,
+      1430
+    ],
+    "trimBounds": [
+      11,
+      9,
+      227,
+      209
+    ],
+    "size": [
+      48,
+      48
+    ],
+    "sizeGrid": null
+  },
+  {
+    "name": "arrow-down",
+    "sourceBounds": [
+      931,
+      1213,
+      1174,
+      1430
+    ],
+    "trimBounds": [
+      14,
+      10,
+      232,
+      205
+    ],
+    "size": [
+      48,
+      48
+    ],
+    "sizeGrid": null
+  },
+  {
+    "name": "close",
+    "sourceBounds": [
+      1595,
+      1208,
+      1840,
+      1448
+    ],
+    "trimBounds": [
+      17,
+      13,
+      230,
+      226
+    ],
+    "size": [
+      48,
+      48
+    ],
+    "sizeGrid": null
+  },
+  {
+    "name": "detail-panel",
+    "sourceBounds": [
+      2185,
+      1138,
+      2568,
+      1496
+    ],
+    "trimBounds": [
+      8,
+      10,
+      375,
+      347
+    ],
+    "size": [
+      128,
+      128
+    ],
+    "sizeGrid": [
+      18,
+      18,
+      18,
+      18,
+      0
+    ]
+  }
+]

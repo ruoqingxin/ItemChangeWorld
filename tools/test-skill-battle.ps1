@@ -13,6 +13,7 @@ if (!(Test-Path -LiteralPath $tsc)) { $tsc = Join-Path (Split-Path (Get-Command 
 $sources = @(
     (Join-Path $root "src/script/module/expedition/manager/ExpeditionRunManager.ts"),
     (Join-Path $root "src/script/module/expedition/utils/ExpeditionRunConfigUtils.ts"),
+    (Join-Path $root "src/script/module/inventory/utils/InventoryTransferUtils.ts"),
     (Join-Path $root "src/script/module/manualTest/manager/RogueTestManager.ts"),
     (Join-Path $root "engine/types/LayaAir.d.ts")
 )

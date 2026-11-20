@@ -4,11 +4,92 @@ const {InventoryRules:I}=load("module/inventory/utils/InventoryRules.js");
 const {ExpeditionRules:R}=load("module/expedition/utils/ExpeditionRules.js");
 const {ExpeditionRunManager:Session}=load("module/expedition/manager/ExpeditionRunManager.js");
 const {SkillBattleManager:BattleManager}=load("module/skillBattle/manager/SkillBattleManager.js");
+const {InventoryTransferUtils:Transfer}=load("module/inventory/utils/InventoryTransferUtils.js");
 let groups=0;
 const test=(name,fn)=>{fn();groups++;console.log("通过 "+name);};
 const start=(seed=17)=>R.start(c,seed,"inventory-map");
 const enter=s=>R.apply(c,s,{type:"enter"},1000,17).state;
 const move=(s,item,to)=>I.apply(c,s,{type:"move",move:{uid:item.uid,from:item.location,to}},1000).state;
+test("整批收取只处理当前页，空间不足保留原物且不动装备药匣",()=>{
+    const s=start(),t=c.templates.find(t=>t.kind==="material"&&t.width===1&&t.height===1);
+    for(let i=0;i<24;i++)s.items.push({uid:"bulk-"+i,templateId:t.id,durability:null,location:{space:"warehouse"}});
+    s.warehouseLayout=I.warehousePlacements(c,s);
+    s.warehouseLayout.find(p=>p.uid==="bulk-23").page=1;
+    const before=structuredClone(s),plan=Transfer.plan(c,s,true,0);
+    assert.ok(plan.moved>0);assert.ok(plan.remaining>0);assert.match(plan.reason,/不足/);
+    assert.deepEqual(s,before);
+    const result=I.apply(c,s,plan.command,1000).state;
+    assert.equal(result.revision,s.revision+1);
+    assert.equal(I.item(result,"bulk-23").location.space,"warehouse");
+    assert.equal(result.items.length,s.items.length);
+    for(const space of ["weapon","container","safe","battle"])
+        assert.deepEqual(result.items.filter(i=>i.location.space===space),s.items.filter(i=>i.location.space===space));
+    I.validate(c,result);
+    const returned=Transfer.plan(c,result,false,0),restored=I.apply(c,result,returned.command,1000).state;
+    assert.equal(restored.items.filter(i=>i.location.space==="bag").length,0);
+    assert.equal(restored.items.length,s.items.length);
+});
+test("整批移动校验负重、未装备背包与空清单",()=>{
+    const s=start();
+    const config=structuredClone(c);
+    config.weight.base=1;
+    I.template(config,s.items.find(i=>i.location.space==="container")).weightLimit=I.weight(c,s).current-1;
+    // 仅为本组测试把可用承重压到当前重量，不改正式配置。
+    const plan=Transfer.plan(config,s,true,0);
+    assert.equal(plan.command,null);assert.ok(plan.remaining>0);assert.match(plan.reason,/负重/);
+    const removed=I.apply(c,s,I.containerPlan(c,s,null),1000).state;
+    assert.equal(Transfer.plan(c,removed,true,0).command,null);
+    assert.equal(Transfer.plan(c,removed,false,0).command,null);
+    assert.throws(()=>I.apply(c,s,{type:"moveBatch",moves:[]},1000),/清单/);
+    const bag=s.items.find(i=>i.location.space==="bag");
+    const m={uid:bag.uid,from:bag.location,to:{space:"warehouse"}};
+    assert.throws(()=>I.apply(c,s,{type:"moveBatch",moves:[m,m]},1000),/清单/);
+    assert.throws(()=>I.apply(c,s,{type:"moveBatch",moves:[{...m,from:{space:"battle"}}]},1000),/同向/);
+});
+test("整批移动一次写入和重放，保存失败及过期修订保持原档",()=>{
+    const saved=new Map();let fail=false,writes=0;
+    const storage={getItem:k=>saved.get(k)??null,setItem:(k,v)=>{
+        if(fail)throw new Error("模拟写失败");writes++;saved.set(k,v);
+    },removeItem:k=>saved.delete(k)};
+    const session=new Session(new BattleManager(),storage,()=>1000,c);
+    session.prepare(c,17);
+    const plan=Transfer.plan(c,session.inventory,true,0),before=session.archive,raw=saved.get(Session.key),token=session.token;
+    session.previewMove(plan.command,token);
+    assert.equal(writes,1);assert.deepEqual(session.archive,before);
+    fail=true;assert.throws(()=>session.inventoryCommand(plan.command,token),/写失败/);
+    assert.deepEqual(session.archive,before);assert.equal(saved.get(Session.key),raw);
+    fail=false;session.inventoryCommand(plan.command,token);
+    assert.equal(writes,2);assert.equal(session.archive.commands.length,1);
+    assert.equal(session.inventory.revision,before.state.revision+1);
+    const committed=session.archive;
+    assert.throws(()=>session.inventoryCommand(plan.command,token),/过期/);
+    assert.deepEqual(session.archive,committed);
+    assert.deepEqual(new Session(new BattleManager(),storage,()=>1000,c).archive,committed);
+    const invalid=structuredClone(plan.command);
+    const moves=invalid.type==="reflowBag"?invalid.action.moves:invalid.moves;
+    moves.at(-1).to={space:"bag",x:100,y:100,rotated:false};
+    assert.throws(()=>I.apply(c,before.state,invalid,1000),/边界/);
+    assert.deepEqual(session.archive,committed);
+});
+test("来源整批收取不揭示未知物，整批放回保留未知物占格",()=>{
+    const s=enter(start()),node=s.node,t=c.templates.find(t=>t.kind==="material"&&t.width===1&&t.height===1);
+    const known={uid:"bulk-known",templateId:t.id,durability:null,location:{space:"source",node}};
+    const unknown={...known,uid:"bulk-unknown"};
+    s.items.push(known);
+    s.map.sources.push({node,entries:[known,unknown],opened:true,revealed:1,progressMs:0});
+    s.interactionSource=node;
+    s.sourceLayouts.push({node,slots:I.sourcePlacements(c,s)});
+    const unknownSlot=structuredClone(s.sourceLayouts[0].slots.find(p=>p.uid===unknown.uid));
+    const picked=Transfer.plan(c,s,true,0);
+    assert.equal(picked.moved,1);
+    const next=I.apply(c,s,picked.command,1000).state;
+    assert.equal(next.items.some(i=>i.uid===unknown.uid),false);
+    assert.deepEqual(next.sourceLayouts[0].slots.find(p=>p.uid===unknown.uid),unknownSlot);
+    const stored=Transfer.plan(c,next,false,0),after=I.apply(c,next,stored.command,1000).state;
+    assert.equal(after.items.filter(i=>i.location.space==="bag").length,0);
+    assert.deepEqual(after.sourceLayouts[0].slots.find(p=>p.uid===unknown.uid),unknownSlot);
+    assert.throws(()=>I.apply(c,s,picked.command,s.deadlineAt),/截止/);
+});
 test("归真匣四种规格的边界、碰撞、禁入与存档重放",()=>{
     assert.deepEqual([c.spaces.safeWidth,c.spaces.safeHeight],[2,1]);
     for(const [width,height] of [[2,1],[2,2],[3,2],[3,3]]){

@@ -73,6 +73,9 @@ for (const file of files.filter(file => file.endsWith(".lh")).sort()) {
     if (relative(file) === "ui/prefab/module/expedition/SkillBattleMapView.lh")
         for (const image of files.filter(candidate =>
             relative(candidate).startsWith("ui/image/expeditionNodes/") && candidate.endsWith(".png"))) deps.add(relative(image));
+    if (relative(file) === "ui/prefab/module/inventory/SkillBattleInventoryView.lh")
+        for (const image of files.filter(candidate =>
+            /ui\/atlas\/module\/warehouse\/(jade|graphite)\//.test(relative(candidate)) && candidate.endsWith(".png"))) deps.add(relative(image));
     depMap[relative(file)] = [...deps].sort();
 }
 function checkCycles(file, stack = []) {

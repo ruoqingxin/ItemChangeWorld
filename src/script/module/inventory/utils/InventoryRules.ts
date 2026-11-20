@@ -344,11 +344,27 @@ export class InventoryRules {
         command: InventoryCommand, at: number): { state: InventoryState; battle?: BattleResult } {
         if(command?.type === "reflowBag") {
             this.movable(snapshot);
-            if(!["move","arrangeWarehouse","equipWeapon","equipContainer"].includes(command.action?.type))
+            if(!["move","moveBatch","arrangeWarehouse","equipWeapon","equipContainer"].includes(command.action?.type))
                 throw new Error("背包重排只能与物品整理一并提交");
             const projection=this.bagProjection(config,snapshot);
             if(projection.overflow.length)throw new Error("七列背包空间不足，请先取出待整理物品");
             return this.apply(config,projection.state,command.action,at);
+        }
+        if(command?.type === "moveBatch") {
+            this.movable(snapshot);
+            const moves=command.moves,outside=snapshot.phase==="active"?"source":"warehouse";
+            if(!Array.isArray(moves)||!moves.length||moves.length>snapshot.items.length||
+                new Set(moves.map(m=>m?.uid)).size!==moves.length)
+                throw new Error("整批移动的物品清单无效");
+            const target=moves[0]?.to?.space;
+            if(!moves.every(m=>m?.to?.space===target&&
+                (target==="bag"&&m.from?.space===outside||target===outside&&m.from?.space==="bag")))
+                throw new Error("整批移动只能在背包与当前仓库之间同向转移");
+            // 逐件复用落格校验，全部成功后才作为一条命令发布。
+            let state=snapshot;
+            for(const move of moves)state=this.apply(config,state,{type:"move",move},at).state;
+            state.revision=snapshot.revision+1;
+            return {state};
         }
         const state = Core.clone(snapshot);
         if (!command || state.phase === "ended") throw new Error("本次演练已结算");
