@@ -1,0 +1,2613 @@
+{
+  "version": "combat-release-baseline-20261123",
+  "purpose": "正式开发数值输入；未导入运行配置，不替代固定物品ID",
+  "enumDefinitions": {
+    "stat": {
+      "hp": 1,
+      "mp": 2,
+      "a": 3,
+      "s": 4,
+      "armor": 5,
+      "speed": 6
+    },
+    "slot": {
+      "weapon": 1,
+      "armor": 2,
+      "accessory": 3
+    },
+    "kind": {
+      "physical": 1,
+      "magic": 2,
+      "mixed": 3,
+      "support": 4
+    },
+    "enemyTier": {
+      "normal": 1,
+      "elite": 2,
+      "boss": 3
+    },
+    "potionResource": {
+      "hp": 1,
+      "mp": 2,
+      "dual": 3,
+      "shield": 4
+    }
+  },
+  "rules": {
+    "player": {
+      "hp": 240,
+      "mp": 36,
+      "a": 18,
+      "s": 18,
+      "armor": 6,
+      "speed": 10
+    },
+    "activeSlots": 5,
+    "equipmentSlots": 3,
+    "traitsPerItem": 1,
+    "mainActions": 1,
+    "medicineUsesPerOwnTurn": 1,
+    "medicineUsesAction": false,
+    "potionCells": 5,
+    "hpPotion": 90,
+    "mpPotion": 18,
+    "shieldCap": 0.3,
+    "statusTicks": 3,
+    "statusLimits": {
+      "bleed": 5,
+      "burn": 5,
+      "chill": 3,
+      "mark": 3
+    },
+    "bleedRatio": 0.1,
+    "burnRatio": 0.15,
+    "chillReduction": 0.06,
+    "armorConstant": 100,
+    "basicMana": 2,
+    "lifePaymentRate": 0.04,
+    "lifePaymentMin": 4,
+    "durabilityQuality": [
+      0,
+      4,
+      8,
+      12,
+      16,
+      20
+    ],
+    "durabilityLoss": [
+      [
+        2,
+        2,
+        1
+      ],
+      [
+        3,
+        3,
+        2
+      ],
+      [
+        5,
+        5,
+        3
+      ]
+    ],
+    "repairPrice": [
+      1,
+      1,
+      2,
+      2,
+      3,
+      4
+    ],
+    "repairSand": 12,
+    "route": [
+      1,
+      2,
+      8,
+      3,
+      5,
+      10,
+      6,
+      13
+    ],
+    "pressureEvery": 3,
+    "pressureMax": 2,
+    "pressureHp": 0.1,
+    "pressureAttack": 0.04
+  },
+  "qualities": [
+    {
+      "quality": 1,
+      "name": "普通",
+      "minBand": 1,
+      "maxBand": 3
+    },
+    {
+      "quality": 2,
+      "name": "优秀",
+      "minBand": 1,
+      "maxBand": 4
+    },
+    {
+      "quality": 3,
+      "name": "精良",
+      "minBand": 2,
+      "maxBand": 5
+    },
+    {
+      "quality": 4,
+      "name": "稀有",
+      "minBand": 3,
+      "maxBand": 5
+    },
+    {
+      "quality": 5,
+      "name": "史诗",
+      "minBand": 3,
+      "maxBand": 6
+    },
+    {
+      "quality": 6,
+      "name": "传说",
+      "minBand": 4,
+      "maxBand": 6
+    }
+  ],
+  "attributes": [
+    {
+      "stat": 1,
+      "name": "生命上限",
+      "main": [
+        [
+          12,
+          18
+        ],
+        [
+          19,
+          27
+        ],
+        [
+          28,
+          38
+        ],
+        [
+          39,
+          50
+        ],
+        [
+          51,
+          65
+        ],
+        [
+          66,
+          80
+        ]
+      ],
+      "sub": [
+        [
+          4,
+          6
+        ],
+        [
+          7,
+          11
+        ],
+        [
+          12,
+          17
+        ],
+        [
+          18,
+          24
+        ],
+        [
+          25,
+          30
+        ],
+        [
+          31,
+          40
+        ]
+      ]
+    },
+    {
+      "stat": 2,
+      "name": "法力上限",
+      "main": [
+        [
+          3,
+          4
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          7,
+          8
+        ],
+        [
+          9,
+          10
+        ],
+        [
+          11,
+          12
+        ],
+        [
+          13,
+          15
+        ]
+      ],
+      "sub": [
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          3
+        ],
+        [
+          4,
+          4
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          6,
+          6
+        ],
+        [
+          7,
+          8
+        ]
+      ]
+    },
+    {
+      "stat": 3,
+      "name": "物理攻击",
+      "main": [
+        [
+          2,
+          3
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          6,
+          7
+        ],
+        [
+          8,
+          9
+        ],
+        [
+          10,
+          11
+        ],
+        [
+          12,
+          13
+        ]
+      ],
+      "sub": [
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          3,
+          3
+        ],
+        [
+          4,
+          4
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          6,
+          6
+        ]
+      ]
+    },
+    {
+      "stat": 4,
+      "name": "精神力",
+      "main": [
+        [
+          2,
+          3
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          6,
+          7
+        ],
+        [
+          8,
+          9
+        ],
+        [
+          10,
+          11
+        ],
+        [
+          12,
+          13
+        ]
+      ],
+      "sub": [
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          3,
+          3
+        ],
+        [
+          4,
+          4
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          6,
+          6
+        ]
+      ]
+    },
+    {
+      "stat": 5,
+      "name": "护甲",
+      "main": [
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          3
+        ],
+        [
+          4,
+          4
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          6,
+          6
+        ],
+        [
+          7,
+          8
+        ]
+      ],
+      "sub": [
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          3,
+          3
+        ],
+        [
+          4,
+          4
+        ],
+        [
+          5,
+          5
+        ]
+      ]
+    },
+    {
+      "stat": 6,
+      "name": "速度",
+      "main": [
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          3,
+          3
+        ],
+        [
+          4,
+          4
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          6,
+          6
+        ]
+      ],
+      "sub": [
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ]
+    }
+  ],
+  "bases": [
+    {
+      "code": "steelSword",
+      "name": "青钢剑",
+      "slot": 1,
+      "main": 3,
+      "weight": 4,
+      "durability": 28
+    },
+    {
+      "code": "saber",
+      "name": "厚背刀",
+      "slot": 1,
+      "main": 3,
+      "weight": 5,
+      "durability": 32
+    },
+    {
+      "code": "spear",
+      "name": "穿云枪",
+      "slot": 1,
+      "main": 3,
+      "weight": 5,
+      "durability": 32
+    },
+    {
+      "code": "axe",
+      "name": "破山斧",
+      "slot": 1,
+      "main": 3,
+      "weight": 7,
+      "durability": 40
+    },
+    {
+      "code": "hammer",
+      "name": "镇岳锤",
+      "slot": 1,
+      "main": 5,
+      "weight": 7,
+      "durability": 40
+    },
+    {
+      "code": "staff",
+      "name": "盘龙棍",
+      "slot": 1,
+      "main": 5,
+      "weight": 5,
+      "durability": 32
+    },
+    {
+      "code": "bow",
+      "name": "逐风弓",
+      "slot": 1,
+      "main": 3,
+      "weight": 3,
+      "durability": 24
+    },
+    {
+      "code": "crossbow",
+      "name": "藏机弩",
+      "slot": 1,
+      "main": 3,
+      "weight": 5,
+      "durability": 32
+    },
+    {
+      "code": "fan",
+      "name": "流云扇",
+      "slot": 1,
+      "main": 4,
+      "weight": 2,
+      "durability": 20
+    },
+    {
+      "code": "bamboo",
+      "name": "青竹杖",
+      "slot": 1,
+      "main": 4,
+      "weight": 4,
+      "durability": 28
+    },
+    {
+      "code": "bell",
+      "name": "玄铜铃",
+      "slot": 1,
+      "main": 2,
+      "weight": 3,
+      "durability": 24
+    },
+    {
+      "code": "seal",
+      "name": "玄山印",
+      "slot": 1,
+      "main": 4,
+      "weight": 6,
+      "durability": 36
+    },
+    {
+      "code": "feather",
+      "name": "青羽轻甲",
+      "slot": 2,
+      "main": 5,
+      "weight": 3,
+      "durability": 24
+    },
+    {
+      "code": "scale",
+      "name": "铁鳞甲",
+      "slot": 2,
+      "main": 5,
+      "weight": 5,
+      "durability": 32
+    },
+    {
+      "code": "heavy",
+      "name": "山岳重甲",
+      "slot": 2,
+      "main": 5,
+      "weight": 7,
+      "durability": 40
+    },
+    {
+      "code": "heart",
+      "name": "护心衣",
+      "slot": 2,
+      "main": 1,
+      "weight": 3,
+      "durability": 24
+    },
+    {
+      "code": "robe",
+      "name": "玄纹袍",
+      "slot": 2,
+      "main": 1,
+      "weight": 2,
+      "durability": 20
+    },
+    {
+      "code": "manaRobe",
+      "name": "凝神法衣",
+      "slot": 2,
+      "main": 2,
+      "weight": 2,
+      "durability": 20
+    },
+    {
+      "code": "jade",
+      "name": "养元佩",
+      "slot": 3,
+      "main": 1,
+      "weight": 1,
+      "durability": 16
+    },
+    {
+      "code": "pearl",
+      "name": "蕴灵珠",
+      "slot": 3,
+      "main": 2,
+      "weight": 1,
+      "durability": 16
+    },
+    {
+      "code": "ring",
+      "name": "玄铁环",
+      "slot": 3,
+      "main": 5,
+      "weight": 2,
+      "durability": 22
+    },
+    {
+      "code": "edge",
+      "name": "砺锋坠",
+      "slot": 3,
+      "main": 3,
+      "weight": 2,
+      "durability": 22
+    },
+    {
+      "code": "pin",
+      "name": "凝神簪",
+      "slot": 3,
+      "main": 4,
+      "weight": 2,
+      "durability": 22
+    },
+    {
+      "code": "bracelet",
+      "name": "血纹镯",
+      "slot": 3,
+      "main": 1,
+      "weight": 2,
+      "durability": 22
+    }
+  ],
+  "traits": [
+    {
+      "code": "vampire",
+      "name": "饮血",
+      "slot": 1,
+      "p": [
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          6,
+          8
+        ],
+        [
+          8,
+          10
+        ]
+      ],
+      "text": "原技能直接生命伤害的P%吸血"
+    },
+    {
+      "code": "bloodthirst",
+      "name": "嗜血",
+      "slot": 1,
+      "p": [
+        [
+          8,
+          10
+        ],
+        [
+          10,
+          12
+        ],
+        [
+          12,
+          14
+        ],
+        [
+          14,
+          16
+        ],
+        [
+          16,
+          18
+        ],
+        [
+          18,
+          20
+        ]
+      ],
+      "n": [
+        [
+          10,
+          12
+        ],
+        [
+          9,
+          11
+        ],
+        [
+          8,
+          10
+        ],
+        [
+          7,
+          9
+        ],
+        [
+          6,
+          8
+        ],
+        [
+          5,
+          7
+        ]
+      ],
+      "text": "本次探索击杀N敌后获得P%吸血；本次启动击杀不追溯吸血"
+    },
+    {
+      "code": "veteran",
+      "name": "百战",
+      "slot": 1,
+      "p": [
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          6,
+          8
+        ],
+        [
+          8,
+          10
+        ]
+      ],
+      "n": [
+        [
+          4,
+          5
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          3,
+          3
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "text": "本次探索每击杀N敌，物理攻击+1，最多P；卸下不生效"
+    },
+    {
+      "code": "edgeStack",
+      "name": "叠锋",
+      "slot": 1,
+      "p": [
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          6
+        ],
+        [
+          6,
+          8
+        ],
+        [
+          8,
+          10
+        ],
+        [
+          10,
+          12
+        ],
+        [
+          12,
+          14
+        ]
+      ],
+      "n": [
+        [
+          4,
+          5
+        ],
+        [
+          4,
+          4
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          3,
+          3
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          2
+        ]
+      ],
+      "text": "每N次原始直接攻击，对存活主目标追加P点同类伤害；混合取物理"
+    },
+    {
+      "code": "hunt",
+      "name": "猎弱",
+      "slot": 1,
+      "p": [
+        [
+          6,
+          8
+        ],
+        [
+          8,
+          10
+        ],
+        [
+          10,
+          12
+        ],
+        [
+          12,
+          14
+        ],
+        [
+          14,
+          17
+        ],
+        [
+          17,
+          20
+        ]
+      ],
+      "text": "目标生命不高于35%时，原技能直接伤害+P%，每段判定"
+    },
+    {
+      "code": "wound",
+      "name": "逐伤",
+      "slot": 1,
+      "p": [
+        [
+          3,
+          5
+        ],
+        [
+          5,
+          7
+        ],
+        [
+          7,
+          9
+        ],
+        [
+          9,
+          11
+        ],
+        [
+          11,
+          14
+        ],
+        [
+          14,
+          17
+        ]
+      ],
+      "text": "目标有流血或灼烧时，原技能直接伤害+P%，两种不重复加成"
+    },
+    {
+      "code": "gap",
+      "name": "识隙",
+      "slot": 1,
+      "p": [
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "n": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "text": "每N次直接物理技能使破甲主目标损失生命后，加1流血；每招记一次"
+    },
+    {
+      "code": "ember",
+      "name": "余烬",
+      "slot": 1,
+      "p": [
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "n": [
+        [
+          5,
+          5
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          4,
+          4
+        ],
+        [
+          4,
+          4
+        ],
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "text": "焚尽消费至少N层且目标存活时补1层灼烧"
+    },
+    {
+      "code": "barrier",
+      "name": "护体",
+      "slot": 2,
+      "p": [
+        [
+          4,
+          6
+        ],
+        [
+          6,
+          8
+        ],
+        [
+          8,
+          11
+        ],
+        [
+          11,
+          14
+        ],
+        [
+          14,
+          18
+        ],
+        [
+          18,
+          22
+        ]
+      ],
+      "text": "每战首次被敌方主动攻击实际扣血且存活后获得P盾"
+    },
+    {
+      "code": "guardShield",
+      "name": "回甲",
+      "slot": 2,
+      "p": [
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          5,
+          7
+        ],
+        [
+          7,
+          10
+        ],
+        [
+          10,
+          13
+        ],
+        [
+          13,
+          16
+        ]
+      ],
+      "text": "使用通用防御获得P盾，守反等技能不触发"
+    },
+    {
+      "code": "danger",
+      "name": "守危",
+      "slot": 2,
+      "p": [
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          5,
+          7
+        ],
+        [
+          7,
+          9
+        ],
+        [
+          9,
+          12
+        ]
+      ],
+      "text": "生命不高于35%时护甲+P"
+    },
+    {
+      "code": "nourish",
+      "name": "养元",
+      "slot": 2,
+      "p": [
+        [
+          3,
+          5
+        ],
+        [
+          5,
+          7
+        ],
+        [
+          7,
+          10
+        ],
+        [
+          10,
+          13
+        ],
+        [
+          13,
+          17
+        ],
+        [
+          17,
+          22
+        ]
+      ],
+      "text": "战斗胜利且存活后恢复P生命"
+    },
+    {
+      "code": "reflect",
+      "name": "反震",
+      "slot": 2,
+      "p": [
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          6
+        ],
+        [
+          6,
+          8
+        ],
+        [
+          8,
+          10
+        ],
+        [
+          10,
+          12
+        ]
+      ],
+      "text": "被敌方主动攻击实际扣血且存活后，反震P物理伤害，每自身出招间隔一次"
+    },
+    {
+      "code": "store",
+      "name": "守势化锋",
+      "slot": 2,
+      "p": [
+        [
+          8,
+          12
+        ],
+        [
+          12,
+          18
+        ],
+        [
+          18,
+          24
+        ],
+        [
+          24,
+          30
+        ],
+        [
+          30,
+          36
+        ],
+        [
+          36,
+          40
+        ]
+      ],
+      "text": "护盾实吸直接伤害的P%存锋，上限80%攻击；下次直接技能对主目标附伤并清空"
+    },
+    {
+      "code": "excess",
+      "name": "血饲",
+      "slot": 2,
+      "p": [
+        [
+          2,
+          2
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          6,
+          8
+        ],
+        [
+          8,
+          10
+        ]
+      ],
+      "text": "吸血过量转盾，此来源当前盾最多P%生命上限；仍受总盾30%限制"
+    },
+    {
+      "code": "fortify",
+      "name": "固守",
+      "slot": 2,
+      "p": [
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          6,
+          8
+        ]
+      ],
+      "text": "通用防御后护甲+P，至下次自身出招前"
+    },
+    {
+      "code": "medicine",
+      "name": "药引",
+      "slot": 3,
+      "p": [
+        [
+          3,
+          5
+        ],
+        [
+          5,
+          7
+        ],
+        [
+          7,
+          10
+        ],
+        [
+          10,
+          13
+        ],
+        [
+          13,
+          16
+        ],
+        [
+          16,
+          20
+        ]
+      ],
+      "text": "实际使用血药、蓝药时药效+P%"
+    },
+    {
+      "code": "harmony",
+      "name": "合律",
+      "slot": 3,
+      "p": [
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          4
+        ]
+      ],
+      "text": "累计三种不同主动技能后回P蓝，清空记录；普攻、防御、用药不计"
+    },
+    {
+      "code": "returnMana",
+      "name": "归灵",
+      "slot": 3,
+      "p": [
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          6
+        ],
+        [
+          6,
+          8
+        ],
+        [
+          8,
+          10
+        ]
+      ],
+      "text": "战斗胜利且存活后回复P蓝"
+    },
+    {
+      "code": "meditate",
+      "name": "调息",
+      "slot": 3,
+      "p": [
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          5
+        ]
+      ],
+      "n": [
+        [
+          4,
+          4
+        ],
+        [
+          4,
+          4
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          3,
+          3
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          2
+        ]
+      ],
+      "text": "第N、2N、3N次自身回合开始各回P蓝，每战最多三次"
+    },
+    {
+      "code": "frugal",
+      "name": "节用",
+      "slot": 3,
+      "p": [
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "text": "原本耗蓝的主动技能付费后返P蓝，不超过实付；每战最多五次"
+    },
+    {
+      "code": "hidden",
+      "name": "藏锋",
+      "slot": 3,
+      "p": [
+        [
+          3,
+          4
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          7,
+          8
+        ],
+        [
+          9,
+          10
+        ],
+        [
+          11,
+          13
+        ],
+        [
+          14,
+          15
+        ]
+      ],
+      "text": "无直接伤害主动行动积1层，最多2；下次直接技能每层+P%并清空"
+    },
+    {
+      "code": "alternate",
+      "name": "换脉",
+      "slot": 3,
+      "p": [
+        [
+          3,
+          4
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          7,
+          8
+        ],
+        [
+          9,
+          10
+        ],
+        [
+          11,
+          13
+        ],
+        [
+          14,
+          15
+        ]
+      ],
+      "n": [
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          2,
+          2
+        ]
+      ],
+      "text": "纯物理后纯魔法直接伤害+P%；纯魔法后纯物理耗蓝-N；辅助保留，混合清空"
+    },
+    {
+      "code": "opening",
+      "name": "启明",
+      "slot": 3,
+      "p": [
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          5,
+          6
+        ]
+      ],
+      "n": [
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          2,
+          2
+        ]
+      ],
+      "text": "前N个完整回合，物理攻击与精神力各+P"
+    }
+  ],
+  "skills": [
+    {
+      "code": "basic",
+      "name": "普攻",
+      "mp": 0,
+      "cd": 0,
+      "kind": 1,
+      "uses": 0,
+      "effect": {
+        "physical": 1,
+        "mana": 2
+      }
+    },
+    {
+      "code": "guard",
+      "name": "防御",
+      "mp": 0,
+      "cd": 0,
+      "kind": 4,
+      "uses": 0,
+      "effect": {
+        "reduction": 0.4
+      }
+    },
+    {
+      "code": "rend",
+      "name": "裂帛",
+      "mp": 0,
+      "cd": 0,
+      "kind": 1,
+      "uses": 0,
+      "effect": {
+        "physical": 1.1,
+        "bleed": 1
+      }
+    },
+    {
+      "code": "sunder",
+      "name": "断甲刺",
+      "mp": 2,
+      "cd": 0,
+      "kind": 1,
+      "uses": 0,
+      "effect": {
+        "physical": 1,
+        "armorReduction": 0.25
+      }
+    },
+    {
+      "code": "shatter",
+      "name": "破障槌",
+      "mp": 2,
+      "cd": 1,
+      "kind": 1,
+      "uses": 0,
+      "effect": {
+        "physical": 1.4,
+        "shieldBonus": 2
+      }
+    },
+    {
+      "code": "spin",
+      "name": "回旋刃",
+      "mp": 3,
+      "cd": 0,
+      "kind": 1,
+      "uses": 0,
+      "effect": {
+        "physical": 0.45,
+        "hits": 3,
+        "bleed": 1
+      }
+    },
+    {
+      "code": "execute",
+      "name": "斩命",
+      "mp": 3,
+      "cd": 0,
+      "kind": 1,
+      "uses": 0,
+      "effect": {
+        "physical": 2.2,
+        "threshold": 0.3
+      }
+    },
+    {
+      "code": "sweep",
+      "name": "横扫",
+      "mp": 3,
+      "cd": 0,
+      "kind": 1,
+      "uses": 0,
+      "effect": {
+        "physical": 0.8
+      }
+    },
+    {
+      "code": "sever",
+      "name": "截脉",
+      "mp": 2,
+      "cd": 1,
+      "kind": 1,
+      "uses": 0,
+      "effect": {
+        "physical": 1.4,
+        "consume": 2,
+        "suppression": 0.4
+      }
+    },
+    {
+      "code": "ignite",
+      "name": "点烬",
+      "mp": 4,
+      "cd": 0,
+      "kind": 2,
+      "uses": 0,
+      "effect": {
+        "magic": 0.9,
+        "burn": 2
+      }
+    },
+    {
+      "code": "firewind",
+      "name": "焚风",
+      "mp": 7,
+      "cd": 0,
+      "kind": 2,
+      "uses": 0,
+      "effect": {
+        "magic": 0.7,
+        "copy": 2
+      }
+    },
+    {
+      "code": "detonate",
+      "name": "焚尽",
+      "mp": 8,
+      "cd": 0,
+      "kind": 2,
+      "uses": 0,
+      "effect": {
+        "magic": 1.4,
+        "remainingBurn": 1.25
+      }
+    },
+    {
+      "code": "frost",
+      "name": "凝霜",
+      "mp": 4,
+      "cd": 0,
+      "kind": 2,
+      "uses": 0,
+      "effect": {
+        "magic": 1.1,
+        "chill": 2
+      }
+    },
+    {
+      "code": "spark",
+      "name": "雷引",
+      "mp": 4,
+      "cd": 0,
+      "kind": 2,
+      "uses": 0,
+      "effect": {
+        "magic": 1.2,
+        "mark": 1
+      }
+    },
+    {
+      "code": "thunder",
+      "name": "惊雷",
+      "mp": 8,
+      "cd": 0,
+      "kind": 2,
+      "uses": 0,
+      "effect": {
+        "magic": 1.8,
+        "consume": 2,
+        "bonusPerMark": 0.3
+      }
+    },
+    {
+      "code": "mine",
+      "name": "伏雷",
+      "mp": 5,
+      "cd": 1,
+      "kind": 4,
+      "uses": 0,
+      "effect": {
+        "magic": 1.8,
+        "mark": 1
+      }
+    },
+    {
+      "code": "chain",
+      "name": "雷链",
+      "mp": 7,
+      "cd": 0,
+      "kind": 2,
+      "uses": 0,
+      "effect": {
+        "magic": 1,
+        "consume": 2,
+        "bonusPerMark": 0.2
+      }
+    },
+    {
+      "code": "icebreak",
+      "name": "碎寒击",
+      "mp": 3,
+      "cd": 0,
+      "kind": 3,
+      "uses": 0,
+      "effect": {
+        "physical": 1.2,
+        "magicPerChill": 0.8,
+        "consume": 3
+      }
+    },
+    {
+      "code": "pierce",
+      "name": "雷贯",
+      "mp": 5,
+      "cd": 0,
+      "kind": 3,
+      "uses": 0,
+      "effect": {
+        "physical": 1,
+        "magic": 1,
+        "consume": 1,
+        "armorIgnore": 0.5
+      }
+    },
+    {
+      "code": "flameblade",
+      "name": "借焰斩",
+      "mp": 3,
+      "cd": 0,
+      "kind": 3,
+      "uses": 0,
+      "effect": {
+        "physical": 1.3,
+        "magicPerBurn": 0.1
+      }
+    },
+    {
+      "code": "iron",
+      "name": "铁衣",
+      "mp": 5,
+      "cd": 2,
+      "kind": 4,
+      "uses": 0,
+      "effect": {
+        "hpShield": 0.12,
+        "armorShield": 1,
+        "armorBonus": 0.2
+      }
+    },
+    {
+      "code": "counter",
+      "name": "守反",
+      "mp": 1,
+      "cd": 1,
+      "kind": 4,
+      "uses": 0,
+      "effect": {
+        "reduction": 0.5,
+        "physical": 0.9
+      }
+    },
+    {
+      "code": "shieldhit",
+      "name": "碎壁轰",
+      "mp": 3,
+      "cd": 0,
+      "kind": 1,
+      "uses": 0,
+      "effect": {
+        "physical": 1.2,
+        "shieldSpend": 0.5,
+        "spentDamage": 2,
+        "shieldBonus": 2
+      }
+    },
+    {
+      "code": "ashward",
+      "name": "灰烬衣",
+      "mp": 2,
+      "cd": 2,
+      "kind": 4,
+      "uses": 0,
+      "effect": {
+        "magicShield": 0.6,
+        "remainingBurnShield": 1,
+        "hpCap": 0.2,
+        "consume": 2
+      }
+    },
+    {
+      "code": "bloodrage",
+      "name": "燃血",
+      "mp": 0,
+      "cd": 2,
+      "kind": 1,
+      "uses": 0,
+      "effect": {
+        "physical": 0.9,
+        "bonus": 0.4,
+        "charges": 2
+      }
+    },
+    {
+      "code": "leech",
+      "name": "饮血刃",
+      "mp": 2,
+      "cd": 0,
+      "kind": 1,
+      "uses": 0,
+      "effect": {
+        "physical": 1.1,
+        "lifesteal": 0.3
+      }
+    },
+    {
+      "code": "bloodcast",
+      "name": "血契",
+      "mp": 4,
+      "cd": 0,
+      "kind": 2,
+      "uses": 0,
+      "effect": {
+        "magic": 2
+      }
+    },
+    {
+      "code": "convert",
+      "name": "化灵",
+      "mp": 0,
+      "cd": 3,
+      "kind": 1,
+      "uses": 3,
+      "effect": {
+        "physical": 1,
+        "mana": 12
+      }
+    },
+    {
+      "code": "heal",
+      "name": "回春",
+      "mp": 8,
+      "cd": 2,
+      "kind": 4,
+      "uses": 3,
+      "effect": {
+        "hpHeal": 0.1,
+        "magicHeal": 0.5
+      }
+    },
+    {
+      "code": "cleanse",
+      "name": "涤尘",
+      "mp": 4,
+      "cd": 2,
+      "kind": 4,
+      "uses": 3,
+      "effect": {
+        "hpHeal": 0.05,
+        "cleanseTypes": 2
+      }
+    },
+    {
+      "code": "bloodpay",
+      "name": "血偿",
+      "mp": 2,
+      "cd": 2,
+      "kind": 1,
+      "uses": 3,
+      "effect": {
+        "physical": 0.8,
+        "attackHealPerBleed": 0.4,
+        "consume": 2
+      }
+    },
+    {
+      "code": "firebreath",
+      "name": "火息",
+      "mp": 0,
+      "cd": 2,
+      "kind": 2,
+      "uses": 3,
+      "effect": {
+        "magic": 0.6,
+        "manaPerBurn": 2,
+        "consume": 2
+      }
+    },
+    {
+      "code": "frostheal",
+      "name": "回霜",
+      "mp": 3,
+      "cd": 2,
+      "kind": 4,
+      "uses": 3,
+      "effect": {
+        "hpHealPerChill": 0.05,
+        "magicHeal": 0.4,
+        "cleanseTypes": 1,
+        "consume": 2
+      }
+    },
+    {
+      "code": "frostseal",
+      "name": "霜封",
+      "mp": 2,
+      "cd": 1,
+      "kind": 2,
+      "uses": 0,
+      "effect": {
+        "magic": 0.8,
+        "suppression": 0.45,
+        "consume": 2
+      }
+    },
+    {
+      "code": "recall",
+      "name": "雷回流",
+      "mp": 0,
+      "cd": 2,
+      "kind": 2,
+      "uses": 3,
+      "effect": {
+        "magic": 0.6,
+        "manaPerMark": 3,
+        "consume": 2
+      }
+    },
+    {
+      "code": "thunderward",
+      "name": "霆护",
+      "mp": 3,
+      "cd": 0,
+      "kind": 4,
+      "uses": 0,
+      "effect": {
+        "hpShield": 0.08,
+        "hpShieldPerMark": 0.05,
+        "consume": 2
+      }
+    }
+  ],
+  "enemies": [
+    {
+      "id": 1,
+      "name": "山门游兵",
+      "tier": 1,
+      "hp": 110,
+      "mp": 18,
+      "a": 14,
+      "s": 8,
+      "armor": 6,
+      "speed": 9,
+      "pattern": [
+        "strike",
+        "strike",
+        "heavy"
+      ],
+      "healUses": 1,
+      "wardUses": 2,
+      "purifyUses": 2
+    },
+    {
+      "id": 2,
+      "name": "疾行斥候",
+      "tier": 1,
+      "hp": 105,
+      "mp": 16,
+      "a": 15,
+      "s": 8,
+      "armor": 4,
+      "speed": 14,
+      "pattern": [
+        "flurry",
+        "strike",
+        "heavy"
+      ],
+      "healUses": 1,
+      "wardUses": 2,
+      "purifyUses": 2
+    },
+    {
+      "id": 3,
+      "name": "铁甲守卒",
+      "tier": 1,
+      "hp": 145,
+      "mp": 18,
+      "a": 13,
+      "s": 8,
+      "armor": 35,
+      "speed": 7,
+      "pattern": [
+        "strike",
+        "guard",
+        "heavy"
+      ],
+      "healUses": 1,
+      "wardUses": 2,
+      "purifyUses": 2
+    },
+    {
+      "id": 4,
+      "name": "余火术士",
+      "tier": 1,
+      "hp": 112,
+      "mp": 24,
+      "a": 8,
+      "s": 18,
+      "armor": 6,
+      "speed": 10,
+      "pattern": [
+        "ignite",
+        "bolt",
+        "strike"
+      ],
+      "healUses": 1,
+      "wardUses": 2,
+      "purifyUses": 2
+    },
+    {
+      "id": 5,
+      "name": "霜纹侍者",
+      "tier": 1,
+      "hp": 120,
+      "mp": 24,
+      "a": 10,
+      "s": 16,
+      "armor": 8,
+      "speed": 11,
+      "pattern": [
+        "frost",
+        "bolt",
+        "strike"
+      ],
+      "healUses": 1,
+      "wardUses": 2,
+      "purifyUses": 2
+    },
+    {
+      "id": 6,
+      "name": "持符卫士",
+      "tier": 1,
+      "hp": 135,
+      "mp": 24,
+      "a": 13,
+      "s": 12,
+      "armor": 12,
+      "speed": 8,
+      "pattern": [
+        "ward",
+        "strike",
+        "heavy"
+      ],
+      "healUses": 1,
+      "wardUses": 2,
+      "purifyUses": 2
+    },
+    {
+      "id": 7,
+      "name": "疗伤门徒",
+      "tier": 1,
+      "hp": 130,
+      "mp": 18,
+      "a": 12,
+      "s": 13,
+      "armor": 8,
+      "speed": 9,
+      "pattern": [
+        "strike",
+        "mend",
+        "bolt"
+      ],
+      "healUses": 1,
+      "wardUses": 2,
+      "purifyUses": 2
+    },
+    {
+      "id": 8,
+      "name": "重甲统领",
+      "tier": 2,
+      "hp": 240,
+      "mp": 30,
+      "a": 19,
+      "s": 10,
+      "armor": 45,
+      "speed": 8,
+      "pattern": [
+        "strike",
+        "charge",
+        "slam",
+        "guard"
+      ],
+      "healUses": 1,
+      "wardUses": 2,
+      "purifyUses": 2
+    },
+    {
+      "id": 9,
+      "name": "净尘执事",
+      "tier": 2,
+      "hp": 210,
+      "mp": 36,
+      "a": 12,
+      "s": 23,
+      "armor": 12,
+      "speed": 12,
+      "pattern": [
+        "bolt",
+        "purify",
+        "heavy"
+      ],
+      "healUses": 1,
+      "wardUses": 2,
+      "purifyUses": 2
+    },
+    {
+      "id": 10,
+      "name": "结界执事",
+      "tier": 2,
+      "hp": 235,
+      "mp": 36,
+      "a": 18,
+      "s": 18,
+      "armor": 18,
+      "speed": 9,
+      "pattern": [
+        "ward",
+        "strike",
+        "bolt",
+        "heavy"
+      ],
+      "healUses": 1,
+      "wardUses": 2,
+      "purifyUses": 2
+    },
+    {
+      "id": 11,
+      "name": "伏雷祭司",
+      "tier": 2,
+      "hp": 215,
+      "mp": 40,
+      "a": 10,
+      "s": 24,
+      "armor": 10,
+      "speed": 13,
+      "pattern": [
+        "bolt",
+        "charge",
+        "storm",
+        "strike"
+      ],
+      "healUses": 1,
+      "wardUses": 2,
+      "purifyUses": 2
+    },
+    {
+      "id": 12,
+      "name": "噬血卫长",
+      "tier": 2,
+      "hp": 250,
+      "mp": 30,
+      "a": 21,
+      "s": 14,
+      "armor": 15,
+      "speed": 11,
+      "pattern": [
+        "strike",
+        "drain",
+        "heavy"
+      ],
+      "healUses": 1,
+      "wardUses": 2,
+      "purifyUses": 2
+    },
+    {
+      "id": 13,
+      "name": "镇门石卫",
+      "tier": 3,
+      "hp": 360,
+      "mp": 48,
+      "a": 25,
+      "s": 18,
+      "armor": 28,
+      "speed": 8,
+      "pattern": [
+        "charge",
+        "slam",
+        "strike",
+        "ward"
+      ],
+      "healUses": 2,
+      "wardUses": 2,
+      "purifyUses": 2
+    },
+    {
+      "id": 14,
+      "name": "焚殿长老",
+      "tier": 3,
+      "hp": 340,
+      "mp": 60,
+      "a": 14,
+      "s": 28,
+      "armor": 16,
+      "speed": 12,
+      "pattern": [
+        "ignite",
+        "bolt",
+        "charge",
+        "storm"
+      ],
+      "healUses": 2,
+      "wardUses": 2,
+      "purifyUses": 2
+    },
+    {
+      "id": 15,
+      "name": "藏经守使",
+      "tier": 3,
+      "hp": 380,
+      "mp": 54,
+      "a": 23,
+      "s": 24,
+      "armor": 20,
+      "speed": 10,
+      "pattern": [
+        "strike",
+        "mend",
+        "bolt",
+        "purify",
+        "heavy"
+      ],
+      "healUses": 2,
+      "wardUses": 2,
+      "purifyUses": 2
+    }
+  ],
+  "potions": [
+    {
+      "code": "hp",
+      "name": "回春丹",
+      "resource": 1,
+      "hp": 90,
+      "mp": 0,
+      "shield": 0
+    },
+    {
+      "code": "mp",
+      "name": "聚灵丹",
+      "resource": 2,
+      "hp": 0,
+      "mp": 18,
+      "shield": 0
+    },
+    {
+      "code": "hpPlus",
+      "name": "玉露丹",
+      "resource": 1,
+      "hp": 150,
+      "mp": 0,
+      "shield": 0
+    },
+    {
+      "code": "mpPlus",
+      "name": "凝神丹",
+      "resource": 2,
+      "hp": 0,
+      "mp": 30,
+      "shield": 0
+    },
+    {
+      "code": "dual",
+      "name": "调息散",
+      "resource": 3,
+      "hp": 45,
+      "mp": 9,
+      "shield": 0
+    },
+    {
+      "code": "ward",
+      "name": "护元散",
+      "resource": 4,
+      "hp": 0,
+      "mp": 0,
+      "shield": 45
+    }
+  ],
+  "exampleBuilds": [
+    {
+      "code": "bleed",
+      "name": "放血省药",
+      "bases": [
+        "steelSword",
+        "scale",
+        "jade"
+      ],
+      "traits": [
+        "gap",
+        "excess",
+        "frugal"
+      ],
+      "skills": [
+        "rend",
+        "sunder",
+        "leech",
+        "sever",
+        "bloodpay"
+      ],
+      "potions": [
+        3,
+        2
+      ]
+    },
+    {
+      "code": "fire",
+      "name": "养火收火",
+      "bases": [
+        "bamboo",
+        "heart",
+        "pin"
+      ],
+      "traits": [
+        "ember",
+        "barrier",
+        "hidden"
+      ],
+      "skills": [
+        "ignite",
+        "detonate",
+        "firewind",
+        "firebreath",
+        "ashward"
+      ],
+      "potions": [
+        2,
+        3
+      ]
+    },
+    {
+      "code": "frost",
+      "name": "寒意择机",
+      "bases": [
+        "fan",
+        "scale",
+        "edge"
+      ],
+      "traits": [
+        "hunt",
+        "nourish",
+        "alternate"
+      ],
+      "skills": [
+        "frost",
+        "icebreak",
+        "frostheal",
+        "frostseal",
+        "sweep"
+      ],
+      "potions": [
+        3,
+        2
+      ]
+    },
+    {
+      "code": "thunder",
+      "name": "雷印调度",
+      "bases": [
+        "seal",
+        "heart",
+        "pin"
+      ],
+      "traits": [
+        "edgeStack",
+        "store",
+        "meditate"
+      ],
+      "skills": [
+        "spark",
+        "thunder",
+        "recall",
+        "thunderward",
+        "chain"
+      ],
+      "potions": [
+        2,
+        3
+      ]
+    },
+    {
+      "code": "guard",
+      "name": "守势转攻",
+      "bases": [
+        "steelSword",
+        "heavy",
+        "jade"
+      ],
+      "traits": [
+        "vampire",
+        "store",
+        "hidden"
+      ],
+      "skills": [
+        "iron",
+        "counter",
+        "shieldhit",
+        "leech",
+        "sunder"
+      ],
+      "potions": [
+        3,
+        2
+      ]
+    },
+    {
+      "code": "blood",
+      "name": "血蓝轮换",
+      "bases": [
+        "saber",
+        "heart",
+        "pin"
+      ],
+      "traits": [
+        "vampire",
+        "excess",
+        "alternate"
+      ],
+      "skills": [
+        "bloodrage",
+        "bloodcast",
+        "leech",
+        "convert",
+        "cleanse"
+      ],
+      "potions": [
+        3,
+        2
+      ]
+    }
+  ]
+}

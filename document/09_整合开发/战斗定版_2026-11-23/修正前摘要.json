@@ -1,0 +1,15 @@
+{
+  "scope": "历史问题定位摘要，旧数值与旧自动策略，不能作为当前验收；不再维护旧规则核",
+  "singleSummary": {
+    "count": 3096,
+    "wins": 2755,
+    "stalls": 4,
+    "winRounds": 7.55
+  },
+  "stalls": [
+    { "suite": "random-traits", "build": "bleed", "quality": 6, "seed": 3049, "enemy": 13, "rounds": 101, "guardActions": 96 },
+    { "suite": "random-traits", "build": "fire", "quality": 6, "seed": 3049, "enemy": 13, "rounds": 101, "guardActions": 90 },
+    { "suite": "random-traits", "build": "frost", "quality": 6, "seed": 3049, "enemy": 13, "rounds": 101, "guardActions": 96 },
+    { "suite": "random-traits", "build": "blood", "quality": 6, "seed": 3049, "enemy": 13, "rounds": 101, "guardActions": 95 }
+  ]
+}

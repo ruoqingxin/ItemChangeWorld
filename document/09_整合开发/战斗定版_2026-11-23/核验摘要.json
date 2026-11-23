@@ -1,0 +1,17 @@
+{
+  "version": "combat-release-baseline-20261123",
+  "ruleGroupsPassed": 104,
+  "generationChecks": 6912,
+  "candidateBattles": 540,
+  "expandedSingleBattles": 3690,
+  "expeditionAttempts": 432,
+  "expeditionBattles": 3375,
+  "traitComparisonBattles": 72,
+  "traceReplayBattles": 12,
+  "totalRecordedBattles": 7689,
+  "stalls": 0,
+  "supplyConservationPassed": true,
+  "traceReplaysPassed": true,
+  "sourceFreshnessPassed": true,
+  "resultHash": "909f1fbe2f01258f18eb52e6e8e28544b9e8bca33518fd229787c90a3334a3ad"
+}
