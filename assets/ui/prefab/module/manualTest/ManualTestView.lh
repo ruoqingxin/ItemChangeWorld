@@ -1512,6 +1512,110 @@
               "mouseEnabled": false
             }
           ]
+        },
+        {
+          "_$id": "3fbe7d9f95e34169993e2c0ae4451ca5",
+          "_$type": "GWidget",
+          "name": "btn_preset",
+          "width": 150,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "febf69943aad4eb699362ba1553c9b98",
+              "_$type": "GTextField",
+              "name": "txt_presetText",
+              "text": "",
+              "width": 150,
+              "height": 40,
+              "font": "Microsoft YaHei",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            }
+          ]
+        },
+        {
+          "_$id": "2e073b0088594e5694d62422ca5849c2",
+          "_$type": "GWidget",
+          "name": "btn_weapon",
+          "width": 150,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "1823248b17d34a97a7424a04fb555321",
+              "_$type": "GTextField",
+              "name": "txt_weaponText",
+              "text": "",
+              "width": 150,
+              "height": 40,
+              "font": "Microsoft YaHei",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            }
+          ]
+        },
+        {
+          "_$id": "d04a800181d7411b82ed6fcb0f6474a4",
+          "_$type": "GWidget",
+          "name": "btn_quality",
+          "width": 150,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "e62b3eb7aa604a4f8da36594ec062fe2",
+              "_$type": "GTextField",
+              "name": "txt_qualityText",
+              "text": "",
+              "width": 150,
+              "height": 40,
+              "font": "Microsoft YaHei",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            }
+          ]
+        },
+        {
+          "_$id": "2650aeadce1a4a23974c09592e3f6d7b",
+          "_$type": "GWidget",
+          "name": "btn_weaponPassive",
+          "width": 150,
+          "height": 54,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "6aea8ba5f8d84d6890e9d879814a6642",
+              "_$type": "GTextField",
+              "name": "txt_weaponPassiveText",
+              "text": "",
+              "width": 150,
+              "height": 40,
+              "font": "Microsoft YaHei",
+              "fontSize": 18,
+              "color": "#ecefe7",
+              "align": "center",
+              "valign": "middle",
+              "wordWrap": true,
+              "overflow": "shrink",
+              "mouseEnabled": false
+            }
+          ]
         }
       ]
     }
@@ -1850,6 +1954,30 @@
         },
         {
           "_$ref": "d8a062e6d078467ebd9952b9206dd94b"
+        },
+        {
+          "_$ref": "3fbe7d9f95e34169993e2c0ae4451ca5"
+        },
+        {
+          "_$ref": "febf69943aad4eb699362ba1553c9b98"
+        },
+        {
+          "_$ref": "2e073b0088594e5694d62422ca5849c2"
+        },
+        {
+          "_$ref": "1823248b17d34a97a7424a04fb555321"
+        },
+        {
+          "_$ref": "d04a800181d7411b82ed6fcb0f6474a4"
+        },
+        {
+          "_$ref": "e62b3eb7aa604a4f8da36594ec062fe2"
+        },
+        {
+          "_$ref": "2650aeadce1a4a23974c09592e3f6d7b"
+        },
+        {
+          "_$ref": "6aea8ba5f8d84d6890e9d879814a6642"
         }
       ],
       "mapperType": 4

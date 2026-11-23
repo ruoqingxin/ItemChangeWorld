@@ -1,9 +1,9 @@
-import { QingmingConfig } from "../../skillBattle/utils/QingmingConfig";
+import { WeaponTrialConfig } from "../utils/WeaponTrialConfig";
 import { QingmingRules } from "../../skillBattle/utils/QingmingRules";
 import type { RogueAction, RogueState, RogueResult } from "../../skillBattle/types/QingmingTypes";
 
 export class RogueTestManager {
-    readonly draft = QingmingConfig.defaults();
+    readonly draft = WeaponTrialConfig.defaults();
     state: RogueState = null;
     error = "";
     start(): boolean {

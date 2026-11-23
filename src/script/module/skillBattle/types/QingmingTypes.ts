@@ -1,3 +1,5 @@
+import type { WeaponTrialSetup, WeaponTrialState } from "./WeaponTrialTypes";
+import type { CombatTrialProfile, EquipmentSetup, EquipmentState } from "./EquipmentTrialTypes";
 export type RunPhase = "fighting" | "reward" | "between" | "complete" | "defeat" | "retreated";
 export interface TestAttributes { hp: number; mp: number; attack: number; defense: number; }
 export interface EnemyIntent {
@@ -31,6 +33,12 @@ export interface RogueSetup {
     player: TestAttributes; enemy: TestAttributes; seed: number; battles: number;
     style: RogueEnemyStyle; pressure: RoguePressure; healPotions: number; manaPotions: number;
     enemyId?: RogueEnemyId | null;
+    weaponTrial?: WeaponTrialSetup;
+    armorTrial?: EquipmentSetup;
+    accessoryTrial?: EquipmentSetup;
+    combatTrial?: CombatTrialProfile;
+    armorMitigation?: boolean;
+    singleAction?: boolean;
 }
 export interface RogueLoadout {
     acquired: RogueItem[]; passives: RogueItem[]; mutations: Partial<Record<RogueMove, RogueItem>>;
@@ -46,6 +54,9 @@ export interface RogueReport extends RogueCounters {
     battle: number; tier: string; style: RogueEnemyStyle; enemyId: RogueEnemyId | null; rounds: number; won: boolean;
     startHp: number; startMp: number; endHp: number; endMp: number;
     build: RogueItem[]; core: RogueItem | null;
+    weapon?: WeaponTrialState;
+    armor?: EquipmentState;
+    accessory?: EquipmentState;
 }
 export interface RogueState {
     setup: RogueSetup; revision: number; phase: RunPhase; battle: number; round: number; ap: number;
@@ -63,5 +74,8 @@ export interface RogueState {
     potions: { heal: number; mana: number; }; potionUsed: boolean;
     fightStart: { hp: number; mp: number; }; fight: RogueCounters; totals: RogueCounters;
     reports: RogueReport[]; logs: string[];
+    weapon?: WeaponTrialState;
+    armor?: EquipmentState;
+    accessory?: EquipmentState;
 }
 export interface RogueResult { ok: boolean; state: RogueState; reason?: string; }

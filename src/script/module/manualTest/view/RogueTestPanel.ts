@@ -1,5 +1,11 @@
 import { UIManager } from "../../../games/ui/UIManager";
 import { EnemyPickerView } from "./EnemyPickerView";
+import { TrialOptionPickerView } from "./TrialOptionPickerView";
+import { WeaponTrialRules as W } from "../../skillBattle/utils/WeaponTrialRules";
+import { WeaponTrialConfig } from "../utils/WeaponTrialConfig";
+import { EquipmentTrialRules as G } from "../../skillBattle/utils/EquipmentTrialRules";
+import type { EquipmentPassive, EquipmentSlot } from "../../skillBattle/types/EquipmentTrialTypes";
+import type { WeaponPassiveCode } from "../../skillBattle/types/WeaponTrialTypes";
 import type { ManualTestView } from "./ManualTestView";
 import type { RogueAction, RogueItem, RogueMove } from "../../skillBattle/types/QingmingTypes";
 import { QingmingConfig as C } from "../../skillBattle/utils/QingmingConfig";
@@ -24,13 +30,20 @@ export class RogueTestPanel {
     private revision = -1;
     private notice = "";
     private tab: "log" | "build" | "pool" | "report" | "enemy" = "log";
-    private popup: EnemyPickerView = null;
+    private popup: EnemyPickerView | TrialOptionPickerView = null;
+    private trialSlot: "weapon" | EquipmentSlot = "weapon";
     private readonly clicks: Record<string, () => void> = {};
     private readonly changes: Record<string, (n: number) => void> = {};
     private detailScroll: Laya.GPanel;
     private readonly icons: Record<string, Laya.GImage> = {};
     constructor(private readonly view: ManualTestView) {
         this.session = view.rogueSession; this.root = view.getElement<Laya.GWidget>("adapter");
+        for (const key of ["preset", "weapon", "quality", "weaponPassive"]) {
+            const b = view.getElement<Laya.GWidget>("btn_" + key);
+            this.buttons[key] = b;
+            this.labels[key + "Text"] = view.getElement<Laya.GTextField>("txt_" + key + "Text");
+            b.on(Laya.Event.CLICK, this, () => { if (this.opened) this.clicks[key]?.(); });
+        }
         for (const key of ["pressure_relaxed","pressure_standard","pressure_hard","battles_1","battles_12","battles_15","enemyPick","restart","heal","mana","intent_1","intent_2","intent_3","reward_0","reward_1","reward_2","nextBattle","retreat","tab_log","tab_build","tab_pool","tab_report","tab_enemy","cancel","back","endTurn","confirm","move_basic","move_guard","move_edge","move_wind","move_guide","move_fall"]) {
             const b = view.getElement<Laya.GWidget>("btn_" + key);
             this.buttons[key] = b;
@@ -98,19 +111,25 @@ export class RogueTestPanel {
             this.popup = null; this.render();
         });
     }
+    private optionMenu(options: string[], current: number, apply: (index: number) => void): void {
+        this.closeMenu();
+        this.popup = UIManager.ins().openForm(TrialOptionPickerView, options, current, (index: number) => {
+            apply(index); this.popup = null; this.render();
+        });
+    }
     private setup(): void {
         const d = this.session.draft, s = this.session.state;
-        this.text("manualName", "青冥剑典", 20, 82, 214, 32, 26, colors.gold);
+        this.text("manualName", "青冥剑典", 20, 82, 214, 36, 24, colors.gold);
         Object.entries(C.pressures).forEach(([key, value], i) => {
             const b = this.button("pressure_" + key, value.name, 20 + i * 73, 120, 68, 28,
                 () => { d.pressure = key as typeof d.pressure; this.render(); }, d.pressure === key);
             b.tooltips = `连战压力：每过3战，敌生命增加${Math.round(value.hp * 100)}%、攻击增加${Math.round(value.attack * 100)}%；最多3段`;
         });
-        this.text("selfHead", "己方", 76, 158, 66, 28);
+        this.text("selfHead", "自身基准", 70, 158, 78, 28, 16);
         this.text("enemyHead", "敌方基准", 154, 158, 82, 28, 16, colors.red);
         for (const [i, key] of (["hp", "mp", "attack", "defense"] as const).entries()) {
             const y = 194 + i * 34;
-            this.text(key + "Label", ({ hp: "生命", mp: "法力", attack: "攻击", defense: "防御" })[key], 20, y, 46, 28, 16, colors.muted);
+            this.text(key + "Label", ({ hp: "生命", mp: "法力", attack: "攻击", defense: d.armorMitigation ? "护甲" : "防御" })[key], 20, y, 46, 28, 16, colors.muted);
             for (const [actor, x] of [["player", 70], ["enemy", 156]] as const)
                 this.input(`${actor}_${key}`, d[actor][key], x, y, 78, n => { d[actor][key] = n; });
         }
@@ -118,8 +137,36 @@ export class RogueTestPanel {
         this.input("seed", d.seed, 70, 336, 164, n => { d.seed = n; });
         [1, 12, 15].forEach((n, i) => this.button(`battles_${n}`, n === 1 ? "单场" : `${n}战`,
             20 + i * 73, 378, 68, 30, () => { d.battles = n; if (n !== 1) d.enemyId = null; this.render(); }, d.battles === n));
+        const preset = WeaponTrialConfig.presets.findIndex(p =>
+            JSON.stringify(p.player) === JSON.stringify(d.player) && JSON.stringify(p.enemy) === JSON.stringify(d.enemy));
+        this.button("preset", `数值·${WeaponTrialConfig.presets[preset]?.name || "自定"} v`, 20, 414, 102, 30,
+            () => this.optionMenu(WeaponTrialConfig.presets.map(p => p.name), preset, i => WeaponTrialConfig.apply(d, i)));
+        const slot = this.trialSlot, key = `${slot}Trial` as const;
+        const bases = slot === "weapon" ? W.bases : G.bases[slot];
+        const w = d[key], slotName = {weapon:"武器",armor:"防具",accessory:"饰品"}[slot];
+        this.button("weapon", `${slotName}·${w ? bases[w.base-1].name : "空"} v`, 132, 414, 102, 30,
+            () => this.optionMenu(["选择武器部位", "选择防具部位", "选择饰品部位", `卸下${slotName}`, ...bases.map(b => b.name)],
+                w ? w.base + 3 : 3, i => {
+                    if (i < 3) this.trialSlot = (["weapon","armor","accessory"] as const)[i];
+                    else if (i === 3) delete d[key];
+                    else d[key] = {base:i-3,quality:w?.quality || 3};
+                }));
+        this.button("quality", `${w ? W.qualities[w.quality - 1] : "品质"} v`, 20, 452, 102, 30,
+            () => this.optionMenu(W.qualities.slice(), w.quality - 1, i => { w.quality = i + 1; }), false, !!w);
+        const codes: (WeaponPassiveCode | EquipmentPassive)[] = slot === "weapon" ? Object.keys(W.names) as WeaponPassiveCode[] : G.pools[slot];
+        const names = {...W.names,...G.names};
+        this.button("weaponPassive", `${w?.passive ? names[w.passive] : "随机被动"} v`, 132, 452, 102, 30,
+            () => this.optionMenu(["随机被动", ...codes.map(k => names[k])], w?.passive ? codes.indexOf(w.passive) + 1 : 0,
+                i => {
+                    if (!i) delete w.passive;
+                    else if (slot === "weapon") d.weaponTrial.passive = codes[i-1] as WeaponPassiveCode;
+                    else d[`${slot}Trial`].passive = codes[i-1] as EquipmentPassive;
+                }), false, !!w);
+        if (w && Number.isInteger(d.seed) && d.seed > 0)
+            this.buttons.weapon.tooltips = slot === "weapon" ? W.describe(W.roll(d.weaponTrial, d.seed)) :
+                G.describe(slot, G.roll(slot, d[`${slot}Trial`], d.seed));
         this.button("enemyPick", d.enemyId ? E.enemies[d.enemyId].name + "  v" : "指定古宗敌人  v",
-            20, 492, 214, 26, this.enemyMenu.bind(this));
+            20, 490, 214, 30, this.enemyMenu.bind(this));
         this.text("supplyLabel", "血/蓝药", 20, 522, 50, 28, 14, colors.muted);
         this.input("healPotions", d.healPotions, 70, 522, 78, n => { d.healPotions = n; });
         this.input("manaPotions", d.manaPotions, 156, 522, 78, n => { d.manaPotions = n; });
@@ -129,7 +176,7 @@ export class RogueTestPanel {
         const live = !!s && ["fighting", "reward", "between"].includes(s.phase);
         this.button("heal", `回春丹 ${s?.potions.heal ?? d.healPotions}`, 20, 616, 102, 30, () => this.select("heal"), false, live);
         this.button("mana", `回灵丹 ${s?.potions.mana ?? d.manaPotions}`, 132, 616, 102, 30, () => this.select("mana"), false, live);
-        this.buttons.heal.tooltips = this.buttons.mana.tooltips = "恢复最大值30%；不耗行动；每回合共用一次";
+        this.buttons.heal.tooltips = this.buttons.mana.tooltips = "恢复最大值30%；战内占用本回合行动，战间不耗行动";
         this.text("draftStatus", !s ? "未开始" : JSON.stringify(s.setup) === JSON.stringify(d) ? "参数已应用" : "参数待应用",
             20, 666, 214, 26, 15, colors.muted);
     }
@@ -137,20 +184,20 @@ export class RogueTestPanel {
         const s = this.session.state, active = s?.phase === "fighting";
         if (!s) { this.text("emptyArena", "青冥剑典", x, 200, w, 70, 36, colors.gold).align = "center"; return; }
         const half = (w - 20) / 2;
-        this.text("playerState", `己方 ${s.player.hp}/${s.player.maxHp}\n法力 ${s.player.mp}/${s.player.maxMp} · 护盾 ${s.player.shield}`,
-            x, 82, half, 64, 18, colors.jade);
+        this.text("playerState", `己方 ${s.player.hp}/${s.player.maxHp} · 攻${G.attack(s)}\n法力 ${s.player.mp}/${s.player.maxMp} · 护甲${G.armor(s)} · 盾${s.player.shield}`,
+            x, 82, half, 64, 16, colors.jade);
         this.text("enemyState", `${s.enemy.tier}·${E.title(s)} ${s.enemy.hp}/${s.enemy.maxHp}\n护盾 ${s.enemy.shield} · 剑伤 ${s.wounds}/6`,
             x + half + 20, 82, half, 64, 18, colors.red);
         for (const [actor, offset, tint] of [[s.player, 0, colors.jade], [s.enemy, half + 20, colors.red]] as const) {
             this.root.graphics.drawRect(x + offset, 150, half, 5, "#3e4c44");
             if (actor.hp) this.root.graphics.drawRect(x + offset, 150, half * actor.hp / actor.maxHp, 5, tint);
         }
-        const iw = (w - 16) / 3;
+        const iw = (w - (s.intentions.length - 1) * 8) / Math.max(1, s.intentions.length);
         s.intentions.forEach((intent, i) => {
             const percent = E.percent(s, intent), ratio = 1 - s.suppression[i] / 100;
             const [low, high] = E.range(intent);
             const fallback = intent.maxHpHeal && s.enemy.hp === s.enemy.maxHp;
-            const value = intent.kind === "attack" ? Math.round(s.enemy.attack * percent / 100 * ratio) :
+            const value = intent.kind === "attack" ? W.armorDamage(s.enemy.attack * percent / 100 * ratio, G.armor(s), !!s.setup.armorMitigation) :
                 intent.kind === "guard" ? Math.round(s.enemy.defense * percent / 100 * ratio) :
                 intent.kind === "heal" ? fallback ? Math.round(s.enemy.defense * ratio) :
                     Math.min(s.enemy.maxHp - s.enemy.hp, intent.maxHpHeal ?
@@ -161,14 +208,16 @@ export class RogueTestPanel {
                     `现${intent.kind === "attack" ? "伤" : intent.kind === "guard" || fallback ? "盾" : "疗"}${value} · ${fallback ? 3 : intent.mpCost || 0}蓝`),
                 x + i * (iw + 8), 174, iw, 58, () => this.select("guide", { enemyAction: i + 1 }),
                 this.selected?.move === "guide" && (this.selected.enemyAction ?? 1) === i + 1, active && !R.has(s, "rupture"));
-            b.tooltips = (s.foe.id ? E.enemies[s.foe.id].hint + "\n" : "") +
+            b.tooltips = (s.foe.id ? E.hint(s) + "\n" : "") +
                 `当前${percent}%；压制${s.suppression[i]}%` +
                 (intent.condition ? "\n条件攻击按上限预留法力；条件未触发仍耗预留值" : "") +
                 (intent.maxHpHeal ? "\n治疗不超生命缺口；满血改100%防御护盾，耗3蓝" : "");
         });
         this.text("flyingState", `飞剑 ${s.flying}/${R.has(s, "swordUnity") ? 5 : 3}  ·  ` +
             (R.has(s, "swordUnity") ? "青锋引动" : "回合末攻击"), x, 246, w, 28, 17, colors.blue);
-        this.text("coreState", `核心：${s.core ? C.items[s.core].name : "无"}`, x, 282, w, 28, 18, colors.gold);
+        this.text("coreState", `核心：${s.core ? C.items[s.core].name : "无"}` +
+            ` · 耐久 ${[s.weapon,s.armor,s.accessory].map((e,i)=>["武","防","饰"][i]+(e ? e.durability : "—")).join("/")}`,
+            x, 282, w, 28, 16, colors.gold);
         this.text("enemyMechanic", E.summary(s), x, 308, w, 20, 14, colors.red);
         const mechanics = [
             R.has(s, "storedEdge") || R.has(s, "meditation") ? `势 ${s.momentum}/3` : "",
@@ -181,11 +230,12 @@ export class RogueTestPanel {
                 const item = C.items[key], old = item.type === "core" ? s.core : item.slot ? s.mutations[item.slot] : null;
                 const role = C.offerRoles[s.offerRoles[key]];
                 const related = R.related(s, key);
-                const title = `${item.name}${role ? ` · ${role}` : ""}${old ? `  ← 替换${C.items[old].name}` : ""}\n${item.description}`;
+                const description = WeaponTrialConfig.itemDescription(key,s.setup);
+                const title = `${item.name}${role ? ` · ${role}` : ""}${old ? `  ← 替换${C.items[old].name}` : ""}\n${description}`;
                 const b = this.button("reward_" + i, title, x, 330 + i * 70, w, 64,
                     () => this.select("choose", { choice: key }), this.selected?.choice === key);
                 this.labels["reward_" + i + "Text"].align = "left";
-                b.tooltips = item.description + (related.length ? `\n联动：${related.map(k => C.items[k].name).join("、")}` : "");
+                b.tooltips = description + (related.length ? `\n联动：${related.map(k => C.items[k].name).join("、")}` : "");
             });
         } else {
             const mutationText = Object.values(s.mutations).map(k => C.items[k].name).join(" / ");
@@ -211,25 +261,29 @@ export class RogueTestPanel {
         let text = "";
         if (this.tab === "log") text = s?.logs.slice(-60).reverse().join("\n\n") || "尚无结算";
         else if (this.tab === "build") text = s?.rewards.map(r =>
-            `第${r.battle}战 · ${C.items[r.choice].name} · ${R.has(s, r.choice) ? "生效中" : "已替换"}${r.replaced ? `\n替换 ${C.items[r.replaced].name}` : ""}\n${C.items[r.choice].description}`).join("\n\n") || "尚未获得局内内容";
-        else if (this.tab === "pool") text = "青锋 110%A / 4蓝\n回风 250%防御 / 4蓝\n引星 75%A，指定敌行动数值-35% / 5蓝；不截断蓄力\n落青冥 170%A / 8蓝，每回合一次\n普攻 100%A；防御150%防御\n" +
+            `第${r.battle}战 · ${C.items[r.choice].name} · ${R.has(s, r.choice) ? "生效中" : "已替换"}${r.replaced ? `\n替换 ${C.items[r.replaced].name}` : ""}\n${WeaponTrialConfig.itemDescription(r.choice,s.setup)}`).join("\n\n") || "尚未获得局内内容";
+        else if (this.tab === "pool") text = WeaponTrialConfig.skillSummary(s?.setup || this.session.draft) + "\n" +
             ((s ? s.setup.style : this.session.draft.style) === "guzong" ?
-                `古宗普攻回${C.guzongTempo.basicMana}蓝，吐纳另加4蓝\n\n` : "\n") +
+                `古宗普攻回${s?.setup.combatTrial?.basicMana ?? this.session.draft.combatTrial?.basicMana ?? C.guzongTempo.basicMana}蓝，吐纳另加4蓝\n\n` : "\n") +
             (Object.entries(C.items) as [RogueItem, typeof C.items[RogueItem]][]).map(([k, v]) =>
-                `${s && R.has(s, k) ? "● " : ""}${v.name} · ${{ passive: "被动", mutation: "改招", core: "核心" }[v.type]}\n${v.description}`).join("\n\n");
-        else if (this.tab === "enemy") text = s?.foe.id ? `${E.title(s)}\n${E.enemies[s.foe.id].hint}\n\n${E.summary(s)}\n\n` +
+                `${s && R.has(s, k) ? "● " : ""}${v.name} · ${{ passive: "被动", mutation: "改招", core: "核心" }[v.type]}\n${WeaponTrialConfig.itemDescription(k,s?.setup || this.session.draft)}`).join("\n\n");
+        else if (this.tab === "enemy") text = s?.foe.id ? `${E.title(s)}\n${E.hint(s)}\n\n${E.summary(s)}\n\n` +
             `意图${s.foe.phase2 ? " · 第二阶段" : ""}\n` + s.intentions.map((a, i) =>
                 `${i + 1} · ${a.label} ${E.range(a).join("~")}% · 当前${E.percent(s, a)}% · ${a.mpCost || 0}蓝` +
                 (a.maxHpHeal ? "\n按最大生命治疗，不超缺口；满血改100%防御护盾/3蓝" : "")).join("\n") +
-            `\n\n${s.foe.id === "thunder" ? "蓄雷成功后下一轮第三击240%" :
-                s.foe.id === "arrayMaster" || s.foe.id === "swordSpirit" ? "布阵后下一玩家回合3次本体命中可拆阵；派生攻击不计" : ""}` +
             "\n\n条件攻击按上限预留法力，条件未触发仍耗预留值；不足时按预告降为普攻。" +
             `\n\n本局敌阵\n${s.enemyPlan.map((k, i) => `${i + 1} · ${E.enemies[k].name}`).join("\n")}` :
             "尚未开始演练";
         else text = s?.reports.slice().reverse().map(r =>
             `第${r.battle}战 ${r.tier}${r.enemyId ? "·" + E.enemies[r.enemyId].name : ""} · ${r.won ? "胜" : "败"}\n${r.rounds}回合 / ${r.actions}行动\n生命 ${r.startHp} → ${r.endHp}\n法力 ${r.startMp} → ${r.endMp}\n承伤${r.taken} / 耗蓝${r.mpSpent} / 血祭${r.bloodSpent}\n` +
             Object.entries(r.skills).map(([k, n]) => `${C.moves[k]}${n}`).join(" ") + "\n" +
-            Object.entries(r.events).map(([k, n]) => `${C.events[k] || k}:${n}`).join(" ")).join("\n\n") || "尚无完整战报";
+            Object.entries(r.events).map(([k, n]) => `${G.events[k] || W.events[k] || C.events[k] || k}:${n}`).join(" ")).join("\n\n") || "尚无完整战报";
+        if (this.tab === "build") text = (s?.weapon ? W.describe(s.weapon.roll) +
+            `\n耐久 ${s.weapon.durability}/${s.weapon.roll.maxDurability} · 击杀 ${s.weapon.kills}\n` +
+            `攻击计数 ${s.weapon.attacks} · 蓄能 ${s.weapon.charge}\n\n` : "未装备武器\n\n") + text;
+        if (this.tab === "build") text = (["armor","accessory"] as const).map(slot=>s?.[slot] ?
+            `${G.describe(slot,s[slot].roll)}\n耐久 ${s[slot].durability}/${s[slot].roll.maxDurability}\n\n` :
+            `未装备${slot === "armor" ? "防具" : "饰品"}\n\n`).join("") + text;
         const panel = this.detailScroll; panel.visible = true; panel.pos(x,128).size(w,this.height-256);
         const t = this.text("detailText", text, 4, 0, w - 10, 100, 16, colors.muted);
         t.overflow = "visible"; t.valign = "top"; t.textIns.typeset(); t.height = Math.max(panel.height, t.textIns.textHeight + 12);
@@ -246,7 +300,7 @@ export class RogueTestPanel {
         const x = 276, right = this.width - 300, w = right - x - 24, s = this.session.state;
         this.text("pageTitle", "功法测试 · 肉鸽", 20, 14, 240, 36, 24, colors.gold);
         this.text("roundState", s ? `战${s.battle}/${s.setup.battles} · 回${s.round} · ` +
-            (s.phase === "fighting" ? `行动 ${s.ap}/3` : ({ reward: "选择奖励", between: "战间", complete: "完成", defeat: "失败", retreated: "撤离" })[s.phase]) :
+            (s.phase === "fighting" ? `行动 ${s.ap}/${R.actionLimit(s)}` : ({ reward: "选择奖励", between: "战间", complete: "完成", defeat: "失败", retreated: "撤离" })[s.phase]) :
             "青冥剑典 · 局内构筑", x, 14, w - 10, 36, 20, colors.jade);
         const boss = s?.enemyPlan.find(k => E.enemies[k].tier === "首领");
         if (boss) this.text("bossForecast", `本局首领：${E.enemies[boss].name}`, x, 50, w, 24, 15, colors.red);
@@ -258,8 +312,9 @@ export class RogueTestPanel {
             const title = s?.mutations[move] ? C.items[s.mutations[move]].name : C.moves[move];
             const b = this.button("move_" + move, title, x + i * step, footer, step - 8, 46,
                 () => this.select(move, move === "guide" ? { enemyAction: 1 } : {}), this.selected?.move === move, s?.phase === "fighting");
-            b.tooltips = `${title} · 1行动 · ${C.cost(move, s)}法力` + (s?.mutations[move] ? `\n${C.items[s.mutations[move]].description}` : "");
-            if (move === "basic" && s?.foe.id) b.tooltips += `\n普攻后回${C.guzongTempo.basicMana}蓝，吐纳再加4；致胜不回蓝`;
+            b.tooltips = `${title} · 1行动 · ${C.cost(move, s)}法力` + (s?.mutations[move] ? `\n${WeaponTrialConfig.itemDescription(s.mutations[move],s.setup)}` : "");
+            if (move === "basic" && s?.foe.id) b.tooltips += `\n普攻后回${s.setup.combatTrial?.basicMana ?? C.guzongTempo.basicMana}蓝，吐纳再加4；致胜不回蓝`;
+            if (s?.setup.combatTrial) b.tooltips += "\n" + WeaponTrialConfig.skillSummary(s.setup);
             if (i >= 2) {
                 const image = this.icons[move]; image.visible = true;
                 image.pos(4,8).size(28,28);

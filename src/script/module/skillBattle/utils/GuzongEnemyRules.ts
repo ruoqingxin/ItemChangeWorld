@@ -62,8 +62,13 @@ export class GuzongEnemyRules {
         const changed = !f.phase2 && this.enemies[f.id].tier === "首领" && s.enemy.hp <= s.enemy.maxHp / 2;
         if (changed) f.phase2 = true;
         f.read = ["swordsman", "swordmaster"].includes(f.id) ? f.lastCast : null;
-        f.lastCast = null; f.casts = []; f.hits = 0; f.broken = false; f.acting = false;
+        const previous = f.lastCast;
+        f.lastCast = null; f.casts = s.setup.singleAction && f.id === "echo" && previous ? [previous] : [];
+        f.hits = 0; f.broken = false; f.acting = false;
         return changed;
+    }
+    static idle(s: RogueState): void {
+        if (s.setup.singleAction) { s.foe.casts = []; s.foe.lastCast = null; }
     }
     static cast(s: RogueState, move: RogueMove): void {
         if (!s.foe.id) return;
@@ -77,7 +82,7 @@ export class GuzongEnemyRules {
             case "unbroken": return action.percent + (f.broken ? 0 : bonus);
             case "echo": return action.percent + (new Set(f.casts).size < f.casts.length ? bonus : 0);
             case "unguarded": return action.percent + (s.player.shield ? 0 : bonus);
-            case "formation": return action.percent + (f.formation && f.hits < 3 ? bonus : 0);
+            case "formation": return action.percent + (f.formation && f.hits < (s.setup.singleAction ? 1 : 3) ? bonus : 0);
             case "heat": return action.percent + f.heat * bonus;
             default: return action.percent;
         }
@@ -129,6 +134,29 @@ export class GuzongEnemyRules {
                 [guard(150), attack(120, "剑气"), expose()]; break;
             default: throw new Error("古宗敌人无效");
         }
+        if (s.setup.singleAction) {
+            // 单行动敌人按回合轮换完整招式，蓄力与重击各占一次行动。
+            const cycles: Record<RogueEnemyId, RogueEnemyIntent[]> = {
+                patrol: [attack(100), guard(150), attack(160,"重斩")],
+                stone: [guard(200), attack(140,"拳击","broken"), attack(100,"推掌")],
+                thunder: [attack(100,"雷击"), {kind:"charge",percent:0,label:"蓄雷",mpCost:4},
+                    attack(s.enemy.charged ? 220 : 100,"落雷")],
+                apothecary: [attack(100,"药杵"), heal(), attack(130,"药杵")],
+                bloodBlade: [{kind:"blood",percent:3,label:"血炼",mpCost:0},attack(170,"重斩"),attack(100)],
+                echo: [attack(100,"回声符","echo",70)],
+                shade: [attack(90,"突袭","unguarded",60),guard(150),attack(140,"追击")],
+                gatekeeper: [guard(250),attack(150,"破城斩","unbroken",80),attack(110,"盾击")],
+                alchemist: [attack(100,"炉火"),heal(),attack(150,"炉爆","heat",35)],
+                swordsman: [attack(110),guard(150),attack(180,"重斩")],
+                breaker: [{...attack(150,"震盾锤"),shatter:true},guard(150),attack(120)],
+                arrayMaster: [formation(),attack(100,"判剑","formation",120),attack(130,"剑气")],
+                tortoise: [guard(second ? 250 : 350),attack(180,"破城锤","unbroken",70),attack(120,"拳击"),expose()],
+                swordmaster: [attack(second ? 140 : 110),guard(200),attack(second ? 210 : 180,"重斩"),expose()],
+                swordSpirit: [formation(),attack(second ? 140 : 110,"天剑","formation",120),attack(second ? 160 : 130,"剑雨"),expose()],
+            };
+            const cycle = cycles[s.foe.id];
+            rows = [cycle[(s.round - 1) % cycle.length]];
+        }
         let mp = s.enemy.mp;
         return rows.map(action => {
             if (mp >= action.mpCost) { mp -= action.mpCost; return action; }
@@ -137,12 +165,33 @@ export class GuzongEnemyRules {
         });
     }
     static title(s: RogueState): string { return this.enemies[s.foe.id].name; }
+    static hint(s: RogueState): string {
+        if (!s.setup.singleAction) return this.enemies[s.foe.id].hint;
+        const hints: Record<RogueEnemyId, string> = {
+            patrol:"斩击→架盾→重斩，三回合循环。",
+            stone:"架盾→拳击→推掌；拳击前破盾则拳击减半。",
+            thunder:"雷击→蓄雷→落雷；蓄雷后落雷220%攻击。",
+            apothecary:"药杵→疗伤→重击；每场最多疗伤两次。",
+            bloodBlade:"血炼→重斩→斩击；血炼自损并暴露一回合。",
+            echo:"每回合符击；连续两回合使用同名主动则追伤。",
+            shade:"突袭→架盾→追击；突袭遇无盾目标追加伤害。",
+            gatekeeper:"架盾→破城斩→盾击；破城斩前破盾取消追加伤害。",
+            alchemist:"炉火→疗伤→炉爆；有效治疗提高炉温，最多两层。",
+            swordsman:"斩击→架盾→重斩；识破上回合主动，同招本体伤害降低。",
+            breaker:"震盾锤→架盾→斩击；锤击格挡后再削少量余盾。",
+            arrayMaster:"布阵→判剑→剑气；布阵后一次本体命中拆阵，派生不计。",
+            tortoise:"架盾→重锤→拳击→暴露；重锤前破盾取消追加，半血后换阶段。",
+            swordmaster:"斩击→架盾→重斩→暴露；识破上回合主动，半血后攻击增强。",
+            swordSpirit:"布阵→天剑→剑雨→暴露；一次本体命中拆阵，半血后攻击增强。",
+        };
+        return hints[s.foe.id];
+    }
     static summary(s: RogueState): string {
         const f = s.foe;
         if (!f.id) return "";
         const states = [f.phase2 ? "第二阶段" : "", f.broken ? "已破盾" : "", f.vulnerable ? "受伤+20%" : "",
-            f.read ? `识破${C.moves[f.read]}` : "", f.formation ? `拆阵${f.hits}/3` : "",
+            f.read ? `识破${C.moves[f.read]}` : "", f.formation ? `拆阵${f.hits}/${s.setup.singleAction ? 1 : 3}` : "",
             ["apothecary", "alchemist"].includes(f.id) ? `疗伤余${f.heals}` : "", f.id === "alchemist" ? `炉温${f.heat}/2` : ""];
-        return states.filter(Boolean).join(" · ") || this.enemies[f.id].hint;
+        return states.filter(Boolean).join(" · ") || (s.setup.singleAction ? "每回合执行一个公开意图" : this.enemies[f.id].hint);
     }
 }

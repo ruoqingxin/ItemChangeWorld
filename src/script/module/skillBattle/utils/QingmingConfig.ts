@@ -91,7 +91,7 @@ export class QingmingConfig {
         this.items = items;
     }
     static cost(move: RogueMove, state?: RogueState): number {
-        const base = this.skills[move]?.cost || 0;
+        const base = state?.setup.combatTrial?.costs[move] ?? (this.skills[move]?.cost || 0);
         return base + (base && state?.core === "cycle" ? 2 : 0);
     }
     static defaults(): RogueSetup {

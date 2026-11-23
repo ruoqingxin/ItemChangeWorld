@@ -1167,6 +1167,7 @@
     "ui/atlas/module/skillBattle/skill-3.png",
     "ui/atlas/module/skillBattle/skill-4.png"
   ],
+  "ui/prefab/module/manualTest/TrialOptionPickerView.lh": [],
   "ui/prefab/module/skillBattle/SkillBattleBattleView.lh": [
     "ui/atlas/module/inventory/arrow.png",
     "ui/atlas/module/inventory/blue-flask.png",

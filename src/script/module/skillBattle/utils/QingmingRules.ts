@@ -1,9 +1,12 @@
 import type { RogueAction, RogueCounters, RogueEnemyIntent, RogueItem, RogueLoadout, RogueMove, RogueResult, RogueSetup, RogueState } from "../types/QingmingTypes";
 import { QingmingConfig as C } from "./QingmingConfig";
 import { GuzongEnemyRules as E } from "./GuzongEnemyRules";
+import { WeaponTrialRules as W } from "./WeaponTrialRules";
+import { EquipmentTrialRules as G } from "./EquipmentTrialRules";
 
 
 export class QingmingRules {
+    static actionLimit(s: Pick<RogueState, "setup">): number { return s.setup.singleAction ? 1 : 3; }
     static clone<T>(value: T): T { return JSON.parse(JSON.stringify(value)); }
     static has(s: RogueLoadout, item: RogueItem): boolean {
         return s.passives.includes(item) || s.core === item || Object.values(s.mutations).includes(item);
@@ -50,7 +53,25 @@ export class QingmingRules {
             suppression: [0, 0, 0], intentions: [], potions: { heal: d.healPotions, mana: d.manaPotions }, potionUsed: false,
             fightStart: { hp: d.player.hp, mp: d.player.mp }, fight: this.counters(), totals: this.counters(), reports: [], logs: [],
         };
-        this.beginFight(s); return s;
+        if (d.armorMitigation !== undefined && typeof d.armorMitigation !== "boolean") throw new Error("护甲开关无效");
+        if (d.singleAction !== undefined && typeof d.singleAction !== "boolean") throw new Error("行动规则无效");
+        if (d.weaponTrial) s.weapon = W.create(d.weaponTrial, d.seed);
+        if (d.armorTrial) s.armor = G.create("armor", d.armorTrial, d.seed);
+        if (d.accessoryTrial) s.accessory = G.create("accessory", d.accessoryTrial, d.seed);
+        if (d.combatTrial) {
+            const p = d.combatTrial;
+            if ([p.edge,p.guide,p.guideMp,p.fall,p.guard,p.wind,p.shieldAttack,p.shieldArmor,p.shieldCap,p.basicMana,
+                ...Object.values(p.costs),...Object.values(p.enemyHp)].some(n => !Number.isFinite(n) || n < 0 || n > 100) ||
+                !Number.isInteger(p.basicMana) || Object.values(p.costs).some(n => !Number.isInteger(n)) ||
+                p.shieldCap <= 0 || Object.values(p.enemyHp).some(n => n <= 0)) throw new Error("试调倍率无效");
+        }
+        this.beginFight(s);
+        // 新局满血满蓝；后续战斗只调整上限，不因属性增长回血回蓝。
+        if (G.enabled(s)) {
+            s.player.hp = s.player.maxHp; s.player.mp = s.player.maxMp;
+            s.fightStart = { hp: s.player.hp, mp: s.player.mp };
+        }
+        return s;
     }
     private static log(s: RogueState, text: string): void {
         s.logs.push(`[战${s.battle}/回${s.round}] ${text}`);
@@ -64,10 +85,12 @@ export class QingmingRules {
     }
     private static resetTurn(s: RogueState): void {
         s.firstActive = false; s.fallUsed = false; s.wave = false; s.counterAttacks = 0; s.lostAP = 0;
-        s.potionUsed = false; s.suppression = [0, 0, 0]; s.ap = 3;
+        s.potionUsed = false; s.suppression = Array(this.actionLimit(s)).fill(0); s.ap = this.actionLimit(s);
         s.siphonUses = 0;
     }
     private static beginFight(s: RogueState): void {
+        W.beginFight(s);
+        G.beginFight(s);
         s.battle++; s.round = 1; s.phase = "fighting"; s.flying = 0; s.wounds = 0; s.player.shield = 0;
         s.momentum = 0; s.pendingSword = 0; s.lastActive = null; s.forms = [];
         this.resetTurn(s); s.fight = this.counters(); s.fightStart = { hp: s.player.hp, mp: s.player.mp };
@@ -77,7 +100,7 @@ export class QingmingRules {
         const base = s.setup.enemy, stage = Math.min(3, Math.floor((s.battle - 1) / 3));
         const pressure = C.pressures[s.setup.pressure];
         const hp = Math.max(1, Math.round(base.hp * (tier === "首领" ? 3 : tier === "精英" ? 1.6 : 1) *
-            C.guzongTempo.hp[tier] *
+            (s.setup.combatTrial?.enemyHp[tier] ?? C.guzongTempo.hp[tier]) *
             (1 + stage * pressure.hp)));
         const style = "guzong" as const;
         s.enemy = { ...base, hp, maxHp: hp, maxMp: base.mp, shield: 0, charged: false, style, tier,
@@ -85,6 +108,7 @@ export class QingmingRules {
                 (1 + stage * pressure.attack)) };
         if (enemyId) s.enemy.shield = Math.min(s.enemy.defense * 6, Math.round(s.enemy.defense * (E.enemies[enemyId].opening || 0) / 100));
         E.playerTurn(s);
+        G.playerTurn(s, this.equipmentHooks(s));
         s.intentions = this.intents(s); this.log(s, `${tier}·${E.title(s)}·${pressure.name}；生命${hp}，攻击${s.enemy.attack}；战内机制清空，血蓝和丹药继承`);
     }
     static flyingSource(s: RogueLoadout): boolean {
@@ -169,10 +193,14 @@ export class QingmingRules {
     }
     private static finish(s: RogueState, won: boolean): void {
         if (s.phase !== "fighting") return;
+        W.endAction(s, this.weaponHooks(s));
+        W.finish(s, won);
+        G.finish(s, won, this.equipmentHooks(s));
         s.reports.push({ ...this.clone(s.fight), battle: s.battle, tier: s.enemy.tier, style: s.enemy.style,
             enemyId: s.foe.id, rounds: s.round,
             won, startHp: s.fightStart.hp, startMp: s.fightStart.mp, endHp: s.player.hp, endMp: s.player.mp,
-            build: this.build(s), core: s.core });
+            build: this.build(s), core: s.core, ...(s.weapon ? { weapon: this.clone(s.weapon) } : {}),
+            ...(s.armor ? {armor:this.clone(s.armor)} : {}), ...(s.accessory ? {accessory:this.clone(s.accessory)} : {}) });
         s.ap = 0; s.flying = 0; s.wounds = 0; s.player.shield = 0; s.enemy.shield = 0; s.enemy.charged = false;
         s.momentum = 0; s.pendingSword = 0; s.lastActive = null; s.forms = [];
         s.foe = E.fresh(s.foe.id);
@@ -181,13 +209,22 @@ export class QingmingRules {
         if (won && s.phase === "between" && s.battle <= 9) this.offer(s);
         this.log(s, won ? `胜利；生命${s.player.hp}，法力${s.player.mp}` : "倒下，本局终止");
     }
-    private static damage(s: RogueState, n: number, source: string, main = false): void {
+    private static weaponHooks(s: RogueState) {
+        return { damage: (n: number) => this.damage(s, n, `武器·${W.names[s.weapon.roll.passive]}`, false, true),
+            log: (text: string) => this.log(s, text) };
+    }
+    private static equipmentHooks(s: RogueState) {
+        return { damage: (n: number) => this.damage(s, n, "反震", false, true),
+            shield: (n: number) => this.shield(s, n), log: (text: string) => this.log(s, text) };
+    }
+    private static damage(s: RogueState, n: number, source: string, main = false, equipment = false): void {
         if (s.phase !== "fighting") return;
-        n = Math.max(0, Math.round(n * (s.foe.vulnerable ? 1.2 : 1)));
+        n = W.armorDamage(n * (s.foe.vulnerable ? 1.2 : 1) * (main ? W.directMultiplier(s) : 1),
+            s.enemy.defense, !!s.setup.armorMitigation);
         if (main && n > 0 && s.foe.id) {
             s.foe.hits = Math.min(3, s.foe.hits + 1);
-            if (s.foe.formation && s.foe.hits === 3) {
-                s.foe.formation = false; this.count(s, "enemyArrayBreak", 1, "events"); this.log(s, "本体命中3次，剑阵已拆");
+            if (s.foe.formation && s.foe.hits >= (s.setup.singleAction ? 1 : 3)) {
+                s.foe.formation = false; this.count(s, "enemyArrayBreak", 1, "events"); this.log(s, "本体命中达标，剑阵已拆");
             }
         }
         const shieldBefore = s.enemy.shield, blocked = Math.min(s.enemy.shield, n);
@@ -196,6 +233,11 @@ export class QingmingRules {
             s.foe.broken = true; this.count(s, "enemyBreak", 1, "events"); this.log(s, "实际破盾");
         }
         s.enemy.hp -= loss; this.count(s, "damage", loss);
+        if (s.weapon?.action && !equipment) {
+            s.weapon.action.hpDamage += loss;
+            if (shieldBefore > 0 && !s.enemy.shield) s.weapon.action.broke = true;
+        }
+        if (equipment) W.count(s, source === "反震" ? "equipmentDamage" : "weaponDamage", loss);
         this.log(s, `${source} 伤害${loss}${blocked ? ` / 抵盾${blocked}` : ""}`);
         if (!s.enemy.hp) this.finish(s, true);
     }
@@ -216,7 +258,7 @@ export class QingmingRules {
         this.count(s, kind, 1, "events"); this.damage(s, n, kind === "flying" ? "飞剑" : "格挡反击");
     }
     private static flyingAttack(s: RogueState, count: number, ratio = 0.3): void {
-        for (let i = 0; i < count && s.phase === "fighting"; i++) this.extraAttack(s, s.player.attack * ratio, "flying");
+        for (let i = 0; i < count && s.phase === "fighting"; i++) this.extraAttack(s, G.attack(s) * ratio, "flying");
     }
     private static addFlying(s: RogueState): void {
         if (s.phase !== "fighting") return;
@@ -230,7 +272,7 @@ export class QingmingRules {
         if (gain) { this.count(s, "momentum", gain, "events"); this.log(s, `积势 ${s.momentum}/3`); }
     }
     static shield(s: RogueState, amount: number): void {
-        const n = Math.max(0, Math.min(Math.round(amount * (this.risky(s) ? 0.75 : 1)), s.setup.player.defense * 6 - s.player.shield));
+        const n = Math.max(0, Math.min(Math.round(amount * (this.risky(s) ? 0.75 : 1)), G.shieldCap(s) - s.player.shield));
         s.player.shield += n; this.count(s, "shield", n); this.log(s, `护盾+${n}`);
     }
     private static intents(s: RogueState): RogueEnemyIntent[] { return E.intents(s); }
@@ -238,9 +280,11 @@ export class QingmingRules {
         if (!this.has(s, "swordUnity")) this.flyingAttack(s, s.flying);
         if (s.phase !== "fighting") return;
         s.foe.acting = true; s.foe.vulnerable = false;
+        G.enemyStart(s);
         s.enemy.shield = 0;
-        const wasCharged = s.enemy.charged; s.enemy.charged = false;
-        for (let i = 0; i < 3 && s.phase === "fighting"; i++) {
+        const wasCharged = s.enemy.charged;
+        if (!s.setup.singleAction) s.enemy.charged = false;
+        for (let i = 0; i < s.intentions.length && s.phase === "fighting"; i++) {
             const action = s.intentions[i], ratio = 1 - s.suppression[i] / 100;
             s.enemy.mp -= action.mpCost || 0;
             if (s.foe.id && action.kind !== "wait") this.count(s, "enemyActions", 1, "events");
@@ -249,7 +293,7 @@ export class QingmingRules {
                 if (s.foe.id && percent > action.percent) {
                     this.count(s, action.condition === "echo" ? "enemyEcho" : "enemyBonus", 1, "events");
                 }
-                const n = Math.round(s.enemy.attack * percent / 100 * ratio);
+                const n = W.armorDamage(s.enemy.attack * percent / 100 * ratio, G.armor(s), !!s.setup.armorMitigation);
                 const blocked = Math.min(n, s.player.shield), loss = Math.min(s.player.hp, n - blocked);
                 s.player.shield -= blocked; s.player.hp -= loss; this.count(s, "taken", loss);
                 this.log(s, `${i + 1} ${action.label} 承伤${loss} / 格挡${blocked}`);
@@ -259,6 +303,8 @@ export class QingmingRules {
                     s.player.shield -= removed;
                     this.count(s, "enemyShatter", removed, "events"); this.log(s, `震盾额外削盾${removed}，不伤生命`);
                 }
+                G.hit(s, loss, this.equipmentHooks(s));
+                if (s.phase !== "fighting") break;
                 if (blocked > 0) {
                     let counter = this.has(s, "riposte") ? 0.5 : 0;
                     if (s.counterAttacks < 2) {
@@ -268,7 +314,7 @@ export class QingmingRules {
                         }
                     }
                     s.counterAttacks++;
-                    if (counter) this.extraAttack(s, s.player.attack * counter, "counter");
+                    if (counter) this.extraAttack(s, G.attack(s) * counter, "counter");
                 }
             } else if (action.kind === "guard") {
                 s.enemy.shield = Math.min(s.enemy.defense * 6, s.enemy.shield + Math.round(s.enemy.defense * action.percent / 100 * ratio));
@@ -294,27 +340,36 @@ export class QingmingRules {
                 this.count(s, "enemyBlood", loss, "events"); this.log(s, `血炼自损${loss}，受伤+20%`);
             } else if (action.kind === "expose") {
                 s.foe.vulnerable = true; this.count(s, "enemyWindow", 1, "events"); this.log(s, "收势暴露：受伤+20%");
-            } else if (action.kind === "formation") { s.foe.formation = true; this.log(s, "布阵：下一玩家回合3次本体命中可拆阵"); }
+            } else if (action.kind === "formation") { s.foe.formation = true; this.log(s, `布阵：下一玩家回合${s.setup.singleAction ? 1 : 3}次本体命中可拆阵`); }
+            if (s.setup.singleAction && action.kind === "attack") {
+                s.enemy.charged = false;
+                if (action.condition === "formation") s.foe.formation = false;
+            }
             if (s.phase === "fighting" && action.kind !== "wait" && s.wounds) {
                 const before = s.enemy.hp;
-                this.count(s, "woundTick", 1, "events"); this.damage(s, s.wounds * s.player.attack * 0.05, "剑伤发作");
+                this.count(s, "woundTick", 1, "events"); this.damage(s, s.wounds * G.attack(s) * 0.05, "剑伤发作");
                 if (s.phase === "fighting" && s.enemy.hp < before && this.has(s, "woundGuard")) {
-                    this.count(s, "woundGuard", 1, "events"); this.shield(s, s.player.defense * 0.2);
+                    this.count(s, "woundGuard", 1, "events"); this.shield(s, G.shieldPower(s) * 0.2);
                 }
             }
         }
         if (s.phase !== "fighting") return;
-        if (wasCharged && s.round % 2 === 0) s.enemy.charged = false;
-        if (s.foe.id && s.foe.formation && (s.foe.id === "arrayMaster" ? s.round % 2 === 0 : s.round % 3 === 2))
+        G.enemyEnd(s, this.equipmentHooks(s));
+        if (!s.setup.singleAction && wasCharged && s.round % 2 === 0) s.enemy.charged = false;
+        if (!s.setup.singleAction && s.foe.id && s.foe.formation && (s.foe.id === "arrayMaster" ? s.round % 2 === 0 : s.round % 3 === 2))
             s.foe.formation = false;
-        s.wounds = Math.max(0, s.wounds - 1);
-        s.player.shield = this.has(s, "retention") ? Math.min(Math.floor(s.player.shield / 2), Math.round(s.player.defense * 1.5)) : 0;
+        if (!s.setup.singleAction || s.round % 3 === 0) s.wounds = Math.max(0, s.wounds - 1);
+        s.player.shield = s.setup.singleAction ?
+            Math.min(Math.floor(s.player.shield * (this.has(s, "retention") ? 1 : .5)),
+                Math.round(G.shieldPower(s) * (this.has(s, "retention") ? 3 : 1.5))) :
+            this.has(s, "retention") ? Math.min(Math.floor(s.player.shield / 2), Math.round(G.shieldPower(s) * 1.5)) : 0;
         if (s.pendingSword) {
             const damage = s.pendingSword; s.pendingSword = 0;
             this.count(s, "delayed", 1, "events"); this.damage(s, damage, "悬剑落下");
             if (s.phase !== "fighting") return;
         }
         s.round++; this.resetTurn(s);
+        G.playerTurn(s, this.equipmentHooks(s));
         if (E.playerTurn(s)) { this.count(s, "enemyPhase", 1, "events"); this.log(s, "下一轮进入第二阶段；已执行意图不变"); }
         s.intentions = this.intents(s);
     }
@@ -323,12 +378,13 @@ export class QingmingRules {
         if (missing && (!this.has(s, "bloodMana") || s.player.hp <= missing * 2)) throw new Error("法力不足或血祭会致死");
         s.player.mp -= paid; s.player.hp -= missing * 2;
         this.count(s, "mpSpent", paid); this.count(s, "bloodSpent", missing * 2);
+        G.paid(s, paid, this.equipmentHooks(s));
     }
     private static attack(s: RogueState, move: RogueMove, ratio: number, flat = 0): void {
         this.addWound(s);
         const read = s.foe.read === move ? 0.7 : 1;
         if (read < 1) this.count(s, "enemyRead", 1, "events");
-        this.damage(s, (s.player.attack * ratio + flat) * (move !== "basic" && this.risky(s) ? 1.35 : 1) *
+        this.damage(s, (G.attack(s) * ratio + flat) * (move !== "basic" && this.risky(s) ? 1.35 : 1) *
             (move !== "basic" && this.has(s, "stillness") ? 0.75 : 1) * read, C.moves[move], true);
     }
     private static apply(s: RogueState, a: RogueAction): void {
@@ -356,23 +412,32 @@ export class QingmingRules {
             const key = move === "heal" ? "hp" : "mp", max = move === "heal" ? "maxHp" : "maxMp";
             if (!s.potions[move] || s.player[key] >= s.player[max]) throw new Error("无库存或已满");
             s.potions[move]--; s.potionUsed = true;
-            const n = Math.min(s.player[max] - s.player[key], Math.max(1, Math.round(s.player[max] * 0.3)));
+            const n = Math.min(s.player[max] - s.player[key], Math.max(1, Math.round(s.player[max] * 0.3 * G.potionMultiplier(s))));
             s.player[key] += n; s.totals[move === "heal" ? "healUsed" : "manaUsed"]++;
             if (s.phase === "fighting") s.fight[move === "heal" ? "healUsed" : "manaUsed"]++;
-            this.log(s, `${C.moves[move]} +${n}`); return;
+            this.log(s, `${C.moves[move]} +${n}`);
+            if (s.setup.singleAction && s.phase === "fighting") {
+                s.ap--; this.count(s, "actions"); this.count(s, move, 1, "skills");
+                s.lastActive = null; E.idle(s); this.enemyTurn(s);
+            }
+            return;
         }
         if (s.phase !== "fighting" || s.ap < 1) throw new Error("当前不能出招");
         if (move === "end") {
+            G.earlyEnd(s, this.equipmentHooks(s));
             s.lostAP = s.ap;
             if (this.has(s, "meditation")) {
                 s.player.mp = Math.min(s.player.maxMp, s.player.mp + s.ap * 2);
                 this.addMomentum(s, s.ap); this.count(s, "meditation", 1, "events");
             }
-            s.ap = 0; this.count(s, "earlyEnd", 1, "events"); this.enemyTurn(s); return;
+            s.ap = 0;
+            if (s.setup.singleAction) { this.count(s, "actions"); this.count(s, "end", 1, "skills"); s.lastActive = null; E.idle(s); }
+            this.count(s, "earlyEnd", 1, "events"); this.enemyTurn(s); return;
         }
         if (move === "guide" && !this.has(s, "rupture") && a.enemyAction !== undefined &&
-            (!Number.isInteger(a.enemyAction) || a.enemyAction < 1 || a.enemyAction > 3)) throw new Error("敌行动须为1至3");
+            (!Number.isInteger(a.enemyAction) || a.enemyAction < 1 || a.enemyAction > s.intentions.length)) throw new Error("敌行动序号无效");
         if (move === "fall" && s.fallUsed) throw new Error("落青冥每回合只能一次");
+        W.beginAction(s, move, this.weaponHooks(s));
         this.pay(s, move); s.ap--; this.count(s, "actions"); this.count(s, move, 1, "skills");
         const active = ["edge", "wind", "guide", "fall"].includes(move), first = active && !s.firstActive;
         const tempo = active && this.has(s, "tempo") && s.lastActive && s.lastActive !== move ? 0.35 : 0;
@@ -380,16 +445,17 @@ export class QingmingRules {
         s.lastActive = active ? move : null;
         if (active) s.firstActive = true;
         if (active) E.cast(s, move);
+        else if (s.setup.singleAction) E.idle(s);
         if (move === "basic") {
             const momentum = s.momentum; s.momentum = 0;
             this.attack(s, move, 1 + momentum * 0.3);
             if (s.phase === "fighting") {
                 const gain = Math.min(s.player.maxMp - s.player.mp,
-                    ((s.foe.id ? C.guzongTempo.basicMana : 0) + (this.has(s, "breathing") ? 4 : 0)));
+                    ((s.foe.id ? s.setup.combatTrial?.basicMana ?? C.guzongTempo.basicMana : 0) + (this.has(s, "breathing") ? 4 : 0)));
                 s.player.mp += gain;
                 if (gain && s.foe.id) { this.count(s, "basicMana", gain, "events"); this.log(s, `普攻回灵${gain}`); }
             }
-        } else if (move === "guard") this.shield(s, s.player.defense * 1.5);
+        } else if (move === "guard") this.shield(s, G.shieldPower(s) * (s.setup.combatTrial?.guard ?? 1.5));
         else if (move === "edge") {
             let ratio = this.has(s, "flyingEdge") ? 0.7 : 1.1;
             if (this.has(s, "heavyEdge")) {
@@ -397,20 +463,22 @@ export class QingmingRules {
                 if (s.momentum) this.count(s, "heavy", 1, "events");
                 s.momentum = 0;
             }
-            this.attack(s, move, ratio + tempo);
+            this.attack(s, move, ratio * (s.setup.combatTrial ? s.setup.combatTrial.edge / 1.1 : 1) + tempo);
         }
         else if (move === "wind") {
             s.wave ||= this.has(s, "breakingWave");
             const ratio = this.has(s, "shieldWind") ? 1.75 : this.has(s, "breakingWave") ? 1.875 : 2.5;
-            this.shield(s, s.player.defense * (ratio + tempo));
+            this.shield(s, G.shieldPower(s) * (ratio * (s.setup.combatTrial ? s.setup.combatTrial.wind / 2.5 : 1) + tempo));
         } else if (move === "guide") {
-            this.attack(s, move, (this.has(s, "endlessWound") ? 0.375 : this.has(s, "pinGuide") ? 0.5 : 0.75) + tempo);
+            const body = this.has(s, "endlessWound") ? .375 : this.has(s, "pinGuide") ? .5 : .75;
+            this.attack(s, move, body * (s.setup.combatTrial ? s.setup.combatTrial.guide / .75 : 1) + tempo,
+                s.setup.combatTrial ? s.player.maxMp * s.setup.combatTrial.guideMp * body / .75 : 0);
             if (s.phase === "fighting") {
                 if (this.has(s, "rupture")) {
                     const wounds = s.wounds;
                     s.wounds = this.has(s, "endlessWound") ? wounds - Math.ceil(wounds / 2) : 0;
                     if (s.wounds) this.count(s, "endless", 1, "events");
-                    this.count(s, "rupture", 1, "events"); this.damage(s, wounds * s.player.attack * 0.25, "割脉引爆");
+                    this.count(s, "rupture", 1, "events"); this.damage(s, wounds * G.attack(s) * 0.25, "割脉引爆");
                 } else {
                     const at = (a.enemyAction ?? 1) - 1;
                     s.suppression[at] = Math.max(s.suppression[at], this.has(s, "pinGuide") ? 60 : 35);
@@ -427,9 +495,9 @@ export class QingmingRules {
                 converted = s.player.shield * 1.25; s.player.shield = 0;
                 this.count(s, "shatter", 1, "events");
             }
-            this.attack(s, move, ratio + tempo, converted);
+            this.attack(s, move, ratio * (s.setup.combatTrial ? s.setup.combatTrial.fall / 1.7 : 1) + tempo, converted);
             if (s.phase === "fighting" && this.has(s, "delayedFall"))
-                s.pendingSword = Math.round(s.player.attack * 2.2 * (this.has(s, "stillness") ? 1.5 : 1));
+                s.pendingSword = Math.round(G.attack(s) * 2.2 * (this.has(s, "stillness") ? 1.5 : 1));
             this.flyingAttack(s, flying, 0.6);
         }
         if (s.phase !== "fighting") return;
@@ -444,10 +512,12 @@ export class QingmingRules {
             s.forms.push(move);
             if (s.forms.length === 3) {
                 s.forms = []; this.count(s, "cycle", 1, "events");
-                this.damage(s, s.player.attack * 0.9, "三式归一");
-                if (s.phase === "fighting") this.shield(s, s.player.defense * 0.75);
+                this.damage(s, G.attack(s) * 0.9, "三式归一");
+                if (s.phase === "fighting") this.shield(s, G.shieldPower(s) * 0.75);
             }
         }
+        G.action(s, move, this.equipmentHooks(s));
+        W.endAction(s, this.weaponHooks(s));
         if (s.phase === "fighting" && !s.ap) this.enemyTurn(s);
     }
     static resolve(source: RogueState, action: RogueAction): RogueResult {
@@ -459,8 +529,8 @@ export class QingmingRules {
         const int = (n: number, lo: number, hi: number) => {
             if (!Number.isSafeInteger(n) || n < lo || n > hi) throw new Error("状态边界异常");
         };
-        int(s.ap, 0, 3); int(s.flying, 0, this.has(s, "swordUnity") ? 5 : 3); int(s.wounds, 0, 6);
-        int(s.momentum, 0, 3); int(s.pendingSword, 0, s.setup.player.attack * 4);
+        int(s.ap, 0, this.actionLimit(s)); int(s.flying, 0, this.has(s, "swordUnity") ? 5 : 3); int(s.wounds, 0, 6);
+        int(s.momentum, 0, 3); int(s.pendingSword, 0, (G.enabled(s) || s.setup.combatTrial ? s.player.attack + (s.accessory?.roll.passive === "dawn" ? s.accessory.roll.benefit : 0) : s.setup.player.attack) * 4);
         int(s.siphonUses, 0, 2);
         int(s.foe.hits, 0, 3); int(s.foe.heals, 0, 2); int(s.foe.heat, 0, 2);
         if (s.foe.casts.length > 3 || s.foe.casts.some(k => !["edge", "wind", "guide", "fall"].includes(k)))
@@ -472,7 +542,19 @@ export class QingmingRules {
         if (this.build(s).some(k => !this.supported(s, k))) throw new Error("构筑前置缺失");
         for (const actor of [s.player, s.enemy]) {
             int(actor.hp, 0, actor.maxHp); int(actor.mp, 0, actor.maxMp);
-            int(actor.shield, 0, (actor===s.player?s.setup.player.defense:actor.defense) * 6);
+            int(actor.shield, 0, actor === s.player ? G.shieldCap(s) : actor.defense * 6);
+        }
+        if (s.weapon) {
+            int(s.weapon.durability, 0, s.weapon.roll.maxDurability);
+            int(s.weapon.kills, 0, s.setup.battles);
+            int(s.weapon.attacks, 0, Number.MAX_SAFE_INTEGER);
+            int(s.weapon.charge, 0, Number.MAX_SAFE_INTEGER);
+            if (s.weapon.action !== null) throw new Error("武器行动未结算");
+        }
+        for (const e of [s.armor, s.accessory]) if (e) {
+            int(e.durability, 0, e.roll.maxDurability); int(e.calmUses, 0, 3);
+            int(e.pendingHeal, 0, e.roll.benefit); int(e.phaseTaken, 0, Number.MAX_SAFE_INTEGER);
+            if (e.forms.length > 3 || new Set(e.forms).size !== e.forms.length) throw new Error("装备招式计数异常");
         }
         int(s.potions.heal, 0, s.setup.healPotions); int(s.potions.mana, 0, s.setup.manaPotions);
         if (new Set(s.acquired).size !== s.acquired.length || new Set(s.offers).size !== s.offers.length) throw new Error("重复奖励");
@@ -480,7 +562,7 @@ export class QingmingRules {
         if (Object.keys(s.offerRoles).some(k => !s.offers.includes(k as RogueItem)) ||
             s.phase === "reward" && s.offers.some(k => !Object.prototype.hasOwnProperty.call(C.offerRoles, s.offerRoles[k])))
             throw new Error("奖励标记异常");
-        if (s.phase === "fighting" && (s.player.hp < 1 || s.enemy.hp < 1 || s.intentions.length !== 3 || s.ap < 1))
+        if (s.phase === "fighting" && (s.player.hp < 1 || s.enemy.hp < 1 || s.intentions.length !== this.actionLimit(s) || s.ap < 1))
             throw new Error("战斗终止异常");
     }
 }
