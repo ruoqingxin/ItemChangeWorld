@@ -29,6 +29,12 @@
         },
         {
           "_$ref": "item_detail_close"
+        },
+        {
+          "_$ref": "combat_item_action"
+        },
+        {
+          "_$ref": "combat_item_action_text"
         }
       ]
     }
@@ -61,7 +67,7 @@
           "_$type": "GWidget",
           "name": "box_item_detail",
           "width": 360,
-          "height": 240,
+          "height": 420,
           "mouseEnabled": true,
           "mouseThrough": false,
           "_$child": [
@@ -72,7 +78,7 @@
               "x": 5,
               "y": 5,
               "width": 350,
-              "height": 230,
+              "height": 410,
               "src": "ui/atlas/module/warehouse/graphite/detail-fill.png",
               "autoSize": false,
               "mouseEnabled": false
@@ -82,7 +88,7 @@
               "_$type": "GImage",
               "name": "img_detail_frame",
               "width": 360,
-              "height": 240,
+              "height": 420,
               "src": "ui/atlas/module/warehouse/graphite/detail-frame.png",
               "autoSize": false,
               "mouseEnabled": false
@@ -109,13 +115,13 @@
               "x": 20,
               "y": 64,
               "width": 292,
-              "height": 156,
+              "height": 284,
               "font": "Microsoft YaHei",
-              "fontSize": 16,
+              "fontSize": 15,
               "color": "#bbc3bd",
               "wordWrap": true,
               "overflow": "shrink",
-              "leading": 8,
+              "leading": 5,
               "mouseEnabled": false
             },
             {
@@ -141,6 +147,43 @@
                   "autoSize": false,
                   "color": "#c4c7bf",
                   "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "combat_item_action",
+              "_$type": "GWidget",
+              "name": "btn_item_action",
+              "x": 20,
+              "y": 358,
+              "width": 292,
+              "height": 40,
+              "mouseEnabled": true,
+              "_$child": [
+                {
+                  "_$id": "combat_item_action_skin",
+                  "_$type": "GImage",
+                  "name": "img_action_skin",
+                  "width": 292,
+                  "height": 40,
+                  "mouseEnabled": false,
+                  "src": "ui/atlas/module/warehouse/graphite/button-normal.png",
+                  "autoSize": false
+                },
+                {
+                  "_$id": "combat_item_action_text",
+                  "_$type": "GTextField",
+                  "name": "txt_item_action",
+                  "x": 8,
+                  "y": 4,
+                  "width": 276,
+                  "height": 32,
+                  "fontSize": 18,
+                  "color": "#e8e6df",
+                  "align": "center",
+                  "valign": "middle",
+                  "mouseEnabled": false,
+                  "text": "使用"
                 }
               ]
             }

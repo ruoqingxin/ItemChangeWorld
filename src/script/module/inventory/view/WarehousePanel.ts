@@ -73,6 +73,7 @@ export class WarehousePanel {
             release:()=>this.releaseDrag(),cancel:()=>this.cancelDrag(),rotate:()=>this.rotateDrag(),
         });
         for(const name of ["btn_take_all","btn_store_all","btn_sell","btn_sort","btn_safe_left","btn_safe_right",
+            "btn_repair_all",
             ...Array.from({length:7},(_,i)=>"expLootPage"+(i+1))]) {
             const node=this.nodes[name];this.buttons[name]=node;
             node.on(Laya.Event.CLICK,this,()=>this.onClick(name));
@@ -82,11 +83,11 @@ export class WarehousePanel {
                 this.pageLocks.set(node,node.getChildAt(2) as Laya.GImage);
             }
         }
-        for(const name of ["invWeapon","invContainer"]){
+        for(const name of ["invWeapon","invArmor","invAccessory","invContainer"]){
             const node=this.nodes[name],ctrl=new InventoryItemCtrl();
             ctrl.setComponents(node,0);this.equipment.set(name,ctrl);this.bindItem(node);
             this.equipmentHints.set(name,node.parent.getChildByName(
-                name==="invWeapon"?"img_weapon_hint":"img_container_hint") as Laya.GWidget);
+                name==="invWeapon"?"img_weapon_hint":name==="invArmor"?"img_armor_hint":name==="invAccessory"?"img_accessory_hint":"img_container_hint") as Laya.GWidget);
         }
         this.bagScroller.direction=Laya.ScrollDirection.Vertical;
         this.bagScroller.barDisplay=Laya.ScrollBarDisplay.Hidden;
@@ -96,7 +97,7 @@ export class WarehousePanel {
         bag.scroller=this.bagScroller;bag.layout.foldInvisibles=true;
         this.bagScrollBar=this.nodes.box_bag_scrollbar as Laya.GScrollBar;
         this.bagScrollBar.setOwner(this.bagScroller,true);
-        for(const name of ["btn_close","btn_sell","btn_sort","btn_safe_left","btn_safe_right","btn_take_all","btn_store_all"]){
+        for(const name of ["btn_close","btn_sell","btn_sort","btn_repair_all","btn_safe_left","btn_safe_right","btn_take_all","btn_store_all"]){
             const node=this.nodes[name];
             this.bindControlSkin(node,node.getChildAt(0) as Laya.GImage,
                 name==="btn_take_all"||name==="btn_store_all"||name.startsWith("btn_safe_")?"square":"button");
@@ -174,6 +175,7 @@ export class WarehousePanel {
         if(this.held||this.drag.suppressClick())return;
         this.notice="";
         try {
+            const selected=this.selected;
             this.closeDetail();
             if(name==="btn_take_all"||name==="btn_store_all")this.transferAll(name==="btn_take_all");
             else if(name==="btn_sort")this.sortStorage();
@@ -181,7 +183,12 @@ export class WarehousePanel {
                 this.safeIndex=Math.max(0,Math.min(this.safeSpecs.length-1,this.safeIndex+(name==="btn_safe_right"?1:-1)));
                 this.selected="";
             }
-            else if(name==="btn_sell")this.notice="出售暂未开放";
+            else if(name==="btn_sell"){
+                if(!selected)throw new Error("请先选中仓库物品");
+                const item=Rules.item(this.state!,selected);
+                this.inventorySession.inventoryCommand({type:"sell",uid:item.uid,from:item.location},this.inventorySession.token);
+            }
+            else if(name==="btn_repair_all")this.inventorySession.inventoryCommand({type:"repairAll"},this.inventorySession.token);
             else if(name.startsWith("expLootPage")){
                 const page=Number(name.slice(11))-1;
                 if(page<0||page>=this.availablePages)return;
@@ -273,12 +280,12 @@ export class WarehousePanel {
         if(this.held)this.renderHeld();
     }
     private renderEquipment(): void {
-        for(const [space,name] of [["weapon","invWeapon"],["container","invContainer"]] as const){
+        for(const [space,name] of [["weapon","invWeapon"],["armor","invArmor"],["accessory","invAccessory"],["container","invContainer"]] as const){
             const item=this.state?.items.find(i=>i.location.space===space),ctrl=this.equipment.get(name)!;
             this.equipmentHints.get(name)!.visible=!item;
             if(!item){ctrl.clear();continue;}
             const t=Rules.template(this.config,item);
-            ctrl.update({template:t,width:110,height:space==="weapon"?166:110,rotated:false,selected:this.selected===item.uid},0);
+            ctrl.update({template:t,width:110,height:space==="weapon"||space==="armor"?166:110,rotated:false,selected:this.selected===item.uid},0);
             this.itemRotations.set(item.uid,false);
         }
     }
@@ -341,7 +348,11 @@ export class WarehousePanel {
     }
     private updateNotice(): void {
         this.label("txt_inventory_feedback",this.inventorySession.error||this.notice||
-            (this.overflow.length?`${this.overflow.length} 件物品需要先取出，再完成七列整理`:""));
+            (this.overflow.length?`${this.overflow.length} 件物品需要先取出，再完成七列整理`:`愿力 ${this.state?.wish??0}`));
+        const button=this.nodes.btn_repair_all,price=this.state?Rules.repairCost(this.state):0;
+        (this.nodes.txt_repair_all as Laya.GTextField).text=`修理 · ${price} 愿力`;
+        const state=this.state,forge=(state as InventoryState & {map?:{nodes:Array<{id:number;icon?:string}>}})?.map?.nodes.some(n=>n.id===state.node&&n.icon==="forge");
+        this.enabled(button,!!state&&state.flow?.phase!=="battle"&&(state.phase==="preparation"||!!forge)&&price>0&&!this.held);
     }
     private refreshScroll(): void {
         const content=this.bagScroller.contentHeight,view=this.bagScroller.viewHeight;
@@ -370,17 +381,41 @@ export class WarehousePanel {
                 this.closeDetail();this.selected=item.uid;this.notice="";this.refresh();
                 this.detailView=UIManager.ins().openForm(ItemDetailView,{
                     template:Rules.template(this.config,item),durability:item.durability,
+                    equipment:item.equipment,
                     rotated:!!this.itemRotations.get(item.uid),anchor:node,
-                    closed:()=>{this.selected="";this.detailView=null;if(this.opened)this.refresh();},
+                    action:this.itemAction(item),
+                    perform:()=>this.performItemAction(item),
+                    closed:()=>{this.detailView=null;if(this.opened)this.refresh();},
                 });
             }
         });
     }
     private itemForNode(name: string): InventoryItem | undefined {
-        if(name==="invWeapon"||name==="invContainer")return this.state?.items.find(i=>
-            i.location.space===(name==="invWeapon"?"weapon":"container"));
+        const space={invWeapon:"weapon",invArmor:"armor",invAccessory:"accessory",invContainer:"container"}[name];
+        if(space)return this.state?.items.find(i=>i.location.space===space);
         return /^invList\d+$/.test(name)?this.visibleItems[Number(name.slice(7))]:
             /^invItem\d+$/.test(name)?this.gridItems[Number(name.slice(7))]:undefined;
+    }
+    private itemAction(item:InventoryItem):string {
+        if(!this.state||this.state.phase==="ended"||this.state.flow?.phase==="battle")return "";
+        const kind=Rules.template(this.config,item).kind;
+        if(Rules.isEquipment(kind)&&!Rules.isEquipment(item.location.space))return "装备";
+        if(kind==="container"&&item.location.space!=="container")return "装备";
+        if(["hp","mp","mixed","stamina"].includes(kind)&&this.state.phase==="active"&&["battle","bag","safe"].includes(item.location.space))return "使用";
+        return "";
+    }
+    private performItemAction(item:InventoryItem):void {
+        try{
+            const t=Rules.template(this.config,item);
+            const action:InventoryAction=Rules.isEquipment(t.kind)?Rules.equipmentPlan(this.config,this.workingState(),item.uid):
+                t.kind==="container"?Rules.containerPlan(this.config,this.workingState(),item.uid):{type:"use",uid:item.uid,from:item.location};
+            const touchesBag=action.type==="equipContainer"||action.type==="equipEquipment"&&
+                (action.from?.space==="bag"||action.oldTo?.space==="bag");
+            this.inventorySession.inventoryCommand(!this.state.bagColumns&&!this.overflow.length&&touchesBag?
+                {type:"reflowBag",action}:action,this.inventorySession.token);
+            this.notice="";
+        }catch(e){this.notice=(e as Error).message;}
+        this.refresh();
     }
     private workingState(): InventoryState { return this.overflow.length?this.state!:this.displayState!; }
     private beginDrag(key: string,point: Laya.Point): boolean {
@@ -421,7 +456,7 @@ export class WarehousePanel {
                 x:Math.round((point.x-g.x-h.grabX*w*56)/56),
                 y:Math.round((point.y-g.y-h.grabY*height*56)/56),rotated:h.rotated};
         }
-        for(const [space,name] of [["weapon","invWeapon"],["container","invContainer"]] as const){
+        for(const [space,name] of [["weapon","invWeapon"],["armor","invArmor"],["accessory","invAccessory"],["container","invContainer"]] as const){
             const node=this.nodes[name],p=this.position(node);
             if(point.x>=p.x&&point.x<p.x+node.width&&point.y>=p.y&&point.y<p.y+node.height)return {space};
         }
@@ -431,10 +466,16 @@ export class WarehousePanel {
         const state=this.workingState(),item=Rules.item(state,h.uid),t=Rules.template(this.config,item);
         const {space,x,y,rotated,page,node}=to;
         let action: InventoryAction;
-        if(space==="weapon"){
-            if(t.kind!=="weapon")throw new Error("武器位只能放武器");
-            if(item.location.space==="weapon")return null;
-            action=Rules.weaponPlan(this.config,state,item.uid);
+        if(Rules.isEquipment(space)){
+            if(t.kind==="repair"){
+                const target=state.items.find(i=>i.location.space===space);
+                if(!target)throw new Error("该部位没有可修理装备");
+                action={type:"repair",uid:item.uid,from:item.location,targetUid:target.uid};
+            }else{
+                if(t.kind!==space)throw new Error("装备部位不匹配");
+                if(item.location.space===space)return null;
+                action=Rules.equipmentPlan(this.config,state,item.uid);
+            }
         } else if(space==="container"){
             if(t.kind!=="container")throw new Error("背包位只能放纳虚器");
             if(item.location.space==="container")return null;
@@ -446,14 +487,14 @@ export class WarehousePanel {
             const warehouseTo=space==="warehouse"?{page:page!,x:x!,y:y!,rotated:!!rotated}:undefined;
             if(item.location.space==="warehouse"&&space==="warehouse")
                 action={type:"arrangeWarehouse",uid:item.uid,from:item.location,to:warehouseTo!};
-            else if(item.location.space==="weapon")action={type:"equipWeapon",uid:null,oldTo:to,...(warehouseTo?{warehouseTo}:{})};
+            else if(Rules.isEquipment(item.location.space))action={type:"equipEquipment",slot:item.location.space,uid:null,oldTo:to,...(warehouseTo?{warehouseTo}:{})};
             else if(item.location.space==="container"){
                 if(space!==(state.phase==="active"?"source":"warehouse"))throw new Error("背包本体只能卸回当前交互仓库");
                 action={...Rules.containerPlan(this.config,state,null),...(warehouseTo?{warehouseTo}:{})};
             } else action={type:"move",move:{uid:item.uid,from:item.location,to},...(warehouseTo?{warehouseTo}:{})};
         }
         const touchesBag=action.type==="equipContainer"||action.type==="move"&&
-            (action.move.from.space==="bag"||action.move.to.space==="bag")||action.type==="equipWeapon"&&
+            (action.move.from.space==="bag"||action.move.to.space==="bag")||action.type==="equipEquipment"&&
             (action.from?.space==="bag"||action.oldTo?.space==="bag");
         return !this.state!.bagColumns&&!this.overflow.length&&touchesBag?{type:"reflowBag",action}:action;
     }

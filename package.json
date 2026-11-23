@@ -3,7 +3,7 @@
     "test": "powershell -ExecutionPolicy Bypass -File tools/test-skill-battle.ps1",
     "check": "tsc --noEmit --pretty false",
     "preview": "node tools/preview-skill-battle.cjs",
-    "test:browser": "node tools/test-qingming-formal-browser.cjs && node tools/test-expedition-browser.cjs"
+    "test:browser": "node tools/test-combat-release-browser.cjs"
   },
   "devDependencies": {
     "playwright": "^1.65.0",

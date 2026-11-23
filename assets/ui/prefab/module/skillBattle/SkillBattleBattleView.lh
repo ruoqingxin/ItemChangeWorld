@@ -267,6 +267,12 @@
         },
         {
           "_$ref": "ea41bf8929c64cd889966b258d391e8a"
+        },
+        {
+          "_$ref": "combat_qIntent4"
+        },
+        {
+          "_$ref": "combat_txt_qIntent4"
         }
       ],
       "mapperType": 4
@@ -724,6 +730,32 @@
                   "_$id": "dda271f8f909425aa23a1163e4ce0f4d",
                   "_$type": "GTextField",
                   "name": "txt_qIntent3",
+                  "text": "",
+                  "width": 150,
+                  "height": 40,
+                  "font": "Microsoft YaHei",
+                  "fontSize": 18,
+                  "color": "#ecefe7",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "combat_qIntent4",
+              "_$type": "GWidget",
+              "name": "qIntent4",
+              "width": 150,
+              "height": 54,
+              "mouseEnabled": true,
+              "_$child": [
+                {
+                  "_$id": "combat_txt_qIntent4",
+                  "_$type": "GTextField",
+                  "name": "txt_qIntent4",
                   "text": "",
                   "width": 150,
                   "height": 40,

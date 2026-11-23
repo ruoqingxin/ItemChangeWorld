@@ -1,12 +1,17 @@
 import { UIBaseView } from "../../../games/ui/UIBaseView";
 import { UILayer } from "../../../games/ui/UILayer";
 import type { InventoryTemplate } from "../types/InventoryTypes";
+import type { EquipmentInstance } from "../../skillBattle/types/CombatTypes";
+import { STAT_NAMES, traitDescription } from "../../skillBattle/utils/CombatConfig";
 
 export interface IItemDetailRequest {
     template: InventoryTemplate;
     durability: number | null;
     rotated: boolean;
     anchor: Laya.GWidget;
+    equipment?: EquipmentInstance;
+    action?: string;
+    perform?(): void;
     closed?(): void;
 }
 
@@ -16,12 +21,19 @@ export class ItemDetailView extends UIBaseView {
     private panel: Laya.GWidget;
     private title: Laya.GTextField;
     private detail: Laya.GTextField;
+    private action:Laya.GWidget;
+    private actionText:Laya.GTextField;
     private request: IItemDetailRequest | null = null;
 
     protected onConstruct(): void {
         this.panel=this.getElement("box_item_detail");
         this.title=this.getElement("txt_item_name");
         this.detail=this.getElement("txt_item_detail");
+        this.action=this.getElement("btn_item_action");
+        this.actionText=this.getElement("txt_item_action");
+        this.addClickListener(this.action,()=>{
+            const perform=this.request?.perform;this.close();perform?.();
+        });
         this.addClickListener(this.getElement("btn_close"),this.close);
     }
 
@@ -30,11 +42,13 @@ export class ItemDetailView extends UIBaseView {
         const t=request.template,w=request.rotated?t.height:t.width,h=request.rotated?t.width:t.height;
         const quality=["","普通","优秀","精良","稀有","史诗","传说"][t.quality||1];
         this.title.text=t.name;
+        const e=request.equipment;
         this.detail.text=`${quality} · ${w}×${h}\n重量 ${t.weight}${
-            request.durability!==null?`\n耐久 ${request.durability}/${t.weaponDurability}\n攻击 +${t.weaponAttack} · 防御 +${t.weaponDefense}`:""}${
+            e?`\n耐久 ${request.durability}/${e.maxDurability}\n主属性 ${STAT_NAMES[e.main]} +${e.mainValue}\n副属性 ${STAT_NAMES[e.sub]} +${e.subValue}\n${traitDescription(e)}${e.kills?`\n探索击杀 ${e.kills}`:""}${request.durability===0?"\n零耐久：主副属性减半":""}`:""}${
             t.kind==="container"?`\n容量 ${t.bagWidth*t.bagHeight} 格 · 承重 +${t.weightLimit}`:""}${
             t.kind==="repair"?`\n修理 ${t.repairAmount===-1?"全部耐久":t.repairAmount+" 耐久"}`:""}${
             t.kind==="stamina"?`\n恢复体力 ${t.staminaRestore}`:""}\n${t.safe?"可放归真匣":"禁止归真匣"}`;
+        this.action.visible=!!request.action;this.actionText.text=request.action||"";
         this.placeNearItem();
         Laya.stage.on(Laya.Event.MOUSE_DOWN,this,this.onPointerDown);
         Laya.stage.on(Laya.Event.KEY_DOWN,this,this.onKeyDown);

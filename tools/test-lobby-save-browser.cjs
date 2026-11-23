@@ -5,7 +5,7 @@ const fs = require("node:fs/promises");
 const path = require("node:path");
 const { confirmStartup } = require("./lobby-save-test-utils.cjs");
 const url = process.env.SKILL_BATTLE_URL || "http://127.0.0.1:18095";
-const out = path.resolve(__dirname, "../output/design/lobby-save");
+const out = path.resolve(__dirname, "../tmp/combat-release/lobby-save");
 const key = "nowchange.expedition.v1";
 
 async function ready(page) {

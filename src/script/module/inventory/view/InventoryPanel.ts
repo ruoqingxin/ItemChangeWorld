@@ -11,6 +11,7 @@ import { BuildPanel } from "../../build/view/BuildPanel";
 import { InventoryDragController } from "../ctrl/InventoryDragController";
 import { visitRegion } from "../../gameplay/utils/GameplayLayout";
 import type { SkillBattlePage } from "../../gameplay/utils/GameplayLayout";
+import { STAT_NAMES, traitDescription } from "../../skillBattle/utils/CombatConfig";
 
 interface InventorySelection {
     uid: string; rotated: boolean; draft: InventoryCommand | null; token: BuildToken | null;
@@ -174,6 +175,9 @@ export class InventoryPanel extends BuildPanel {
     private inventoryCommand(key: string): void {
         const session = this.inventorySession, state = session.inventory;
         if (key === "invPrimary") { this.startRun(); return; }
+        if (key === "invUse" && state.phase==="preparation") {
+            session.inventoryCommand({type:"repairAll"});return;
+        }
         if (key === "invAbandon") {
             if (session.error) { this.resetConfirm = true; return; }
             this.stage({ type: "abandon" }); return;
@@ -217,7 +221,7 @@ export class InventoryPanel extends BuildPanel {
             const i = Rules.item(state,this.uid), t = Rules.template(session.archive!.config,i);
             if (t.kind !== space) throw new Error(space === "weapon" ? "请选择一件武器" : "请选择一个纳虚器本体");
             if (space === "weapon") {
-                session.inventoryCommand(Rules.weaponPlan(session.archive!.config,state,i.uid));
+                session.inventoryCommand(Rules.equipmentPlan(session.archive!.config,state,i.uid));
                 this.clearSelection();
             } else this.stageContainer(i);
             return;
@@ -284,7 +288,7 @@ export class InventoryPanel extends BuildPanel {
         if (!this.uid) throw new Error("尚未选中物品");
         const state = this.inventorySession.inventory!, item = Rules.item(state,this.uid);
         if (item.location.space === "weapon") {
-            this.inventorySession.inventoryCommand({ type: "equipWeapon", uid: null, oldTo: to });
+            this.inventorySession.inventoryCommand({ type: "equipEquipment", slot:"weapon", uid: null, oldTo: to });
             this.clearSelection(); return;
         }
         if (item.location.space === "container") {
@@ -430,7 +434,7 @@ export class InventoryPanel extends BuildPanel {
             }
             this.label(key+"Name",`${item ? Rules.template(save.config,item).name :
                 space === "weapon" ? "未装备武器" : "未装备纳虚器"}\n${cols}×${rows}${item && space === "weapon" ?
-                ` · 耐久 ${item.durability}/${save.config.build.setup.weapon!.maxDurability}` : ""}`,17);
+                ` · 耐久 ${item.durability}/${item.equipment.maxDurability}` : ""}`,17);
         }
         let count = 0;
         for (const space of ["battle","safe","bag"] as const) {
@@ -519,7 +523,8 @@ export class InventoryPanel extends BuildPanel {
         this.control("invNext",">",this.inventoryPage + 1 < pages);
         this.label("invPage",`${list.length} 件 · ${this.inventoryPage + 1}/${pages}`,17,"#b9c9cf");
         const selected = actual!.items.find(i => i.uid === this.uid);
-        let detail = selected ? this.describeItem(selected) : `生命 ${this.format(state.hp)} / ${this.format(save.config.build.setup.player.maxHp)}\n灵力 ${this.format(state.mp)} / ${this.format(save.config.build.setup.player.maxMp)}`;
+        const stats=Rules.stats(save.config,state);
+        let detail = selected ? this.describeItem(selected) : `生命 ${this.format(state.hp)} / ${stats.hp}\n灵力 ${this.format(state.mp)} / ${stats.mp}\n物攻 ${stats.a} · 精神 ${stats.s}\n护甲 ${stats.armor} · 速度 ${stats.speed}`;
         if(!selected && state.stamina!==undefined)detail+=`\n体力 ${state.stamina} / ${save.config.staminaMax}`;
         if (this.draft?.type === "extract") detail = "确认撤离\n仅带回当前携带物，来源仓库内物品不带出。";
         else if (this.draft?.type === "abandon") detail = "确认放弃\n只保留归真匣，所有携带装备及其他内容损失。";
@@ -531,7 +536,8 @@ export class InventoryPanel extends BuildPanel {
         (this.child(this.nodes.invRotate, 2) as Laya.GImage).visible = false;
         this.control("invCancel","取消",!!this.uid || !!this.draft);
         this.control("invConfirm","确认提交",!!this.draft && !this.draftError);
-        this.control("invUse","使用",editable && state.phase === "active" && !!selected && !this.draft &&
+        this.control("invUse",state.phase==="preparation"?`修理 ${Rules.repairCost(state)}愿力`:"使用",
+            state.phase==="preparation"?Rules.repairCost(state)>0:editable && state.phase === "active" && !!selected && !this.draft &&
             ["hp","mp","mixed","repair","stamina"].includes(Rules.template(save.config,selected).kind) &&
             (Rules.template(save.config,selected).kind!=="stamina" || state.stamina!<save.config.staminaMax!));
         this.control("invDrop",state.phase === "preparation" ? "放回仓库" : activeSource ? "退回来源" : "放到地面",editable && !!selected &&
@@ -672,7 +678,7 @@ export class InventoryPanel extends BuildPanel {
         const warehouse = space === "warehouse" ?
             { warehouseTo: { page: page!, x: x!, y: y!, rotated: !!rotated } } : {};
         if (item.location.space === "weapon")
-            return { type: "equipWeapon", uid: null, oldTo: destination, ...warehouse };
+            return { type: "equipEquipment", slot:"weapon", uid: null, oldTo: destination, ...warehouse };
         if (item.location.space === "container") {
             const state = this.inventorySession.inventory!;
             const expected = state.phase === "preparation" ? "warehouse" :
@@ -708,7 +714,7 @@ export class InventoryPanel extends BuildPanel {
                 if (t.kind !== "weapon") throw new Error("武器位只能放武器");
                 const old = state.items.find(i => i.location.space === "weapon");
                 if (old?.uid === item.uid) { this.clearAutoRotation(); this.renderHeld(); return; }
-                h.candidate = Rules.weaponPlan(config,state,item.uid);
+                h.candidate = Rules.equipmentPlan(config,state,item.uid);
             } else if (to.space === "container") {
                 if (t.kind !== "container") throw new Error("纳虚器位只能放纳虚器");
                 if (item.location.space === "container") { this.clearAutoRotation(); this.renderHeld(); return; }
@@ -914,7 +920,7 @@ export class InventoryPanel extends BuildPanel {
         return `${t.name} · ${qualityName} · ${w}×${h}${this.rotated ? " · 旋转" : ""}\n${this.locationName(item.location)}${item.durability !== null ?
             ` · 耐久 ${item.durability}/${t.weaponDurability}` : ""}${t.weight!==undefined?` · 重量 ${t.weight}`:""}\n${
             t.kind==="container"?`背包承重 +${t.weightLimit || 0}\n`:""}${
-            t.kind==="weapon"?`攻击 +${t.weaponAttack} · 防御 +${t.weaponDefense}\n`:""}${
+            item.equipment?`主属性 ${STAT_NAMES[item.equipment.main]} +${item.equipment.mainValue} · 副属性 ${STAT_NAMES[item.equipment.sub]} +${item.equipment.subValue}\n${traitDescription(item.equipment)}\n`:""}${
             t.kind==="repair"?`战外修理${t.repairAmount===-1?"至满耐久":` +${t.repairAmount}`}\n`:""}${
             t.kind==="stamina"?`战外恢复体力 ${t.staminaRestore}\n`:""}${t.safe ?
                 "归真匣合规，仍需尺寸适配" : "禁止归真匣"}${t.kind === "book" ? "\n完整功法典籍，永久学习尚未开放" : ""}`;

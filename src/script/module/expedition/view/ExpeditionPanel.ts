@@ -181,7 +181,7 @@ export class ExpeditionPanel extends InventoryPanel {
         }
         if (["invNodePrev", "invNodeNext"].includes(key)) return;
         if (key === "invToggle") {
-            this.run(() => { this.expedition.pauseSearch(); this.navigate("map"); }); return;
+            this.run(() => { this.expedition.pauseSearch(); this.navigate(this.expedition.inventory?.phase==="preparation"?"inventory":"map"); }); return;
         }
         if (key === "invPrimary" && this.expedition.inventory?.phase === "active" && !this.expedition.flow?.pending) {
             this.run(() => { this.expedition.pauseSearch(); this.navigate("map"); }); return;
@@ -276,6 +276,7 @@ export class ExpeditionPanel extends InventoryPanel {
             if (!s) this.label("invClock", "行前整备", 22);
             this.control("invPrimary", !s || s.phase === "ended" ? "开始整备" : s.phase === "preparation" ? "入境" :
                 s.flow?.pending ? "领取借法" : "地图", !this.expedition.error);
+            if(s?.phase==="preparation")this.button("invToggle","装备与行囊",630,16,174,46);
             for (const key of ["invNodePrev", "invNodeNext"]) this.nodes[key].visible = false;
             if (s?.phase === "active") {
                 this.button("invToggle", "地图", 630, 16, 128, 46);
@@ -338,7 +339,7 @@ export class ExpeditionPanel extends InventoryPanel {
     protected renderBattle(): void {
         super.renderBattle();
         this.buttons.loot.visible = false;
-        this.labels.brand.text = this.expedition.record?.setup.qingming?"末法寻仙 · 青冥剑典":"末法寻仙 · 秘境斗法";
+        this.labels.brand.text = "末法寻仙 · 秘境斗法";
     }
     protected renderReset(): void {
         this.requestConfirmation("重建当前探索档？", "仅重建阶段 4 当前档，不删除其他应用数据。",

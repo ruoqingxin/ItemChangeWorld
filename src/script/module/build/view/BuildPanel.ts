@@ -2,79 +2,73 @@ import type { UIBaseView } from "../../../games/ui/UIBaseView";
 import type { ExpeditionRunManager } from "../../expedition/manager/ExpeditionRunManager";
 import { BattlePanel } from "../../skillBattle/view/BattlePanel";
 import type { SkillBattlePage } from "../../gameplay/utils/GameplayLayout";
-import { QingmingBuildRules } from "../utils/QingmingBuildRules";
-import { QingmingRules } from "../../skillBattle/utils/QingmingRules";
-import { QingmingConfig as C } from "../../skillBattle/utils/QingmingConfig";
+import { BY_SKILL, SKILLS } from "../../skillBattle/utils/CombatConfig";
 
 export type BuildPanelSession = ExpeditionRunManager;
-
 export class BuildPanel extends BattlePanel {
-    private chosen = 0;
-    private page = 0;
-    constructor(view: UIBaseView, readonly flowSession: BuildPanelSession,
-        navigate: (screen: SkillBattlePage) => void, screen: "start" | "battle" | "settlement",
-        page: SkillBattlePage = screen) {
-        super(view, flowSession, navigate, screen, page);
-    }
-    startRun(): void { this.navigate(this.flowSession.flow?.phase === "battle" ? "battle" : "map"); }
-    protected command(key: string): void {
-        if (this.modalOpen) return;
-        if (this.screen === "battle" || this.overlay) { super.command(key); return; }
-        this.run(() => {
-            if (key === "reset") { this.resetConfirm = true; return; }
-            if (key === "report") { this.openReport(); return; }
-            if (key === "previousPage") { this.page = Math.max(0, this.page - 1); return; }
-            if (key === "nextPage") { this.page++; return; }
-            const pending = this.flowSession.flow?.pending;
-            if (!pending) { if (key === "newRun") this.startRun(); return; }
-            const slot = /^warehouse[0-2]$/.test(key) ? Number(key.slice(9)) : -1;
-            if (slot >= 0) this.chosen = pending.candidates[slot] || 0;
-            if (key === "newRun" && this.chosen) {
-                this.flowSession.dispatch({type: "choose", source: pending.source, id: this.chosen});
-                this.chosen = 0;
+    private chosen=0;
+    private page=0;
+    private slot=0;
+    private readonly slotKeys=["skill1","skill2","skill3","skill4","upgrade0"];
+    constructor(view:UIBaseView,readonly flowSession:BuildPanelSession,navigate:(screen:SkillBattlePage)=>void,
+        screen:"start"|"battle"|"settlement",page:SkillBattlePage=screen){super(view,flowSession,navigate,screen,page);}
+    startRun():void{this.navigate(this.flowSession.flow?.phase==="battle"?"battle":this.flowSession.inventory?.phase==="active"?"map":"start");}
+    protected command(key:string):void {
+        if(this.modalOpen)return;
+        if(this.screen==="battle"||this.overlay){super.command(key);return;}
+        this.run(()=>{
+            const flow=this.flowSession.flow;if(!flow)return;
+            const index=this.slotKeys.indexOf(key);
+            if(index>=0){this.slot=index;return;}
+            if(key==="previousPage"){this.page=Math.max(0,this.page-1);this.chosen=0;return;}
+            if(key==="nextPage"){this.page++;this.chosen=0;return;}
+            if(key==="report"){this.openReport();return;}
+            if(key==="hub"){this.startRun();return;}
+            const rows=this.rows(),match=/^warehouse([0-2])$/.exec(key);
+            if(match){this.chosen=rows[this.page*3+Number(match[1])]?.id||0;return;}
+            if(key==="cancel"&&!flow.pending){
+                this.flowSession.dispatch({type:"loadout",skills:flow.skills.filter((_,i)=>i!==this.slot)});return;
+            }
+            if(key==="newRun"&&this.chosen){
+                if(flow.pending)this.flowSession.dispatch({type:"choose",source:flow.pending.source,id:this.chosen,slot:this.slot});
+                else{
+                    const skill=SKILLS.find(s=>s.id===this.chosen),skills=flow.skills.slice();
+                    if(skills.includes(skill.code))throw new Error("该技能已装配");
+                    skills[Math.min(this.slot,skills.length)]=skill.code;
+                    this.flowSession.dispatch({type:"loadout",skills});
+                }
+                this.chosen=0;
             }
         });
     }
-    protected renderStart(): void {
-        const flow = this.flowSession.flow;
-        if (!flow?.qingming) { this.navigate("map"); return; }
+    private rows(){
+        const flow=this.flowSession.flow;
+        return flow?.pending?flow.pending.candidates.map(id=>SKILLS.find(s=>s.id===id)):
+            (flow?.knownSkills||[]).map(code=>BY_SKILL[code]);
+    }
+    protected renderStart():void {
+        const flow=this.flowSession.flow;
+        if(!flow){this.navigate("start");return;}
         this.backdrop();
-        const q = flow.qingming, pending = flow.pending, active = QingmingRules.build(q);
-        this.text("overlayBrand", "末法寻仙", 32, 18, 420, 44, 26, "#e3c98c");
-        this.text("currency", this.timeText(), 1000, 22, 248, 40, 20, "#bac3b6");
-        this.text("resultTitle", "青冥剑典", 170, 76, 940, 52, 30);
-        this.text("resultDetail", `已战 ${flow.battles.length} 场 · 获得 ${q.acquired.length} 项 · 生效 ${active.length} 项`,
-            170, 138, 940, 44, 21, "#a1d7ba");
-        this.text("overlayMessage", this.flowSession.error || this.notice, 170, 590, 940, 36, 17, "#efa797");
-        this.button("reset", "放弃本局", 170, 634, 260);
-        this.button("report", "战斗记录", 490, 634, 260, 54, !!flow.battles.length);
-        if (pending) {
-            this.text("section", "功法机缘 · 取其一", 170, 194, 940, 36, 22, "#e3c98c");
-            if (!pending.candidates.includes(this.chosen)) this.chosen = 0;
-            pending.candidates.forEach((id, i) => {
-                const key = QingmingBuildRules.item(id), item = C.items[key], role = C.offerRoles[q.offerRoles[key]];
-                this.button(`warehouse${i}`, `${item.name}\n${{passive: "被动", mutation: "改招", core: "核心"}[item.type]} · ${role}`,
-                    170 + i * 320, 246, 300, 82, true, id === this.chosen);
-            });
-            const key = QingmingBuildRules.item(this.chosen), item = key && C.items[key];
-            const old = item && (item.type === "core" ? q.core : item.slot ? q.mutations[item.slot] : null);
-            const related = item ? QingmingRules.related(q, key) : [];
-            this.text("reportBody", item ? `${item.name}\n${item.description}${old ? `\n替换：${C.items[old].name}` : ""}${
-                related.length ? `\n联动：${related.map(k => C.items[k].name).join("、")}` : ""}` : "",
-                170, 360, 940, 190, 20);
-            this.button("newRun", "确认领取", 810, 634, 300, 54, !!item);
-            return;
-        }
-        this.text("section", q.core ? `核心 · ${C.items[q.core].name}` : "基础四招", 170, 194, 940, 36, 22, "#e3c98c");
-        const descriptions = [
-            ...Object.values(C.skills).filter(s => s.cost > 0).map(s => `${s.name} · ${s.description} / ${s.cost}灵力`),
-            ...active.map(k => `${C.items[k].name} · ${C.items[k].description}`),
-        ];
-        const pages = Math.max(1, Math.ceil(descriptions.length / 3)); this.page = Math.min(this.page, pages - 1);
-        this.text("reportBody", descriptions.slice(this.page * 3, this.page * 3 + 3).join("\n\n"), 170, 246, 940, 286, 18);
-        this.text("choiceTitle", `${this.page + 1} / ${pages}`, 540, 550, 120, 36, 18);
-        this.button("previousPage", "<", 670, 550, 90, 38, this.page > 0);
-        this.button("nextPage", ">", 780, 550, 90, 38, this.page + 1 < pages);
-        this.button("newRun", flow.phase === "battle" ? "返回战斗" : "返回地图", 810, 634, 300);
+        this.text("overlayBrand","末法寻仙",32,18,420,44,26,"#e3c98c");
+        this.text("currency",this.timeText(),1000,22,248,40,20,"#bac3b6");
+        this.text("resultTitle",flow.pending?"技能机缘":"技能装配",170,76,940,46,30);
+        this.text("resultDetail",`已掌握 ${flow.knownSkills.length} 招 · 已装配 ${flow.skills.length}/5`,170,128,940,34,20,"#a1d7ba");
+        this.slotKeys.forEach((key,i)=>this.button(key,`${i+1} · ${BY_SKILL[flow.skills[i]]?.name||"空位"}`,
+            170+i*190,176,178,48,true,i===this.slot));
+        const rows=this.rows(),pages=Math.max(1,Math.ceil(rows.length/3));this.page=Math.min(this.page,pages-1);
+        rows.slice(this.page*3,this.page*3+3).forEach((s,i)=>this.button(`warehouse${i}`,
+            `${s.name}\n${["","物理","魔法","混合","辅助"][s.kind]} · ${s.mp}法力`,
+            170+i*320,254,300,76,true,s.id===this.chosen));
+        const selected=rows.find(s=>s.id===this.chosen);
+        this.text("reportBody",selected?`${selected.name}\n${selected.description}\n冷却 ${selected.cd}${selected.uses?` · 每战 ${selected.uses} 次`:""}`:"",
+            170,350,940,170,18);
+        this.text("choiceTitle",`${this.page+1} / ${pages}`,540,542,120,36,18);
+        this.button("previousPage","<",670,542,90,38,this.page>0);
+        this.button("nextPage",">",780,542,90,38,this.page+1<pages);
+        this.text("overlayMessage",this.flowSession.error||this.notice,170,586,940,34,17,"#efa797");
+        this.button("hub","返回",170,634,240,54,!flow.pending);
+        this.button("cancel","卸下选中技能",450,634,270,54,!flow.pending&&!!flow.skills[this.slot]);
+        this.button("newRun",flow.pending?"领悟并装配":"装配到选中位",810,634,300,54,!!selected);
     }
 }

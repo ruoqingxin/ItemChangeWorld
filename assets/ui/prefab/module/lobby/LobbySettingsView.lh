@@ -1,80 +1,288 @@
 {
-  "_$ver": 1, "_$id": "settings_root", "_$type": "GWidget", "name": "LobbySettingsView", "width": 1280, "height": 720,
-  "_$child": [{
-    "_$id": "settings_adapter", "_$type": "GWidget", "name": "adapter", "width": 1280, "height": 720, "mouseThrough": true,
-    "relations": [{"_$type": "Relation", "target": {"_$ref": "settings_root"}, "data": [1, 0, 2, 0]}],
-    "_$child": [{
-      "_$id": "settings_panel", "_$type": "GWidget", "name": "box_settings", "x": 380, "y": 184,
-      "width": 520, "height": 352, "mouseEnabled": true,
-      "relations": [{"_$type": "Relation", "target": {"_$ref": "settings_adapter"}, "data": [6, 0, 13, 0]}],
+  "_$ver": 1,
+  "_$id": "settings_root",
+  "_$type": "GWidget",
+  "name": "LobbySettingsView",
+  "width": 1280,
+  "height": 720,
+  "_$child": [
+    {
+      "_$id": "settings_adapter",
+      "_$type": "GWidget",
+      "name": "adapter",
+      "width": 1280,
+      "height": 720,
+      "mouseThrough": true,
+      "relations": [
+        {
+          "_$type": "Relation",
+          "target": {
+            "_$ref": "settings_root"
+          },
+          "data": [
+            1,
+            0,
+            2,
+            0
+          ]
+        }
+      ],
       "_$child": [
-        {"_$id": "settings_panel_skin", "_$type": "GImage", "name": "img_panel", "width": 520, "height": 352,
-          "autoSize": false, "mouseEnabled": false, "src": "ui/texture/lobby/settings-panel.png"},
-        {"_$id": "settings_title", "_$type": "GTextField", "name": "txt_settings_title", "x": 52, "y": 22,
-          "width": 416, "height": 42, "text": "设置", "font": "KaiTi", "fontSize": 30, "color": "#fff0c9",
-          "align": "center", "valign": "middle", "mouseEnabled": false},
         {
-          "_$id": "settings_close", "_$type": "GWidget", "name": "btn_close", "x": 438, "y": 22,
-          "width": 44, "height": 44, "mouseEnabled": true,
-          "_$child": [{"_$id": "settings_close_icon", "_$type": "GImage", "name": "img_close", "x": 8, "y": 8,
-            "width": 28, "height": 28, "autoSize": false, "mouseEnabled": false, "src": "ui/atlas/module/lobby/close.png"}]
-        },
-        {
-          "_$id": "settings_music", "_$type": "GWidget", "name": "btn_music", "x": 68, "y": 88,
-          "width": 384, "height": 52, "mouseEnabled": true,
+          "_$id": "settings_panel",
+          "_$type": "GWidget",
+          "name": "box_settings",
+          "x": 380,
+          "y": 184,
+          "width": 520,
+          "height": 352,
+          "mouseEnabled": true,
+          "relations": [
+            {
+              "_$type": "Relation",
+              "target": {
+                "_$ref": "settings_adapter"
+              },
+              "data": [
+                6,
+                0,
+                13,
+                0
+              ]
+            }
+          ],
           "_$child": [
-            {"_$id": "settings_music_icon", "_$type": "GImage", "name": "img_music", "x": 8, "y": 12,
-              "width": 28, "height": 28, "autoSize": false, "mouseEnabled": false, "src": "ui/atlas/module/lobby/music.png"},
-            {"_$id": "settings_music_label", "_$type": "GTextField", "name": "txt_music", "x": 56, "y": 6,
-              "width": 240, "height": 40, "text": "背景音乐", "font": "Microsoft YaHei", "fontSize": 20,
-              "valign": "middle", "color": "#fff0c9", "mouseEnabled": false},
-            {"_$id": "settings_music_box", "_$type": "GImage", "name": "img_music_box", "x": 332, "y": 8,
-              "width": 36, "height": 36, "autoSize": false, "mouseEnabled": false, "src": "ui/atlas/module/lobby/icon-button.png"},
-            {"_$id": "settings_music_check", "_$type": "GImage", "name": "img_music_check", "x": 338, "y": 14,
-              "width": 24, "height": 24, "autoSize": false, "mouseEnabled": false, "src": "ui/atlas/module/lobby/check.png"}
+            {
+              "_$id": "settings_panel_skin",
+              "_$type": "GImage",
+              "name": "img_panel",
+              "width": 520,
+              "height": 352,
+              "autoSize": false,
+              "mouseEnabled": false,
+              "src": "ui/texture/lobby/settings-panel.png"
+            },
+            {
+              "_$id": "settings_title",
+              "_$type": "GTextField",
+              "name": "txt_settings_title",
+              "x": 52,
+              "y": 22,
+              "width": 416,
+              "height": 42,
+              "text": "设置",
+              "font": "KaiTi",
+              "fontSize": 30,
+              "color": "#fff0c9",
+              "align": "center",
+              "valign": "middle",
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "settings_close",
+              "_$type": "GWidget",
+              "name": "btn_close",
+              "x": 438,
+              "y": 22,
+              "width": 44,
+              "height": 44,
+              "mouseEnabled": true,
+              "_$child": [
+                {
+                  "_$id": "settings_close_icon",
+                  "_$type": "GImage",
+                  "name": "img_close",
+                  "x": 8,
+                  "y": 8,
+                  "width": 28,
+                  "height": 28,
+                  "autoSize": false,
+                  "mouseEnabled": false,
+                  "src": "ui/atlas/module/lobby/close.png"
+                }
+              ]
+            },
+            {
+              "_$id": "settings_music",
+              "_$type": "GWidget",
+              "name": "btn_music",
+              "x": 68,
+              "y": 88,
+              "width": 384,
+              "height": 52,
+              "mouseEnabled": true,
+              "_$child": [
+                {
+                  "_$id": "settings_music_icon",
+                  "_$type": "GImage",
+                  "name": "img_music",
+                  "x": 8,
+                  "y": 12,
+                  "width": 28,
+                  "height": 28,
+                  "autoSize": false,
+                  "mouseEnabled": false,
+                  "src": "ui/atlas/module/lobby/music.png"
+                },
+                {
+                  "_$id": "settings_music_label",
+                  "_$type": "GTextField",
+                  "name": "txt_music",
+                  "x": 56,
+                  "y": 6,
+                  "width": 240,
+                  "height": 40,
+                  "text": "背景音乐",
+                  "font": "Microsoft YaHei",
+                  "fontSize": 20,
+                  "valign": "middle",
+                  "color": "#fff0c9",
+                  "mouseEnabled": false
+                },
+                {
+                  "_$id": "settings_music_box",
+                  "_$type": "GImage",
+                  "name": "img_music_box",
+                  "x": 332,
+                  "y": 8,
+                  "width": 36,
+                  "height": 36,
+                  "autoSize": false,
+                  "mouseEnabled": false,
+                  "src": "ui/atlas/module/lobby/icon-button.png"
+                },
+                {
+                  "_$id": "settings_music_check",
+                  "_$type": "GImage",
+                  "name": "img_music_check",
+                  "x": 338,
+                  "y": 14,
+                  "width": 24,
+                  "height": 24,
+                  "autoSize": false,
+                  "mouseEnabled": false,
+                  "src": "ui/atlas/module/lobby/check.png"
+                }
+              ]
+            },
+            {
+              "_$id": "settings_sound",
+              "_$type": "GWidget",
+              "name": "btn_sound",
+              "x": 68,
+              "y": 152,
+              "width": 384,
+              "height": 52,
+              "mouseEnabled": true,
+              "_$child": [
+                {
+                  "_$id": "settings_sound_icon",
+                  "_$type": "GImage",
+                  "name": "img_sound",
+                  "x": 8,
+                  "y": 12,
+                  "width": 28,
+                  "height": 28,
+                  "autoSize": false,
+                  "mouseEnabled": false,
+                  "src": "ui/atlas/module/lobby/sound.png"
+                },
+                {
+                  "_$id": "settings_sound_label",
+                  "_$type": "GTextField",
+                  "name": "txt_sound",
+                  "x": 56,
+                  "y": 6,
+                  "width": 240,
+                  "height": 40,
+                  "text": "游戏音效",
+                  "font": "Microsoft YaHei",
+                  "fontSize": 20,
+                  "valign": "middle",
+                  "color": "#fff0c9",
+                  "mouseEnabled": false
+                },
+                {
+                  "_$id": "settings_sound_box",
+                  "_$type": "GImage",
+                  "name": "img_sound_box",
+                  "x": 332,
+                  "y": 8,
+                  "width": 36,
+                  "height": 36,
+                  "autoSize": false,
+                  "mouseEnabled": false,
+                  "src": "ui/atlas/module/lobby/icon-button.png"
+                },
+                {
+                  "_$id": "settings_sound_check",
+                  "_$type": "GImage",
+                  "name": "img_sound_check",
+                  "x": 338,
+                  "y": 14,
+                  "width": 24,
+                  "height": 24,
+                  "autoSize": false,
+                  "mouseEnabled": false,
+                  "src": "ui/atlas/module/lobby/check.png"
+                }
+              ]
+            },
+            {
+              "_$id": "settings_message",
+              "_$type": "GTextField",
+              "name": "txt_settings_message",
+              "x": 52,
+              "y": 294,
+              "width": 416,
+              "height": 32,
+              "text": "",
+              "fontSize": 16,
+              "color": "#ffc4b6",
+              "align": "center",
+              "valign": "middle",
+              "overflow": "shrink",
+              "mouseEnabled": false
+            }
           ]
-        },
-        {
-          "_$id": "settings_sound", "_$type": "GWidget", "name": "btn_sound", "x": 68, "y": 152,
-          "width": 384, "height": 52, "mouseEnabled": true,
-          "_$child": [
-            {"_$id": "settings_sound_icon", "_$type": "GImage", "name": "img_sound", "x": 8, "y": 12,
-              "width": 28, "height": 28, "autoSize": false, "mouseEnabled": false, "src": "ui/atlas/module/lobby/sound.png"},
-            {"_$id": "settings_sound_label", "_$type": "GTextField", "name": "txt_sound", "x": 56, "y": 6,
-              "width": 240, "height": 40, "text": "游戏音效", "font": "Microsoft YaHei", "fontSize": 20,
-              "valign": "middle", "color": "#fff0c9", "mouseEnabled": false},
-            {"_$id": "settings_sound_box", "_$type": "GImage", "name": "img_sound_box", "x": 332, "y": 8,
-              "width": 36, "height": 36, "autoSize": false, "mouseEnabled": false, "src": "ui/atlas/module/lobby/icon-button.png"},
-            {"_$id": "settings_sound_check", "_$type": "GImage", "name": "img_sound_check", "x": 338, "y": 14,
-              "width": 24, "height": 24, "autoSize": false, "mouseEnabled": false, "src": "ui/atlas/module/lobby/check.png"}
-          ]
-        },
-        {
-          "_$id": "settings_manual", "_$type": "GWidget", "name": "btn_manual_test", "x": 160, "y": 232,
-          "width": 200, "height": 48, "mouseEnabled": true,
-          "_$child": [
-            {"_$id": "settings_manual_skin", "_$type": "GImage", "name": "img_manual_skin", "width": 200, "height": 48,
-              "autoSize": false, "mouseEnabled": false, "src": "ui/atlas/module/lobby/hud-strip.png"},
-            {"_$id": "settings_manual_label", "_$type": "GTextField", "name": "txt_manual_test", "x": 12, "y": 4,
-              "width": 176, "height": 40, "text": "功法测试", "font": "Microsoft YaHei", "fontSize": 20,
-              "align": "center", "valign": "middle", "color": "#fff0c9", "mouseEnabled": false}
-          ]
-        },
-        {"_$id": "settings_message", "_$type": "GTextField", "name": "txt_settings_message", "x": 52, "y": 294,
-          "width": 416, "height": 32, "text": "", "fontSize": 16, "color": "#ffc4b6",
-          "align": "center", "valign": "middle", "overflow": "shrink", "mouseEnabled": false}
+        }
       ]
-    }]
-  }],
-  "_$comp": [{
-    "_$type": "3593fc26-337e-42e3-92dc-1b9c2bb8f988",
-    "scriptPath": "../src/script/games/ui/components/ElementMapper.ts",
-    "adapter": {"_$ref": "settings_adapter"}, "mapperType": 1,
-    "elements": [
-      {"_$ref": "settings_adapter"}, {"_$ref": "settings_panel"}, {"_$ref": "settings_close"},
-      {"_$ref": "settings_music"}, {"_$ref": "settings_music_check"},
-      {"_$ref": "settings_sound"}, {"_$ref": "settings_sound_check"},
-      {"_$ref": "settings_manual"}, {"_$ref": "settings_message"}
-    ]
-  }]
+    }
+  ],
+  "_$comp": [
+    {
+      "_$type": "3593fc26-337e-42e3-92dc-1b9c2bb8f988",
+      "scriptPath": "../src/script/games/ui/components/ElementMapper.ts",
+      "adapter": {
+        "_$ref": "settings_adapter"
+      },
+      "mapperType": 1,
+      "elements": [
+        {
+          "_$ref": "settings_adapter"
+        },
+        {
+          "_$ref": "settings_panel"
+        },
+        {
+          "_$ref": "settings_close"
+        },
+        {
+          "_$ref": "settings_music"
+        },
+        {
+          "_$ref": "settings_music_check"
+        },
+        {
+          "_$ref": "settings_sound"
+        },
+        {
+          "_$ref": "settings_sound_check"
+        },
+        {
+          "_$ref": "settings_message"
+        }
+      ]
+    }
+  ]
 }

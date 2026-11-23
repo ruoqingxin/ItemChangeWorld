@@ -5,7 +5,7 @@ const fs = require("node:fs/promises");
 const path = require("node:path");
 const { confirmStartup } = require("./lobby-save-test-utils.cjs");
 const url = process.env.SKILL_BATTLE_URL || "http://127.0.0.1:18095";
-const out = path.resolve(__dirname, "../output/design/lobby");
+const out = path.resolve(__dirname, "../tmp/combat-release/lobby");
 const facilities = ["alchemy", "forge", "warehouse", "library", "realm", "market"];
 const skins = [
     "img_player_strip", "img_player_portrait", "img_player_frame",
@@ -213,7 +213,7 @@ async function assertLayout(page) {
                 await screenshot(page, "lobby-notice-" + name);
             }
             for (const [key, message] of [
-                ["btn_alchemy", "炼丹炉尚未开放"], ["btn_forge", "炼器室尚未开放"],
+                ["btn_alchemy", "炼丹炉尚未开放"], ["btn_forge", "当前装备无需修理"],
                 ["btn_library", "功法查阅与升级尚未开放"], ["btn_market", "坊市交易尚未开放"],
             ]) {
                 const facility = key.slice(4);

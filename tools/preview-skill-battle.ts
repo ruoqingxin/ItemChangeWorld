@@ -1,10 +1,7 @@
-import { ConfigLoader, ConfigUtil } from "../src/script/config/ConfigUtil";
 import { UIManager } from "../src/script/games/ui/UIManager";
 import { GameplayManager } from "../src/script/module/gameplay/manager/GameplayManager";
 import { closeSkillBattleScreens, currentSkillBattleView, openLobbyScreen, openSkillBattleScreen } from "../src/script/module/gameplay/utils/GameplayNavigation";
 import { SkillBattleManager } from "../src/script/module/skillBattle/manager/SkillBattleManager";
-import { BuildConfigUtils } from "../src/script/module/build/utils/BuildConfigUtils";
-import { ManualTestView } from "../src/script/module/manualTest/view/ManualTestView";
 import { GameStart } from "../src/script/GameStart";
 
 async function main(): Promise<void> {
@@ -25,15 +22,6 @@ async function main(): Promise<void> {
     Laya.stage.alignH = Laya.Stage.ALIGN_CENTER;
     Laya.stage.alignV = Laya.Stage.ALIGN_MIDDLE;
     Laya.stage.bgColor = "#111613";
-    if (new URLSearchParams(window.location.search).get("manualTest") === "1") {
-        await new Promise<void>((resolve, reject) => ConfigLoader.loadAllConfig(
-            Laya.Handler.create(null, ok => ok ? resolve() : reject(new Error("配置加载失败")))));
-        UIManager.ins().init();
-        BuildConfigUtils.read(ConfigUtil.Tables);
-        const view = UIManager.ins().openForm(ManualTestView);
-        (window as any).__manualTestPreview = { view, get panel() { return view.panel; }, get session() { return view.panel.session; } };
-        return;
-    }
     new GameStart();
     await new Promise<void>((resolve, reject) => {
         const deadline = Date.now() + 15000;

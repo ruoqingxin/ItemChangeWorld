@@ -3,6 +3,7 @@ import { UILayer } from "../../../games/ui/UILayer";
 import { UIManager } from "../../../games/ui/UIManager";
 import { openSkillBattleScreen } from "../../gameplay/utils/GameplayNavigation";
 import { LobbySettingsView } from "./LobbySettingsView";
+import { GameplayManager } from "../../gameplay/manager/GameplayManager";
 
 export class LobbyView extends UIBaseView {
     get layer(): UILayer { return UILayer.Base; }
@@ -30,7 +31,13 @@ export class LobbyView extends UIBaseView {
         const realm = this.getElement<Laya.GWidget>("btn_realm");
         const market = this.getElement<Laya.GWidget>("btn_market");
         this.addClickListener(alchemy, () => this.showNotice("炼丹炉尚未开放"));
-        this.addClickListener(forge, () => this.showNotice("炼器室尚未开放"));
+        this.addClickListener(forge, () => {
+            try{
+                const session=GameplayManager.getMapTrial();
+                session.inventoryCommand({type:"repairAll"});
+                this.showNotice(`修理完成，剩余愿力 ${session.inventory.wish}`);
+            }catch(e){this.showNotice((e as Error).message);}
+        });
         this.addClickListener(warehouse, this.onClickWarehouse);
         this.addClickListener(library, () => this.showNotice("功法查阅与升级尚未开放"));
         this.addClickListener(realm, this.onClickRealm);

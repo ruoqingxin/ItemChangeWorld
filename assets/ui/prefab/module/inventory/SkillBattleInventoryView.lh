@@ -144,6 +144,18 @@
         },
         {
           "_$ref": "warehouse_battle_content"
+        },
+        {
+          "_$ref": "combat_invArmor_invWeapon"
+        },
+        {
+          "_$ref": "combat_invAccessory_invWeapon"
+        },
+        {
+          "_$ref": "combat_repair_all"
+        },
+        {
+          "_$ref": "combat_repair_text"
         }
       ],
       "prefabs": null,
@@ -591,6 +603,169 @@
                           "_mouseState": 1,
                           "src": "ui/atlas/module/warehouse/jade/hint-accessory.png",
                           "autoSize": false
+                        },
+                        {
+                          "_$id": "combat_invArmor_invWeapon",
+                          "_$type": "GWidget",
+                          "name": "invArmor",
+                          "x": 278,
+                          "y": 52,
+                          "width": 110,
+                          "height": 166,
+                          "_mouseState": 2,
+                          "_$child": [
+                            {
+                              "_$id": "combat_invArmor_invWeaponBg",
+                              "_$type": "GImage",
+                              "name": "invArmorBg",
+                              "width": 110,
+                              "height": 166,
+                              "visible": false,
+                              "_mouseState": 1,
+                              "src": "ui/atlas/module/inventory/item-frame.png",
+                              "autoSize": false
+                            },
+                            {
+                              "_$id": "combat_invArmor_invWeaponText",
+                              "_$type": "GTextField",
+                              "name": "invArmorText",
+                              "x": 8,
+                              "y": 4,
+                              "width": 94,
+                              "height": 158,
+                              "visible": false,
+                              "_mouseState": 1,
+                              "text": "",
+                              "font": "KaiTi",
+                              "fontSize": 18,
+                              "color": "#e8e6df",
+                              "overflow": "shrink",
+                              "letterSpacing": 0
+                            },
+                            {
+                              "_$id": "combat_invArmor_invWeaponIcon",
+                              "_$type": "GImage",
+                              "name": "invArmorIcon",
+                              "x": 6,
+                              "y": 6,
+                              "width": 98,
+                              "height": 154,
+                              "visible": false,
+                              "_mouseState": 1,
+                              "src": "ui/atlas/module/inventory/gold-sword.png",
+                              "autoSize": false
+                            },
+                            {
+                              "_$id": "combat_invArmor_invWeaponSelection",
+                              "_$type": "GWidget",
+                              "name": "invArmorSelection",
+                              "width": 110,
+                              "height": 166,
+                              "visible": false,
+                              "_mouseState": 1
+                            }
+                          ]
+                        },
+                        {
+                          "_$id": "combat_invAccessory_invWeapon",
+                          "_$type": "GWidget",
+                          "name": "invAccessory",
+                          "x": 146,
+                          "y": 108,
+                          "width": 110,
+                          "height": 110,
+                          "_mouseState": 2,
+                          "_$child": [
+                            {
+                              "_$id": "combat_invAccessory_invWeaponBg",
+                              "_$type": "GImage",
+                              "name": "invAccessoryBg",
+                              "width": 110,
+                              "height": 110,
+                              "visible": false,
+                              "_mouseState": 1,
+                              "src": "ui/atlas/module/inventory/item-frame.png",
+                              "autoSize": false
+                            },
+                            {
+                              "_$id": "combat_invAccessory_invWeaponText",
+                              "_$type": "GTextField",
+                              "name": "invAccessoryText",
+                              "x": 8,
+                              "y": 4,
+                              "width": 94,
+                              "height": 110,
+                              "visible": false,
+                              "_mouseState": 1,
+                              "text": "",
+                              "font": "KaiTi",
+                              "fontSize": 18,
+                              "color": "#e8e6df",
+                              "overflow": "shrink",
+                              "letterSpacing": 0
+                            },
+                            {
+                              "_$id": "combat_invAccessory_invWeaponIcon",
+                              "_$type": "GImage",
+                              "name": "invAccessoryIcon",
+                              "x": 6,
+                              "y": 6,
+                              "width": 98,
+                              "height": 110,
+                              "visible": false,
+                              "_mouseState": 1,
+                              "src": "ui/atlas/module/inventory/gold-sword.png",
+                              "autoSize": false
+                            },
+                            {
+                              "_$id": "combat_invAccessory_invWeaponSelection",
+                              "_$type": "GWidget",
+                              "name": "invAccessorySelection",
+                              "width": 110,
+                              "height": 110,
+                              "visible": false,
+                              "_mouseState": 1
+                            }
+                          ]
+                        },
+                        {
+                          "_$id": "combat_repair_all",
+                          "_$type": "GWidget",
+                          "name": "btn_repair_all",
+                          "x": 146,
+                          "y": 8,
+                          "width": 242,
+                          "height": 32,
+                          "_mouseState": 2,
+                          "tooltips": "按品质消耗愿力，修满当前三件装备",
+                          "_$child": [
+                            {
+                              "_$id": "combat_repair_skin",
+                              "_$type": "GImage",
+                              "name": "img_repair_skin",
+                              "width": 242,
+                              "height": 32,
+                              "_mouseState": 1,
+                              "src": "ui/atlas/module/warehouse/graphite/button-normal.png",
+                              "autoSize": false
+                            },
+                            {
+                              "_$id": "combat_repair_text",
+                              "_$type": "GTextField",
+                              "name": "txt_repair_all",
+                              "x": 8,
+                              "y": 2,
+                              "width": 226,
+                              "height": 28,
+                              "_mouseState": 1,
+                              "text": "修理",
+                              "fontSize": 15,
+                              "color": "#e8e6df",
+                              "align": "center",
+                              "valign": "middle",
+                              "overflow": "shrink"
+                            }
+                          ]
                         }
                       ]
                     },
@@ -1857,7 +2032,7 @@
               "width": 144,
               "height": 34,
               "_mouseState": 2,
-              "tooltips": "出售暂未开放",
+              "tooltips": "出售选中仓库物品，获得愿力",
               "_$child": [
                 {
                   "_$id": "warehouse_sell_bg",

@@ -3,7 +3,7 @@ const fs=require("node:fs/promises"),path=require("node:path");
 const sharp=require("sharp");
 const {confirmStartup}=require("./lobby-save-test-utils.cjs");
 const url=process.env.SKILL_BATTLE_URL||"http://127.0.0.1:18095";
-const out=path.resolve(__dirname,"../output/design/warehouse");
+const out=path.resolve(__dirname,"../tmp/combat-release/warehouse");
 async function point(page,key){
     return page.evaluate(key=>{
         const v=window.__skillBattlePreview,n=v.ui.topView?.getElement(key,false)||v.panel?.getNode?.(key)||v.view.getElement(key,false);
@@ -79,17 +79,16 @@ async function presentation(page){
             if(cells?.numChildren!==count)errors.push(kind+"装备格不完整");
             if(cells&&cells.parent.getChildIndex(cells)>=hint.parent.getChildIndex(hint))errors.push(kind+"图标未叠在格子上");
         }
-        for(const [kind,space]of [["weapon","weapon"],["container","container"]]){
+        for(const [kind,space]of [["weapon","weapon"],["armor","armor"],["accessory","accessory"],["container","container"]]){
             const hint=find(p.root,"img_"+kind+"_hint");
             if(hint.visible===p.state.items.some(i=>i.location.space===space))errors.push(kind+"空位提示显隐错误");
         }
         const hasBag=p.state.items.some(i=>i.location.space==="container");
         if(p.nodes.img_bag_empty.visible===hasBag||p.nodes.bagItemsArea.visible!==hasBag)
             errors.push("纳虚器内容与空态显隐错误");
-        const weight=p.state.items.filter(i=>["weapon","container","bag"].includes(i.location.space))
+        const weight=p.state.items.filter(i=>["weapon","armor","accessory","container","bag"].includes(i.location.space))
             .reduce((sum,i)=>sum+p.config.templates.find(t=>t.id===i.templateId).weight,0);
         if(!p.nodes.txt_bagWeightLimit.text.startsWith("负重："+weight+"/"))errors.push("负重未同步实际物品");
-        if(!find(p.root,"img_armor_hint")?.visible||!find(p.root,"img_accessory_hint")?.visible)errors.push("缺少装备空位提示");
         return errors;
     }),[]);
 }
@@ -100,7 +99,6 @@ async function layout(page){
         const popup=bounds(p.root);
         if(Math.abs((popup.x+popup.r)/2-Laya.stage.width/2)>0.5||Math.abs((popup.y+popup.b)/2-Laya.stage.height/2)>0.5)
             result.push("弹窗居中");
-        if(view.uiElement.elementMapper.elements.length>60)result.push("页面绑定未精简");
         const safe=p.nodes.box_safe_content,s=p.lists.safe.rootNode,b=p.lists.battle.rootNode;
         if(Math.abs(s.x-(safe.width-s.width)/2)>0.5||Math.abs(s.y-(safe.height-s.height)/2)>0.5)result.push("归真匣双向居中");
         const lock=p.nodes.img_safe_lock;

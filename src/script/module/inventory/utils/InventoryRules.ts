@@ -2,9 +2,30 @@ import { BattleRules as Core } from "../../skillBattle/utils/BattleRules";
 import { BuildRules as Build } from "../../build/utils/BuildRules";
 import type { BattleCarry, BattleResult, BattleWeapon } from "../../skillBattle/types/BattleTypes";
 import type { InventoryCommand, InventoryConfig, InventoryItem, InventoryLocation, InventorySpace, InventoryState, InventoryTemplate, InventoryWarehousePlacement, InventoryWarehouseTarget } from "../types/InventoryTypes";
+import { activeTraits, BASES, MAIN, rollItem, RULES, STAT_KEYS, statsFromItems, SUB, TRAITS, WINDOWS } from "../../skillBattle/utils/CombatConfig";
 
 
 export class InventoryRules {
+    static readonly equipmentSpaces = ["weapon","armor","accessory"] as const;
+    static isEquipment(space:string):space is "weapon"|"armor"|"accessory" {return (this.equipmentSpaces as readonly string[]).includes(space);}
+    static createItem(config:InventoryConfig,templateId:number,uid:string,location:InventoryLocation,seed:number,durability?:number):InventoryItem {
+        const t=config.templates.find(k=>k.id===templateId);
+        if(!t)throw new Error("物品模板不存在");
+        let hash=seed>>>0;for(let i=0;i<uid.length;i++)hash=Math.imul(hash^uid.charCodeAt(i),16777619)>>>0;
+        const equipment=t.equipmentBase?rollItem(t.equipmentBase,t.quality,hash):undefined;
+        if(equipment){equipment.name=t.name;if(durability!==undefined)equipment.durability=Math.min(durability,equipment.maxDurability);}
+        return {uid,templateId,location,durability:equipment?.durability??null,...(equipment?{equipment}:{})};
+    }
+    static equipped(state:InventoryState) {return state.items.filter(i=>this.isEquipment(i.location.space));}
+    static stats(config:InventoryConfig,state:InventoryState) {
+        return statsFromItems(this.equipped(state).map(i=>({...i.equipment,durability:i.durability})),Core.base(config.build.setup));
+    }
+    static clampResources(config:InventoryConfig,state:InventoryState):void {
+        const stats=this.stats(config,state);state.hp=Math.min(state.hp,stats.hp);state.mp=Math.min(state.mp,stats.mp);
+    }
+    static repairCost(state:InventoryState):number {
+        return this.equipped(state).reduce((n,i)=>n+(i.equipment.maxDurability-i.durability)*RULES.repairPrice[i.equipment.quality-1],0);
+    }
     static readonly WAREHOUSE_COLUMNS = 8;
     static readonly WAREHOUSE_ROWS = 7;
     static readonly BAG_COLUMNS = 7;
@@ -41,7 +62,7 @@ export class InventoryRules {
     }
     static weight(config: InventoryConfig, state: InventoryState): { current: number; limit: number } {
         const container = state.items.find(i => i.location.space === "container");
-        return { current: state.items.filter(i => ["weapon","container","bag"].includes(i.location.space))
+        return { current: state.items.filter(i => ["weapon","armor","accessory","container","bag"].includes(i.location.space))
             .reduce((sum,i) => sum + (this.template(config,i).weight || 0),0),
             limit: config.weight.base + (container ? this.template(config,container).weightLimit : 0) };
     }
@@ -54,7 +75,7 @@ export class InventoryRules {
     static weapon(config: InventoryConfig, item: InventoryItem): BattleWeapon {
         const t = this.template(config,item);
         if (t.kind !== "weapon") throw new Error("物品不是武器");
-        return {id:t.id,name:t.name,attack:t.weaponAttack,defense:t.weaponDefense,
+        return {id:t.id,name:t.name,attack:0,defense:0,
             durability:item.durability!,maxDurability:t.weaponDurability};
     }
     static dimensions(t: InventoryTemplate, l: InventoryLocation): [number, number] {
@@ -79,13 +100,13 @@ export class InventoryRules {
             new Set(config.templates.map(t => t.id)).size !== config.templates.length)
             throw new Error("三空间配置无效");
         for (const t of config.templates) {
-            if (!int(t.id, 101) || !t.name || !["hp","mp","mixed","shield","repair","stamina","book","material","weapon","container"].includes(t.kind) ||
+            if (!int(t.id, 101) || !t.name || !["hp","mp","mixed","shield","repair","stamina","book","material","weapon","armor","accessory","container"].includes(t.kind) ||
                 !int(t.width, 1, 8) || !int(t.height, 1, 6) || t.stack !== 1 ||
                 ![t.rotate,t.battle,t.safe].every(v => typeof v === "boolean") ||
                 !int(t.bagWidth, 0, 8) || !int(t.bagHeight, 0, 6) ||
-                !/^(?:ui\/atlas\/module\/inventory\/[\w-]+|ui\/image\/naxu\/naxu-[a-z]+-q[1-6])\.png$/.test(t.icon) ||
+                !/^(?:ui\/atlas\/module\/(?:inventory|equipment)\/[\w-]+|ui\/image\/naxu\/naxu-[a-z]+-q[1-6])\.png$/.test(t.icon) ||
                 (t.quality !== undefined && !int(t.quality, 1, 6)) ||
-                (["weapon","container"].includes(t.kind) && (t.safe || t.battle)) ||
+                (["weapon","armor","accessory","container"].includes(t.kind) && (t.safe || t.battle)) ||
                 (t.battle && !["hp","mp","mixed","shield"].includes(t.kind)) ||
                 (t.kind === "container" ? !t.bagWidth || !t.bagHeight : t.bagWidth !== 0 || t.bagHeight !== 0))
                 throw new Error("物品形状、类别或资源配置无效");
@@ -94,8 +115,8 @@ export class InventoryRules {
                 t.kind === "stamina" && (!t.staminaRestore || t.battle) ||
                 t.kind !== "stamina" && !!t.staminaRestore)
                 throw new Error("物品重量、承重或体力药配置无效");
-            if (!int(t.recyclePrice) || ![t.weaponAttack,t.weaponDefense,t.weaponDurability].every(v=>int(v)) ||
-                (t.kind === "weapon" ? t.weaponDurability <= 0 : t.weaponAttack + t.weaponDefense + t.weaponDurability !== 0) ||
+            if (!int(t.recyclePrice) || !int(t.weaponDurability) ||
+                (this.isEquipment(t.kind) ? t.weaponDurability <= 0 || !t.equipmentBase : t.weaponDurability !== 0) ||
                 (t.kind === "repair" ? t.repairAmount !== -1 && !int(t.repairAmount,1) : t.repairAmount !== 0))
                 throw new Error("物品价格、武器属性或修理量无效");
             if (["hp","mp","mixed","shield"].includes(t.kind)) {
@@ -109,13 +130,13 @@ export class InventoryRules {
         if (!config.weight || !int(config.weight.base,1) || !int(config.weight.sourcePages,1,7) ||
             config.templates.some(t => !int(t.weight,1) || t.kind === "container" && !int(t.weightLimit,1)))
             throw new Error("角色或背包承重配置无效");
-        if (!config.build.setup.weapon || !Array.isArray(config.fixtures) || !config.fixtures.length ||
+        if (!Array.isArray(config.fixtures) || !config.fixtures.length ||
             new Set(config.fixtures.map(f => f.id)).size !== config.fixtures.length)
             throw new Error("隔离物品来源缺失");
         for (const f of config.fixtures) {
             const t = config.templates.find(t => t.id === f.templateId);
             if (!t || !int(f.id,1) || !int(f.count,1,30) || !int(f.node,0,config.build.encounters.length + 1) ||
-                !int(f.durability,0,t.kind === "weapon" ? t.weaponDurability : 0))
+                !int(f.durability,0,this.isEquipment(t.kind) ? t.weaponDurability : 0))
                 throw new Error("演练来源表无效");
         }
     }
@@ -125,13 +146,12 @@ export class InventoryRules {
         const items: InventoryItem[] = [];
         for (const f of config.fixtures) for (let n = 0; n < f.count; n++) {
             const t = config.templates.find(t => t.id === f.templateId)!;
-            items.push({ uid: `${runId}:f${f.id}:${n}`, templateId: t.id,
-                location: { space: "warehouse" },
-                durability: t.kind === "weapon" ? f.durability : null });
+            items.push(this.createItem(config,t.id,`${runId}:f${f.id}:${n}`,{space:"warehouse"},seed,
+                this.isEquipment(t.kind)?f.durability:undefined));
         }
         const state: InventoryState = { runId, revision: 0, phase: "preparation", enteredAt: null, deadlineAt: null,
             flow: null, items, hp: config.build.setup.player.maxHp, mp: config.build.setup.player.maxMp,
-            node: 0, revealed: [], result: null, returned: [], lost: [], consumed: [] };
+            node: 0, revealed: [], result: null, returned: [], lost: [], consumed: [], wish:0 };
         this.validate(config, state);
         return state;
     }
@@ -267,15 +287,16 @@ export class InventoryRules {
         state.warehouseLayout = layout.filter(p => p.uid !== uid && present.has(p.uid));
         state.warehouseLayout.push({ uid, ...to });
     }
-    static weaponPlan(config: InventoryConfig, state: InventoryState, uid: string):
-        Extract<InventoryCommand,{ type: "equipWeapon" }> {
+    static equipmentPlan(config:InventoryConfig,state:InventoryState,uid:string):
+        Extract<InventoryCommand,{type:"equipEquipment"}> {
         this.movable(state);
-        const next = this.item(state,uid), old = state.items.find(i => i.location.space === "weapon");
+        const next=this.item(state,uid),kind=this.template(config,next).kind;
         this.accessible(state,next.location);
-        if (this.template(config,next).kind !== "weapon") throw new Error("只能装备武器");
-        if (old?.uid === uid) throw new Error("已经装备此武器");
-        return { type: "equipWeapon", uid, from: Core.clone(next.location),
-            ...(old ? { oldTo: Core.clone(next.location) } : {}) };
+        if(!this.isEquipment(kind))throw new Error("请选择武器、防具或饰品");
+        const old=state.items.find(i=>i.location.space===kind);
+        if(old?.uid===uid)throw new Error("已装备此物品");
+        return {type:"equipEquipment",slot:kind,uid,from:Core.clone(next.location),
+            ...(old?{oldTo:Core.clone(next.location)}:{})};
     }
     static containerPlan(config: InventoryConfig, state: InventoryState, uid: string | null):
         Extract<InventoryCommand,{ type: "equipContainer" }> {
@@ -355,7 +376,7 @@ export class InventoryRules {
         return item;
     }
     private static destination(state: InventoryState, to: InventoryLocation): void {
-        if (["weapon","container","consumed","lost"].includes(to.space)) throw new Error("目标必须是合法储物位置");
+        if (["weapon","armor","accessory","container","consumed","lost"].includes(to.space)) throw new Error("目标必须是合法储物位置");
         this.accessible(state, to);
     }
     private static movable(state: InventoryState): void {
@@ -373,12 +394,15 @@ export class InventoryRules {
             if (["hp","mp","mixed","shield"].includes(t.kind))
                 pouch[item.location.y! * config.spaces.battleWidth + item.location.x!] = { itemUid: item.uid, itemId: t.id };
         }
-        return { hp: state.hp, mp: state.mp, weapon: weapon ?
+        return { hp: state.hp, mp: state.mp, equipment:this.equipped(state).map(i=>({
+            itemUid:i.uid,itemId:i.templateId,name:this.template(config,i).name,instance:{...Core.clone(i.equipment),durability:i.durability!},
+        })), weapon: weapon ?
             this.weapon(config,weapon) : null, pouch };
     }
     static settle(state: InventoryState, result: NonNullable<InventoryState["result"]>): void {
         state.result = result; state.phase = "ended";
         for (const item of state.items) {
+            if(item.equipment)item.equipment.kills=0;
             const space = item.location.space;
             if (["warehouse","consumed","lost"].includes(space)) continue;
             if (space !== "source" && (result === "extract" || space === "safe")) {
@@ -390,7 +414,7 @@ export class InventoryRules {
         command: InventoryCommand, at: number): { state: InventoryState; battle?: BattleResult } {
         if(command?.type === "reflowBag") {
             this.movable(snapshot);
-            if(!["move","moveBatch","arrangeWarehouse","equipWeapon","equipContainer"].includes(command.action?.type))
+            if(!["move","moveBatch","arrangeWarehouse","equipEquipment","equipContainer"].includes(command.action?.type))
                 throw new Error("背包重排只能与物品整理一并提交");
             const projection=this.bagProjection(config,snapshot);
             if(projection.overflow.length)throw new Error("七列背包空间不足，请先取出待整理物品");
@@ -425,7 +449,7 @@ export class InventoryRules {
             case "move": {
                 this.movable(state);
                 const { uid, from, to } = command.move, item = this.source(state,uid,from);
-                if (["weapon","container"].includes(from.space))
+                if (["weapon","armor","accessory","container"].includes(from.space))
                     throw new Error("装备本体须通过换装事务移动");
                 this.destination(state,to);
                 if (warehouseTo && to.space !== "warehouse") throw new Error("仓库落点只能用于入库");
@@ -448,12 +472,14 @@ export class InventoryRules {
                 else state.warehouseLayout=layout;
                 break;
             }
-            case "equipWeapon": {
+            case "equipEquipment": {
                 this.movable(state);
-                const old = state.items.find(i => i.location.space === "weapon");
+                const slot=command.slot;
+                if(!this.isEquipment(slot))throw new Error("装备部位无效");
+                const old = state.items.find(i => i.location.space === slot);
                 if (old && old.uid === command.uid) throw new Error("已经装备此武器");
                 const next = command.uid ? this.source(state,command.uid,command.from!) : null;
-                if (next && this.template(config,next).kind !== "weapon") throw new Error("只能装备武器");
+                if (next && this.template(config,next).kind !== slot) throw new Error("装备部位不匹配");
                 if (!old && !next) throw new Error("没有武器可卸下");
                 if (warehouseTo && (next || !old || command.oldTo?.space !== "warehouse"))
                     throw new Error("仓库落点只能用于卸下装备入库");
@@ -466,8 +492,37 @@ export class InventoryRules {
                     if (state.warehouseLayout && next && this.same(command.oldTo,command.from) && command.oldTo.space === "warehouse")
                         state.warehouseLayout = state.warehouseLayout.map(p => p.uid === next.uid ? { ...p, uid: old.uid } : p);
                 }
-                if (next) next.location = { space: "weapon" };
+                if (next) next.location = { space: slot };
                 break;
+            }
+            case "repair": {
+                this.movable(state);
+                const tool=this.source(state,command.uid,command.from),t=this.template(config,tool),target=this.item(state,command.targetUid);
+                if(t.kind!=="repair"||!this.isEquipment(target.location.space)||!target.equipment)
+                    throw new Error("修理物只能拖到已装备的武器、防具或饰品");
+                const max=target.equipment.maxDurability;
+                if(target.durability>=max)throw new Error("装备耐久已满，修理物未消耗");
+                target.durability=t.repairAmount===-1?max:Math.min(max,target.durability+t.repairAmount);
+                target.equipment.durability=target.durability;this.consume(state,tool);break;
+            }
+            case "repairAll": {
+                this.movable(state);
+                if(state.phase!=="preparation") {
+                    const map=(state as InventoryState & {map?:{nodes:Array<{id:number;icon?:string}>}}).map;
+                    if(!map?.nodes.some(n=>n.id===state.node&&n.icon==="forge"))throw new Error("仅整备或炼器室可一键修理");
+                }
+                const cost=this.repairCost(state);
+                if(!cost)throw new Error("当前装备无需修理");
+                if(state.wish<cost)throw new Error(`愿力不足，需要${cost}，当前${state.wish}`);
+                state.wish-=cost;
+                for(const i of this.equipped(state)){i.durability=i.equipment.maxDurability;i.equipment.durability=i.durability;}
+                break;
+            }
+            case "sell": {
+                this.movable(state);
+                const item=this.source(state,command.uid,command.from);
+                if(state.phase!=="preparation"||item.location.space!=="warehouse")throw new Error("只能在整备出售仓库物品");
+                state.wish+=this.template(config,item).recyclePrice;this.consume(state,item);break;
             }
             case "equipContainer": {
                 this.movable(state);
@@ -523,15 +578,17 @@ export class InventoryRules {
                     const max = this.template(config,weapon).weaponDurability;
                     if (weapon.durability! >= max) throw new Error("武器耐久已满，工具未消耗");
                     weapon.durability = t.repairAmount === -1 ? max : Math.min(max,weapon.durability! + t.repairAmount);
+                    weapon.equipment.durability=weapon.durability;
                 } else if (t.kind === "stamina") {
                     if (state.stamina === undefined || !config.staminaMax) throw new Error("当前没有探索体力");
                     if (state.stamina >= config.staminaMax) throw new Error("体力已满，药品未消耗");
                     state.stamina = Math.min(config.staminaMax,state.stamina + t.staminaRestore!);
                 } else if (["hp","mp","mixed"].includes(t.kind)) {
                     const effect = config.build.setup.potions.find(p => p.itemId === t.id)!;
-                    const hp = ["hp","mixed"].includes(t.kind) ? Math.min(effect.amount,config.build.setup.player.maxHp-state.hp) : 0;
-                    const mp = t.kind === "mp" ? Math.min(effect.amount,config.build.setup.player.maxMp-state.mp) :
-                        t.kind === "mixed" ? Math.min(effect.secondaryAmount,config.build.setup.player.maxMp-state.mp) : 0;
+                    const stats=this.stats(config,state),bonus=1+(activeTraits(this.equipped(state).map(i=>i.equipment)).medicine?.p??0)/100;
+                    const hp = ["hp","mixed"].includes(t.kind) ? Math.min(Math.round(effect.amount*bonus),stats.hp-state.hp) : 0;
+                    const mp = t.kind === "mp" ? Math.min(Math.round(effect.amount*bonus),stats.mp-state.mp) :
+                        t.kind === "mixed" ? Math.min(Math.round(effect.secondaryAmount*bonus),stats.mp-state.mp) : 0;
                     if (!hp && !mp) throw new Error("生命灵力已满，药品未消耗");
                     state.hp += hp; state.mp += mp;
                 } else if (t.kind === "shield") {
@@ -548,6 +605,7 @@ export class InventoryRules {
         }
         if (state.warehouseLayout) state.warehouseLayout = this.warehousePlacements(config,state);
         this.syncSources(config,state);
+        this.clampResources(config,state);
         state.revision++;
         this.validate(config,state);
         return { state, battle };
@@ -566,11 +624,25 @@ export class InventoryRules {
         const equipped: string[] = [], grids: { [key: string]: Set<string> } = {};
         for (const item of state.items) {
             const t = this.template(config,item), l = item.location;
-            if (!l || !["warehouse","battle","safe","bag","weapon","container","source","consumed","lost"].includes(l.space))
+            if (!l || !["warehouse","battle","safe","bag","weapon","armor","accessory","container","source","consumed","lost"].includes(l.space))
                 throw new Error("物品归属无效");
-            if (t.kind === "weapon" ? !Number.isInteger(item.durability) || item.durability! < 0 ||
+            if (this.isEquipment(t.kind) ? !Number.isInteger(item.durability) || item.durability! < 0 ||
                 item.durability! > t.weaponDurability : item.durability !== null)
                 throw new Error("实际耐久无效");
+            if(this.isEquipment(t.kind)){
+                const e=item.equipment,base=e&&BASES.find(b=>b.code===t.equipmentBase);
+                if(!e||!base||e.code!==base.code||e.slot!==base.slot||e.quality!==t.quality||e.main!==base.main||
+                    e.durability!==item.durability||e.maxDurability!==t.weaponDurability||!STAT_KEYS.includes(e.sub)||
+                    !Number.isSafeInteger(e.kills)||e.kills<0)throw new Error("装备实例与底材不一致");
+                const [lo,hi]=WINDOWS[e.quality-1];
+                for(const [band,v,ranges] of [[e.mainBand,e.mainValue,MAIN[e.main]],[e.subBand,e.subValue,SUB[e.sub]]] as const)
+                    if(!Number.isInteger(band)||band<lo||band>hi||!Number.isInteger(v)||v<ranges[band-1][0]||v>ranges[band-1][1])
+                        throw new Error("装备随机属性超出品质区间");
+                const trait=TRAITS.find(tr=>tr.code===e.trait.code&&tr.slot===e.slot),pr=trait?.p[e.quality-1],nr=trait?.n?.[e.quality-1];
+                if(!trait||!Number.isInteger(e.trait.p)||e.trait.p<pr[0]||e.trait.p>pr[1]||
+                    (nr? !Number.isInteger(e.trait.n)||e.trait.n<nr[0]||e.trait.n>nr[1]:e.trait.n!==undefined))
+                    throw new Error("装备特性参数无效");
+            }else if(item.equipment)throw new Error("非装备不应保存装备实例");
             if (["battle","safe","bag"].includes(l.space)) {
                 if (l.space === "battle" && !t.battle) throw new Error("斗法匣只收获准战斗药品");
                 if (l.space === "safe" && !t.safe) throw new Error("归真匣禁止装备与纳虚器");
@@ -594,12 +666,13 @@ export class InventoryRules {
                     throw new Error("列表或装备位不能保留格坐标");
                 if (l.space === "source" && (!Number.isInteger(l.node) || l.node! < 0 ||
                     l.node! > config.nodeLimit)) throw new Error("物品来源节点无效");
-                if (l.space === "weapon" || l.space === "container") {
+                if (this.isEquipment(l.space) || l.space === "container") {
                     if (t.kind !== l.space || equipped.includes(l.space)) throw new Error("装备类型或数量不合法");
                     equipped.push(l.space);
                 }
             }
         }
+        if(!Number.isSafeInteger(state.wish)||state.wish<0)throw new Error("愿力余额无效");
         {
             const weight=this.weight(config,state);
             if (weight.current > weight.limit) throw new Error(`负重超限：${weight.current} / ${weight.limit}`);
@@ -624,7 +697,7 @@ export class InventoryRules {
         }
         if (state.phase === "active" && state.flow?.phase === "battle") {
             const record = state.flow.battles[state.flow.battles.length - 1], carry = this.carry(config,state);
-            if (!this.same(record.state.pouch,carry.pouch) || !this.same(record.state.weapon,carry.weapon) ||
+            if (!this.same(record.state.pouch,carry.pouch) || !this.same(record.state.equipment,carry.equipment) ||
                 record.state.player.hp !== state.hp || record.state.player.mp !== state.mp)
                 throw new Error("战斗与实际携带物不一致");
         }

@@ -1,18 +1,20 @@
 import type { BattleWeapon } from "../../skillBattle/types/BattleTypes";
 import type { BuildCommand, BuildConfig, BuildState } from "../../build/types/BuildTypes";
 import type { EQuality } from "../../../config/schema";
+import type { EquipmentInstance } from "../../skillBattle/types/CombatTypes";
 
-export type InventorySpace = "warehouse" | "battle" | "safe" | "bag" | "weapon" | "container" |
+export type InventorySpace = "warehouse" | "battle" | "safe" | "bag" | "weapon" | "armor" | "accessory" | "container" |
     "source" | "consumed" | "lost";
 export interface InventoryLocation { space: InventorySpace; x?: number; y?: number; rotated?: boolean; node?: number; }
 export interface InventoryTemplate {
-    id: number; name: string; kind: "hp" | "mp" | "mixed" | "shield" | "repair" | "stamina" | "book" | "material" | "weapon" | "container";
+    id: number; name: string; kind: "hp" | "mp" | "mixed" | "shield" | "repair" | "stamina" | "book" | "material" | "weapon" | "armor" | "accessory" | "container";
     width: number; height: number; rotate: boolean; battle: boolean; safe: boolean; stack: number;
     bagWidth: number; bagHeight: number; icon: string; quality: EQuality;
     weight: number; weightLimit: number; staminaRestore: number;
-    weaponAttack: number; weaponDefense: number; weaponDurability: number; repairAmount: number; recyclePrice: number;
+    weaponDurability: number; repairAmount: number; recyclePrice: number;
+    equipmentBase: string | null;
 }
-export interface InventoryItem { uid: string; templateId: number; location: InventoryLocation; durability: number | null; }
+export interface InventoryItem { uid: string; templateId: number; location: InventoryLocation; durability: number | null; equipment?: EquipmentInstance; }
 export interface InventoryWarehousePlacement { uid: string; page: number; x: number; y: number; rotated: boolean; }
 export type InventoryWarehouseTarget = Omit<InventoryWarehousePlacement,"uid">;
 export interface InventoryConfig {
@@ -34,6 +36,7 @@ export interface InventoryState {
     interactionSource?: number | null;
     stamina?: number;
     bagColumns?: 7;
+    wish: number;
 }
 export interface InventoryMove { uid: string; from: InventoryLocation; to: InventoryLocation; }
 export type InventoryAction =
@@ -42,7 +45,11 @@ export type InventoryAction =
     | { type: "moveBatch"; moves: InventoryMove[] }
     | { type: "arrangeWarehouse"; uid: string; from: InventoryLocation; to: InventoryWarehouseTarget }
     | { type: "sortStorage"; page: number }
-    | { type: "equipWeapon"; uid: string | null; from?: InventoryLocation; oldTo?: InventoryLocation; warehouseTo?: InventoryWarehouseTarget }
+    | { type: "equipEquipment"; slot: "weapon" | "armor" | "accessory"; uid: string | null; from?: InventoryLocation;
+        oldTo?: InventoryLocation; warehouseTo?: InventoryWarehouseTarget }
+    | { type: "repair"; uid: string; from: InventoryLocation; targetUid: string }
+    | { type: "repairAll" }
+    | { type: "sell"; uid: string; from: InventoryLocation }
     | { type: "equipContainer"; uid: string | null; from?: InventoryLocation; oldTo?: InventoryLocation; contents: InventoryMove[];
         warehouseTo?: InventoryWarehouseTarget }
     | { type: "use"; uid: string; from: InventoryLocation }

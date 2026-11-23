@@ -894,6 +894,7 @@
     "ui/atlas/module/inventory/repair-tool.png",
     "ui/atlas/module/inventory/spirit-fruit.png",
     "ui/atlas/module/inventory/sword-book.png",
+    "ui/atlas/module/warehouse/graphite/button-normal.png",
     "ui/atlas/module/warehouse/graphite/close.png",
     "ui/atlas/module/warehouse/graphite/detail-fill.png",
     "ui/atlas/module/warehouse/graphite/detail-frame.png",
@@ -1135,7 +1136,6 @@
   "ui/prefab/module/lobby/LobbySettingsView.lh": [
     "ui/atlas/module/lobby/check.png",
     "ui/atlas/module/lobby/close.png",
-    "ui/atlas/module/lobby/hud-strip.png",
     "ui/atlas/module/lobby/icon-button.png",
     "ui/atlas/module/lobby/music.png",
     "ui/atlas/module/lobby/sound.png",
@@ -1160,14 +1160,6 @@
     "ui/texture/lobby/building-warehouse.png",
     "ui/texture/lobby/lobby-courtyard.png"
   ],
-  "ui/prefab/module/manualTest/EnemyPickerView.lh": [],
-  "ui/prefab/module/manualTest/ManualTestView.lh": [
-    "ui/atlas/module/skillBattle/skill-1.png",
-    "ui/atlas/module/skillBattle/skill-2.png",
-    "ui/atlas/module/skillBattle/skill-3.png",
-    "ui/atlas/module/skillBattle/skill-4.png"
-  ],
-  "ui/prefab/module/manualTest/TrialOptionPickerView.lh": [],
   "ui/prefab/module/skillBattle/SkillBattleBattleView.lh": [
     "ui/atlas/module/inventory/arrow.png",
     "ui/atlas/module/inventory/blue-flask.png",

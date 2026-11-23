@@ -4,8 +4,7 @@ import { InventoryRules as Inventory } from "../../inventory/utils/InventoryRule
 import type { BattleResult } from "../../skillBattle/types/BattleTypes";
 import type { ExpeditionCommand, ExpeditionConfig, ExpeditionNode, ExpeditionSource, ExpeditionState } from "../types/ExpeditionRunTypes";
 import { EXPEDITION_LOOT_FAMILIES, isBattleNode } from "../types/ExpeditionRunTypes";
-import { GuzongEnemyRules } from "../../skillBattle/utils/GuzongEnemyRules";
-import type { RogueEnemyId } from "../../skillBattle/types/QingmingTypes";
+import { ENEMIES } from "../../skillBattle/utils/CombatConfig";
 
 
 class Random {
@@ -111,7 +110,7 @@ export class ExpeditionRules {
         const familyKinds = new Map<string, string>([
             ["hp","hp"],["mp","mp"],["mixed","mixed"],["shield","shield"],["repair","repair"],["stamina","stamina"],
             ["herb","material"],["ore","material"],["beast","material"],["relic","material"],
-            ["weapon","weapon"],["book","book"],["container","container"],
+            ["weapon","weapon"],["armor","armor"],["accessory","accessory"],["book","book"],["container","container"],
         ]);
         const families = new Set(familyKinds.keys());
         for (const v of c.variants) {
@@ -135,11 +134,13 @@ export class ExpeditionRules {
             const template = Inventory.template(c,item), kind = template.kind;
             if(kind==="stamina")continue;
             const rotated = template.height > c.spaces.battleHeight && template.rotate;
-            item.location = kind === "weapon" || kind === "container" ? { space: kind } :
+            item.location = Inventory.isEquipment(kind) || kind === "container" ? { space: kind } :
                 kind === "repair" ? { space: "bag", x: 0, y: 0, rotated: false } :
                 { space: "battle", x: slot, y: 0, rotated };
             if (item.location.space === "battle") slot += Inventory.dimensions(template,item.location)[0];
         }
+        const initialStats=Inventory.stats(c,state);
+        state.hp=initialStats.hp;state.mp=initialStats.mp;
         Inventory.validate(c,state);
         return state;
     }
@@ -261,9 +262,9 @@ export class ExpeditionRules {
         return paths;
     }
     static recovery(c: ExpeditionConfig, s: ExpeditionState): { hp: number; mp: number } {
-        const p = c.build.setup.player, ratio = c.rules.recoveryPercent / 100;
-        return { hp: Math.min(p.maxHp-s.hp,Math.round(p.maxHp*ratio)),
-            mp: Math.min(p.maxMp-s.mp,Math.round(p.maxMp*ratio)) };
+        const p = Inventory.stats(c,s), ratio = c.rules.recoveryPercent / 100;
+        return { hp: Math.min(p.hp-s.hp,Math.round(p.hp*ratio)),
+            mp: Math.min(p.mp-s.mp,Math.round(p.mp*ratio)) };
     }
     static source(s: ExpeditionState): ExpeditionSource | undefined { return s.map.sources.find(b => b.node === s.node); }
     static searchDuration(c: ExpeditionConfig, s: ExpeditionState): number {
@@ -290,9 +291,9 @@ export class ExpeditionRules {
             const template = c.templates.find(t=>t.id===templateId)!;
             const max = Math.min(pool.durability[1],template.weaponDurability);
             const min = Math.min(pool.durability[0],max);
-            const durability = family === "weapon" ? min+random.below(max-min+1) : null;
-            entries.push({ uid: `${s.runId}:loot:${node.key}:${i}`, templateId, durability,
-                location: { space: "source", node: s.node } });
+            const durability = Inventory.isEquipment(family) ? min+random.below(max-min+1) : undefined;
+            entries.push(Inventory.createItem(c,templateId,`${s.runId}:loot:${node.key}:${i}`,
+                {space:"source",node:s.node},seed,durability));
         }
         s.map.sources.push({ node: s.node, entries, opened: false, revealed: 0, progressMs: 0 });
         s.sourceLayouts!.push({node:s.node,slots:[]});
@@ -300,19 +301,16 @@ export class ExpeditionRules {
     }
     private static pay(c: ExpeditionConfig,s: ExpeditionState,cost:number,hpPercent:number): boolean {
         if(s.stamina!>=cost) { s.stamina!-=cost;return true; }
-        s.hp=Math.max(0,s.hp-Math.round(c.build.setup.player.maxHp*hpPercent/100));
+        s.hp=Math.max(0,s.hp-Math.round(Inventory.stats(c,s).hp*hpPercent/100));
         if(s.hp>0)return true;
         s.flow!.phase="ended";s.flow!.endReason="defeat";s.flow!.pending=null;
-        {
-            delete s.flow!.qingming;
-        }
         Inventory.settle(s,"defeat");return false;
     }
     private static battleConfig(c: ExpeditionConfig,s: ExpeditionState) {
         return {...c.build,encounters:s.map.nodes.filter(isBattleNode).map(n=>{
             const template=c.build.encounters.find(e=>e.id===`battle:${n.encounterKey}`);
             if(!template)throw new Error("地图敌人模板不存在");
-            return {...template,id:`battle:${n.key}`,qingmingEnemy:n.qingmingEnemy};
+            return {...template,id:`battle:${n.key}`,enemyId:n.enemyId};
         })};
     }
     static apply(c: ExpeditionConfig, snapshot: ExpeditionState,
@@ -343,12 +341,11 @@ export class ExpeditionRules {
                 s.phase = "active"; s.enteredAt = at; s.deadlineAt = at + c.rules.limitMs;
                 this.generateLongRouteMap(c,s,seed);
                 {
-                    const ids=Object.keys(GuzongEnemyRules.enemies) as RogueEnemyId[];
                     for(const n of s.map.nodes.filter(isBattleNode)) {
-                        const tier=n.kind==="boss"?"首领":n.kind==="elite"?"精英":"普通";
-                        const pool=ids.filter(k=>GuzongEnemyRules.enemies[k].tier===tier);
-                        n.qingmingEnemy=pool[new Random(seed,`qingming-enemy:${n.key}`).below(pool.length)];
-                        n.name=GuzongEnemyRules.enemies[n.qingmingEnemy].name;
+                        const tier=n.kind==="boss"?3:n.kind==="elite"?2:1;
+                        const pool=ENEMIES.filter(e=>e.tier===tier);
+                        const enemy=pool[new Random(seed,`enemy:${n.key}`).below(pool.length)];
+                        n.enemyId=enemy.id;n.name=enemy.name;
                     }
                 }
                 break;
@@ -373,6 +370,14 @@ export class ExpeditionRules {
                 s.stamina!-=cost;
                 s.flow=Build.apply(this.battleConfig(c,s),s.flow!,{type:"battle"},at,Inventory.carry(c,s),
                     `battle:${n.key}`).state;
+                {
+                    const initial=s.flow.battles[s.flow.battles.length-1].state;
+                    s.hp=initial.player.hp;s.mp=initial.player.mp;
+                    for(const gear of initial.equipment){
+                        const item=Inventory.item(s,gear.itemUid);item.equipment=Core.clone(gear.instance);item.durability=gear.instance.durability;
+                    }
+                    if(initial.phase==="defeat")Inventory.settle(s,"defeat");
+                }
                 break;
             }
             case "borrow": case "insight":
@@ -431,7 +436,7 @@ export class ExpeditionRules {
                 finish("extract"); break;
             case "abandon": case "timeout": finish(command.type); break;
             case "build": {
-                if (s.phase !== "active" || !s.flow || !["choose","action"].includes(command.command.type))
+                if (s.phase !== "active" || !s.flow || !["choose","action","loadout"].includes(command.command.type))
                     throw new Error("图上战斗及奖励须由对应节点发起");
                 const n=this.node(c,s.node,s);
                 const result = Build.apply(this.battleConfig(c,s),s.flow,command.command,at,Inventory.carry(c,s),
@@ -439,8 +444,9 @@ export class ExpeditionRules {
                 s.flow = result.state; battle = result.battle;
                 if (battle?.ok) {
                     s.hp = battle.state.player.hp; s.mp = battle.state.player.mp;
-                    const weapon = s.items.find(i => i.location.space === "weapon");
-                    if (weapon) weapon.durability = battle.state.weapon!.durability;
+                    for(const gear of battle.state.equipment){
+                        const item=Inventory.item(s,gear.itemUid);item.equipment=Core.clone(gear.instance);item.durability=gear.instance.durability;
+                    }
                     if (command.command.type === "action" && command.command.action.type === "potion") {
                         const item = Inventory.item(s,command.command.action.itemUid);
                         if (item.location.space !== "battle") throw new Error("药品不在斗法匣");
@@ -464,6 +470,7 @@ export class ExpeditionRules {
         }
         if (s.warehouseLayout) s.warehouseLayout = Inventory.warehousePlacements(c,s);
         Inventory.syncSources(c,s);
+        if(s.flow?.phase!=="battle")Inventory.clampResources(c,s);
         s.revision++;
         Inventory.validate(c,s);
         return { state: s, battle };

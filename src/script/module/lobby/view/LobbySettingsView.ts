@@ -1,7 +1,5 @@
 import { UIBaseView } from "../../../games/ui/UIBaseView";
 import { UILayer } from "../../../games/ui/UILayer";
-import { UIManager } from "../../../games/ui/UIManager";
-import { ManualTestView } from "../../manualTest/view/ManualTestView";
 
 interface LobbyAudioSettings { music: boolean; sound: boolean; }
 
@@ -34,7 +32,6 @@ export class LobbySettingsView extends UIBaseView {
         this.addClickListener(this.getElement("btn_close"), this.close);
         this.addClickListener(this.getElement("btn_music"), () => this.toggleAudio("music"));
         this.addClickListener(this.getElement("btn_sound"), () => this.toggleAudio("sound"));
-        this.addClickListener(this.getElement("btn_manual_test"), this.onClickManualTest);
     }
 
     onOpen(): void {
@@ -59,10 +56,6 @@ export class LobbySettingsView extends UIBaseView {
         this.soundCheck.visible = this.audio.sound;
     }
 
-    private onClickManualTest(): void {
-        this.close();
-        UIManager.ins().openForm(ManualTestView);
-    }
 
     protected onClose(): void {}
 }

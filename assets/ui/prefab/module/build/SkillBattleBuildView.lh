@@ -527,6 +527,209 @@
                   "mouseEnabled": false
                 }
               ]
+            },
+            {
+              "_$id": "combat_build_skill1",
+              "_$type": "GWidget",
+              "name": "skill1",
+              "x": 640,
+              "y": 34,
+              "width": 300,
+              "height": 54,
+              "_$child": [
+                {
+                  "_$id": "combat_build_txt_skill1",
+                  "_$type": "GTextField",
+                  "name": "txt_skill1",
+                  "x": 0,
+                  "y": 4,
+                  "width": 300,
+                  "height": 46,
+                  "text": "确认领取",
+                  "zOrder": 1,
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "combat_build_skill2",
+              "_$type": "GWidget",
+              "name": "skill2",
+              "x": 640,
+              "y": 34,
+              "width": 300,
+              "height": 54,
+              "_$child": [
+                {
+                  "_$id": "combat_build_txt_skill2",
+                  "_$type": "GTextField",
+                  "name": "txt_skill2",
+                  "x": 0,
+                  "y": 4,
+                  "width": 300,
+                  "height": 46,
+                  "text": "确认领取",
+                  "zOrder": 1,
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "combat_build_skill3",
+              "_$type": "GWidget",
+              "name": "skill3",
+              "x": 640,
+              "y": 34,
+              "width": 300,
+              "height": 54,
+              "_$child": [
+                {
+                  "_$id": "combat_build_txt_skill3",
+                  "_$type": "GTextField",
+                  "name": "txt_skill3",
+                  "x": 0,
+                  "y": 4,
+                  "width": 300,
+                  "height": 46,
+                  "text": "确认领取",
+                  "zOrder": 1,
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "combat_build_skill4",
+              "_$type": "GWidget",
+              "name": "skill4",
+              "x": 640,
+              "y": 34,
+              "width": 300,
+              "height": 54,
+              "_$child": [
+                {
+                  "_$id": "combat_build_txt_skill4",
+                  "_$type": "GTextField",
+                  "name": "txt_skill4",
+                  "x": 0,
+                  "y": 4,
+                  "width": 300,
+                  "height": 46,
+                  "text": "确认领取",
+                  "zOrder": 1,
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "combat_build_upgrade0",
+              "_$type": "GWidget",
+              "name": "upgrade0",
+              "x": 640,
+              "y": 34,
+              "width": 300,
+              "height": 54,
+              "_$child": [
+                {
+                  "_$id": "combat_build_txt_upgrade0",
+                  "_$type": "GTextField",
+                  "name": "txt_upgrade0",
+                  "x": 0,
+                  "y": 4,
+                  "width": 300,
+                  "height": 46,
+                  "text": "确认领取",
+                  "zOrder": 1,
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "combat_build_cancel",
+              "_$type": "GWidget",
+              "name": "cancel",
+              "x": 640,
+              "y": 34,
+              "width": 300,
+              "height": 54,
+              "_$child": [
+                {
+                  "_$id": "combat_build_txt_cancel",
+                  "_$type": "GTextField",
+                  "name": "txt_cancel",
+                  "x": 0,
+                  "y": 4,
+                  "width": 300,
+                  "height": 46,
+                  "text": "确认领取",
+                  "zOrder": 1,
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "combat_build_hub",
+              "_$type": "GWidget",
+              "name": "hub",
+              "x": 640,
+              "y": 34,
+              "width": 300,
+              "height": 54,
+              "_$child": [
+                {
+                  "_$id": "combat_build_txt_hub",
+                  "_$type": "GTextField",
+                  "name": "txt_hub",
+                  "x": 0,
+                  "y": 4,
+                  "width": 300,
+                  "height": 46,
+                  "text": "确认领取",
+                  "zOrder": 1,
+                  "fontSize": 22,
+                  "color": "#e3e8de",
+                  "align": "center",
+                  "valign": "middle",
+                  "wordWrap": true,
+                  "overflow": "shrink",
+                  "mouseEnabled": false
+                }
+              ]
             }
           ]
         },
@@ -783,6 +986,48 @@
         },
         {
           "_$ref": "invstart_946"
+        },
+        {
+          "_$ref": "combat_build_skill1"
+        },
+        {
+          "_$ref": "combat_build_txt_skill1"
+        },
+        {
+          "_$ref": "combat_build_skill2"
+        },
+        {
+          "_$ref": "combat_build_txt_skill2"
+        },
+        {
+          "_$ref": "combat_build_skill3"
+        },
+        {
+          "_$ref": "combat_build_txt_skill3"
+        },
+        {
+          "_$ref": "combat_build_skill4"
+        },
+        {
+          "_$ref": "combat_build_txt_skill4"
+        },
+        {
+          "_$ref": "combat_build_upgrade0"
+        },
+        {
+          "_$ref": "combat_build_txt_upgrade0"
+        },
+        {
+          "_$ref": "combat_build_cancel"
+        },
+        {
+          "_$ref": "combat_build_txt_cancel"
+        },
+        {
+          "_$ref": "combat_build_hub"
+        },
+        {
+          "_$ref": "combat_build_txt_hub"
         }
       ],
       "mapperType": 4

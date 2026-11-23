@@ -9,10 +9,9 @@ import { SkillBattleReportView } from "./SkillBattleReportView";
 import { SkillBattleBuildInfoView } from "../../build/view/SkillBattleBuildInfoView";
 import { placeInDesign, visitRegion } from "../../gameplay/utils/GameplayLayout";
 import type { SkillBattlePage } from "../../gameplay/utils/GameplayLayout";
-import { QingmingConfig as QC } from "../utils/QingmingConfig";
-import { QingmingRules as QR } from "../utils/QingmingRules";
-import { GuzongEnemyRules as QE } from "../utils/GuzongEnemyRules";
-import type { RogueMove } from "../types/QingmingTypes";
+import { BY_SKILL, traitDescription } from "../utils/CombatConfig";
+import { intent, layers, skillCost } from "../utils/CombatEngine";
+import type { StatusType } from "../types/CombatTypes";
 
 type Screen = "start" | "battle" | "settlement";
 export type BattlePanelSession = ExpeditionRunManager;
@@ -36,8 +35,6 @@ export class BattlePanel {
     protected elements: { [key: string]: Laya.GWidget } = {};
     protected modalOpen = false;
     private popup: UIBaseView;
-    private guideTarget = 1;
-    private readonly qMoves: RogueMove[] = ["basic","guard","edge","wind","guide","fall","end"];
     private readonly qKeys = ["skill1","skill2","skill3","skill4","upgrade0","qFall","qEnd"];
     private readonly childNodes = new Map<Laya.Node, Laya.GWidget[]>();
     protected child(node: Laya.Node, index: number): Laya.GWidget { return this.childNodes.get(node)?.[index]; }
@@ -158,14 +155,30 @@ export class BattlePanel {
             if (key === "cancel") { this.selected = null; this.selection = null; this.notice = ""; return; }
             if (key === "confirm") { this.confirm(); return; }
             {
-                if(/^qIntent[1-3]$/.test(key)) {
-                    this.guideTarget=Number(key.slice(-1));
-                    this.select({type:"qingming",move:"guide",enemyAction:this.guideTarget});return;
+                if(key==="qIntent1" && this.selected?.type==="skill" && this.selected.code==="pierce") {
+                    this.select({...this.selected,consumeMark:this.selected.consumeMark===false});return;
+                }
+                const cleanseIndex=["qIntent1","qIntent2","qIntent3","qIntent4"].indexOf(key);
+                if(cleanseIndex>=0 && this.selected?.type==="skill" && ["cleanse","frostheal"].includes(this.selected.code)) {
+                    const types=[...new Set(this.session.state.combat.p.statuses.map(s=>s.type))];
+                    const type=types[cleanseIndex];if(!type)return;
+                    let chosen=(this.selected.cleanseTypes||[]).slice();
+                    if(chosen.includes(type))chosen=chosen.filter(t=>t!==type);
+                    else {
+                        if(chosen.length>=BY_SKILL[this.selected.code].effect.cleanseTypes)chosen.pop();
+                        chosen.push(type);
+                    }
+                    this.select({...this.selected,cleanseTypes:chosen});return;
                 }
                 const i=this.qKeys.indexOf(key);
                 if(i>=0) {
-                    const move=this.qMoves[i];
-                    this.select({type:"qingming",move,...(move==="guide"?{enemyAction:this.guideTarget}:{})});return;
+                    const code=i===0?"basic":i===1?"guard":this.session.state?.combat.build.skills[i-2];
+                    if(code){
+                        const skill=BY_SKILL[code],types=[...new Set(this.session.state.combat.p.statuses.map(s=>s.type))];
+                        this.select(i<2?{type:code as "basic"|"guard"}:{type:"skill",code,target:0,
+                            ...(skill.effect.cleanseTypes?{cleanseTypes:types.slice(0,skill.effect.cleanseTypes)}:{})});
+                    }
+                    return;
                 }
             }
             if (/^pouch[0-4]$/.test(key)) {
@@ -258,77 +271,65 @@ export class BattlePanel {
     protected renderStart(): void { this.navigate("map"); }
     protected renderBattle(): void {
         if (!this.session.record) { this.navigate("start"); return; }
-        this.renderQingmingBattle();
+        this.renderCombat();
     }
-    private renderQingmingBattle(): void {
-        const record=this.session.record,s=record.state,q=s.qingming,a=BattleRules.attributes(record.setup,s);
-        const enabled=!this.busy&&this.session.outcome==="active"&&q.phase==="fighting";
-        this.text("brand","末法寻仙 · 青冥剑典",24,12,380,48,26,colors.gold);
-        this.text("round",`第 ${q.round} 回合 · 行动 ${q.ap}/3`,420,16,350,44,23);
+    private renderCombat(): void {
+        const record=this.session.record,s=record.state,c=s.combat,e=c.enemies[0],a=BattleRules.attributes(record.setup,s);
+        const enabled=!this.busy&&s.phase==="player_input";
+        this.text("brand","末法寻仙 · 秘境斗法",24,12,380,48,26,colors.gold);
+        this.text("round",`第 ${c.round} 回合 · 一次行动`,420,16,350,44,23);
         this.text("upgrades",this.timeText(),800,16,200,44,20,colors.muted);
         this.text("playerName","散修",30,110,320,40,26);
         this.text("playerHp",`生命 ${s.player.hp} / ${s.player.maxHp}`,30,158,340,36,22,colors.jade);
         this.bar("playerHpBar",s.player.hp/s.player.maxHp,30,198,340,colors.jade);
         this.text("playerBlock",`灵力 ${s.player.mp} / ${s.player.maxMp}`,30,214,340,36,22,colors.blue);
-        this.text("durability",`攻 ${a.attack} · 防 ${a.defense}\n${s.weapon?
-            `${s.weapon.name} ${s.weapon.durability}/${s.weapon.maxDurability}`:"无武器"}`,30,258,250,66,17,colors.muted);
-        this.text("enemyName",record.setup.enemy.name,850,110,176,40,24);
-        this.text("enemyHp",`${s.enemy.hp} / ${s.enemy.maxHp}`,880,158,330,36,22,colors.red);
-        this.bar("enemyHpBar",s.enemy.hp/s.enemy.maxHp,880,198,330,colors.red);
-        this.text("enemyBlock",`护盾 ${q.enemy.shield} · 灵力 ${q.enemy.mp}`,880,216,330,34,18,colors.gold);
-        q.intentions.forEach((intent,i)=>{
-            const percent=QE.percent(q,intent),ratio=1-q.suppression[i]/100;
-            const fallback=intent.maxHpHeal&&q.enemy.hp===q.enemy.maxHp;
-            const amount=intent.kind==="attack"?Math.round(q.enemy.attack*percent/100*ratio):
-                intent.kind==="guard"||fallback?Math.round(q.enemy.defense*(fallback?1:percent/100)*ratio):
-                intent.kind==="heal"?Math.min(q.enemy.maxHp-q.enemy.hp,Math.floor(q.enemy.maxHp*percent/100*ratio)):null;
-            this.button(`qIntent${i+1}`,`${i+1} · ${fallback?"架盾":intent.label}\n${amount===null?"":amount+" · "}压制${q.suppression[i]}%`,
-                410+i*150,116,140,72,enabled&&!QR.has(q,"rupture"),
-                this.selected?.type==="qingming"&&this.selected.move==="guide"&&this.guideTarget===i+1);
-            this.buttons[`qIntent${i+1}`].tooltips=QE.enemies[q.foe.id].hint;
-        });
-        this.text("intent",QE.summary(q),410,208,440,80,17,colors.red);
-        this.text("interrupt",`飞剑 ${q.flying}/${QR.has(q,"swordUnity")?5:3} · 剑伤 ${q.wounds}/6 · 势 ${q.momentum}/3`,
-            410,292,440,34,18,colors.blue);
-        this.drawActors(record.setup.qingming.enemyId);
-        placeInDesign(this.elements.enemy,this.root,1100,350);
+        this.text("durability",`物攻 ${a.attack} · 精神 ${a.spirit}\n护甲 ${a.defense} · 速度 ${a.speed}\n`+
+            `流血 ${layers(c.p,"bleed")} · 灼烧 ${layers(c.p,"burn")} · 寒意 ${layers(c.p,"chill")} · 雷印 ${layers(c.p,"mark")}`,
+            30,254,340,78,17,colors.muted);
+        this.text("enemyName",e.name,880,150,330,36,24);
+        this.text("enemyHp",`${s.enemy.hp} / ${s.enemy.maxHp}`,880,190,330,32,22,colors.red);
+        this.bar("enemyHpBar",s.enemy.hp/s.enemy.maxHp,880,228,330,colors.red);
+        this.text("enemyBlock",`护盾 ${e.shield} · 法力 ${e.mp}/${e.maxMp}\n护甲 ${e.armor}${e.sunderUntil>=c.round?"（破甲）":""} · 速度 ${e.speed}`,
+            880,242,330,64,18,colors.gold);
+        const code=intent(e,c.round+(e.speed>c.p.speed?1:0));
+        const names={strike:"普攻",flurry:"连击",heavy:"重击",bolt:"灵弹",ignite:"点火",frost:"寒霜",charge:"蓄力",
+            slam:"重砸",storm:"雷暴",guard:"防御",ward:"结界",mend:"疗伤",purify:"净化",drain:"噬血"};
+        this.text("intent",`下一行动：${names[code]||code}${e.charged?" · 已蓄力":""}\n${e.speed>c.p.speed?"敌方先手":"我方先手"}${e.phase?" · 半血强化":""}`,410,116,440,72,20,colors.red);
+        this.text("interrupt",`流血 ${layers(e,"bleed")} · 灼烧 ${layers(e,"burn")}\n寒意 ${layers(e,"chill")} · 雷印 ${layers(e,"mark")}`,
+            410,204,440,68,18,colors.blue);
+        this.drawActors(String(record.setup.enemyId));
         this.text("event",this.notice||(this.busy?"结算中":""),410,345,440,42,17,colors.gold);
-        const mechanics=[`护盾 ${q.player.shield} · 药品${q.potionUsed?"已用":"可用"}`,
-            `核心 ${q.core?QC.items[q.core].name:"无"}`,
-            q.pendingSword?`悬剑 ${q.pendingSword}`:"",
-            q.forms.length?`归一 ${q.forms.map(k=>QC.moves[k]).join("、")}`:"",
-            q.lastActive?`上式 ${QC.moves[q.lastActive]}`:""].filter(Boolean);
-        this.text("qi",mechanics.join("\n"),30,420,370,158,18,colors.gold);
-        const result=this.selection?.ok?this.selection:null,p=result?.preview,next=result?.state.qingming;
-        this.text("previewTitle",p?p.name:"青冥剑典",440,396,560,30,20,colors.jade);
+        const mechanics=[`护盾 ${c.p.shield} · 本回合${s.potionUsed?"已用药":"可用药"}`,
+            ...s.equipment.map(g=>`${g.name} ${g.instance.durability}/${g.instance.maxDurability}\n${g.instance.trait.name}${g.instance.kills?` · 击杀 ${g.instance.kills}`:""}`)];
+        this.text("qi",mechanics.join("\n"),30,442,370,160,16,colors.gold);
+        const result=this.selection?.ok?this.selection:null,p=result?.preview,next=result?.state;
+        this.text("previewTitle",p?p.name:"选择招式",440,396,560,30,20,colors.jade);
         const detail=!p?this.notice:p.potion?
             (p.resource==="shield"?`护盾 +${p.shield}`:p.resource==="mixed"?
                 `恢复生命 ${p.recovery} · 灵力 ${p.secondaryRecovery}`:`恢复${p.resource==="hp"?"生命":"灵力"} ${p.recovery}`)+
-                "\n不消耗行动点":
+                "\n不消耗行动":
             `敌生命 -${p.enemyHpLoss} · 自身承伤 ${p.playerHpLoss}\n`+
-            `灵力 ${s.player.mp} → ${next.player.mp} · 耐久 -${p.durabilityCost}\n`+
-            `第${next.round}回合 · 行动${next.ap}/3 · 护盾${next.player.shield}\n`+
-            `飞剑${next.flying} · 剑伤${next.wounds} · 势${next.momentum}`;
+            `法力 ${s.player.mp} → ${next.player.mp} · 护盾 ${next.player.block}\n`+
+            (p.durabilityCost?`战后耐久合计 -${p.durabilityCost}`:`下一回合 ${next.round}`);
         this.text("preview",detail,440,432,560,100,17);
-        this.qMoves.forEach((move,i)=>{
-            const key=this.qKeys[i],active=i>=2&&i<=5;
-            const action:BattleAction={type:"qingming",move,...(move==="guide"?{enemyAction:this.guideTarget}:{})};
-            const mutation=active&&q.mutations[move];
-            this.button(key,`${mutation?QC.items[mutation].name:QC.moves[move]}${active?`\n灵力 ${QC.cost(move,q)}`:""}`,
-                i===6?1034:30+i*162,614,i===6?176:152,76,enabled,
-                this.selected?.type==="qingming"&&this.selected.move===move);
-            this.buttons[key].tooltips=mutation?QC.items[mutation].description:
-                ({basic:"100%攻击；未致胜回复3灵力",guard:"获得150%防御护盾",edge:"110%攻击",
-                    wind:"获得250%防御护盾",guide:"75%攻击；指定敌行动数值压制35%",fall:"170%攻击；每回合限一次",
-                    end:"放弃剩余行动，进入敌方回合"})[move];
-            if(enabled&&!BattleRules.resolve(record.setup,s,action).ok)this.buttons[key].alpha=0.55;
-            if(active) {
-                const icon=this.elements[`img_skill${i-1}`] as Laya.GImage;
-                icon.visible=true;icon.pos(5,8).size(26,26);
-                const label=this.buttonLabel(key);
-                label.pos(34,4).size(112,68);label.fontSize=16;
-            }
+        this.qKeys.forEach((key,i)=>{
+            const code=i===0?"basic":i===1?"guard":c.build.skills[i-2],skill=BY_SKILL[code];
+            const action:BattleAction=i<2?{type:code as "basic"|"guard"}:{type:"skill",code,target:0};
+            const cd=Math.max(0,(c.p.cds[code]??0)-c.p.turns);
+            this.button(key,skill?`${skill.name}${i>=2?`\n${skillCost(c,code)} 法力${cd?` · 冷却${cd}`:""}`:""}`:"空技能位",
+                30+i*170,614,160,76,enabled&&!!skill,
+                this.selected?.type==="skill"?this.selected.code===code:this.selected?.type===code);
+            this.buttons[key].tooltips=skill?.description||"";
+            if(enabled&&skill&&!BattleRules.resolve(record.setup,s,action).ok)this.buttons[key].alpha=0.45;
         });
+        if(this.selected?.type==="skill"&&this.selected.code==="pierce")
+            this.button("qIntent1",this.selected.consumeMark===false?"保留雷印":"消耗雷印穿甲",410,292,200,42,enabled);
+        if(this.selected?.type==="skill"&&["cleanse","frostheal"].includes(this.selected.code)){
+            const types=[...new Set(c.p.statuses.map(s=>s.type))],names={bleed:"流血",burn:"灼烧",chill:"寒意",mark:"雷印"};
+            types.forEach((type:StatusType,i)=>
+                this.button(`qIntent${i+1}`,`净化${names[type]}`,410+i%2*212,282+Math.floor(i/2)*44,202,40,enabled,
+                    this.selected.type==="skill"&&this.selected.cleanseTypes?.includes(type)));
+        }
         for(let i=0;i<5;i++) {
             const item=s.pouch[i],potion=item&&record.setup.potions.find(p=>p.itemId===item.itemId);
             this.button(`pouch${i}`,potion?`${potion.name}\n${potion.resource==="mixed"?`血${potion.amount} 蓝${potion.secondaryAmount}`:
@@ -383,8 +384,8 @@ export class BattlePanel {
         const build = this.overlay === "build";
         const records = (build ? [this.session.record].filter(Boolean) : this.session.records).map((record,index) => {
             let lines: string[] = [];
-            lines=build?["青冥剑典 · 基础四招",...QR.build(record.setup.qingming.loadout).map(k=>
-                `${QC.items[k].name} · ${QC.items[k].description}`)]:record.state.qingming.logs.slice();
+            lines=build?[...record.setup.skills.map(k=>`${BY_SKILL[k].name} · ${BY_SKILL[k].description}`),
+                ...record.state.equipment.map(g=>`${g.name} · ${traitDescription(g.instance)}`)]:record.state.combat.log.slice();
             return { title: build ? record.setup.enemy.name : `第 ${index + 1} 场 · ${record.setup.enemy.name}`, lines };
         });
         this.modalOpen = true;
@@ -409,7 +410,8 @@ export class BattlePanel {
     private drawActors(enemyCode: string): void {
         const player = this.elements.player, enemy = this.elements.enemy;
         player.visible = enemy.visible = true;
-        placeInDesign(player, this.root, 250, 340); placeInDesign(enemy, this.root, 970, 350);
+        placeInDesign(player, this.root, 250, 380); placeInDesign(enemy, this.root, 1100, 380);
+        player.scale(0.65,0.65);enemy.scale(0.65,0.65);
         for (const actor of [player, enemy]) {
             const g = actor.graphics, isPlayer = actor === player;
             g.clear(); g.drawEllipse(-61, 64, 122, 22, "#18201a", null, 0);

@@ -3,38 +3,23 @@
 import ByteBuf from './bright/serialization/ByteBuf'
 
 
-export enum EBuildFamily {
+export enum EDamageKind {
     /**
-     * 飞剑
+     * 物理
      */
-    flying = 1,
+    physical = 1,
     /**
-     * 剑伤
+     * 魔法
      */
-    wound = 2,
+    magic = 2,
     /**
-     * 御守
+     * 混合
      */
-    guard = 3,
+    mixed = 3,
     /**
-     * 通用
+     * 辅助
      */
-    neutral = 4,
-}
-
-export enum EBuildType {
-    /**
-     * 被动
-     */
-    passive = 1,
-    /**
-     * 改招
-     */
-    mutation = 2,
-    /**
-     * 核心
-     */
-    core = 3,
+    support = 4,
 }
 
 export enum EEnemyTier {
@@ -50,6 +35,21 @@ export enum EEnemyTier {
      * 首领
      */
     boss = 3,
+}
+
+export enum EEquipmentSlot {
+    /**
+     * 武器
+     */
+    weapon = 1,
+    /**
+     * 防具
+     */
+    armor = 2,
+    /**
+     * 饰品
+     */
+    accessory = 3,
 }
 
 export enum EItemKind {
@@ -93,6 +93,14 @@ export enum EItemKind {
      * 纳虚器
      */
     container = 10,
+    /**
+     * 防具
+     */
+    armor = 11,
+    /**
+     * 饰品
+     */
+    accessory = 12,
 }
 
 export enum ELootFamily {
@@ -148,6 +156,14 @@ export enum ELootFamily {
      * 武器
      */
     weapon = 13,
+    /**
+     * 防具
+     */
+    armor = 14,
+    /**
+     * 饰品
+     */
+    accessory = 15,
 }
 
 export enum EMapNodeKind {
@@ -243,6 +259,57 @@ export enum EQuality {
     legendary = 6,
 }
 
+export enum EStat {
+    /**
+     * 生命
+     */
+    hp = 1,
+    /**
+     * 法力
+     */
+    mp = 2,
+    /**
+     * 物理攻击
+     */
+    a = 3,
+    /**
+     * 精神力
+     */
+    s = 4,
+    /**
+     * 护甲
+     */
+    armor = 5,
+    /**
+     * 速度
+     */
+    speed = 6,
+}
+
+export class Ibattle_parameterConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.id = _buf_.ReadInt()
+        this.code = _buf_.ReadString()
+        this.value = _buf_.ReadFloat()
+    }
+
+    /**
+     * 固定正整数编号
+     */
+    readonly id: number
+    /**
+     * 独立程序行为码
+     */
+    readonly code: string
+    /**
+     * 规则参数；布尔值0关闭1开启，数组索引从0开始
+     */
+    readonly value: number
+
+
+}
+
 export class Ibattle_ruleConfig {
 
     constructor(_buf_: ByteBuf) {
@@ -250,64 +317,38 @@ export class Ibattle_ruleConfig {
         this.player_hp = _buf_.ReadInt()
         this.player_mp = _buf_.ReadInt()
         this.base_attack = _buf_.ReadInt()
+        this.base_spirit = _buf_.ReadInt()
         this.base_defense = _buf_.ReadInt()
-        this.enemy_hp = _buf_.ReadInt()
-        this.enemy_mp = _buf_.ReadInt()
-        this.enemy_attack = _buf_.ReadInt()
-        this.enemy_defense = _buf_.ReadInt()
-        this.battle_rewards = _buf_.ReadInt()
+        this.base_speed = _buf_.ReadInt()
+        this.active_slots = _buf_.ReadInt()
         this.version = _buf_.ReadInt()
     }
 
     /**
-     * 固定编号
+     * 固定正整数编号
      */
     readonly id: number
-    /**
-     * 生命上限
-     */
+
     readonly player_hp: number
-    /**
-     * 灵力上限
-     */
+
     readonly player_mp: number
-    /**
-     * 基础攻击
-     */
+
     readonly base_attack: number
-    /**
-     * 基础防御
-     */
+
+    readonly base_spirit: number
+
     readonly base_defense: number
-    /**
-     * 敌人基础生命，按类型及战次调整
-     */
-    readonly enemy_hp: number
-    /**
-     * 敌人灵力
-     */
-    readonly enemy_mp: number
-    /**
-     * 敌人基础攻击
-     */
-    readonly enemy_attack: number
-    /**
-     * 敌人防御
-     */
-    readonly enemy_defense: number
-    /**
-     * 胜利后构筑奖励场数
-     */
-    readonly battle_rewards: number
-    /**
-     * 整数规则版本
-     */
+
+    readonly base_speed: number
+
+    readonly active_slots: number
+
     readonly version: number
 
 
 }
 
-export class Ibuild_mutationConfig {
+export class Ibattle_start_skillConfig {
 
     constructor(_buf_: ByteBuf) {
         this.id = _buf_.ReadInt()
@@ -315,52 +356,13 @@ export class Ibuild_mutationConfig {
     }
 
     /**
-     * 构筑编号，引用 build.id
+     * 固定正整数编号
      */
     readonly id: number
     /**
-     * 被替换技能编号，引用 skill.id
+     * 引用 skill.id
      */
     readonly skill_id: number
-
-
-}
-
-export class IbuildConfig {
-
-    constructor(_buf_: ByteBuf) {
-        this.id = _buf_.ReadInt()
-        this.code = _buf_.ReadString()
-        this.name = _buf_.ReadString()
-        this.type = _buf_.ReadInt()
-        this.family = _buf_.ReadInt()
-        this.description = _buf_.ReadString()
-    }
-
-    /**
-     * 固定编号
-     */
-    readonly id: number
-    /**
-     * 程序行为码
-     */
-    readonly code: string
-    /**
-     * 名称
-     */
-    readonly name: string
-    /**
-     * 类型
-     */
-    readonly type: EBuildType
-    /**
-     * 机制方向
-     */
-    readonly family: EBuildFamily
-    /**
-     * 效果
-     */
-    readonly description: string
 
 
 }
@@ -394,6 +396,35 @@ export class IcontainerConfig {
 
 }
 
+export class Ienemy_actionConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.id = _buf_.ReadInt()
+        this.enemy_id = _buf_.ReadInt()
+        this.order = _buf_.ReadInt()
+        this.code = _buf_.ReadString()
+    }
+
+    /**
+     * 固定正整数编号
+     */
+    readonly id: number
+    /**
+     * 引用 enemy.id
+     */
+    readonly enemy_id: number
+    /**
+     * 从1开始循环执行
+     */
+    readonly order: number
+    /**
+     * 独立程序行为码
+     */
+    readonly code: string
+
+
+}
+
 export class IenemyConfig {
 
     constructor(_buf_: ByteBuf) {
@@ -401,34 +432,236 @@ export class IenemyConfig {
         this.code = _buf_.ReadString()
         this.name = _buf_.ReadString()
         this.tier = _buf_.ReadInt()
-        this.opening = _buf_.ReadInt()
-        this.hint = _buf_.ReadString()
+        this.hp = _buf_.ReadInt()
+        this.mp = _buf_.ReadInt()
+        this.attack = _buf_.ReadInt()
+        this.spirit = _buf_.ReadInt()
+        this.armor = _buf_.ReadInt()
+        this.speed = _buf_.ReadInt()
+        this.heal_uses = _buf_.ReadInt()
+        this.ward_uses = _buf_.ReadInt()
+        this.purify_uses = _buf_.ReadInt()
     }
 
     /**
-     * 固定编号
+     * 固定正整数编号
      */
     readonly id: number
     /**
-     * 程序行为码
+     * 独立程序行为码
      */
     readonly code: string
     /**
-     * 名称
+     * 中文名称
      */
     readonly name: string
-    /**
-     * 级别
-     */
+
     readonly tier: EEnemyTier
+
+    readonly hp: number
+
+    readonly mp: number
+
+    readonly attack: number
+
+    readonly spirit: number
+
+    readonly armor: number
+
+    readonly speed: number
+
+    readonly heal_uses: number
+
+    readonly ward_uses: number
+
+    readonly purify_uses: number
+
+
+}
+
+export class Iequipment_bandConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.id = _buf_.ReadInt()
+        this.stat = _buf_.ReadInt()
+        this.band = _buf_.ReadInt()
+        this.main_min = _buf_.ReadInt()
+        this.main_max = _buf_.ReadInt()
+        this.sub_min = _buf_.ReadInt()
+        this.sub_max = _buf_.ReadInt()
+    }
+
     /**
-     * 初始护盾防御百分比
+     * 固定正整数编号
      */
-    readonly opening: number
+    readonly id: number
+
+    readonly stat: EStat
     /**
-     * 行为提示
+     * 1最低档至6最高档
      */
-    readonly hint: string
+    readonly band: number
+
+    readonly main_min: number
+
+    readonly main_max: number
+
+    readonly sub_min: number
+
+    readonly sub_max: number
+
+
+}
+
+export class Iequipment_baseConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.id = _buf_.ReadInt()
+        this.code = _buf_.ReadString()
+        this.name = _buf_.ReadString()
+        this.slot = _buf_.ReadInt()
+        this.main_stat = _buf_.ReadInt()
+        this.durability = _buf_.ReadInt()
+    }
+
+    /**
+     * 固定正整数编号
+     */
+    readonly id: number
+    /**
+     * 独立程序行为码
+     */
+    readonly code: string
+    /**
+     * 中文名称
+     */
+    readonly name: string
+
+    readonly slot: EEquipmentSlot
+
+    readonly main_stat: EStat
+
+    readonly durability: number
+
+
+}
+
+export class Iequipment_qualityConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.id = _buf_.ReadInt()
+        this.quality = _buf_.ReadInt()
+        this.band_min = _buf_.ReadInt()
+        this.band_max = _buf_.ReadInt()
+        this.durability_bonus = _buf_.ReadInt()
+        this.repair_price = _buf_.ReadInt()
+    }
+
+    /**
+     * 固定正整数编号
+     */
+    readonly id: number
+
+    readonly quality: EQuality
+
+    readonly band_min: number
+
+    readonly band_max: number
+
+    readonly durability_bonus: number
+    /**
+     * 每恢复1耐久消耗愿力
+     */
+    readonly repair_price: number
+
+
+}
+
+export class Iequipment_trait_rollConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.id = _buf_.ReadInt()
+        this.trait_id = _buf_.ReadInt()
+        this.quality = _buf_.ReadInt()
+        this.p_min = _buf_.ReadInt()
+        this.p_max = _buf_.ReadInt()
+        this.n_min = _buf_.ReadInt()
+        this.n_max = _buf_.ReadInt()
+    }
+
+    /**
+     * 固定正整数编号
+     */
+    readonly id: number
+    /**
+     * 引用 equipment_trait.id
+     */
+    readonly trait_id: number
+
+    readonly quality: EQuality
+
+    readonly p_min: number
+
+    readonly p_max: number
+    /**
+     * 0表示无次数门槛
+     */
+    readonly n_min: number
+    /**
+     * 0表示无次数门槛
+     */
+    readonly n_max: number
+
+
+}
+
+export class Iequipment_traitConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.id = _buf_.ReadInt()
+        this.code = _buf_.ReadString()
+        this.name = _buf_.ReadString()
+        this.slot = _buf_.ReadInt()
+        this.description = _buf_.ReadString()
+    }
+
+    /**
+     * 固定正整数编号
+     */
+    readonly id: number
+    /**
+     * 独立程序行为码
+     */
+    readonly code: string
+    /**
+     * 中文名称
+     */
+    readonly name: string
+
+    readonly slot: EEquipmentSlot
+    /**
+     * P为收益参数，N为次数门槛
+     */
+    readonly description: string
+
+
+}
+
+export class IequipmentConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.id = _buf_.ReadInt()
+        this.base_id = _buf_.ReadInt()
+    }
+
+    /**
+     * 引用 item.id
+     */
+    readonly id: number
+    /**
+     * 引用 equipment_base.id
+     */
+    readonly base_id: number
 
 
 }
@@ -998,6 +1231,35 @@ export class IrepairConfig {
 
 }
 
+export class Iskill_effectConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.id = _buf_.ReadInt()
+        this.skill_id = _buf_.ReadInt()
+        this.code = _buf_.ReadString()
+        this.value = _buf_.ReadFloat()
+    }
+
+    /**
+     * 固定正整数编号
+     */
+    readonly id: number
+    /**
+     * 引用 skill.id
+     */
+    readonly skill_id: number
+    /**
+     * 独立程序行为码
+     */
+    readonly code: string
+    /**
+     * 独立效果参数；比例使用小数
+     */
+    readonly value: number
+
+
+}
+
 export class IskillConfig {
 
     constructor(_buf_: ByteBuf) {
@@ -1005,27 +1267,38 @@ export class IskillConfig {
         this.code = _buf_.ReadString()
         this.name = _buf_.ReadString()
         this.mp_cost = _buf_.ReadInt()
+        this.cooldown = _buf_.ReadInt()
+        this.kind = _buf_.ReadInt()
+        this.uses = _buf_.ReadInt()
         this.description = _buf_.ReadString()
     }
 
     /**
-     * 固定编号
+     * 固定正整数编号
      */
     readonly id: number
     /**
-     * 程序行为码
+     * 独立程序行为码
      */
     readonly code: string
     /**
-     * 名称
+     * 中文名称
      */
     readonly name: string
-    /**
-     * 灵力消耗
-     */
+
     readonly mp_cost: number
+
+    readonly cooldown: number
     /**
-     * 效果
+     * 伤害类别
+     */
+    readonly kind: EDamageKind
+    /**
+     * 每战次数；0不限
+     */
+    readonly uses: number
+    /**
+     * 具体技能效果
      */
     readonly description: string
 
@@ -1047,35 +1320,6 @@ export class IstaminaConfig {
      * 战外体力恢复量
      */
     readonly amount: number
-
-
-}
-
-export class IweaponConfig {
-
-    constructor(_buf_: ByteBuf) {
-        this.id = _buf_.ReadInt()
-        this.attack = _buf_.ReadInt()
-        this.defense = _buf_.ReadInt()
-        this.durability = _buf_.ReadInt()
-    }
-
-    /**
-     * 物品编号，引用 item.id
-     */
-    readonly id: number
-    /**
-     * 武器攻击
-     */
-    readonly attack: number
-    /**
-     * 武器防御
-     */
-    readonly defense: number
-    /**
-     * 武器耐久上限
-     */
-    readonly durability: number
 
 
 }
@@ -1117,6 +1361,92 @@ export class battle_rule {
     getDataList(): Ibattle_ruleConfig[] { this.load();return this._dataList; }
 
     get(key: number): Ibattle_ruleConfig | undefined {
+		this.load();
+        return this._dataMap.get(key);
+    }
+
+}
+
+export class battle_parameter {
+    private _dataMap: Map<number, Ibattle_parameterConfig>
+
+    private _dataList: Ibattle_parameterConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, Ibattle_parameterConfig>()
+        this._dataList = []
+
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Ibattle_parameterConfig
+            _v = new Ibattle_parameterConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, Ibattle_parameterConfig> {this.load(); return this._dataMap; }
+
+    getDataList(): Ibattle_parameterConfig[] { this.load();return this._dataList; }
+
+    get(key: number): Ibattle_parameterConfig | undefined {
+		this.load();
+        return this._dataMap.get(key);
+    }
+
+}
+
+export class battle_start_skill {
+    private _dataMap: Map<number, Ibattle_start_skillConfig>
+
+    private _dataList: Ibattle_start_skillConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, Ibattle_start_skillConfig>()
+        this._dataList = []
+
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Ibattle_start_skillConfig
+            _v = new Ibattle_start_skillConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, Ibattle_start_skillConfig> {this.load(); return this._dataMap; }
+
+    getDataList(): Ibattle_start_skillConfig[] { this.load();return this._dataList; }
+
+    get(key: number): Ibattle_start_skillConfig | undefined {
 		this.load();
         return this._dataMap.get(key);
     }
@@ -1166,10 +1496,10 @@ export class skill {
 
 }
 
-export class build {
-    private _dataMap: Map<number, IbuildConfig>
+export class skill_effect {
+    private _dataMap: Map<number, Iskill_effectConfig>
 
-    private _dataList: IbuildConfig[]
+    private _dataList: Iskill_effectConfig[]
     private _loaded:boolean=false;
     private _buf: ByteBuf;
     constructor(_buf_: ByteBuf) {
@@ -1186,23 +1516,23 @@ export class build {
             console.error("_buf_ null");
             return;
         }
-        this._dataMap = new Map<number, IbuildConfig>()
+        this._dataMap = new Map<number, Iskill_effectConfig>()
         this._dataList = []
 
         for(let n = _buf_.ReadInt(); n > 0; n--) {
-            let _v: IbuildConfig
-            _v = new IbuildConfig(_buf_)
+            let _v: Iskill_effectConfig
+            _v = new Iskill_effectConfig(_buf_)
             this._dataList.push(_v)
             this._dataMap.set(_v.id, _v)
 
         }
         this._loaded = true;
     }
-    getDataMap(): Map<number, IbuildConfig> {this.load(); return this._dataMap; }
+    getDataMap(): Map<number, Iskill_effectConfig> {this.load(); return this._dataMap; }
 
-    getDataList(): IbuildConfig[] { this.load();return this._dataList; }
+    getDataList(): Iskill_effectConfig[] { this.load();return this._dataList; }
 
-    get(key: number): IbuildConfig | undefined {
+    get(key: number): Iskill_effectConfig | undefined {
 		this.load();
         return this._dataMap.get(key);
     }
@@ -1252,6 +1582,49 @@ export class enemy {
 
 }
 
+export class enemy_action {
+    private _dataMap: Map<number, Ienemy_actionConfig>
+
+    private _dataList: Ienemy_actionConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, Ienemy_actionConfig>()
+        this._dataList = []
+
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Ienemy_actionConfig
+            _v = new Ienemy_actionConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, Ienemy_actionConfig> {this.load(); return this._dataMap; }
+
+    getDataList(): Ienemy_actionConfig[] { this.load();return this._dataList; }
+
+    get(key: number): Ienemy_actionConfig | undefined {
+		this.load();
+        return this._dataMap.get(key);
+    }
+
+}
+
 export class item {
     private _dataMap: Map<number, IitemConfig>
 
@@ -1295,6 +1668,264 @@ export class item {
 
 }
 
+export class equipment {
+    private _dataMap: Map<number, IequipmentConfig>
+
+    private _dataList: IequipmentConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, IequipmentConfig>()
+        this._dataList = []
+
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: IequipmentConfig
+            _v = new IequipmentConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, IequipmentConfig> {this.load(); return this._dataMap; }
+
+    getDataList(): IequipmentConfig[] { this.load();return this._dataList; }
+
+    get(key: number): IequipmentConfig | undefined {
+		this.load();
+        return this._dataMap.get(key);
+    }
+
+}
+
+export class equipment_base {
+    private _dataMap: Map<number, Iequipment_baseConfig>
+
+    private _dataList: Iequipment_baseConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, Iequipment_baseConfig>()
+        this._dataList = []
+
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Iequipment_baseConfig
+            _v = new Iequipment_baseConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, Iequipment_baseConfig> {this.load(); return this._dataMap; }
+
+    getDataList(): Iequipment_baseConfig[] { this.load();return this._dataList; }
+
+    get(key: number): Iequipment_baseConfig | undefined {
+		this.load();
+        return this._dataMap.get(key);
+    }
+
+}
+
+export class equipment_band {
+    private _dataMap: Map<number, Iequipment_bandConfig>
+
+    private _dataList: Iequipment_bandConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, Iequipment_bandConfig>()
+        this._dataList = []
+
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Iequipment_bandConfig
+            _v = new Iequipment_bandConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, Iequipment_bandConfig> {this.load(); return this._dataMap; }
+
+    getDataList(): Iequipment_bandConfig[] { this.load();return this._dataList; }
+
+    get(key: number): Iequipment_bandConfig | undefined {
+		this.load();
+        return this._dataMap.get(key);
+    }
+
+}
+
+export class equipment_quality {
+    private _dataMap: Map<number, Iequipment_qualityConfig>
+
+    private _dataList: Iequipment_qualityConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, Iequipment_qualityConfig>()
+        this._dataList = []
+
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Iequipment_qualityConfig
+            _v = new Iequipment_qualityConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, Iequipment_qualityConfig> {this.load(); return this._dataMap; }
+
+    getDataList(): Iequipment_qualityConfig[] { this.load();return this._dataList; }
+
+    get(key: number): Iequipment_qualityConfig | undefined {
+		this.load();
+        return this._dataMap.get(key);
+    }
+
+}
+
+export class equipment_trait {
+    private _dataMap: Map<number, Iequipment_traitConfig>
+
+    private _dataList: Iequipment_traitConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, Iequipment_traitConfig>()
+        this._dataList = []
+
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Iequipment_traitConfig
+            _v = new Iequipment_traitConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, Iequipment_traitConfig> {this.load(); return this._dataMap; }
+
+    getDataList(): Iequipment_traitConfig[] { this.load();return this._dataList; }
+
+    get(key: number): Iequipment_traitConfig | undefined {
+		this.load();
+        return this._dataMap.get(key);
+    }
+
+}
+
+export class equipment_trait_roll {
+    private _dataMap: Map<number, Iequipment_trait_rollConfig>
+
+    private _dataList: Iequipment_trait_rollConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, Iequipment_trait_rollConfig>()
+        this._dataList = []
+
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Iequipment_trait_rollConfig
+            _v = new Iequipment_trait_rollConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, Iequipment_trait_rollConfig> {this.load(); return this._dataMap; }
+
+    getDataList(): Iequipment_trait_rollConfig[] { this.load();return this._dataList; }
+
+    get(key: number): Iequipment_trait_rollConfig | undefined {
+		this.load();
+        return this._dataMap.get(key);
+    }
+
+}
+
 export class potion {
     private _dataMap: Map<number, IpotionConfig>
 
@@ -1332,264 +1963,6 @@ export class potion {
     getDataList(): IpotionConfig[] { this.load();return this._dataList; }
 
     get(key: number): IpotionConfig | undefined {
-		this.load();
-        return this._dataMap.get(key);
-    }
-
-}
-
-export class inventory_rule {
-    private _dataMap: Map<number, Iinventory_ruleConfig>
-
-    private _dataList: Iinventory_ruleConfig[]
-    private _loaded:boolean=false;
-    private _buf: ByteBuf;
-    constructor(_buf_: ByteBuf) {
-        this._buf = _buf_;
-        this._loaded = false;
-    }
-
-    private load():void{
-        if(this._loaded){
-            return;
-        }
-        let _buf_ = this._buf;
-        if(!_buf_){
-            console.error("_buf_ null");
-            return;
-        }
-        this._dataMap = new Map<number, Iinventory_ruleConfig>()
-        this._dataList = []
-
-        for(let n = _buf_.ReadInt(); n > 0; n--) {
-            let _v: Iinventory_ruleConfig
-            _v = new Iinventory_ruleConfig(_buf_)
-            this._dataList.push(_v)
-            this._dataMap.set(_v.id, _v)
-
-        }
-        this._loaded = true;
-    }
-    getDataMap(): Map<number, Iinventory_ruleConfig> {this.load(); return this._dataMap; }
-
-    getDataList(): Iinventory_ruleConfig[] { this.load();return this._dataList; }
-
-    get(key: number): Iinventory_ruleConfig | undefined {
-		this.load();
-        return this._dataMap.get(key);
-    }
-
-}
-
-export class map_node {
-    private _dataMap: Map<number, Imap_nodeConfig>
-
-    private _dataList: Imap_nodeConfig[]
-    private _loaded:boolean=false;
-    private _buf: ByteBuf;
-    constructor(_buf_: ByteBuf) {
-        this._buf = _buf_;
-        this._loaded = false;
-    }
-
-    private load():void{
-        if(this._loaded){
-            return;
-        }
-        let _buf_ = this._buf;
-        if(!_buf_){
-            console.error("_buf_ null");
-            return;
-        }
-        this._dataMap = new Map<number, Imap_nodeConfig>()
-        this._dataList = []
-
-        for(let n = _buf_.ReadInt(); n > 0; n--) {
-            let _v: Imap_nodeConfig
-            _v = new Imap_nodeConfig(_buf_)
-            this._dataList.push(_v)
-            this._dataMap.set(_v.id, _v)
-
-        }
-        this._loaded = true;
-    }
-    getDataMap(): Map<number, Imap_nodeConfig> {this.load(); return this._dataMap; }
-
-    getDataList(): Imap_nodeConfig[] { this.load();return this._dataList; }
-
-    get(key: number): Imap_nodeConfig | undefined {
-		this.load();
-        return this._dataMap.get(key);
-    }
-
-}
-
-export class map_pool {
-    private _dataMap: Map<number, Imap_poolConfig>
-
-    private _dataList: Imap_poolConfig[]
-    private _loaded:boolean=false;
-    private _buf: ByteBuf;
-    constructor(_buf_: ByteBuf) {
-        this._buf = _buf_;
-        this._loaded = false;
-    }
-
-    private load():void{
-        if(this._loaded){
-            return;
-        }
-        let _buf_ = this._buf;
-        if(!_buf_){
-            console.error("_buf_ null");
-            return;
-        }
-        this._dataMap = new Map<number, Imap_poolConfig>()
-        this._dataList = []
-
-        for(let n = _buf_.ReadInt(); n > 0; n--) {
-            let _v: Imap_poolConfig
-            _v = new Imap_poolConfig(_buf_)
-            this._dataList.push(_v)
-            this._dataMap.set(_v.id, _v)
-
-        }
-        this._loaded = true;
-    }
-    getDataMap(): Map<number, Imap_poolConfig> {this.load(); return this._dataMap; }
-
-    getDataList(): Imap_poolConfig[] { this.load();return this._dataList; }
-
-    get(key: number): Imap_poolConfig | undefined {
-		this.load();
-        return this._dataMap.get(key);
-    }
-
-}
-
-export class map_variant {
-    private _dataMap: Map<number, Imap_variantConfig>
-
-    private _dataList: Imap_variantConfig[]
-    private _loaded:boolean=false;
-    private _buf: ByteBuf;
-    constructor(_buf_: ByteBuf) {
-        this._buf = _buf_;
-        this._loaded = false;
-    }
-
-    private load():void{
-        if(this._loaded){
-            return;
-        }
-        let _buf_ = this._buf;
-        if(!_buf_){
-            console.error("_buf_ null");
-            return;
-        }
-        this._dataMap = new Map<number, Imap_variantConfig>()
-        this._dataList = []
-
-        for(let n = _buf_.ReadInt(); n > 0; n--) {
-            let _v: Imap_variantConfig
-            _v = new Imap_variantConfig(_buf_)
-            this._dataList.push(_v)
-            this._dataMap.set(_v.id, _v)
-
-        }
-        this._loaded = true;
-    }
-    getDataMap(): Map<number, Imap_variantConfig> {this.load(); return this._dataMap; }
-
-    getDataList(): Imap_variantConfig[] { this.load();return this._dataList; }
-
-    get(key: number): Imap_variantConfig | undefined {
-		this.load();
-        return this._dataMap.get(key);
-    }
-
-}
-
-export class map_rule {
-    private _dataMap: Map<number, Imap_ruleConfig>
-
-    private _dataList: Imap_ruleConfig[]
-    private _loaded:boolean=false;
-    private _buf: ByteBuf;
-    constructor(_buf_: ByteBuf) {
-        this._buf = _buf_;
-        this._loaded = false;
-    }
-
-    private load():void{
-        if(this._loaded){
-            return;
-        }
-        let _buf_ = this._buf;
-        if(!_buf_){
-            console.error("_buf_ null");
-            return;
-        }
-        this._dataMap = new Map<number, Imap_ruleConfig>()
-        this._dataList = []
-
-        for(let n = _buf_.ReadInt(); n > 0; n--) {
-            let _v: Imap_ruleConfig
-            _v = new Imap_ruleConfig(_buf_)
-            this._dataList.push(_v)
-            this._dataMap.set(_v.id, _v)
-
-        }
-        this._loaded = true;
-    }
-    getDataMap(): Map<number, Imap_ruleConfig> {this.load(); return this._dataMap; }
-
-    getDataList(): Imap_ruleConfig[] { this.load();return this._dataList; }
-
-    get(key: number): Imap_ruleConfig | undefined {
-		this.load();
-        return this._dataMap.get(key);
-    }
-
-}
-
-export class weapon {
-    private _dataMap: Map<number, IweaponConfig>
-
-    private _dataList: IweaponConfig[]
-    private _loaded:boolean=false;
-    private _buf: ByteBuf;
-    constructor(_buf_: ByteBuf) {
-        this._buf = _buf_;
-        this._loaded = false;
-    }
-
-    private load():void{
-        if(this._loaded){
-            return;
-        }
-        let _buf_ = this._buf;
-        if(!_buf_){
-            console.error("_buf_ null");
-            return;
-        }
-        this._dataMap = new Map<number, IweaponConfig>()
-        this._dataList = []
-
-        for(let n = _buf_.ReadInt(); n > 0; n--) {
-            let _v: IweaponConfig
-            _v = new IweaponConfig(_buf_)
-            this._dataList.push(_v)
-            this._dataMap.set(_v.id, _v)
-
-        }
-        this._loaded = true;
-    }
-    getDataMap(): Map<number, IweaponConfig> {this.load(); return this._dataMap; }
-
-    getDataList(): IweaponConfig[] { this.load();return this._dataList; }
-
-    get(key: number): IweaponConfig | undefined {
 		this.load();
         return this._dataMap.get(key);
     }
@@ -1768,10 +2141,10 @@ export class container {
 
 }
 
-export class build_mutation {
-    private _dataMap: Map<number, Ibuild_mutationConfig>
+export class inventory_rule {
+    private _dataMap: Map<number, Iinventory_ruleConfig>
 
-    private _dataList: Ibuild_mutationConfig[]
+    private _dataList: Iinventory_ruleConfig[]
     private _loaded:boolean=false;
     private _buf: ByteBuf;
     constructor(_buf_: ByteBuf) {
@@ -1788,23 +2161,238 @@ export class build_mutation {
             console.error("_buf_ null");
             return;
         }
-        this._dataMap = new Map<number, Ibuild_mutationConfig>()
+        this._dataMap = new Map<number, Iinventory_ruleConfig>()
         this._dataList = []
 
         for(let n = _buf_.ReadInt(); n > 0; n--) {
-            let _v: Ibuild_mutationConfig
-            _v = new Ibuild_mutationConfig(_buf_)
+            let _v: Iinventory_ruleConfig
+            _v = new Iinventory_ruleConfig(_buf_)
             this._dataList.push(_v)
             this._dataMap.set(_v.id, _v)
 
         }
         this._loaded = true;
     }
-    getDataMap(): Map<number, Ibuild_mutationConfig> {this.load(); return this._dataMap; }
+    getDataMap(): Map<number, Iinventory_ruleConfig> {this.load(); return this._dataMap; }
 
-    getDataList(): Ibuild_mutationConfig[] { this.load();return this._dataList; }
+    getDataList(): Iinventory_ruleConfig[] { this.load();return this._dataList; }
 
-    get(key: number): Ibuild_mutationConfig | undefined {
+    get(key: number): Iinventory_ruleConfig | undefined {
+		this.load();
+        return this._dataMap.get(key);
+    }
+
+}
+
+export class inventory_start {
+    private _dataMap: Map<number, Iinventory_startConfig>
+
+    private _dataList: Iinventory_startConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, Iinventory_startConfig>()
+        this._dataList = []
+
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Iinventory_startConfig
+            _v = new Iinventory_startConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, Iinventory_startConfig> {this.load(); return this._dataMap; }
+
+    getDataList(): Iinventory_startConfig[] { this.load();return this._dataList; }
+
+    get(key: number): Iinventory_startConfig | undefined {
+		this.load();
+        return this._dataMap.get(key);
+    }
+
+}
+
+export class map_node {
+    private _dataMap: Map<number, Imap_nodeConfig>
+
+    private _dataList: Imap_nodeConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, Imap_nodeConfig>()
+        this._dataList = []
+
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Imap_nodeConfig
+            _v = new Imap_nodeConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, Imap_nodeConfig> {this.load(); return this._dataMap; }
+
+    getDataList(): Imap_nodeConfig[] { this.load();return this._dataList; }
+
+    get(key: number): Imap_nodeConfig | undefined {
+		this.load();
+        return this._dataMap.get(key);
+    }
+
+}
+
+export class map_pool {
+    private _dataMap: Map<number, Imap_poolConfig>
+
+    private _dataList: Imap_poolConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, Imap_poolConfig>()
+        this._dataList = []
+
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Imap_poolConfig
+            _v = new Imap_poolConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, Imap_poolConfig> {this.load(); return this._dataMap; }
+
+    getDataList(): Imap_poolConfig[] { this.load();return this._dataList; }
+
+    get(key: number): Imap_poolConfig | undefined {
+		this.load();
+        return this._dataMap.get(key);
+    }
+
+}
+
+export class map_variant {
+    private _dataMap: Map<number, Imap_variantConfig>
+
+    private _dataList: Imap_variantConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, Imap_variantConfig>()
+        this._dataList = []
+
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Imap_variantConfig
+            _v = new Imap_variantConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, Imap_variantConfig> {this.load(); return this._dataMap; }
+
+    getDataList(): Imap_variantConfig[] { this.load();return this._dataList; }
+
+    get(key: number): Imap_variantConfig | undefined {
+		this.load();
+        return this._dataMap.get(key);
+    }
+
+}
+
+export class map_rule {
+    private _dataMap: Map<number, Imap_ruleConfig>
+
+    private _dataList: Imap_ruleConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, Imap_ruleConfig>()
+        this._dataList = []
+
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Imap_ruleConfig
+            _v = new Imap_ruleConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, Imap_ruleConfig> {this.load(); return this._dataMap; }
+
+    getDataList(): Imap_ruleConfig[] { this.load();return this._dataList; }
+
+    get(key: number): Imap_ruleConfig | undefined {
 		this.load();
         return this._dataMap.get(key);
     }
@@ -1983,76 +2571,39 @@ export class map_pool_weapon {
 
 }
 
-export class inventory_start {
-    private _dataMap: Map<number, Iinventory_startConfig>
-
-    private _dataList: Iinventory_startConfig[]
-    private _loaded:boolean=false;
-    private _buf: ByteBuf;
-    constructor(_buf_: ByteBuf) {
-        this._buf = _buf_;
-        this._loaded = false;
-    }
-
-    private load():void{
-        if(this._loaded){
-            return;
-        }
-        let _buf_ = this._buf;
-        if(!_buf_){
-            console.error("_buf_ null");
-            return;
-        }
-        this._dataMap = new Map<number, Iinventory_startConfig>()
-        this._dataList = []
-
-        for(let n = _buf_.ReadInt(); n > 0; n--) {
-            let _v: Iinventory_startConfig
-            _v = new Iinventory_startConfig(_buf_)
-            this._dataList.push(_v)
-            this._dataMap.set(_v.id, _v)
-
-        }
-        this._loaded = true;
-    }
-    getDataMap(): Map<number, Iinventory_startConfig> {this.load(); return this._dataMap; }
-
-    getDataList(): Iinventory_startConfig[] { this.load();return this._dataList; }
-
-    get(key: number): Iinventory_startConfig | undefined {
-		this.load();
-        return this._dataMap.get(key);
-    }
-
-}
-
 type ByteBufLoader = (file: string) => ByteBuf
 
 export class Tables {
     private _battle_rule: battle_rule
     get battle_rule(): battle_rule  { return this._battle_rule;}
+    private _battle_parameter: battle_parameter
+    get battle_parameter(): battle_parameter  { return this._battle_parameter;}
+    private _battle_start_skill: battle_start_skill
+    get battle_start_skill(): battle_start_skill  { return this._battle_start_skill;}
     private _skill: skill
     get skill(): skill  { return this._skill;}
-    private _build: build
-    get build(): build  { return this._build;}
+    private _skill_effect: skill_effect
+    get skill_effect(): skill_effect  { return this._skill_effect;}
     private _enemy: enemy
     get enemy(): enemy  { return this._enemy;}
+    private _enemy_action: enemy_action
+    get enemy_action(): enemy_action  { return this._enemy_action;}
     private _item: item
     get item(): item  { return this._item;}
+    private _equipment: equipment
+    get equipment(): equipment  { return this._equipment;}
+    private _equipment_base: equipment_base
+    get equipment_base(): equipment_base  { return this._equipment_base;}
+    private _equipment_band: equipment_band
+    get equipment_band(): equipment_band  { return this._equipment_band;}
+    private _equipment_quality: equipment_quality
+    get equipment_quality(): equipment_quality  { return this._equipment_quality;}
+    private _equipment_trait: equipment_trait
+    get equipment_trait(): equipment_trait  { return this._equipment_trait;}
+    private _equipment_trait_roll: equipment_trait_roll
+    get equipment_trait_roll(): equipment_trait_roll  { return this._equipment_trait_roll;}
     private _potion: potion
     get potion(): potion  { return this._potion;}
-    private _inventory_rule: inventory_rule
-    get inventory_rule(): inventory_rule  { return this._inventory_rule;}
-    private _map_node: map_node
-    get map_node(): map_node  { return this._map_node;}
-    private _map_pool: map_pool
-    get map_pool(): map_pool  { return this._map_pool;}
-    private _map_variant: map_variant
-    get map_variant(): map_variant  { return this._map_variant;}
-    private _map_rule: map_rule
-    get map_rule(): map_rule  { return this._map_rule;}
-    private _weapon: weapon
-    get weapon(): weapon  { return this._weapon;}
     private _potion_item: potion_item
     get potion_item(): potion_item  { return this._potion_item;}
     private _repair: repair
@@ -2061,8 +2612,18 @@ export class Tables {
     get stamina(): stamina  { return this._stamina;}
     private _container: container
     get container(): container  { return this._container;}
-    private _build_mutation: build_mutation
-    get build_mutation(): build_mutation  { return this._build_mutation;}
+    private _inventory_rule: inventory_rule
+    get inventory_rule(): inventory_rule  { return this._inventory_rule;}
+    private _inventory_start: inventory_start
+    get inventory_start(): inventory_start  { return this._inventory_start;}
+    private _map_node: map_node
+    get map_node(): map_node  { return this._map_node;}
+    private _map_pool: map_pool
+    get map_pool(): map_pool  { return this._map_pool;}
+    private _map_variant: map_variant
+    get map_variant(): map_variant  { return this._map_variant;}
+    private _map_rule: map_rule
+    get map_rule(): map_rule  { return this._map_rule;}
     private _map_search: map_search
     get map_search(): map_search  { return this._map_search;}
     private _map_pool_category: map_pool_category
@@ -2071,59 +2632,71 @@ export class Tables {
     get map_pool_quality(): map_pool_quality  { return this._map_pool_quality;}
     private _map_pool_weapon: map_pool_weapon
     get map_pool_weapon(): map_pool_weapon  { return this._map_pool_weapon;}
-    private _inventory_start: inventory_start
-    get inventory_start(): inventory_start  { return this._inventory_start;}
 
     static getTableNames(): string[] {
         let names: string[] = [];
         names.push('battle_rule');
+        names.push('battle_parameter');
+        names.push('battle_start_skill');
         names.push('skill');
-        names.push('build');
+        names.push('skill_effect');
         names.push('enemy');
+        names.push('enemy_action');
         names.push('item');
+        names.push('equipment');
+        names.push('equipment_base');
+        names.push('equipment_band');
+        names.push('equipment_quality');
+        names.push('equipment_trait');
+        names.push('equipment_trait_roll');
         names.push('potion');
-        names.push('inventory_rule');
-        names.push('map_node');
-        names.push('map_pool');
-        names.push('map_variant');
-        names.push('map_rule');
-        names.push('weapon');
         names.push('potion_item');
         names.push('repair');
         names.push('stamina');
         names.push('container');
-        names.push('build_mutation');
+        names.push('inventory_rule');
+        names.push('inventory_start');
+        names.push('map_node');
+        names.push('map_pool');
+        names.push('map_variant');
+        names.push('map_rule');
         names.push('map_search');
         names.push('map_pool_category');
         names.push('map_pool_quality');
         names.push('map_pool_weapon');
-        names.push('inventory_start');
         return names;
     }
 
     constructor(loader: ByteBufLoader) {
         this._battle_rule = new battle_rule(loader('battle_rule'))
+        this._battle_parameter = new battle_parameter(loader('battle_parameter'))
+        this._battle_start_skill = new battle_start_skill(loader('battle_start_skill'))
         this._skill = new skill(loader('skill'))
-        this._build = new build(loader('build'))
+        this._skill_effect = new skill_effect(loader('skill_effect'))
         this._enemy = new enemy(loader('enemy'))
+        this._enemy_action = new enemy_action(loader('enemy_action'))
         this._item = new item(loader('item'))
+        this._equipment = new equipment(loader('equipment'))
+        this._equipment_base = new equipment_base(loader('equipment_base'))
+        this._equipment_band = new equipment_band(loader('equipment_band'))
+        this._equipment_quality = new equipment_quality(loader('equipment_quality'))
+        this._equipment_trait = new equipment_trait(loader('equipment_trait'))
+        this._equipment_trait_roll = new equipment_trait_roll(loader('equipment_trait_roll'))
         this._potion = new potion(loader('potion'))
-        this._inventory_rule = new inventory_rule(loader('inventory_rule'))
-        this._map_node = new map_node(loader('map_node'))
-        this._map_pool = new map_pool(loader('map_pool'))
-        this._map_variant = new map_variant(loader('map_variant'))
-        this._map_rule = new map_rule(loader('map_rule'))
-        this._weapon = new weapon(loader('weapon'))
         this._potion_item = new potion_item(loader('potion_item'))
         this._repair = new repair(loader('repair'))
         this._stamina = new stamina(loader('stamina'))
         this._container = new container(loader('container'))
-        this._build_mutation = new build_mutation(loader('build_mutation'))
+        this._inventory_rule = new inventory_rule(loader('inventory_rule'))
+        this._inventory_start = new inventory_start(loader('inventory_start'))
+        this._map_node = new map_node(loader('map_node'))
+        this._map_pool = new map_pool(loader('map_pool'))
+        this._map_variant = new map_variant(loader('map_variant'))
+        this._map_rule = new map_rule(loader('map_rule'))
         this._map_search = new map_search(loader('map_search'))
         this._map_pool_category = new map_pool_category(loader('map_pool_category'))
         this._map_pool_quality = new map_pool_quality(loader('map_pool_quality'))
         this._map_pool_weapon = new map_pool_weapon(loader('map_pool_weapon'))
-        this._inventory_start = new inventory_start(loader('inventory_start'))
 
 
     }

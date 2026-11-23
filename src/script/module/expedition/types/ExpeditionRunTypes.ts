@@ -1,19 +1,18 @@
 import type { InventoryCommand, InventoryConfig, InventoryItem, InventoryState } from "../../inventory/types/InventoryTypes";
-import type { RogueEnemyId } from "../../skillBattle/types/QingmingTypes";
 
 export function isBattleNode(node: { kind: string }): boolean {
     return node.kind === "normal" || node.kind === "elite" || node.kind === "boss";
 }
 
 export const EXPEDITION_LOOT_FAMILIES = [
-    "hp","mp","mixed","shield","repair","stamina","herb","ore","beast","relic","book","container","weapon",
+    "hp","mp","mixed","shield","repair","stamina","herb","ore","beast","relic","book","container","weapon","armor","accessory",
 ] as const;
 
 export interface ExpeditionNode {
     id: number; key: string; kind: string; name: string; poolId: number;
     mainOrder: number; x: number; y: number;
     encounterKey?: string;
-    qingmingEnemy?: RogueEnemyId;
+    enemyId?: number;
     icon?: string;
     searchMin?: number; searchMax?: number; searchWeight?: number;
 }
