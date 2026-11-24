@@ -21,13 +21,19 @@ async function click(page, name) {
         return { x: r.left + p.x * r.width / Laya.stage.width,
             y: r.top + p.y * r.height / Laya.stage.height };
     }, name);
-    await page.mouse.click(point.x, point.y);
+    if (page.touchMode) await page.touchscreen.tap(point.x, point.y);
+    else await page.mouse.click(point.x, point.y);
     await page.waitForTimeout(100);
 }
-async function shot(page, name) {
-    const issues = await page.evaluate(() => {
-        const v = window.__skillBattlePreview.view, issues = [];
-        const panel = v.getElement("box_save_dialog");
+async function resetDialog(page) {
+    await click(page,"btn_save_reset");
+    await page.waitForFunction(() => window.__skillBattlePreview.ui.topView?.isOpened &&
+        window.__skillBattlePreview.ui.topView.path.endsWith("/SkillBattleConfirmView.lh"));
+}
+async function shot(page, name, confirmation=false) {
+    const issues = await page.evaluate(confirmation => {
+        const v = window.__skillBattlePreview.ui.topView, issues = [];
+        const panel = v.getElement(confirmation?"dialogArea":"box_save_dialog");
         const center = panel.localToGlobal(new Laya.Point(panel.width / 2, panel.height / 2));
         if (Math.abs(center.x - Laya.stage.width / 2) > 0.5 ||
             Math.abs(center.y - Laya.stage.height / 2) > 0.5) issues.push("弹窗未居中");
@@ -44,7 +50,7 @@ async function shot(page, name) {
             }
         }
         return issues;
-    });
+    },confirmation);
     assert.deepEqual(issues, []);
     const image = await page.screenshot({ path: path.join(out, name + ".png") });
     const stats = await sharp(image).stats();
@@ -68,6 +74,7 @@ async function shot(page, name) {
             assert.deepEqual(await page.evaluate(key => [
                 localStorage.getItem(key), window.__skillBattlePreview.trial.inventory,
             ], key), [null,null]);
+            assert.equal(await page.evaluate(() => window.__skillBattlePreview.view.getElement("btn_save_reset").visible),false);
             await page.mouse.click(8,8);
             await page.keyboard.press("Escape");
             assert.equal(await page.evaluate(() => window.__skillBattlePreview.view.isOpened),true);
@@ -84,9 +91,45 @@ async function shot(page, name) {
             await shot(page,name+"-existing");
             await confirmStartup(page);
             assert.equal(await page.evaluate(key => localStorage.getItem(key),key),first,"继续不会重复初始化");
+            // 在隔离档内制造物品出售与限购记录，确认重置确实恢复初始状态。
+            await page.evaluate(() => {
+                const m=window.__skillBattlePreview.trial;
+                const item=m.archive.config.templates.find(t=>t.kind==="material"&&t.width===1&&t.height===1);
+                m.buyMarketGoods(1,[{id:1,itemId:item.id,price:0,limitCount:1,enabled:true}],
+                    {space:"bag",x:1,y:0,rotated:false});
+                const bought=m.inventory.items.find(i=>i.uid.includes(":market:"));
+                m.sellMarketItem(bought.uid,bought.location);
+                localStorage.setItem("reset-test-other-setting","keep");
+            });
+            const changed=await page.evaluate(key=>localStorage.getItem(key),key);
+            assert.ok(JSON.parse(changed).state.wish>0);
+            assert.equal(JSON.parse(changed).state.marketPurchases.length,1);
+            await page.reload();await ready(page);
+            await resetDialog(page);
+            assert.equal(await page.evaluate(key=>localStorage.getItem(key),key),changed,"打开确认不重置");
+            await shot(page,name+"-reset-confirm",true);
+            await click(page,"dialogCancel");
+            assert.equal(await page.evaluate(key=>localStorage.getItem(key),key),changed,"取消保留原档");
+            assert.equal(await page.evaluate(()=>window.__skillBattlePreview.view.isOpened),true);
+            await resetDialog(page);
+            await click(page,"dialogConfirm");
+            await page.waitForFunction(()=>window.__skillBattlePreview.view.isOpened&&
+                window.__skillBattlePreview.view.path.endsWith("/LobbyView.lh"));
+            const reset=await page.evaluate(key=>localStorage.getItem(key),key),fresh=JSON.parse(reset);
+            assert.notEqual(fresh.runId,JSON.parse(changed).runId);
+            assert.equal(fresh.state.phase,"preparation");
+            assert.equal(fresh.state.wish,JSON.parse(first).state.wish);
+            assert.equal(fresh.state.marketPurchases,undefined);
+            assert.equal(fresh.state.items.length,JSON.parse(first).state.items.length);
+            assert.deepEqual(fresh.commands,[]);
+            assert.equal(await page.evaluate(()=>localStorage.getItem("reset-test-other-setting")),"keep");
+            await page.reload();await ready(page);
+            assert.equal(await page.evaluate(key=>localStorage.getItem(key),key),reset);
+            await confirmStartup(page);
+            assert.equal(await page.evaluate(key=>localStorage.getItem(key),key),reset,"新档继续不重复发物品");
             assert.deepEqual(errors,[]);
             await context.close();
-            console.log(`通过 ${name}：首次确认保存、原档继续、点击外部不跳过、文字与居中适配。`);
+            console.log(`通过 ${name}：首次保存、原档继续、重置确认/取消、清除交易记录并重新开始、刷新保持与适配。`);
         }
         const context = await browser.newContext({ viewport:{width:1280,height:720} });
         const page = await context.newPage();
@@ -110,7 +153,35 @@ async function shot(page, name) {
         await shot(page,"write-failed");
         await page.evaluate(() => window.__restoreSaveWrite());
         await confirmStartup(page);
-        const original = await page.evaluate(key => localStorage.getItem(key),key);
+        let original = await page.evaluate(key => localStorage.getItem(key),key);
+        const earlier=original;
+        await page.reload();await ready(page);
+        await resetDialog(page);
+        await page.evaluate(key=>{
+            const write=Storage.prototype.setItem;
+            window.__restoreSaveWrite=()=>{Storage.prototype.setItem=write;};
+            Storage.prototype.setItem=function(k,v){
+                if(k===key)throw Error("测试：重置写入失败");
+                return write.call(this,k,v);
+            };
+        },key);
+        await click(page,"dialogConfirm");
+        assert.equal(await page.evaluate(key=>localStorage.getItem(key),key),original);
+        assert.equal(await page.evaluate(()=>window.__skillBattlePreview.ui.topView.getElement("dialogError").text),
+            "测试：重置写入失败");
+        assert.deepEqual(await page.evaluate(()=>window.__skillBattlePreview.trial.archive),JSON.parse(original));
+        await shot(page,"reset-write-failed",true);
+        await page.evaluate(()=>window.__restoreSaveWrite());
+        await click(page,"dialogConfirm");
+        await page.waitForFunction(()=>window.__skillBattlePreview.view.path.endsWith("/LobbyView.lh"));
+        original=await page.evaluate(key=>localStorage.getItem(key),key);
+        assert.notEqual(original,earlier);
+        await page.reload();await ready(page);await resetDialog(page);
+        await page.evaluate(({key,earlier})=>localStorage.setItem(key,earlier),{key,earlier});
+        await click(page,"dialogConfirm");
+        assert.equal(await page.evaluate(key=>localStorage.getItem(key),key),earlier);
+        assert.match(await page.evaluate(()=>window.__skillBattlePreview.ui.topView.getElement("dialogError").text),/其他页面/);
+        await click(page,"dialogCancel");
         // 构造与当前配置不一致的隔离存档，不能以新档覆盖。
         const mismatch = JSON.parse(original);
         mismatch.config.spaces.safeWidth++;
@@ -122,6 +193,13 @@ async function shot(page, name) {
             await confirmStartup(page);
             assert.equal(await page.evaluate(key => localStorage.getItem(key),key),text);
             assert.equal(await page.evaluate(() => window.__skillBattlePreview.view.path.endsWith("/SkillBattleStartView.lh")),true);
+            await page.reload();await ready(page);await resetDialog(page);
+            await click(page,"dialogCancel");
+            assert.equal(await page.evaluate(key=>localStorage.getItem(key),key),text);
+            await resetDialog(page);await click(page,"dialogConfirm");
+            await page.waitForFunction(()=>window.__skillBattlePreview.view.path.endsWith("/LobbyView.lh"));
+            assert.equal(await page.evaluate(()=>window.__skillBattlePreview.trial.error),"");
+            assert.equal(JSON.parse(await page.evaluate(key=>localStorage.getItem(key),key)).state.phase,"preparation");
         }
         // 其他页面已更新存档时，首次确认也必须拒绝覆盖。
         await page.evaluate(key => localStorage.removeItem(key),key);
@@ -132,6 +210,6 @@ async function shot(page, name) {
         assert.equal(await page.evaluate(() => window.__skillBattlePreview.view.path.endsWith("/LobbySaveView.lh")),true);
         assert.deepEqual(errors,[]);
         await context.close();
-        console.log("通过保存失败重试、损坏/不匹配原档保留、跨页更新拒绝覆盖。");
+        console.log("通过首次与重置保存失败保留原档和重试、损坏/不匹配档确认重建、跨页更新拒绝覆盖。");
     } finally { await browser.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });

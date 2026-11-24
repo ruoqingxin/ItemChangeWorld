@@ -1,0 +1,1993 @@
+{
+  "_$ver": 1,
+  "_$id": "market_page_SkillBattleInventoryView",
+  "_$type": "GWidget",
+  "name": "MarketView",
+  "width": 1280,
+  "height": 720,
+  "_$comp": [
+    {
+      "_$type": "3593fc26-337e-42e3-92dc-1b9c2bb8f988",
+      "scriptPath": "../src/script/games/ui/components/ElementMapper.ts",
+      "adapter": {
+        "_$ref": "market_warehouse_popup_adapter"
+      },
+      "elements": [
+        {
+          "_$ref": "market_warehouse_popup_adapter"
+        },
+        {
+          "_$ref": "market_warehouse_popup_box_inventory_popup"
+        },
+        {
+          "_$ref": "market_invstart_1"
+        },
+        {
+          "_$ref": "market_region_2"
+        },
+        {
+          "_$ref": "market_invstart_28"
+        },
+        {
+          "_$ref": "market_region_3"
+        },
+        {
+          "_$ref": "market_invstart_9"
+        },
+        {
+          "_$ref": "market_warehouse_compact_list_battle_cells"
+        },
+        {
+          "_$ref": "market_region_4"
+        },
+        {
+          "_$ref": "market_invstart_10"
+        },
+        {
+          "_$ref": "market_warehouse_compact_box_safe_content"
+        },
+        {
+          "_$ref": "market_warehouse_compact_list_safe_cells"
+        },
+        {
+          "_$ref": "market_region_7"
+        },
+        {
+          "_$ref": "market_region_6"
+        },
+        {
+          "_$ref": "market_warehouse_compact_list_bag_cells"
+        },
+        {
+          "_$ref": "market_region_11"
+        },
+        {
+          "_$ref": "market_invstart_13"
+        },
+        {
+          "_$ref": "market_region_8"
+        },
+        {
+          "_$ref": "market_warehouse_compact_list_source_cells"
+        },
+        {
+          "_$ref": "market_region_10"
+        },
+        {
+          "_$ref": "market_warehouse_popup_backpackEquipmentArea"
+        },
+        {
+          "_$ref": "market_invstart_36"
+        },
+        {
+          "_$ref": "market_warehouse_compact_box_drag_feedback"
+        },
+        {
+          "_$ref": "market_warehouse_popup_btn_lobby_back"
+        },
+        {
+          "_$ref": "market_warehouse_compact_box_item_template"
+        },
+        {
+          "_$ref": "market_warehouse_btn_sell"
+        },
+        {
+          "_$ref": "market_warehouse_bag_scrollbar"
+        },
+        {
+          "_$ref": "market_3bucmvkb"
+        },
+        {
+          "_$ref": "market_x83t2oom"
+        },
+        {
+          "_$ref": "market_8hsgnp8k"
+        },
+        {
+          "_$ref": "market_qn84l0xq"
+        },
+        {
+          "_$ref": "market_warehouse_safe_lock"
+        },
+        {
+          "_$ref": "market_warehouse_feedback"
+        },
+        {
+          "_$ref": "market_warehouse_battle_content"
+        },
+        {
+          "_$ref": "market_combat_invArmor_invWeapon"
+        },
+        {
+          "_$ref": "market_combat_invAccessory_invWeapon"
+        },
+        {
+          "_$ref": "market_combat_repair_all"
+        },
+        {
+          "_$ref": "market_combat_repair_text"
+        },
+        {
+          "_$ref": "market_market_category_weapon"
+        },
+        {
+          "_$ref": "market_market_category_weapon_skin"
+        },
+        {
+          "_$ref": "market_market_category_weapon_text"
+        },
+        {
+          "_$ref": "market_market_category_armor"
+        },
+        {
+          "_$ref": "market_market_category_armor_skin"
+        },
+        {
+          "_$ref": "market_market_category_armor_text"
+        },
+        {
+          "_$ref": "market_market_category_accessory"
+        },
+        {
+          "_$ref": "market_market_category_accessory_skin"
+        },
+        {
+          "_$ref": "market_market_category_accessory_text"
+        },
+        {
+          "_$ref": "market_market_category_container"
+        },
+        {
+          "_$ref": "market_market_category_container_skin"
+        },
+        {
+          "_$ref": "market_market_category_container_text"
+        },
+        {
+          "_$ref": "market_market_category_material"
+        },
+        {
+          "_$ref": "market_market_category_material_skin"
+        },
+        {
+          "_$ref": "market_market_category_material_text"
+        },
+        {
+          "_$ref": "market_market_categories"
+        },
+        {
+          "_$ref": "market_market_empty"
+        },
+        {
+          "_$ref": "market_page_prev"
+        },
+        {
+          "_$ref": "market_page_text"
+        },
+        {
+          "_$ref": "market_page_next"
+        }
+      ],
+      "prefabs": null,
+      "mapperType": 2
+    }
+  ],
+  "_$child": [
+    {
+      "_$id": "market_warehouse_popup_adapter",
+      "_$type": "GWidget",
+      "name": "adapter",
+      "width": 1280,
+      "height": 720,
+      "mouseThrough": true,
+      "relations": [
+        {
+          "_$type": "Relation",
+          "target": {
+            "_$ref": "market_page_SkillBattleInventoryView"
+          },
+          "data": [
+            1,
+            0,
+            2,
+            0
+          ]
+        }
+      ],
+      "_$child": [
+        {
+          "_$id": "market_warehouse_popup_storageBackdropArea",
+          "_$type": "GWidget",
+          "name": "storageBackdropArea",
+          "width": 1280,
+          "height": 720,
+          "mouseThrough": true,
+          "_$child": [
+            {
+              "_$id": "market_warehouse_popup_result",
+              "_$type": "GWidget",
+              "name": "result",
+              "width": 1280,
+              "height": 720,
+              "visible": false,
+              "mouseThrough": true
+            }
+          ]
+        },
+        {
+          "_$id": "market_warehouse_popup_box_inventory_popup",
+          "_$type": "GWidget",
+          "name": "box_inventory_popup",
+          "x": 48,
+          "y": 56,
+          "width": 1184,
+          "height": 608,
+          "_mouseState": 2,
+          "relations": [
+            {
+              "_$type": "Relation",
+              "target": {
+                "_$ref": "market_warehouse_popup_adapter"
+              },
+              "data": [
+                6,
+                0,
+                13,
+                0
+              ]
+            }
+          ],
+          "_$child": [
+            {
+              "_$id": "market_invstart_1",
+              "_$type": "GWidget",
+              "name": "inventoryRoot",
+              "width": 1184,
+              "height": 608,
+              "mouseThrough": true,
+              "_$child": [
+                {
+                  "_$id": "market_region_5",
+                  "_$type": "GWidget",
+                  "name": "carryArea",
+                  "x": 16,
+                  "y": 16,
+                  "width": 616,
+                  "height": 322,
+                  "mouseThrough": true,
+                  "_$child": [
+                    {
+                      "_$id": "market_invstart_2",
+                      "_$type": "GImage",
+                      "name": "invLeftPanel",
+                      "x": 212,
+                      "width": 404,
+                      "height": 234,
+                      "_mouseState": 1,
+                      "src": "ui/atlas/module/warehouse/graphite/panel.png",
+                      "autoSize": false
+                    },
+                    {
+                      "_$id": "market_region_2",
+                      "_$type": "GWidget",
+                      "name": "equipmentArea",
+                      "x": 212,
+                      "width": 404,
+                      "height": 234,
+                      "mouseThrough": true,
+                      "_$child": [
+                        {
+                          "_$id": "market_invstart_8",
+                          "_$type": "GTextField",
+                          "name": "invEquipTitle",
+                          "x": 16,
+                          "y": 8,
+                          "width": 116,
+                          "height": 32,
+                          "_mouseState": 1,
+                          "text": "装备",
+                          "font": "KaiTi",
+                          "fontSize": 24,
+                          "color": "#e7e1d4",
+                          "valign": "middle",
+                          "overflow": "shrink",
+                          "letterSpacing": 0
+                        },
+                        {
+                          "_$id": "market_warehouse_slots_box_weapon_cells",
+                          "_$type": "GWidget",
+                          "name": "box_weapon_cells",
+                          "x": 16,
+                          "y": 52,
+                          "width": 110,
+                          "height": 166,
+                          "_mouseState": 1,
+                          "_$child": [
+                            {
+                              "_$id": "market_warehouse_slots_weapon_cell_0",
+                              "_$type": "GImage",
+                              "name": "img_weapon_cell_0",
+                              "width": 54,
+                              "height": 54,
+                              "_mouseState": 1,
+                              "src": "ui/atlas/module/warehouse/graphite/cell.png",
+                              "autoSize": false
+                            },
+                            {
+                              "_$id": "market_warehouse_slots_weapon_cell_1",
+                              "_$type": "GImage",
+                              "name": "img_weapon_cell_1",
+                              "x": 56,
+                              "width": 54,
+                              "height": 54,
+                              "_mouseState": 1,
+                              "src": "ui/atlas/module/warehouse/graphite/cell.png",
+                              "autoSize": false
+                            },
+                            {
+                              "_$id": "market_warehouse_slots_weapon_cell_2",
+                              "_$type": "GImage",
+                              "name": "img_weapon_cell_2",
+                              "y": 56,
+                              "width": 54,
+                              "height": 54,
+                              "_mouseState": 1,
+                              "src": "ui/atlas/module/warehouse/graphite/cell.png",
+                              "autoSize": false
+                            },
+                            {
+                              "_$id": "market_warehouse_slots_weapon_cell_3",
+                              "_$type": "GImage",
+                              "name": "img_weapon_cell_3",
+                              "x": 56,
+                              "y": 56,
+                              "width": 54,
+                              "height": 54,
+                              "_mouseState": 1,
+                              "src": "ui/atlas/module/warehouse/graphite/cell.png",
+                              "autoSize": false
+                            },
+                            {
+                              "_$id": "market_warehouse_slots_weapon_cell_4",
+                              "_$type": "GImage",
+                              "name": "img_weapon_cell_4",
+                              "y": 112,
+                              "width": 54,
+                              "height": 54,
+                              "_mouseState": 1,
+                              "src": "ui/atlas/module/warehouse/graphite/cell.png",
+                              "autoSize": false
+                            },
+                            {
+                              "_$id": "market_warehouse_slots_weapon_cell_5",
+                              "_$type": "GImage",
+                              "name": "img_weapon_cell_5",
+                              "x": 56,
+                              "y": 112,
+                              "width": 54,
+                              "height": 54,
+                              "_mouseState": 1,
+                              "src": "ui/atlas/module/warehouse/graphite/cell.png",
+                              "autoSize": false
+                            }
+                          ]
+                        },
+                        {
+                          "_$id": "market_warehouse_slots_img_weapon_hint",
+                          "_$type": "GImage",
+                          "name": "img_weapon_hint",
+                          "x": 37,
+                          "y": 85,
+                          "width": 48,
+                          "height": 68,
+                          "scaleX": 1.4,
+                          "scaleY": 1.4,
+                          "alpha": 0.25,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/warehouse/jade/hint-weapon.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "market_invstart_28",
+                          "_$type": "GWidget",
+                          "name": "invWeapon",
+                          "x": 16,
+                          "y": 52,
+                          "width": 110,
+                          "height": 166,
+                          "_mouseState": 2,
+                          "_$child": [
+                            {
+                              "_$id": "market_invstart_26",
+                              "_$type": "GImage",
+                              "name": "invWeaponBg",
+                              "width": 110,
+                              "height": 166,
+                              "visible": false,
+                              "_mouseState": 1,
+                              "src": "ui/atlas/module/inventory/item-frame.png",
+                              "autoSize": false
+                            },
+                            {
+                              "_$id": "market_invstart_27",
+                              "_$type": "GTextField",
+                              "name": "invWeaponText",
+                              "x": 8,
+                              "y": 4,
+                              "width": 94,
+                              "height": 158,
+                              "visible": false,
+                              "_mouseState": 1,
+                              "text": "",
+                              "font": "KaiTi",
+                              "fontSize": 18,
+                              "color": "#e8e6df",
+                              "overflow": "shrink",
+                              "letterSpacing": 0
+                            },
+                            {
+                              "_$id": "market_invstart_29",
+                              "_$type": "GImage",
+                              "name": "invWeaponIcon",
+                              "x": 6,
+                              "y": 6,
+                              "width": 98,
+                              "height": 154,
+                              "visible": false,
+                              "_mouseState": 1,
+                              "src": "ui/atlas/module/inventory/gold-sword.png",
+                              "autoSize": false
+                            },
+                            {
+                              "_$id": "market_invstart_28_selection",
+                              "_$type": "GWidget",
+                              "name": "invWeaponSelection",
+                              "width": 110,
+                              "height": 166,
+                              "visible": false,
+                              "_mouseState": 1
+                            }
+                          ]
+                        },
+                        {
+                          "_$id": "market_warehouse_slots_box_armor_cells",
+                          "_$type": "GWidget",
+                          "name": "box_armor_cells",
+                          "x": 278,
+                          "y": 52,
+                          "width": 110,
+                          "height": 166,
+                          "_mouseState": 1,
+                          "_$child": [
+                            {
+                              "_$id": "market_warehouse_slots_armor_cell_0",
+                              "_$type": "GImage",
+                              "name": "img_armor_cell_0",
+                              "width": 54,
+                              "height": 54,
+                              "_mouseState": 1,
+                              "src": "ui/atlas/module/warehouse/graphite/cell.png",
+                              "autoSize": false
+                            },
+                            {
+                              "_$id": "market_warehouse_slots_armor_cell_1",
+                              "_$type": "GImage",
+                              "name": "img_armor_cell_1",
+                              "x": 56,
+                              "width": 54,
+                              "height": 54,
+                              "_mouseState": 1,
+                              "src": "ui/atlas/module/warehouse/graphite/cell.png",
+                              "autoSize": false
+                            },
+                            {
+                              "_$id": "market_warehouse_slots_armor_cell_2",
+                              "_$type": "GImage",
+                              "name": "img_armor_cell_2",
+                              "y": 56,
+                              "width": 54,
+                              "height": 54,
+                              "_mouseState": 1,
+                              "src": "ui/atlas/module/warehouse/graphite/cell.png",
+                              "autoSize": false
+                            },
+                            {
+                              "_$id": "market_warehouse_slots_armor_cell_3",
+                              "_$type": "GImage",
+                              "name": "img_armor_cell_3",
+                              "x": 56,
+                              "y": 56,
+                              "width": 54,
+                              "height": 54,
+                              "_mouseState": 1,
+                              "src": "ui/atlas/module/warehouse/graphite/cell.png",
+                              "autoSize": false
+                            },
+                            {
+                              "_$id": "market_warehouse_slots_armor_cell_4",
+                              "_$type": "GImage",
+                              "name": "img_armor_cell_4",
+                              "y": 112,
+                              "width": 54,
+                              "height": 54,
+                              "_mouseState": 1,
+                              "src": "ui/atlas/module/warehouse/graphite/cell.png",
+                              "autoSize": false
+                            },
+                            {
+                              "_$id": "market_warehouse_slots_armor_cell_5",
+                              "_$type": "GImage",
+                              "name": "img_armor_cell_5",
+                              "x": 56,
+                              "y": 112,
+                              "width": 54,
+                              "height": 54,
+                              "_mouseState": 1,
+                              "src": "ui/atlas/module/warehouse/graphite/cell.png",
+                              "autoSize": false
+                            }
+                          ]
+                        },
+                        {
+                          "_$id": "market_warehouse_slots_img_armor_hint",
+                          "_$type": "GImage",
+                          "name": "img_armor_hint",
+                          "x": 292,
+                          "y": 91,
+                          "width": 58,
+                          "height": 58,
+                          "scaleX": 1.4,
+                          "scaleY": 1.4,
+                          "alpha": 0.25,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/warehouse/jade/hint-armor.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "market_warehouse_slots_box_accessory_cells",
+                          "_$type": "GWidget",
+                          "name": "box_accessory_cells",
+                          "x": 146,
+                          "y": 108,
+                          "width": 110,
+                          "height": 110,
+                          "_mouseState": 1,
+                          "_$child": [
+                            {
+                              "_$id": "market_warehouse_slots_accessory_cell_0",
+                              "_$type": "GImage",
+                              "name": "img_accessory_cell_0",
+                              "width": 54,
+                              "height": 54,
+                              "_mouseState": 1,
+                              "src": "ui/atlas/module/warehouse/graphite/cell.png",
+                              "autoSize": false
+                            },
+                            {
+                              "_$id": "market_warehouse_slots_accessory_cell_1",
+                              "_$type": "GImage",
+                              "name": "img_accessory_cell_1",
+                              "x": 56,
+                              "width": 54,
+                              "height": 54,
+                              "_mouseState": 1,
+                              "src": "ui/atlas/module/warehouse/graphite/cell.png",
+                              "autoSize": false
+                            },
+                            {
+                              "_$id": "market_warehouse_slots_accessory_cell_2",
+                              "_$type": "GImage",
+                              "name": "img_accessory_cell_2",
+                              "y": 56,
+                              "width": 54,
+                              "height": 54,
+                              "_mouseState": 1,
+                              "src": "ui/atlas/module/warehouse/graphite/cell.png",
+                              "autoSize": false
+                            },
+                            {
+                              "_$id": "market_warehouse_slots_accessory_cell_3",
+                              "_$type": "GImage",
+                              "name": "img_accessory_cell_3",
+                              "x": 56,
+                              "y": 56,
+                              "width": 54,
+                              "height": 54,
+                              "_mouseState": 1,
+                              "src": "ui/atlas/module/warehouse/graphite/cell.png",
+                              "autoSize": false
+                            }
+                          ]
+                        },
+                        {
+                          "_$id": "market_warehouse_slots_img_accessory_hint",
+                          "_$type": "GImage",
+                          "name": "img_accessory_hint",
+                          "x": 169,
+                          "y": 129,
+                          "width": 52,
+                          "height": 52,
+                          "scaleX": 1.3,
+                          "scaleY": 1.3,
+                          "alpha": 0.25,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/warehouse/jade/hint-accessory.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "market_combat_invArmor_invWeapon",
+                          "_$type": "GWidget",
+                          "name": "invArmor",
+                          "x": 278,
+                          "y": 52,
+                          "width": 110,
+                          "height": 166,
+                          "_mouseState": 2,
+                          "_$child": [
+                            {
+                              "_$id": "market_combat_invArmor_invWeaponBg",
+                              "_$type": "GImage",
+                              "name": "invArmorBg",
+                              "width": 110,
+                              "height": 166,
+                              "visible": false,
+                              "_mouseState": 1,
+                              "src": "ui/atlas/module/inventory/item-frame.png",
+                              "autoSize": false
+                            },
+                            {
+                              "_$id": "market_combat_invArmor_invWeaponText",
+                              "_$type": "GTextField",
+                              "name": "invArmorText",
+                              "x": 8,
+                              "y": 4,
+                              "width": 94,
+                              "height": 158,
+                              "visible": false,
+                              "_mouseState": 1,
+                              "text": "",
+                              "font": "KaiTi",
+                              "fontSize": 18,
+                              "color": "#e8e6df",
+                              "overflow": "shrink",
+                              "letterSpacing": 0
+                            },
+                            {
+                              "_$id": "market_combat_invArmor_invWeaponIcon",
+                              "_$type": "GImage",
+                              "name": "invArmorIcon",
+                              "x": 6,
+                              "y": 6,
+                              "width": 98,
+                              "height": 154,
+                              "visible": false,
+                              "_mouseState": 1,
+                              "src": "ui/atlas/module/inventory/gold-sword.png",
+                              "autoSize": false
+                            },
+                            {
+                              "_$id": "market_combat_invArmor_invWeaponSelection",
+                              "_$type": "GWidget",
+                              "name": "invArmorSelection",
+                              "width": 110,
+                              "height": 166,
+                              "visible": false,
+                              "_mouseState": 1
+                            }
+                          ]
+                        },
+                        {
+                          "_$id": "market_combat_invAccessory_invWeapon",
+                          "_$type": "GWidget",
+                          "name": "invAccessory",
+                          "x": 146,
+                          "y": 108,
+                          "width": 110,
+                          "height": 110,
+                          "_mouseState": 2,
+                          "_$child": [
+                            {
+                              "_$id": "market_combat_invAccessory_invWeaponBg",
+                              "_$type": "GImage",
+                              "name": "invAccessoryBg",
+                              "width": 110,
+                              "height": 110,
+                              "visible": false,
+                              "_mouseState": 1,
+                              "src": "ui/atlas/module/inventory/item-frame.png",
+                              "autoSize": false
+                            },
+                            {
+                              "_$id": "market_combat_invAccessory_invWeaponText",
+                              "_$type": "GTextField",
+                              "name": "invAccessoryText",
+                              "x": 8,
+                              "y": 4,
+                              "width": 94,
+                              "height": 110,
+                              "visible": false,
+                              "_mouseState": 1,
+                              "text": "",
+                              "font": "KaiTi",
+                              "fontSize": 18,
+                              "color": "#e8e6df",
+                              "overflow": "shrink",
+                              "letterSpacing": 0
+                            },
+                            {
+                              "_$id": "market_combat_invAccessory_invWeaponIcon",
+                              "_$type": "GImage",
+                              "name": "invAccessoryIcon",
+                              "x": 6,
+                              "y": 6,
+                              "width": 98,
+                              "height": 110,
+                              "visible": false,
+                              "_mouseState": 1,
+                              "src": "ui/atlas/module/inventory/gold-sword.png",
+                              "autoSize": false
+                            },
+                            {
+                              "_$id": "market_combat_invAccessory_invWeaponSelection",
+                              "_$type": "GWidget",
+                              "name": "invAccessorySelection",
+                              "width": 110,
+                              "height": 110,
+                              "visible": false,
+                              "_mouseState": 1
+                            }
+                          ]
+                        },
+                        {
+                          "_$id": "market_combat_repair_all",
+                          "_$type": "GWidget",
+                          "name": "btn_repair_all",
+                          "x": 146,
+                          "y": 8,
+                          "width": 242,
+                          "height": 32,
+                          "_mouseState": 2,
+                          "tooltips": "按品质消耗愿力，修满当前三件装备",
+                          "_$child": [
+                            {
+                              "_$id": "market_combat_repair_skin",
+                              "_$type": "GImage",
+                              "name": "img_repair_skin",
+                              "width": 242,
+                              "height": 32,
+                              "_mouseState": 1,
+                              "src": "ui/atlas/module/warehouse/graphite/button-normal.png",
+                              "autoSize": false
+                            },
+                            {
+                              "_$id": "market_combat_repair_text",
+                              "_$type": "GTextField",
+                              "name": "txt_repair_all",
+                              "x": 8,
+                              "y": 2,
+                              "width": 226,
+                              "height": 28,
+                              "_mouseState": 1,
+                              "text": "修理",
+                              "fontSize": 15,
+                              "color": "#e8e6df",
+                              "align": "center",
+                              "valign": "middle",
+                              "overflow": "shrink"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "market_region_3",
+                      "_$type": "GWidget",
+                      "name": "battleItemsArea",
+                      "x": 211,
+                      "y": 246,
+                      "width": 404,
+                      "height": 76,
+                      "mouseThrough": true,
+                      "_$child": [
+                        {
+                          "_$id": "market_warehouse_popup_img_battle_well",
+                          "_$type": "GImage",
+                          "name": "img_battle_well",
+                          "width": 404,
+                          "height": 76,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/warehouse/graphite/panel.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "market_invstart_9",
+                          "_$type": "GTextField",
+                          "name": "invBattleTitle",
+                          "x": 16,
+                          "y": 24,
+                          "width": 80,
+                          "height": 32,
+                          "_mouseState": 1,
+                          "text": "斗法匣",
+                          "font": "KaiTi",
+                          "fontSize": 24,
+                          "color": "#e7e1d4",
+                          "valign": "middle",
+                          "overflow": "shrink",
+                          "letterSpacing": 0
+                        },
+                        {
+                          "_$id": "market_warehouse_battle_content",
+                          "_$type": "GWidget",
+                          "name": "box_battle_content",
+                          "x": 90,
+                          "width": 314,
+                          "height": 76,
+                          "mouseThrough": true,
+                          "_$child": [
+                            {
+                              "_$id": "market_warehouse_compact_list_battle_cells",
+                              "_$type": "GList",
+                              "name": "list_battle_cells",
+                              "x": 18,
+                              "y": 13,
+                              "width": 278,
+                              "height": 54,
+                              "mouseThrough": true,
+                              "layout": {
+                                "type": 3,
+                                "columns": 5,
+                                "rowGap": 2,
+                                "columnGap": 2
+                              },
+                              "_templateNode": {
+                                "_$ref": "market_warehouse_compact_list_battle_cells_template",
+                                "_$tmpl": "itemTemplate"
+                              },
+                              "_initItemNum": null,
+                              "_$child": [
+                                {
+                                  "_$id": "market_warehouse_compact_list_battle_cells_template",
+                                  "_$prefab": "43a9e84b-705b-44df-94a9-20eb046942b9",
+                                  "name": "box_cell_template",
+                                  "active": true,
+                                  "x": 0,
+                                  "y": 0,
+                                  "visible": true
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "market_region_4",
+                      "_$type": "GWidget",
+                      "name": "safeItemsArea",
+                      "width": 200,
+                      "height": 234,
+                      "mouseThrough": true,
+                      "_$child": [
+                        {
+                          "_$id": "market_warehouse_popup_img_safe_well",
+                          "_$type": "GImage",
+                          "name": "img_safe_well",
+                          "width": 200,
+                          "height": 234,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/warehouse/graphite/panel.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "market_invstart_10",
+                          "_$type": "GTextField",
+                          "name": "invSafeTitle",
+                          "x": 42,
+                          "y": 8,
+                          "width": 116,
+                          "height": 32,
+                          "_mouseState": 1,
+                          "text": "普通归真匣",
+                          "font": "KaiTi",
+                          "fontSize": 24,
+                          "color": "#e7e1d4",
+                          "align": "center",
+                          "valign": "middle",
+                          "overflow": "shrink",
+                          "letterSpacing": 0
+                        },
+                        {
+                          "_$id": "market_warehouse_compact_box_safe_content",
+                          "_$type": "GWidget",
+                          "name": "box_safe_content",
+                          "x": 10,
+                          "y": 44,
+                          "width": 180,
+                          "height": 178,
+                          "mouseThrough": true,
+                          "_$child": [
+                            {
+                              "_$id": "market_warehouse_compact_list_safe_cells",
+                              "_$type": "GList",
+                              "name": "list_safe_cells",
+                              "x": 35,
+                              "y": 59,
+                              "width": 110,
+                              "height": 54,
+                              "mouseThrough": true,
+                              "layout": {
+                                "type": 3,
+                                "columns": 2,
+                                "rowGap": 2,
+                                "columnGap": 2
+                              },
+                              "_templateNode": {
+                                "_$ref": "market_warehouse_compact_list_safe_cells_template",
+                                "_$tmpl": "itemTemplate"
+                              },
+                              "_initItemNum": null,
+                              "_$child": [
+                                {
+                                  "_$id": "market_warehouse_compact_list_safe_cells_template",
+                                  "_$prefab": "43a9e84b-705b-44df-94a9-20eb046942b9",
+                                  "name": "box_cell_template",
+                                  "active": true,
+                                  "x": 0,
+                                  "y": 0,
+                                  "visible": true
+                                }
+                              ]
+                            },
+                            {
+                              "_$id": "market_warehouse_safe_lock",
+                              "_$type": "GImage",
+                              "name": "img_safe_lock",
+                              "width": 48,
+                              "height": 48,
+                              "visible": false,
+                              "_mouseState": 1,
+                              "src": "ui/atlas/module/warehouse/graphite/lock.png",
+                              "autoSize": false
+                            }
+                          ]
+                        },
+                        {
+                          "_$id": "market_3bucmvkb",
+                          "_$type": "GWidget",
+                          "name": "btn_safe_left",
+                          "x": 15,
+                          "y": 9,
+                          "width": 48,
+                          "height": 48,
+                          "scaleX": 0.6,
+                          "scaleY": 0.6,
+                          "_mouseState": 2,
+                          "tooltips": "查看上一档归真匣",
+                          "_$child": [
+                            {
+                              "_$id": "market_lgdds99h",
+                              "_$type": "GImage",
+                              "name": "img_btn_take_all_skin",
+                              "width": 48,
+                              "height": 48,
+                              "_mouseState": 1,
+                              "src": "ui/atlas/module/warehouse/graphite/square-normal.png",
+                              "autoSize": false
+                            },
+                            {
+                              "_$id": "market_p5v33v29",
+                              "_$type": "GImage",
+                              "name": "img_btn_take_all_arrow",
+                              "x": 24,
+                              "y": 24,
+                              "width": 28,
+                              "height": 28,
+                              "anchorX": 0.5,
+                              "anchorY": 0.5,
+                              "_mouseState": 1,
+                              "src": "ui/atlas/module/warehouse/graphite/arrow-left.png",
+                              "autoSize": false
+                            }
+                          ]
+                        },
+                        {
+                          "_$id": "market_x83t2oom",
+                          "_$type": "GWidget",
+                          "name": "btn_safe_right",
+                          "x": 158,
+                          "y": 9,
+                          "width": 48,
+                          "height": 48,
+                          "scaleX": 0.6,
+                          "scaleY": 0.6,
+                          "_mouseState": 2,
+                          "tooltips": "查看下一档归真匣",
+                          "_$child": [
+                            {
+                              "_$id": "market_1offt5ou",
+                              "_$type": "GImage",
+                              "name": "img_btn_store_all_skin",
+                              "width": 48,
+                              "height": 48,
+                              "_mouseState": 1,
+                              "src": "ui/atlas/module/warehouse/graphite/square-normal.png",
+                              "autoSize": false
+                            },
+                            {
+                              "_$id": "market_cmpjsil4",
+                              "_$type": "GImage",
+                              "name": "img_btn_store_all_arrow",
+                              "x": 24,
+                              "y": 24,
+                              "width": 28,
+                              "height": 28,
+                              "anchorX": 0.5,
+                              "anchorY": 0.5,
+                              "_mouseState": 1,
+                              "src": "ui/atlas/module/warehouse/graphite/arrow-right.png",
+                              "autoSize": false
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "_$id": "market_region_7",
+                  "_$type": "GWidget",
+                  "name": "bagArea",
+                  "x": 177,
+                  "y": 350,
+                  "width": 455,
+                  "height": 242,
+                  "mouseThrough": true,
+                  "_$child": [
+                    {
+                      "_$id": "market_invstart_3",
+                      "_$type": "GImage",
+                      "name": "invBagPanel",
+                      "width": 455,
+                      "height": 242,
+                      "_mouseState": 1,
+                      "src": "ui/atlas/module/warehouse/graphite/panel.png",
+                      "autoSize": false
+                    },
+                    {
+                      "_$id": "market_region_6",
+                      "_$type": "GPanel",
+                      "name": "bagItemsArea",
+                      "x": 32,
+                      "y": 44,
+                      "width": 390,
+                      "height": 166,
+                      "mouseThrough": true,
+                      "_$child": [
+                        {
+                          "_$id": "market_warehouse_compact_list_bag_cells",
+                          "_$type": "GList",
+                          "name": "list_bag_cells",
+                          "width": 390,
+                          "height": 110,
+                          "mouseThrough": true,
+                          "layout": {
+                            "type": 3,
+                            "columns": 7,
+                            "rowGap": 2,
+                            "columnGap": 2
+                          },
+                          "_templateNode": {
+                            "_$ref": "market_warehouse_compact_list_bag_cells_template",
+                            "_$tmpl": "itemTemplate"
+                          },
+                          "_initItemNum": null,
+                          "_$child": [
+                            {
+                              "_$id": "market_warehouse_compact_list_bag_cells_template",
+                              "_$prefab": "43a9e84b-705b-44df-94a9-20eb046942b9",
+                              "name": "box_cell_template",
+                              "active": true,
+                              "x": 0,
+                              "y": 0,
+                              "visible": true
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "market_warehouse_bag_scrollbar",
+                      "_$type": "GScrollBar",
+                      "name": "box_bag_scrollbar",
+                      "x": 431,
+                      "y": 44,
+                      "width": 16,
+                      "height": 166,
+                      "_mouseState": 2,
+                      "tooltips": "滚动背包",
+                      "_bar": {
+                        "_$ref": "market_warehouse_bag_scroll_track"
+                      },
+                      "_gripButton": {
+                        "_$ref": "market_warehouse_bag_scroll_grip"
+                      },
+                      "_$child": [
+                        {
+                          "_$id": "market_warehouse_bag_scroll_track",
+                          "_$type": "GImage",
+                          "name": "img_scroll_track",
+                          "x": 4,
+                          "width": 8,
+                          "height": 166,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/warehouse/graphite/scroll-track.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "market_warehouse_bag_scroll_grip",
+                          "_$type": "GImage",
+                          "name": "img_scroll_grip",
+                          "x": 3,
+                          "width": 10,
+                          "height": 64,
+                          "_mouseState": 2,
+                          "src": "ui/atlas/module/warehouse/graphite/scroll-normal.png",
+                          "autoSize": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "market_warehouse_polish_bag_heading",
+                      "_$type": "GTextField",
+                      "name": "txt_bag_heading",
+                      "x": 16,
+                      "y": 8,
+                      "width": 106,
+                      "height": 32,
+                      "_mouseState": 1,
+                      "text": "纳虚器",
+                      "font": "KaiTi",
+                      "fontSize": 24,
+                      "color": "#e7e1d4",
+                      "valign": "middle",
+                      "letterSpacing": 0
+                    },
+                    {
+                      "_$id": "market_8hsgnp8k",
+                      "_$type": "GImage",
+                      "name": "img_bag_empty",
+                      "x": 225,
+                      "y": 126,
+                      "width": 54,
+                      "height": 54,
+                      "anchorX": 0.5,
+                      "anchorY": 0.5,
+                      "scaleX": 2,
+                      "scaleY": 2,
+                      "alpha": 0.25,
+                      "_mouseState": 1,
+                      "src": "ui/atlas/module/warehouse/jade/hint-container.png",
+                      "autoSize": false
+                    }
+                  ]
+                },
+                {
+                  "_$id": "market_region_11",
+                  "_$type": "GWidget",
+                  "name": "sourceArea",
+                  "x": 704,
+                  "y": 16,
+                  "width": 464,
+                  "height": 576,
+                  "mouseThrough": true,
+                  "_$child": [
+                    {
+                      "_$id": "market_invstart_5",
+                      "_$type": "GImage",
+                      "name": "invRightPanel",
+                      "width": 464,
+                      "height": 576,
+                      "_mouseState": 1,
+                      "src": "ui/atlas/module/warehouse/graphite/panel.png",
+                      "autoSize": false
+                    },
+                    {
+                      "_$id": "market_invstart_13",
+                      "_$type": "GTextField",
+                      "name": "invSourceTitle",
+                      "x": 16,
+                      "y": 8,
+                      "width": 112,
+                      "height": 32,
+                      "_mouseState": 1,
+                      "text": "坊市",
+                      "font": "KaiTi",
+                      "fontSize": 24,
+                      "color": "#e7e1d4",
+                      "valign": "middle",
+                      "letterSpacing": 0
+                    },
+                    {
+                      "_$id": "market_region_8",
+                      "_$type": "GWidget",
+                      "name": "sourceItemsArea",
+                      "x": 9,
+                      "y": 161,
+                      "width": 446,
+                      "height": 390,
+                      "mouseThrough": true,
+                      "_$child": [
+                        {
+                          "_$id": "market_warehouse_compact_list_source_cells",
+                          "_$type": "GList",
+                          "name": "list_source_cells",
+                          "width": 446,
+                          "height": 390,
+                          "mouseThrough": true,
+                          "layout": {
+                            "type": 3,
+                            "columns": 8,
+                            "rowGap": 2,
+                            "columnGap": 2
+                          },
+                          "_templateNode": {
+                            "_$ref": "market_warehouse_compact_list_source_cells_template",
+                            "_$tmpl": "itemTemplate"
+                          },
+                          "_initItemNum": null,
+                          "_$child": [
+                            {
+                              "_$id": "market_warehouse_compact_list_source_cells_template",
+                              "_$prefab": "43a9e84b-705b-44df-94a9-20eb046942b9",
+                              "name": "box_cell_template",
+                              "active": true,
+                              "x": 0,
+                              "y": 0,
+                              "visible": true
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "market_region_10",
+                      "_$type": "GWidget",
+                      "name": "sourcePagesArea",
+                      "x": 9,
+                      "y": 101,
+                      "width": 446,
+                      "height": 40,
+                      "mouseThrough": true,
+                      "_$child": [
+                        {
+                          "_$id": "market_page_prev",
+                          "_$type": "GWidget",
+                          "name": "btn_market_prev",
+                          "x": 0,
+                          "y": 0,
+                          "width": 40,
+                          "height": 40,
+                          "mouseEnabled": true,
+                          "tooltips": "上一页",
+                          "_$child": [
+                            {
+                              "_$id": "market_page_prev_skin",
+                              "_$type": "GImage",
+                              "name": "img_market_prev_skin",
+                              "width": 40,
+                              "height": 40,
+                              "mouseEnabled": false,
+                              "autoSize": false,
+                              "src": "ui/atlas/module/warehouse/graphite/square-normal.png"
+                            },
+                            {
+                              "_$id": "market_page_prev_arrow",
+                              "_$type": "GImage",
+                              "name": "img_market_prev_arrow",
+                              "x": 10,
+                              "y": 10,
+                              "width": 20,
+                              "height": 20,
+                              "mouseEnabled": false,
+                              "autoSize": false,
+                              "src": "ui/atlas/module/warehouse/graphite/arrow-left.png"
+                            }
+                          ]
+                        },
+                        {
+                          "_$id": "market_page_text",
+                          "_$type": "GTextField",
+                          "name": "txt_market_page",
+                          "x": 50,
+                          "y": 0,
+                          "width": 346,
+                          "height": 40,
+                          "font": "Microsoft YaHei",
+                          "fontSize": 17,
+                          "text": "1 / 1",
+                          "color": "#dfc58d",
+                          "align": "center",
+                          "valign": "middle",
+                          "overflow": "shrink",
+                          "mouseEnabled": false,
+                          "letterSpacing": 0
+                        },
+                        {
+                          "_$id": "market_page_next",
+                          "_$type": "GWidget",
+                          "name": "btn_market_next",
+                          "x": 406,
+                          "y": 0,
+                          "width": 40,
+                          "height": 40,
+                          "mouseEnabled": true,
+                          "tooltips": "下一页",
+                          "_$child": [
+                            {
+                              "_$id": "market_page_next_skin",
+                              "_$type": "GImage",
+                              "name": "img_market_next_skin",
+                              "width": 40,
+                              "height": 40,
+                              "mouseEnabled": false,
+                              "autoSize": false,
+                              "src": "ui/atlas/module/warehouse/graphite/square-normal.png"
+                            },
+                            {
+                              "_$id": "market_page_next_arrow",
+                              "_$type": "GImage",
+                              "name": "img_market_next_arrow",
+                              "x": 10,
+                              "y": 10,
+                              "width": 20,
+                              "height": 20,
+                              "mouseEnabled": false,
+                              "autoSize": false,
+                              "src": "ui/atlas/module/warehouse/graphite/arrow-right.png"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "market_market_categories",
+                      "_$type": "GWidget",
+                      "name": "box_market_categories",
+                      "x": 9,
+                      "y": 51,
+                      "width": 446,
+                      "height": 40,
+                      "mouseThrough": true,
+                      "_$child": [
+                        {
+                          "_$id": "market_market_category_weapon",
+                          "_$type": "GWidget",
+                          "name": "btn_category_weapon",
+                          "x": 0,
+                          "width": 86,
+                          "height": 40,
+                          "mouseEnabled": true,
+                          "tooltips": "武器",
+                          "_$child": [
+                            {
+                              "_$id": "market_market_category_weapon_skin",
+                              "_$type": "GImage",
+                              "name": "img_category_weapon",
+                              "width": 86,
+                              "height": 40,
+                              "mouseEnabled": false,
+                              "autoSize": false,
+                              "src": "ui/atlas/module/warehouse/graphite/page-selected.png"
+                            },
+                            {
+                              "_$id": "market_market_category_weapon_text",
+                              "_$type": "GTextField",
+                              "name": "txt_category_weapon",
+                              "x": 5,
+                              "y": 4,
+                              "width": 76,
+                              "height": 32,
+                              "mouseEnabled": false,
+                              "text": "武器",
+                              "font": "KaiTi",
+                              "fontSize": 24,
+                              "color": "#dfc58d",
+                              "bold": true,
+                              "align": "center",
+                              "valign": "middle",
+                              "letterSpacing": 0
+                            }
+                          ]
+                        },
+                        {
+                          "_$id": "market_market_category_armor",
+                          "_$type": "GWidget",
+                          "name": "btn_category_armor",
+                          "x": 90,
+                          "width": 86,
+                          "height": 40,
+                          "mouseEnabled": true,
+                          "tooltips": "防具",
+                          "_$child": [
+                            {
+                              "_$id": "market_market_category_armor_skin",
+                              "_$type": "GImage",
+                              "name": "img_category_armor",
+                              "width": 86,
+                              "height": 40,
+                              "mouseEnabled": false,
+                              "autoSize": false,
+                              "src": "ui/atlas/module/warehouse/graphite/page-normal.png"
+                            },
+                            {
+                              "_$id": "market_market_category_armor_text",
+                              "_$type": "GTextField",
+                              "name": "txt_category_armor",
+                              "x": 5,
+                              "y": 4,
+                              "width": 76,
+                              "height": 32,
+                              "mouseEnabled": false,
+                              "text": "防具",
+                              "font": "KaiTi",
+                              "fontSize": 24,
+                              "color": "#b3bbb6",
+                              "bold": false,
+                              "align": "center",
+                              "valign": "middle",
+                              "letterSpacing": 0
+                            }
+                          ]
+                        },
+                        {
+                          "_$id": "market_market_category_accessory",
+                          "_$type": "GWidget",
+                          "name": "btn_category_accessory",
+                          "x": 180,
+                          "width": 86,
+                          "height": 40,
+                          "mouseEnabled": true,
+                          "tooltips": "饰品",
+                          "_$child": [
+                            {
+                              "_$id": "market_market_category_accessory_skin",
+                              "_$type": "GImage",
+                              "name": "img_category_accessory",
+                              "width": 86,
+                              "height": 40,
+                              "mouseEnabled": false,
+                              "autoSize": false,
+                              "src": "ui/atlas/module/warehouse/graphite/page-normal.png"
+                            },
+                            {
+                              "_$id": "market_market_category_accessory_text",
+                              "_$type": "GTextField",
+                              "name": "txt_category_accessory",
+                              "x": 5,
+                              "y": 4,
+                              "width": 76,
+                              "height": 32,
+                              "mouseEnabled": false,
+                              "text": "饰品",
+                              "font": "KaiTi",
+                              "fontSize": 24,
+                              "color": "#b3bbb6",
+                              "bold": false,
+                              "align": "center",
+                              "valign": "middle",
+                              "letterSpacing": 0
+                            }
+                          ]
+                        },
+                        {
+                          "_$id": "market_market_category_container",
+                          "_$type": "GWidget",
+                          "name": "btn_category_container",
+                          "x": 270,
+                          "width": 86,
+                          "height": 40,
+                          "mouseEnabled": true,
+                          "tooltips": "纳虚",
+                          "_$child": [
+                            {
+                              "_$id": "market_market_category_container_skin",
+                              "_$type": "GImage",
+                              "name": "img_category_container",
+                              "width": 86,
+                              "height": 40,
+                              "mouseEnabled": false,
+                              "autoSize": false,
+                              "src": "ui/atlas/module/warehouse/graphite/page-normal.png"
+                            },
+                            {
+                              "_$id": "market_market_category_container_text",
+                              "_$type": "GTextField",
+                              "name": "txt_category_container",
+                              "x": 5,
+                              "y": 4,
+                              "width": 76,
+                              "height": 32,
+                              "mouseEnabled": false,
+                              "text": "纳虚",
+                              "font": "KaiTi",
+                              "fontSize": 24,
+                              "color": "#b3bbb6",
+                              "bold": false,
+                              "align": "center",
+                              "valign": "middle",
+                              "letterSpacing": 0
+                            }
+                          ]
+                        },
+                        {
+                          "_$id": "market_market_category_material",
+                          "_$type": "GWidget",
+                          "name": "btn_category_material",
+                          "x": 360,
+                          "width": 86,
+                          "height": 40,
+                          "mouseEnabled": true,
+                          "tooltips": "材料",
+                          "_$child": [
+                            {
+                              "_$id": "market_market_category_material_skin",
+                              "_$type": "GImage",
+                              "name": "img_category_material",
+                              "width": 86,
+                              "height": 40,
+                              "mouseEnabled": false,
+                              "autoSize": false,
+                              "src": "ui/atlas/module/warehouse/graphite/page-normal.png"
+                            },
+                            {
+                              "_$id": "market_market_category_material_text",
+                              "_$type": "GTextField",
+                              "name": "txt_category_material",
+                              "x": 5,
+                              "y": 4,
+                              "width": 76,
+                              "height": 32,
+                              "mouseEnabled": false,
+                              "text": "材料",
+                              "font": "KaiTi",
+                              "fontSize": 24,
+                              "color": "#b3bbb6",
+                              "bold": false,
+                              "align": "center",
+                              "valign": "middle",
+                              "letterSpacing": 0
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "market_market_empty",
+                      "_$type": "GTextField",
+                      "name": "txt_market_empty",
+                      "x": 26,
+                      "y": 328,
+                      "width": 412,
+                      "height": 44,
+                      "mouseEnabled": false,
+                      "text": "暂无在售武器",
+                      "font": "KaiTi",
+                      "fontSize": 24,
+                      "color": "#b3bbb6",
+                      "align": "center",
+                      "valign": "middle",
+                      "letterSpacing": 0
+                    }
+                  ]
+                },
+                {
+                  "_$id": "market_warehouse_popup_backpackEquipmentArea",
+                  "_$type": "GWidget",
+                  "name": "backpackEquipmentArea",
+                  "x": 23,
+                  "y": 279,
+                  "width": 140,
+                  "height": 140,
+                  "alpha": 0.968,
+                  "mouseThrough": true,
+                  "_$child": [
+                    {
+                      "_$id": "market_tg0f33w6",
+                      "_$type": "GImage",
+                      "name": "invRightPanel",
+                      "y": -1,
+                      "width": 140,
+                      "height": 140,
+                      "_mouseState": 1,
+                      "src": "ui/atlas/module/warehouse/graphite/panel.png",
+                      "autoSize": false
+                    },
+                    {
+                      "_$id": "market_warehouse_slots_box_container_cells",
+                      "_$type": "GWidget",
+                      "name": "box_container_cells",
+                      "x": 14,
+                      "y": 14,
+                      "width": 110,
+                      "height": 110,
+                      "_mouseState": 1,
+                      "_$child": [
+                        {
+                          "_$id": "market_warehouse_slots_container_cell_0",
+                          "_$type": "GImage",
+                          "name": "img_container_cell_0",
+                          "width": 54,
+                          "height": 54,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/warehouse/graphite/cell.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "market_warehouse_slots_container_cell_1",
+                          "_$type": "GImage",
+                          "name": "img_container_cell_1",
+                          "x": 56,
+                          "width": 54,
+                          "height": 54,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/warehouse/graphite/cell.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "market_warehouse_slots_container_cell_2",
+                          "_$type": "GImage",
+                          "name": "img_container_cell_2",
+                          "y": 56,
+                          "width": 54,
+                          "height": 54,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/warehouse/graphite/cell.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "market_warehouse_slots_container_cell_3",
+                          "_$type": "GImage",
+                          "name": "img_container_cell_3",
+                          "x": 56,
+                          "y": 56,
+                          "width": 54,
+                          "height": 54,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/warehouse/graphite/cell.png",
+                          "autoSize": false
+                        }
+                      ]
+                    },
+                    {
+                      "_$id": "market_warehouse_slots_img_container_hint",
+                      "_$type": "GImage",
+                      "name": "img_container_hint",
+                      "x": 69,
+                      "y": 69,
+                      "width": 54,
+                      "height": 54,
+                      "anchorX": 0.5,
+                      "anchorY": 0.5,
+                      "scaleX": 1.2,
+                      "scaleY": 1.2,
+                      "alpha": 0.25,
+                      "_mouseState": 1,
+                      "src": "ui/atlas/module/warehouse/jade/hint-container.png",
+                      "autoSize": false
+                    },
+                    {
+                      "_$id": "market_invstart_36",
+                      "_$type": "GWidget",
+                      "name": "invContainer",
+                      "x": 14,
+                      "y": 14,
+                      "width": 110,
+                      "height": 110,
+                      "_mouseState": 2,
+                      "_$child": [
+                        {
+                          "_$id": "market_invstart_34",
+                          "_$type": "GImage",
+                          "name": "invContainerBg",
+                          "width": 110,
+                          "height": 110,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/inventory/item-frame.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "market_invstart_35",
+                          "_$type": "GTextField",
+                          "name": "invContainerText",
+                          "x": 8,
+                          "y": 4,
+                          "width": 94,
+                          "height": 102,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "text": "",
+                          "font": "KaiTi",
+                          "fontSize": 18,
+                          "color": "#e8e6df",
+                          "overflow": "shrink",
+                          "letterSpacing": 0
+                        },
+                        {
+                          "_$id": "market_invstart_37",
+                          "_$type": "GImage",
+                          "name": "invContainerIcon",
+                          "x": 6,
+                          "y": 6,
+                          "width": 98,
+                          "height": 98,
+                          "visible": false,
+                          "_mouseState": 1,
+                          "src": "ui/atlas/module/inventory/gold-sword.png",
+                          "autoSize": false
+                        },
+                        {
+                          "_$id": "market_invstart_36_selection",
+                          "_$type": "GWidget",
+                          "name": "invContainerSelection",
+                          "width": 110,
+                          "height": 110,
+                          "visible": false,
+                          "_mouseState": 1
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "_$id": "market_nkciy9y3",
+                  "_$type": "GWidget",
+                  "name": "bagLimit",
+                  "x": 25,
+                  "y": 429,
+                  "width": 140,
+                  "height": 35,
+                  "alpha": 0.968,
+                  "mouseThrough": true,
+                  "_$child": [
+                    {
+                      "_$id": "market_12mlz2zw",
+                      "_$type": "GImage",
+                      "name": "invBagLimitPanel",
+                      "y": -1,
+                      "width": 140,
+                      "height": 35,
+                      "_mouseState": 1,
+                      "src": "ui/atlas/module/warehouse/graphite/panel.png",
+                      "autoSize": false
+                    },
+                    {
+                      "_$id": "market_qn84l0xq",
+                      "_$type": "GTextField",
+                      "name": "txt_bagWeightLimit",
+                      "x": 12,
+                      "y": 1,
+                      "width": 116,
+                      "height": 32,
+                      "_mouseState": 1,
+                      "text": "负重：59/100",
+                      "font": "KaiTi",
+                      "fontSize": 24,
+                      "color": "#e7e1d4",
+                      "align": "center",
+                      "valign": "middle",
+                      "overflow": "shrink",
+                      "letterSpacing": 0
+                    }
+                  ]
+                },
+                {
+                  "_$id": "market_warehouse_compact_box_drag_feedback",
+                  "_$type": "GWidget",
+                  "name": "box_drag_feedback",
+                  "width": 1184,
+                  "height": 608,
+                  "mouseThrough": true
+                }
+              ]
+            },
+            {
+              "_$id": "market_warehouse_popup_box_inventory_portrait",
+              "_$type": "GWidget",
+              "name": "box_inventory_portrait",
+              "x": 375,
+              "y": 44,
+              "width": 110,
+              "height": 80,
+              "mouseThrough": true,
+              "_$child": [
+                {
+                  "_$id": "market_warehouse_popup_img_inventory_portrait",
+                  "_$type": "GImage",
+                  "name": "img_inventory_portrait",
+                  "x": 27,
+                  "y": 12,
+                  "width": 56,
+                  "height": 56,
+                  "_mouseState": 1,
+                  "src": "ui/atlas/module/lobby/player-portrait.png",
+                  "autoSize": false
+                },
+                {
+                  "_$id": "market_warehouse_jade_img_inventory_avatar_frame",
+                  "_$type": "GImage",
+                  "name": "img_inventory_avatar_frame",
+                  "x": 19,
+                  "y": 4,
+                  "width": 72,
+                  "height": 72,
+                  "_mouseState": 1,
+                  "src": "ui/atlas/module/warehouse/jade/avatar-frame.png",
+                  "autoSize": false
+                }
+              ]
+            },
+            {
+              "_$id": "market_warehouse_feedback",
+              "_$type": "GTextField",
+              "name": "txt_inventory_feedback",
+              "x": 177,
+              "y": 588,
+              "width": 991,
+              "height": 20,
+              "_mouseState": 1,
+              "text": "",
+              "font": "Microsoft YaHei",
+              "fontSize": 12,
+              "color": "#e7d4a9",
+              "align": "center",
+              "valign": "middle",
+              "overflow": "shrink",
+              "letterSpacing": 0
+            },
+            {
+              "_$id": "market_warehouse_compact_box_item_template",
+              "_$prefab": "dea68779-9e1b-480a-91aa-5c6403275757",
+              "name": "box_item_template",
+              "active": true,
+              "x": 0,
+              "y": 0,
+              "visible": false
+            },
+            {
+              "_$id": "market_warehouse_btn_sell",
+              "_$type": "GWidget",
+              "name": "btn_sell",
+              "x": 17,
+              "y": 512,
+              "width": 144,
+              "height": 34,
+              "_mouseState": 2,
+              "tooltips": "出售选中仓库物品，获得愿力",
+              "_$child": [
+                {
+                  "_$id": "market_warehouse_sell_bg",
+                  "_$type": "GImage",
+                  "name": "img_sell_skin",
+                  "width": 144,
+                  "height": 34,
+                  "_mouseState": 1,
+                  "src": "ui/atlas/module/warehouse/graphite/button-normal.png",
+                  "autoSize": false
+                },
+                {
+                  "_$id": "market_warehouse_sell_icon",
+                  "_$type": "GImage",
+                  "name": "img_sell_icon",
+                  "x": 26,
+                  "y": 7,
+                  "width": 20,
+                  "height": 20,
+                  "_mouseState": 1,
+                  "src": "ui/atlas/module/warehouse/graphite/sell.png",
+                  "autoSize": false
+                },
+                {
+                  "_$id": "market_warehouse_sell_caption",
+                  "_$type": "GTextField",
+                  "name": "txt_sell",
+                  "x": 79,
+                  "y": 17,
+                  "width": 52,
+                  "height": 30,
+                  "anchorX": 0.5,
+                  "anchorY": 0.5,
+                  "_mouseState": 1,
+                  "text": "出售",
+                  "font": "KaiTi",
+                  "fontSize": 24,
+                  "color": "#e8e6df",
+                  "fitContent": 1,
+                  "align": "center",
+                  "valign": "middle",
+                  "letterSpacing": 0
+                }
+              ]
+            },
+            {
+              "_$id": "market_warehouse_popup_btn_lobby_back",
+              "_$type": "GWidget",
+              "name": "btn_close",
+              "x": 17,
+              "y": 552,
+              "width": 144,
+              "height": 34,
+              "_mouseState": 2,
+              "tooltips": "关闭仓库",
+              "_$child": [
+                {
+                  "_$id": "market_warehouse_popup_img_btn_lobby_back_skin",
+                  "_$type": "GImage",
+                  "name": "img_btn_lobby_back_skin",
+                  "width": 144,
+                  "height": 34,
+                  "_mouseState": 1,
+                  "src": "ui/atlas/module/warehouse/graphite/button-normal.png",
+                  "autoSize": false
+                },
+                {
+                  "_$id": "market_warehouse_popup_txt_btn_lobby_back",
+                  "_$type": "GTextField",
+                  "name": "txt_btn_lobby_back",
+                  "x": 79,
+                  "y": 17,
+                  "width": 52,
+                  "height": 30,
+                  "anchorX": 0.5,
+                  "anchorY": 0.5,
+                  "_mouseState": 1,
+                  "text": "关闭",
+                  "font": "KaiTi",
+                  "fontSize": 24,
+                  "color": "#e8e6df",
+                  "fitContent": 1,
+                  "align": "center",
+                  "valign": "middle",
+                  "letterSpacing": 0
+                },
+                {
+                  "_$id": "market_warehouse_popup_img_close_back",
+                  "_$type": "GImage",
+                  "name": "img_close_back",
+                  "x": 26,
+                  "y": 7,
+                  "width": 20,
+                  "height": 20,
+                  "_mouseState": 1,
+                  "src": "ui/atlas/module/warehouse/graphite/close.png",
+                  "autoSize": false
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

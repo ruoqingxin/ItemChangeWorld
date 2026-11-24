@@ -6,8 +6,10 @@ import { ExpeditionRules as Rules } from "../utils/ExpeditionRules";
 import type { GameStorage } from "../../common/types/GameStorage";
 import type { BattleAction, BattleState, BattleToken } from "../../skillBattle/types/BattleTypes";
 import type { BuildCommand, BuildSave, BuildToken } from "../../build/types/BuildTypes";
-import type { InventoryCommand, InventoryConfig } from "../../inventory/types/InventoryTypes";
+import type { InventoryCommand, InventoryConfig, InventoryLocation } from "../../inventory/types/InventoryTypes";
 import type { ExpeditionCommand, ExpeditionConfig, ExpeditionSave } from "../types/ExpeditionRunTypes";
+import type { MarketGoods } from "../../market/types/MarketTypes";
+import { MarketRules } from "../../market/utils/MarketRules";
 
 
 export class ExpeditionRunManager {
@@ -56,10 +58,15 @@ export class ExpeditionRunManager {
     prepare(config: InventoryConfig, seed: number): void {
         this.readable();
         if (this.data.save && this.data.save.state.phase !== "ended") throw new Error("已有进行中的探索");
+        this.restartConfirmed(config,seed);
+    }
+    restartConfirmed(config: InventoryConfig, seed: number): void {
         if (this.currentConfig && !Inventory.same(config,this.currentConfig)) throw new Error("配置不匹配");
         const createdAt = this.clock(), runId = `expedition_${createdAt}_${seed}`, c = config as ExpeditionConfig;
         const state = Rules.start(c,seed,runId);
+        // 新档成功写入后才替换内存，重置失败时保留原存档和读取错误。
         this.persist({version:4,runId,createdAt,seed,config:Core.clone(c),commands:[],state});
+        this.data.error = "";
         this.pauseSearch(false); this.manager.reset();
     }
     previewMove(command: InventoryCommand, token = this.token) {
@@ -76,10 +83,26 @@ export class ExpeditionRunManager {
         return this.commit({type:"build",command},token);
     }
     mapCommand(command: ExpeditionCommand, token = this.token) {
+        if (command.type === "buyMarketGoods" || command.type === "sellMarketItem") throw new Error("交易请使用坊市专用入口");
         if (["travel","fight","extract","abandon"].includes(command.type)) {
             this.checkToken(token); this.pauseSearch(); token = this.token;
         }
         return this.commit(command,token);
+    }
+    previewMarketTrade(command: Extract<ExpeditionCommand, {type:"buyMarketGoods"|"sellMarketItem"}>, token = this.token) {
+        this.readable(); this.checkToken(token);
+        const save=this.data.save!;
+        return Rules.apply(save.config,save.state,command,this.clock(),save.seed);
+    }
+    buyMarketGoods(goodsId: number, catalog: readonly MarketGoods[], to: InventoryLocation, token = this.token) {
+        this.readable(); this.checkToken(token);
+        const offer = catalog.find(row => row.id === goodsId);
+        MarketRules.validateOffer(this.data.save!.config,offer);
+        // 保存成交时的商品配置，后续改价不改变既有扣款和物品重放。
+        return this.commit({ type: "buyMarketGoods", offer: Core.clone(offer), to: Core.clone(to) },token);
+    }
+    sellMarketItem(uid: string, from: InventoryLocation, token = this.token) {
+        return this.commit({type:"sellMarketItem",uid,from:Core.clone(from)},token);
     }
     openSource(): void {
         this.readable(); this.expire();

@@ -5,6 +5,7 @@ import type { BattleResult } from "../../skillBattle/types/BattleTypes";
 import type { ExpeditionCommand, ExpeditionConfig, ExpeditionNode, ExpeditionSource, ExpeditionState } from "../types/ExpeditionRunTypes";
 import { EXPEDITION_LOOT_FAMILIES, isBattleNode } from "../types/ExpeditionRunTypes";
 import { ENEMIES } from "../../skillBattle/utils/CombatConfig";
+import { MarketRules } from "../../market/utils/MarketRules";
 
 
 class Random {
@@ -330,6 +331,12 @@ export class ExpeditionRules {
             Inventory.settle(s,reason);
         };
         switch (command.type) {
+            case "buyMarketGoods":
+                MarketRules.purchase(c,s,command.offer,command.to,seed);
+                break;
+            case "sellMarketItem":
+                MarketRules.sell(c,s,command.uid,command.from);
+                break;
             case "debugEnemyBlocking":
                 ready();
                 if (typeof command.enabled !== "boolean") throw new Error("怪物拦路开关无效");

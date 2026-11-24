@@ -278,7 +278,7 @@ async function details(page,source,name){
     const viewport=page.viewportSize();
     await page.setViewportSize({width:667,height:375});await page.waitForTimeout(180);await assertVisible();
     await page.setViewportSize(viewport);await page.waitForTimeout(180);await assertVisible();
-    await click(page,"invSourceCell55");
+    await click(page,"invSourceTitle");
     assert.ok(!(await page.evaluate(()=>window.__skillBattlePreview.ui.topView?.path.endsWith("/ItemDetailView.lh"))));
 }
 (async()=>{

@@ -1,4 +1,5 @@
-import type { InventoryCommand, InventoryConfig, InventoryItem, InventoryState } from "../../inventory/types/InventoryTypes";
+import type { InventoryCommand, InventoryConfig, InventoryItem, InventoryLocation, InventoryState } from "../../inventory/types/InventoryTypes";
+import type { MarketGoods } from "../../market/types/MarketTypes";
 
 export function isBattleNode(node: { kind: string }): boolean {
     return node.kind === "normal" || node.kind === "elite" || node.kind === "boss";
@@ -38,6 +39,8 @@ export interface ExpeditionState extends InventoryState {
         debugEnemyBlocking?: boolean };
 }
 export type ExpeditionCommand = InventoryCommand |
+    { type: "buyMarketGoods"; offer: MarketGoods; to: InventoryLocation } |
+    { type: "sellMarketItem"; uid: string; from: InventoryLocation } |
     { type: "debugEnemyBlocking"; enabled: boolean } |
     { type: "travel"; node: number } | { type: "borrow" | "insight" | "recover" } |
     { type: "search"; deltaMs: number } | { type: "warnings" | "openSource" | "interactSource" | "fight" };

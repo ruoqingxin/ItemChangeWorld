@@ -10,6 +10,62 @@ const test=(name,fn)=>{fn();groups++;console.log("通过 "+name);};
 const start=(seed=17)=>R.start(c,seed,"inventory-map");
 const enter=s=>R.apply(c,s,{type:"enter"},1000,17).state;
 const move=(s,item,to)=>I.apply(c,s,{type:"move",move:{uid:item.uid,from:item.location,to}},1000).state;
+test("确认重新开始一次替换整备和探索进度，保留其他设置并可重放",()=>{
+    const saved=new Map([["other-setting","keep"]]);let at=1000,writes=0;
+    const storage={getItem:k=>saved.get(k)??null,setItem:(k,v)=>{writes++;saved.set(k,v);},
+        removeItem:()=>{throw Error("重新开始不应先删除原档");}};
+    const session=new Session(new BattleManager(),storage,()=>at,c);
+    session.prepare(c,17);
+    const template=c.templates.find(t=>t.kind==="material"&&t.width===1&&t.height===1);
+    session.buyMarketGoods(1,[{id:1,itemId:template.id,price:0,limitCount:1,enabled:true}],
+        {space:"bag",x:1,y:0,rotated:false});
+    const bought=session.inventory.items.find(i=>i.uid.includes(":market:"));
+    session.sellMarketItem(bought.uid,bought.location);
+    assert.ok(session.inventory.marketPurchases.length);
+    assert.ok(session.inventory.wish>0);
+    const before=session.archive;
+    at=2000;session.restartConfirmed(c,19);
+    assert.equal(writes,4);
+    assert.notEqual(session.archive.runId,before.runId);
+    assert.deepEqual(session.inventory,R.start(c,19,session.archive.runId));
+    assert.deepEqual(session.archive.commands,[]);
+    assert.equal(saved.get("other-setting"),"keep");
+    session.inventoryCommand({type:"enter"});
+    assert.equal(session.inventory.phase,"active");
+    at=3000;session.restartConfirmed(c,23);
+    assert.equal(session.inventory.phase,"preparation");
+    assert.deepEqual(new Session(new BattleManager(),storage,()=>at,c).archive,session.archive);
+});
+test("重新开始写失败或跨页更新时保留原档和内存，重试只生成一次",()=>{
+    const saved=new Map();let fail=false,writes=0;
+    const storage={getItem:k=>saved.get(k)??null,setItem:(k,v)=>{
+        if(fail)throw Error("模拟写失败");writes++;saved.set(k,v);
+    },removeItem:()=>{throw Error("不应删除");}};
+    const session=new Session(new BattleManager(),storage,()=>1000,c);
+    session.prepare(c,17);
+    const raw=saved.get(Session.key),before=session.archive;
+    fail=true;assert.throws(()=>session.restartConfirmed(c,19),/写失败/);
+    assert.equal(saved.get(Session.key),raw);assert.deepEqual(session.archive,before);
+    fail=false;saved.set(Session.key,"其他页面已写入");
+    assert.throws(()=>session.restartConfirmed(c,19),/其他页面/);
+    assert.equal(saved.get(Session.key),"其他页面已写入");assert.deepEqual(session.archive,before);
+    saved.set(Session.key,raw);session.restartConfirmed(c,19);
+    assert.equal(writes,2);assert.equal(session.archive.seed,19);
+});
+test("损坏存档只能确认后重新开始，失败保持原文和错误",()=>{
+    let raw="{broken-save",fail=true;
+    const storage={getItem:()=>raw,setItem:(k,v)=>{if(fail)throw Error("模拟写失败");raw=v;},
+        removeItem:()=>{throw Error("不应删除");}};
+    const session=new Session(new BattleManager(),storage,()=>1000,c);
+    const error=session.error;
+    assert.ok(error);assert.equal(session.inventory,null);
+    assert.throws(()=>session.prepare(c,17));
+    assert.throws(()=>session.restartConfirmed(c,17),/写失败/);
+    assert.equal(raw,"{broken-save");assert.equal(session.error,error);assert.equal(session.inventory,null);
+    fail=false;session.restartConfirmed(c,17);
+    assert.equal(session.error,"");assert.equal(session.inventory.phase,"preparation");
+    assert.deepEqual(new Session(new BattleManager(),storage,()=>1000,c).archive,session.archive);
+});
 test("当前页整理保留其他页、携带物品，重复整理位置稳定",()=>{
     const s=start(),outside=s.items.filter(i=>i.location.space==="warehouse");
     s.warehouseLayout=I.warehousePlacements(c,s);

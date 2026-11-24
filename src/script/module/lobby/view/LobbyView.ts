@@ -1,7 +1,7 @@
 import { UIBaseView } from "../../../games/ui/UIBaseView";
 import { UILayer } from "../../../games/ui/UILayer";
 import { UIManager } from "../../../games/ui/UIManager";
-import { openSkillBattleScreen } from "../../gameplay/utils/GameplayNavigation";
+import { openMarketScreen, openSkillBattleScreen } from "../../gameplay/utils/GameplayNavigation";
 import { LobbySettingsView } from "./LobbySettingsView";
 import { GameplayManager } from "../../gameplay/manager/GameplayManager";
 
@@ -41,7 +41,7 @@ export class LobbyView extends UIBaseView {
         this.addClickListener(warehouse, this.onClickWarehouse);
         this.addClickListener(library, () => this.showNotice("功法查阅与升级尚未开放"));
         this.addClickListener(realm, this.onClickRealm);
-        this.addClickListener(market, () => this.showNotice("坊市交易尚未开放"));
+        this.addClickListener(market, this.onClickMarket);
         this.addClickListener(this.getElement("btn_settings"), this.onClickSettings);
         const facilities = [
             { node: alchemy, artwork: this.getElement<Laya.GWidget>("box_alchemy_art"),
@@ -104,6 +104,10 @@ export class LobbyView extends UIBaseView {
     }
 
     private onClickRealm(): void { this.openPreparation("start"); }
+    private onClickMarket(): void {
+        try { openMarketScreen(); }
+        catch (error) { this.showNotice((error as Error).message); }
+    }
     private onClickWarehouse(): void {
         try { openSkillBattleScreen("inventory"); }
         catch (error) { this.showNotice((error as Error).message); }

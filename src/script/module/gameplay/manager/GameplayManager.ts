@@ -17,6 +17,11 @@ export class GameplayManager {
         crypto.getRandomValues(seed);
         trial.prepare(ExpeditionRunConfigUtils.read(ConfigUtil.Tables), seed[0] || 1);
     }
+    static resetSaveConfirmed(): void {
+        const seed = new Uint32Array(1);
+        crypto.getRandomValues(seed);
+        this.getActive().restartConfirmed(ExpeditionRunConfigUtils.read(ConfigUtil.Tables), seed[0] || 1);
+    }
     static getMapTrial(): ExpeditionRunManager {
         if (!this.expedition) {
             this.expedition = new ExpeditionRunManager(SkillBattleManager.ins(), window.localStorage,

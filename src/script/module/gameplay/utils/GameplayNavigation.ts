@@ -15,6 +15,7 @@ import { LobbyView } from "../../lobby/view/LobbyView";
 import { LobbySettingsView } from "../../lobby/view/LobbySettingsView";
 import { LobbySaveView } from "../../lobby/view/LobbySaveView";
 import type { BattlePanel } from "../../skillBattle/view/BattlePanel";
+import { MarketView } from "../../market/view/MarketView";
 
 export type SkillBattleScreen = SkillBattlePage;
 export let currentSkillBattleView: UIBaseView;
@@ -26,7 +27,7 @@ export function closeSkillBattleScreens(): void {
     for (const view of [SkillBattleStartView, SkillBattleBattleView, SkillBattleMapView,
         SkillBattleSettlementView, SkillBattleInventoryView, SkillBattleBuildView,
         SkillBattleConfirmView, SkillBattleReportView, SkillBattleBuildInfoView,
-        LobbyView, LobbySettingsView, LobbySaveView]) ui.closeForm<UIBaseView>(view);
+        LobbyView, LobbySettingsView, LobbySaveView, MarketView]) ui.closeForm<UIBaseView>(view);
 }
 
 export function openGameEntry(): void {
@@ -44,6 +45,21 @@ export function closeInventoryScreen(): void {
         const panel = (previous as UIBaseView & { panel?: BattlePanel }).panel;
         if (panel) { panel.openHubScreen(); panel.resizeTo(previous.view); }
     } else openLobbyScreen();
+}
+
+export function openMarketScreen(): void {
+    const trial = GameplayManager.getMapTrial();
+    if (trial.error) throw new Error(trial.error);
+    if (trial.inventory?.phase !== "preparation") throw new Error("坊市仅在局外开放");
+    if (currentSkillBattleView instanceof MarketView && currentSkillBattleView.isOpenedOrOpening) return;
+    UIManager.ins().closeForm(LobbySettingsView);
+    currentSkillBattleView = UIManager.ins().openForm(MarketView);
+}
+
+export function closeMarketScreen(): void {
+    UIManager.ins().closeForm(MarketView);
+    currentSkillBattleView = UIManager.ins().getForm(LobbyView);
+    if (!currentSkillBattleView?.isOpened) openLobbyScreen();
 }
 
 export function openLobbyScreen(): void {

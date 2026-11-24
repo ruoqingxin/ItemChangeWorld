@@ -214,13 +214,23 @@ async function assertLayout(page) {
             }
             for (const [key, message] of [
                 ["btn_alchemy", "炼丹炉尚未开放"], ["btn_forge", "当前装备无需修理"],
-                ["btn_library", "功法查阅与升级尚未开放"], ["btn_market", "坊市交易尚未开放"],
+                ["btn_library", "功法查阅与升级尚未开放"],
             ]) {
                 const facility = key.slice(4);
                 for (const part of ["img_" + facility + "_building", "img_" + facility + "_plate"]) {
                     await click(page, key, part);
                     assert.equal(await page.evaluate(() => window.__skillBattlePreview.view.getElement("txt_notice").text), message);
                 }
+            }
+            for (const part of ["img_market_building", "img_market_plate"]) {
+                const saved = await page.evaluate(() => localStorage.getItem("nowchange.expedition.v1"));
+                await click(page, "btn_market", part);
+                await page.waitForFunction(() => window.__skillBattlePreview.view.path.endsWith("/MarketView.lh") &&
+                    window.__skillBattlePreview.view.isOpened);
+                await screenshot(page, "lobby-market-" + name);
+                await click(page, "btn_close");
+                await waitLobby(page);
+                assert.equal(await page.evaluate(() => localStorage.getItem("nowchange.expedition.v1")), saved);
             }
             await click(page, "btn_settings");
             await page.waitForFunction(() => window.__skillBattlePreview.ui.topView?.path.endsWith("/LobbySettingsView.lh"));

@@ -673,6 +673,11 @@ export class InventoryRules {
             }
         }
         if(!Number.isSafeInteger(state.wish)||state.wish<0)throw new Error("愿力余额无效");
+        if (state.marketPurchases !== undefined && (!Array.isArray(state.marketPurchases) ||
+            new Set(state.marketPurchases.map(row => row?.goodsId)).size !== state.marketPurchases.length ||
+            state.marketPurchases.some(row => !row || !Number.isSafeInteger(row.goodsId) || row.goodsId < 1 ||
+                !config.templates.some(t => t.id === row.itemId) || !Number.isSafeInteger(row.count) || row.count < 1)))
+            throw new Error("商品限购记录无效");
         {
             const weight=this.weight(config,state);
             if (weight.current > weight.limit) throw new Error(`负重超限：${weight.current} / ${weight.limit}`);

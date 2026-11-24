@@ -14,11 +14,12 @@ $sources = @(
     (Join-Path $root "src/script/module/expedition/manager/ExpeditionRunManager.ts"),
     (Join-Path $root "src/script/module/expedition/utils/ExpeditionRunConfigUtils.ts"),
     (Join-Path $root "src/script/module/inventory/utils/InventoryTransferUtils.ts"),
+    (Join-Path $root "src/script/module/market/utils/MarketConfigUtils.ts"),
     (Join-Path $root "engine/types/LayaAir.d.ts")
 )
 & $node $tsc --target ES2020 --module commonjs --lib "ES2020,DOM" --skipLibCheck --noEmit false --rootDir (Join-Path $root "src") --outDir $build @sources
 if ($LASTEXITCODE -ne 0) { throw "当前规则测试编译失败" }
-foreach ($test in @("combat-engine.test.cjs","combat-release.test.cjs","inventory-map.test.cjs","project-structure.test.cjs")) {
+foreach ($test in @("combat-engine.test.cjs","combat-release.test.cjs","inventory-map.test.cjs","market.test.cjs","project-structure.test.cjs")) {
     & $node (Join-Path $PSScriptRoot $test) $build
     if ($LASTEXITCODE -ne 0) { throw "测试失败：$test" }
 }

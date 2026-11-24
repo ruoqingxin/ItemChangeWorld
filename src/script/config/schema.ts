@@ -1248,6 +1248,40 @@ export class Imap_variantConfig {
 
 }
 
+export class Imarket_goodsConfig {
+
+    constructor(_buf_: ByteBuf) {
+        this.id = _buf_.ReadInt()
+        this.item_id = _buf_.ReadInt()
+        this.price = _buf_.ReadInt()
+        this.limit_count = _buf_.ReadInt()
+        this.enabled = _buf_.ReadInt()
+    }
+
+    /**
+     * 固定商品条目编号
+     */
+    readonly id: number
+    /**
+     * 关联物品编号
+     */
+    readonly item_id: number
+    /**
+     * 售价（愿力）；0为零售价
+     */
+    readonly price: number
+    /**
+     * 每个商品限购件数
+     */
+    readonly limit_count: number
+    /**
+     * 上架开关：0下架，1上架
+     */
+    readonly enabled: number
+
+
+}
+
 export class Ipotion_itemConfig {
 
     constructor(_buf_: ByteBuf) {
@@ -2659,6 +2693,52 @@ export class map_pool_weapon {
 
 }
 
+/**
+ * 坊市商品
+ */
+export class market_goods {
+    private _dataMap: Map<number, Imarket_goodsConfig>
+
+    private _dataList: Imarket_goodsConfig[]
+    private _loaded:boolean=false;
+    private _buf: ByteBuf;
+    constructor(_buf_: ByteBuf) {
+        this._buf = _buf_;
+        this._loaded = false;
+    }
+
+    private load():void{
+        if(this._loaded){
+            return;
+        }
+        let _buf_ = this._buf;
+        if(!_buf_){
+            console.error("_buf_ null");
+            return;
+        }
+        this._dataMap = new Map<number, Imarket_goodsConfig>()
+        this._dataList = []
+
+        for(let n = _buf_.ReadInt(); n > 0; n--) {
+            let _v: Imarket_goodsConfig
+            _v = new Imarket_goodsConfig(_buf_)
+            this._dataList.push(_v)
+            this._dataMap.set(_v.id, _v)
+
+        }
+        this._loaded = true;
+    }
+    getDataMap(): Map<number, Imarket_goodsConfig> {this.load(); return this._dataMap; }
+
+    getDataList(): Imarket_goodsConfig[] { this.load();return this._dataList; }
+
+    get(key: number): Imarket_goodsConfig | undefined {
+		this.load();
+        return this._dataMap.get(key);
+    }
+
+}
+
 type ByteBufLoader = (file: string) => ByteBuf
 
 export class Tables {
@@ -2720,6 +2800,11 @@ export class Tables {
     get map_pool_quality(): map_pool_quality  { return this._map_pool_quality;}
     private _map_pool_weapon: map_pool_weapon
     get map_pool_weapon(): map_pool_weapon  { return this._map_pool_weapon;}
+    private _market_goods: market_goods
+    /**
+     * 坊市商品
+     */
+    get market_goods(): market_goods  { return this._market_goods;}
 
     static getTableNames(): string[] {
         let names: string[] = [];
@@ -2752,6 +2837,7 @@ export class Tables {
         names.push('map_pool_category');
         names.push('map_pool_quality');
         names.push('map_pool_weapon');
+        names.push('market_goods');
         return names;
     }
 
@@ -2785,6 +2871,7 @@ export class Tables {
         this._map_pool_category = new map_pool_category(loader('map_pool_category'))
         this._map_pool_quality = new map_pool_quality(loader('map_pool_quality'))
         this._map_pool_weapon = new map_pool_weapon(loader('map_pool_weapon'))
+        this._market_goods = new market_goods(loader('market_goods'))
 
 
     }

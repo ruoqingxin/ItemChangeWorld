@@ -11,6 +11,8 @@ export interface IItemDetailRequest {
     anchor: Laya.GWidget;
     equipment?: EquipmentInstance;
     action?: string;
+    extra?: string;
+    actionEnabled?: boolean;
     perform?(): void;
     closed?(): void;
 }
@@ -38,6 +40,8 @@ export class ItemDetailView extends UIBaseView {
     }
 
     onOpen(request: IItemDetailRequest): void {
+        // 详情含操作按钮，由外部点击关闭，避免提示层在松手时抢先关闭。
+        Laya.stage.off(Laya.Event.MOUSE_UP,this,this.close);
         this.request=request;
         const t=request.template,w=request.rotated?t.height:t.width,h=request.rotated?t.width:t.height;
         const quality=["","普通","优秀","精良","稀有","史诗","传说"][t.quality||1];
@@ -47,8 +51,10 @@ export class ItemDetailView extends UIBaseView {
             e?`\n耐久 ${request.durability}/${e.maxDurability}\n主属性 ${STAT_NAMES[e.main]} +${e.mainValue}\n副属性 ${STAT_NAMES[e.sub]} +${e.subValue}\n${traitDescription(e)}${e.kills?`\n探索击杀 ${e.kills}`:""}${request.durability===0?"\n零耐久：主副属性减半":""}`:""}${
             t.kind==="container"?`\n容量 ${t.bagWidth*t.bagHeight} 格 · 承重 +${t.weightLimit}`:""}${
             t.kind==="repair"?`\n修理 ${t.repairAmount===-1?"全部耐久":t.repairAmount+" 耐久"}`:""}${
-            t.kind==="stamina"?`\n恢复体力 ${t.staminaRestore}`:""}\n${t.safe?"可放归真匣":"禁止归真匣"}`;
+            t.kind==="stamina"?`\n恢复体力 ${t.staminaRestore}`:""}\n${t.safe?"可放归真匣":"禁止归真匣"}${request.extra?`\n${request.extra}`:""}`;
         this.action.visible=!!request.action;this.actionText.text=request.action||"";
+        this.action.mouseEnabled=request.actionEnabled!==false;
+        this.action.alpha=request.actionEnabled===false?0.45:1;
         this.placeNearItem();
         Laya.stage.on(Laya.Event.MOUSE_DOWN,this,this.onPointerDown);
         Laya.stage.on(Laya.Event.KEY_DOWN,this,this.onKeyDown);

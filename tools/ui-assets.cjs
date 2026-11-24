@@ -65,7 +65,7 @@ for (const file of files.filter(file => file.endsWith(".lh")).sort()) {
             ? "ui/atlas/module/skillBattle/" : null;
     if (dynamicDirectory) for (const image of files.filter(candidate =>
         relative(candidate).startsWith(dynamicDirectory) && candidate.endsWith(".png"))) deps.add(relative(image));
-    if (/module[\\/](skillBattle|gameplay|inventory|build)[\\/]/.test(file)) for (const image of files.filter(candidate =>
+    if (/module[\\/](skillBattle|gameplay|inventory|build|market)[\\/]/.test(file)) for (const image of files.filter(candidate =>
         (relative(candidate).startsWith("ui/atlas/module/inventory/") ||
             relative(candidate).startsWith("ui/atlas/module/equipment/") ||
             relative(candidate).startsWith("ui/texture/inventory/") ||
@@ -74,7 +74,7 @@ for (const file of files.filter(file => file.endsWith(".lh")).sort()) {
     if (relative(file) === "ui/prefab/module/expedition/SkillBattleMapView.lh")
         for (const image of files.filter(candidate =>
             relative(candidate).startsWith("ui/image/expeditionNodes/") && candidate.endsWith(".png"))) deps.add(relative(image));
-    if (relative(file) === "ui/prefab/module/inventory/SkillBattleInventoryView.lh")
+    if (["ui/prefab/module/inventory/SkillBattleInventoryView.lh", "ui/prefab/module/market/MarketView.lh"].includes(relative(file)))
         for (const image of files.filter(candidate =>
             /ui\/atlas\/module\/warehouse\/(jade|graphite)\//.test(relative(candidate)) && candidate.endsWith(".png"))) deps.add(relative(image));
     depMap[relative(file)] = [...deps].sort();

@@ -1,8 +1,10 @@
 import { UIBaseView } from "../../../games/ui/UIBaseView";
 import { UILayer } from "../../../games/ui/UILayer";
 import { UIViewportLayout } from "../../../games/ui/UIViewportLayout";
+import { UIManager } from "../../../games/ui/UIManager";
 import { GameplayManager } from "../../gameplay/manager/GameplayManager";
 import { openLobbyScreen, openSkillBattleScreen } from "../../gameplay/utils/GameplayNavigation";
+import { SkillBattleConfirmView } from "../../gameplay/view/SkillBattleConfirmView";
 
 export class LobbySaveView extends UIBaseView {
     get layer(): UILayer { return UILayer.Second; }
@@ -12,6 +14,9 @@ export class LobbySaveView extends UIBaseView {
     private status: Laya.GTextField;
     private errorText: Laya.GTextField;
     private confirmText: Laya.GTextField;
+    private confirmButton: Laya.GWidget;
+    private resetButton: Laya.GWidget;
+    private resetConfirmation: SkillBattleConfirmView;
     private submitting = false;
 
     protected onConstruct(): void {
@@ -20,8 +25,11 @@ export class LobbySaveView extends UIBaseView {
         this.status = this.getElement("txt_save_status");
         this.errorText = this.getElement("txt_save_error");
         this.confirmText = this.getElement("txt_save_confirm");
+        this.confirmButton = this.getElement("btn_save_confirm");
+        this.resetButton = this.getElement("btn_save_reset");
         UIViewportLayout.coverBackground(this.getElement("img_save_background"), this.view);
-        this.addClickListener(this.getElement("btn_save_confirm"), this.onClickConfirm);
+        this.addClickListener(this.confirmButton, this.onClickConfirm);
+        this.addClickListener(this.resetButton, this.onClickReset);
     }
 
     onOpen(): void {
@@ -32,6 +40,8 @@ export class LobbySaveView extends UIBaseView {
 
     private refreshSave(): void {
         const trial = GameplayManager.getActive(), state = trial.inventory;
+        this.resetButton.visible = !!state || !!trial.error;
+        this.confirmButton.x = this.resetButton.visible ? 268 : 150;
         if (trial.error) {
             this.title.text = "存档需要处理";
             this.detail.text = "本地存档暂时无法读取。\n原存档已保留，请先查看并处理。";
@@ -54,7 +64,7 @@ export class LobbySaveView extends UIBaseView {
     }
 
     private onClickConfirm(): void {
-        if (this.submitting) return;
+        if (this.submitting || this.resetConfirmation) return;
         this.submitting = true;
         try {
             const trial = GameplayManager.getActive();
@@ -70,7 +80,23 @@ export class LobbySaveView extends UIBaseView {
         } finally { this.submitting = false; }
     }
 
+    private onClickReset(): void {
+        if (this.submitting || this.resetConfirmation || !this.resetButton.visible) return;
+        this.resetConfirmation = UIManager.ins().openForm(SkillBattleConfirmView, {
+            title: "重置存档",
+            detail: "将清除当前进度、物品、愿力及购买记录，\n重新建立初始存档。此操作无法撤销。",
+            confirmText: "重置并重新开始",
+            confirm: () => {
+                GameplayManager.resetSaveConfirmed();
+                openLobbyScreen();
+            },
+            closed: () => { this.resetConfirmation = null; },
+        });
+    }
+
     protected onClose(): void {
+        this.resetConfirmation?.close();
+        this.resetConfirmation = null;
         this.submitting = false;
     }
 }

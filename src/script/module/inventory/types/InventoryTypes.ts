@@ -2,6 +2,7 @@ import type { BattleWeapon } from "../../skillBattle/types/BattleTypes";
 import type { BuildCommand, BuildConfig, BuildState } from "../../build/types/BuildTypes";
 import type { EQuality } from "../../../config/schema";
 import type { EquipmentInstance } from "../../skillBattle/types/CombatTypes";
+import type { MarketPurchaseCount } from "../../market/types/MarketTypes";
 
 export type InventorySpace = "warehouse" | "battle" | "safe" | "bag" | "weapon" | "armor" | "accessory" | "container" |
     "source" | "consumed" | "lost";
@@ -37,6 +38,7 @@ export interface InventoryState {
     stamina?: number;
     bagColumns?: 7;
     wish: number;
+    marketPurchases?: MarketPurchaseCount[];
 }
 export interface InventoryMove { uid: string; from: InventoryLocation; to: InventoryLocation; }
 export type InventoryAction =

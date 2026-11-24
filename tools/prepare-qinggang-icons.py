@@ -1,4 +1,4 @@
-"""整理六张独立青钢剑原画，导出透明素材及实际尺寸预览。"""
+"""整理青钢剑系列合图或独立原画，导出透明素材及实际尺寸预览。"""
 
 import argparse
 import json
@@ -39,16 +39,35 @@ def tight(image, margin=4):
     ))
 
 
-def clean(image):
+def clean(image, trim_haze=False):
     pixels = np.array(image.convert("RGBA"))
     alpha = pixels[:, :, 3].astype(np.float32)
     # 原画已有透明通道，清除低透明度杂点，保留轮廓的柔和过渡。
     pixels[:, :, 3] = np.clip((alpha - 8) * 255 / 245, 0, 255).astype(np.uint8)
-    subject = Image.fromarray((alpha > 32).astype(np.uint8) * 255)
-    nearby = np.array(subject.filter(ImageFilter.MaxFilter(5))) > 0
+    # 合图只保留实体和清晰剑气附近的透明过渡，去除大范围背景薄雾。
+    subject = Image.fromarray((alpha > (160 if trim_haze else 32)).astype(np.uint8) * 255)
+    nearby = np.array(subject.filter(ImageFilter.MaxFilter(11 if trim_haze else 5))) > 0
     pixels[~nearby] = 0
     pixels[pixels[:, :, 3] == 0, :3] = 0
     return Image.fromarray(pixels)
+
+
+def split_sheet(image):
+    if image.width <= image.height:
+        raise ValueError("系列合图应为三列两行的横图")
+    results = []
+    for index in range(6):
+        column, row = index % 3, index // 3
+        left = round(column * image.width / 3)
+        right = round((column + 1) * image.width / 3)
+        pixels = np.array(image.crop((left, 0, right, image.height)))
+        ys, xs = np.indices(pixels.shape[:2])
+        # 两行剑尖与剑首在高度上交错，用倾斜分界保留完整轮廓。
+        boundary = image.height * (0.535 - 0.085 * xs / (right - left))
+        belongs = ys < boundary if row == 0 else ys >= boundary
+        pixels[~belongs] = 0
+        results.append(tight(Image.fromarray(pixels)))
+    return results
 
 
 def finish_bottom_corner(image):
@@ -193,19 +212,40 @@ def check_backgrounds(masters):
     result.save(OUTPUT / "alpha-check.png")
 
 
+def compare_naxu(icons):
+    result = Image.new("RGBA", (1100, 580), "#202326")
+    draw = ImageDraw.Draw(result)
+    draw.text((30, 24), "青钢剑与纳虚器 · 实际显示尺寸对照", font=font(24), fill="#f0f1ee")
+    draw.text((30, 69), "武器 110×166，纳虚器 110×110；图片与品质框均取自项目", font=font(16), fill="#b7bdbf")
+    containers = [1201, 1204, 1205, 1207, 1210, 1212]
+    for i, item_id in enumerate(containers):
+        center = 105 + i * 176
+        result.alpha_composite(item_preview(icons[i], i + 1), (center - 55, 120))
+        draw.text((center, 303), NAMES[i], font=font(16), fill="#edf0eb", anchor="mt")
+        frame = Image.open(ROOT / f"assets/ui/atlas/module/inventory/quality-{i + 1}.png").convert("RGBA")
+        frame = nine_slice(frame, (110, 110))
+        image = Image.open(ROOT / f"assets/ui/atlas/module/inventory/item-{item_id}.png").convert("RGBA")
+        image.thumbnail((98, 98), RESAMPLE)
+        frame.alpha_composite(image, ((110 - image.width) // 2, (110 - image.height) // 2))
+        result.alpha_composite(frame, (center - 55, 370))
+        draw.text((center, 503), QUALITIES[i], font=font(16), fill=COLORS[i], anchor="mt")
+    result.convert("RGB").save(OUTPUT / "style-comparison.png")
+
+
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("source", type=Path, help="包含 quality-1.png 至 quality-6.png 的原画目录")
+    parser.add_argument("source", type=Path, help="三列两行系列合图，或包含 quality-1.png 至 quality-6.png 的目录")
     args = parser.parse_args()
     args.source = args.source.resolve()
+    sheet_images = split_sheet(Image.open(args.source).convert("RGBA")) if args.source.is_file() else None
     OUTPUT.mkdir(parents=True, exist_ok=True)
     (OUTPUT / "masters").mkdir(exist_ok=True)
     ASSETS.mkdir(parents=True, exist_ok=True)
     masters, icons, entries = [], [], []
     for i, name in enumerate(NAMES):
-        source = args.source / f"quality-{i + 1}.png"
-        original = Image.open(source).convert("RGBA")
-        repaired, extra = finish_bottom_corner(clean(original))
+        source = args.source if sheet_images else args.source / f"quality-{i + 1}.png"
+        original = sheet_images[i] if sheet_images else Image.open(source).convert("RGBA")
+        repaired, extra = (clean(original, trim_haze=True), 0) if sheet_images else finish_bottom_corner(clean(original))
         master, icon, angle = normalize(repaired)
         master, icon = zero_transparent_rgb(master), zero_transparent_rgb(icon)
         verify(master)
@@ -226,6 +266,7 @@ def main():
         entries.append({
             "id": 109 + i, "name": name, "quality": i + 1,
             "source": source.relative_to(ROOT).as_posix(),
+            "sheet_cell": [i // 3, i % 3] if sheet_images else None,
             "source_size": list(original.size), "bottom_corner_added_rows": extra,
             "original_angle": round(angle, 2), "target_angle": 22,
             "file": (ASSETS / filename).relative_to(ROOT).as_posix(),
@@ -236,8 +277,10 @@ def main():
         icons.append(icon)
     create_preview(masters, icons)
     check_backgrounds(masters)
+    compare_naxu(icons)
     (OUTPUT / "manifest.json").write_text(json.dumps({
-        "processing": "保留原画造型与颜色，清理透明杂点，补齐两处被截断的小角，统一朝向，预先缩图。",
+        "processing": "按三列两行分离完整剑体与特效，收掉外围薄雾，保留清晰剑气与边缘过渡，统一朝向与留边，预先缩图。"
+        if sheet_images else "保留原画造型与颜色，清理透明杂点，按需补齐被截断的小角，统一朝向，预先缩图。",
         "runtime_display_size": [98, 154], "inventory_cell_size": [110, 166],
         "entries": entries,
     }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

@@ -49,17 +49,34 @@
             },
             {
               "_$id": "save_confirm", "_$type": "GWidget", "name": "btn_save_confirm",
-              "x": 128, "y": 272, "width": 264, "height": 48, "mouseEnabled": true,
+              "x": 268, "y": 272, "width": 220, "height": 48, "mouseEnabled": true,
               "_$child": [
                 {
                   "_$id": "save_confirm_skin", "_$type": "GImage", "name": "img_save_confirm",
-                  "width": 264, "height": 48, "autoSize": false, "mouseEnabled": false,
+                  "width": 220, "height": 48, "autoSize": false, "mouseEnabled": false,
                   "src": "ui/atlas/module/lobby/hud-strip.png"
                 },
                 {
                   "_$id": "save_confirm_label", "_$type": "GTextField", "name": "txt_save_confirm",
-                  "x": 12, "y": 4, "width": 240, "height": 40, "text": "创建存档并进入",
+                  "x": 12, "y": 4, "width": 196, "height": 40, "text": "创建存档并进入",
                   "font": "Microsoft YaHei", "fontSize": 20, "color": "#fff0c9",
+                  "align": "center", "valign": "middle", "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "save_reset", "_$type": "GWidget", "name": "btn_save_reset",
+              "x": 32, "y": 272, "width": 220, "height": 48, "mouseEnabled": true,
+              "_$child": [
+                {
+                  "_$id": "save_reset_skin", "_$type": "GImage", "name": "img_save_reset",
+                  "width": 220, "height": 48, "autoSize": false, "mouseEnabled": false,
+                  "src": "ui/atlas/module/lobby/hud-strip.png", "color": "#d6aaa0"
+                },
+                {
+                  "_$id": "save_reset_label", "_$type": "GTextField", "name": "txt_save_reset",
+                  "x": 12, "y": 4, "width": 196, "height": 40, "text": "重置存档",
+                  "font": "Microsoft YaHei", "fontSize": 20, "color": "#ffd1ba",
                   "align": "center", "valign": "middle", "mouseEnabled": false
                 }
               ]
@@ -76,7 +93,8 @@
     "elements": [
       {"_$ref": "save_background"}, {"_$ref": "save_adapter"}, {"_$ref": "save_panel"},
       {"_$ref": "save_title"}, {"_$ref": "save_detail"}, {"_$ref": "save_status"},
-      {"_$ref": "save_error"}, {"_$ref": "save_confirm"}, {"_$ref": "save_confirm_label"}
+      {"_$ref": "save_error"}, {"_$ref": "save_confirm"}, {"_$ref": "save_confirm_label"},
+      {"_$ref": "save_reset"}
     ]
   }]
 }
