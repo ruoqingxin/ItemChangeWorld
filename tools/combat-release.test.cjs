@@ -34,7 +34,7 @@ test("真实配置包、六属性及五技能位",()=>{
         assert.equal(tables.item.get(id),undefined);assert.equal(tables.equipment.get(id),undefined);
         assert(!tables.map_variant.getDataList().some(row=>row.item_id===id));
     }
-    assert.equal(tables.item.get(110).name,"青钢剑");assert.equal(tables.item.get(601).name,"青冥剑典");
+    assert.equal(tables.item.get(110).name,"精锻青钢剑");assert.equal(tables.item.get(601).name,"青冥剑典");
     assert.equal(c.fixtures.find(f=>f.id===1).templateId,110);
     const itemIds=tables.item.getDataList().map(row=>row.id);
     assert.deepEqual(itemIds,[...itemIds].sort((a,b)=>a-b));

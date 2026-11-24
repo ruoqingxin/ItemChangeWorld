@@ -1,0 +1,228 @@
+[
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "rendered": [
+      {
+        "id": 109,
+        "width": 110,
+        "height": 166,
+        "iconWidth": 98,
+        "iconHeight": 154,
+        "src": "ui/atlas/module/equipment/icon_109.png",
+        "filterMode": 1,
+        "mipmap": false,
+        "mipmapCount": 1,
+        "screenBounds": {
+          "left": 761,
+          "top": 183,
+          "width": 110,
+          "height": 166
+        }
+      },
+      {
+        "id": 110,
+        "width": 110,
+        "height": 166,
+        "iconWidth": 98,
+        "iconHeight": 154,
+        "src": "ui/atlas/module/equipment/icon_110.png",
+        "filterMode": 1,
+        "mipmap": false,
+        "mipmapCount": 1,
+        "screenBounds": {
+          "left": 873,
+          "top": 183,
+          "width": 110,
+          "height": 166
+        }
+      },
+      {
+        "id": 111,
+        "width": 110,
+        "height": 166,
+        "iconWidth": 98,
+        "iconHeight": 154,
+        "src": "ui/atlas/module/equipment/icon_111.png",
+        "filterMode": 1,
+        "mipmap": false,
+        "mipmapCount": 1,
+        "screenBounds": {
+          "left": 985,
+          "top": 183,
+          "width": 110,
+          "height": 166
+        }
+      },
+      {
+        "id": 112,
+        "width": 110,
+        "height": 166,
+        "iconWidth": 98,
+        "iconHeight": 154,
+        "src": "ui/atlas/module/equipment/icon_112.png",
+        "filterMode": 1,
+        "mipmap": false,
+        "mipmapCount": 1,
+        "screenBounds": {
+          "left": 1097,
+          "top": 183,
+          "width": 110,
+          "height": 166
+        }
+      },
+      {
+        "id": 113,
+        "width": 110,
+        "height": 166,
+        "iconWidth": 98,
+        "iconHeight": 154,
+        "src": "ui/atlas/module/equipment/icon_113.png",
+        "filterMode": 1,
+        "mipmap": false,
+        "mipmapCount": 1,
+        "screenBounds": {
+          "left": 761,
+          "top": 351,
+          "width": 110,
+          "height": 166
+        }
+      },
+      {
+        "id": 114,
+        "width": 110,
+        "height": 166,
+        "iconWidth": 98,
+        "iconHeight": 154,
+        "src": "ui/atlas/module/equipment/icon_114.png",
+        "filterMode": 1,
+        "mipmap": false,
+        "mipmapCount": 1,
+        "screenBounds": {
+          "left": 873,
+          "top": 351,
+          "width": 110,
+          "height": 166
+        }
+      }
+    ],
+    "rotatedVerified": true,
+    "saveUnchanged": true,
+    "errors": []
+  },
+  {
+    "viewport": {
+      "width": 960,
+      "height": 540
+    },
+    "rendered": [
+      {
+        "id": 109,
+        "width": 110,
+        "height": 166,
+        "iconWidth": 98,
+        "iconHeight": 154,
+        "src": "ui/atlas/module/equipment/icon_109.png",
+        "filterMode": 1,
+        "mipmap": false,
+        "mipmapCount": 1,
+        "screenBounds": {
+          "left": 571,
+          "top": 137,
+          "width": 83,
+          "height": 125
+        }
+      },
+      {
+        "id": 110,
+        "width": 110,
+        "height": 166,
+        "iconWidth": 98,
+        "iconHeight": 154,
+        "src": "ui/atlas/module/equipment/icon_110.png",
+        "filterMode": 1,
+        "mipmap": false,
+        "mipmapCount": 1,
+        "screenBounds": {
+          "left": 655,
+          "top": 137,
+          "width": 83,
+          "height": 125
+        }
+      },
+      {
+        "id": 111,
+        "width": 110,
+        "height": 166,
+        "iconWidth": 98,
+        "iconHeight": 154,
+        "src": "ui/atlas/module/equipment/icon_111.png",
+        "filterMode": 1,
+        "mipmap": false,
+        "mipmapCount": 1,
+        "screenBounds": {
+          "left": 739,
+          "top": 137,
+          "width": 83,
+          "height": 125
+        }
+      },
+      {
+        "id": 112,
+        "width": 110,
+        "height": 166,
+        "iconWidth": 98,
+        "iconHeight": 154,
+        "src": "ui/atlas/module/equipment/icon_112.png",
+        "filterMode": 1,
+        "mipmap": false,
+        "mipmapCount": 1,
+        "screenBounds": {
+          "left": 823,
+          "top": 137,
+          "width": 83,
+          "height": 125
+        }
+      },
+      {
+        "id": 113,
+        "width": 110,
+        "height": 166,
+        "iconWidth": 98,
+        "iconHeight": 154,
+        "src": "ui/atlas/module/equipment/icon_113.png",
+        "filterMode": 1,
+        "mipmap": false,
+        "mipmapCount": 1,
+        "screenBounds": {
+          "left": 571,
+          "top": 263,
+          "width": 83,
+          "height": 125
+        }
+      },
+      {
+        "id": 114,
+        "width": 110,
+        "height": 166,
+        "iconWidth": 98,
+        "iconHeight": 154,
+        "src": "ui/atlas/module/equipment/icon_114.png",
+        "filterMode": 1,
+        "mipmap": false,
+        "mipmapCount": 1,
+        "screenBounds": {
+          "left": 655,
+          "top": 263,
+          "width": 83,
+          "height": 125
+        }
+      }
+    ],
+    "rotatedVerified": true,
+    "saveUnchanged": true,
+    "errors": []
+  }
+]

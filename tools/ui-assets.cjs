@@ -67,6 +67,7 @@ for (const file of files.filter(file => file.endsWith(".lh")).sort()) {
         relative(candidate).startsWith(dynamicDirectory) && candidate.endsWith(".png"))) deps.add(relative(image));
     if (/module[\\/](skillBattle|gameplay|inventory|build)[\\/]/.test(file)) for (const image of files.filter(candidate =>
         (relative(candidate).startsWith("ui/atlas/module/inventory/") ||
+            relative(candidate).startsWith("ui/atlas/module/equipment/") ||
             relative(candidate).startsWith("ui/texture/inventory/") ||
             relative(candidate).startsWith("ui/image/naxu/") ||
             relative(candidate).startsWith("ui/image/expeditionNodes/")) && candidate.endsWith(".png"))) deps.add(relative(image));

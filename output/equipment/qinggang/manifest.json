@@ -1,0 +1,187 @@
+{
+  "processing": "保留原画造型与颜色，清理透明杂点，补齐两处被截断的小角，统一朝向，预先缩图。",
+  "runtime_display_size": [
+    98,
+    154
+  ],
+  "inventory_cell_size": [
+    110,
+    166
+  ],
+  "entries": [
+    {
+      "id": 109,
+      "name": "青钢剑",
+      "quality": 1,
+      "source": "art/reference/equipment/qinggang-single/quality-1.png",
+      "source_size": [
+        2752,
+        1536
+      ],
+      "bottom_corner_added_rows": 17,
+      "original_angle": 28.49,
+      "target_angle": 22,
+      "file": "assets/ui/atlas/module/equipment/icon_109.png",
+      "runtime_size": [
+        196,
+        308
+      ],
+      "master_size": [
+        784,
+        1232
+      ],
+      "bounds": [
+        32,
+        8,
+        163,
+        299
+      ],
+      "uuid": "43ed8caa-efef-403b-bef5-f0d3baafdc2f"
+    },
+    {
+      "id": 110,
+      "name": "精锻青钢剑",
+      "quality": 2,
+      "source": "art/reference/equipment/qinggang-single/quality-2.png",
+      "source_size": [
+        2752,
+        1536
+      ],
+      "bottom_corner_added_rows": 0,
+      "original_angle": 44.59,
+      "target_angle": 22,
+      "file": "assets/ui/atlas/module/equipment/icon_110.png",
+      "runtime_size": [
+        196,
+        308
+      ],
+      "master_size": [
+        784,
+        1232
+      ],
+      "bounds": [
+        34,
+        8,
+        161,
+        299
+      ],
+      "uuid": "2b6627c1-4207-4b82-baac-9b8218c06a94"
+    },
+    {
+      "id": 111,
+      "name": "百炼青钢剑",
+      "quality": 3,
+      "source": "art/reference/equipment/qinggang-single/quality-3.png",
+      "source_size": [
+        2752,
+        1536
+      ],
+      "bottom_corner_added_rows": 8,
+      "original_angle": 39.5,
+      "target_angle": 22,
+      "file": "assets/ui/atlas/module/equipment/icon_111.png",
+      "runtime_size": [
+        196,
+        308
+      ],
+      "master_size": [
+        784,
+        1232
+      ],
+      "bounds": [
+        32,
+        8,
+        163,
+        299
+      ],
+      "uuid": "b3f8cbc8-4a5f-4ab1-b58d-aa75b36a2c90"
+    },
+    {
+      "id": 112,
+      "name": "青罡剑",
+      "quality": 4,
+      "source": "art/reference/equipment/qinggang-single/quality-4.png",
+      "source_size": [
+        2752,
+        1536
+      ],
+      "bottom_corner_added_rows": 0,
+      "original_angle": 48.08,
+      "target_angle": 22,
+      "file": "assets/ui/atlas/module/equipment/icon_112.png",
+      "runtime_size": [
+        196,
+        308
+      ],
+      "master_size": [
+        784,
+        1232
+      ],
+      "bounds": [
+        34,
+        8,
+        161,
+        299
+      ],
+      "uuid": "bb74d481-1766-4bec-a60d-c0c25660a159"
+    },
+    {
+      "id": 113,
+      "name": "碧霄剑",
+      "quality": 5,
+      "source": "art/reference/equipment/qinggang-single/quality-5.png",
+      "source_size": [
+        2752,
+        1536
+      ],
+      "bottom_corner_added_rows": 0,
+      "original_angle": 32.1,
+      "target_angle": 22,
+      "file": "assets/ui/atlas/module/equipment/icon_113.png",
+      "runtime_size": [
+        196,
+        308
+      ],
+      "master_size": [
+        784,
+        1232
+      ],
+      "bounds": [
+        37,
+        8,
+        158,
+        299
+      ],
+      "uuid": "4901430c-487a-4174-b463-45077156951c"
+    },
+    {
+      "id": 114,
+      "name": "斩尘剑",
+      "quality": 6,
+      "source": "art/reference/equipment/qinggang-single/quality-6.png",
+      "source_size": [
+        2752,
+        1536
+      ],
+      "bottom_corner_added_rows": 0,
+      "original_angle": 30.24,
+      "target_angle": 22,
+      "file": "assets/ui/atlas/module/equipment/icon_114.png",
+      "runtime_size": [
+        196,
+        308
+      ],
+      "master_size": [
+        784,
+        1232
+      ],
+      "bounds": [
+        25,
+        8,
+        170,
+        299
+      ],
+      "uuid": "6620f516-e57a-4ea0-9a06-a43611440718"
+    }
+  ]
+}
