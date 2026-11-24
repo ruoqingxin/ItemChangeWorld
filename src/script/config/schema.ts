@@ -328,21 +328,37 @@ export class Ibattle_ruleConfig {
      * 固定正整数编号
      */
     readonly id: number
-
+    /**
+     * 角色基础生命上限
+     */
     readonly player_hp: number
-
+    /**
+     * 角色基础法力上限
+     */
     readonly player_mp: number
-
+    /**
+     * 角色基础物理攻击
+     */
     readonly base_attack: number
-
+    /**
+     * 角色基础精神力
+     */
     readonly base_spirit: number
-
+    /**
+     * 角色基础护甲
+     */
     readonly base_defense: number
-
+    /**
+     * 角色基础速度
+     */
     readonly base_speed: number
-
+    /**
+     * 主动技能位数量
+     */
     readonly active_slots: number
-
+    /**
+     * 战斗规则版本号
+     */
     readonly version: number
 
 
@@ -360,7 +376,7 @@ export class Ibattle_start_skillConfig {
      */
     readonly id: number
     /**
-     * 引用 skill.id
+     * 关联技能编号
      */
     readonly skill_id: number
 
@@ -377,7 +393,7 @@ export class IcontainerConfig {
     }
 
     /**
-     * 物品编号，引用 item.id
+     * 关联物品编号
      */
     readonly id: number
     /**
@@ -410,7 +426,7 @@ export class Ienemy_actionConfig {
      */
     readonly id: number
     /**
-     * 引用 enemy.id
+     * 关联敌人编号
      */
     readonly enemy_id: number
     /**
@@ -455,25 +471,45 @@ export class IenemyConfig {
      * 中文名称
      */
     readonly name: string
-
+    /**
+     * 敌人级别
+     */
     readonly tier: EEnemyTier
-
+    /**
+     * 生命上限
+     */
     readonly hp: number
-
+    /**
+     * 法力上限
+     */
     readonly mp: number
-
+    /**
+     * 物理攻击
+     */
     readonly attack: number
-
+    /**
+     * 精神力
+     */
     readonly spirit: number
-
+    /**
+     * 护甲
+     */
     readonly armor: number
-
+    /**
+     * 速度
+     */
     readonly speed: number
-
+    /**
+     * 每战治疗次数上限
+     */
     readonly heal_uses: number
-
+    /**
+     * 每战护盾次数上限
+     */
     readonly ward_uses: number
-
+    /**
+     * 每战净化次数上限
+     */
     readonly purify_uses: number
 
 
@@ -495,19 +531,29 @@ export class Iequipment_bandConfig {
      * 固定正整数编号
      */
     readonly id: number
-
+    /**
+     * 属性种类
+     */
     readonly stat: EStat
     /**
-     * 1最低档至6最高档
+     * 属性档位；1最低、6最高
      */
     readonly band: number
-
+    /**
+     * 主属性数值下限
+     */
     readonly main_min: number
-
+    /**
+     * 主属性数值上限
+     */
     readonly main_max: number
-
+    /**
+     * 副属性数值下限
+     */
     readonly sub_min: number
-
+    /**
+     * 副属性数值上限
+     */
     readonly sub_max: number
 
 
@@ -536,11 +582,17 @@ export class Iequipment_baseConfig {
      * 中文名称
      */
     readonly name: string
-
+    /**
+     * 装备部位
+     */
     readonly slot: EEquipmentSlot
-
+    /**
+     * 主属性种类
+     */
     readonly main_stat: EStat
-
+    /**
+     * 底材基础耐久上限
+     */
     readonly durability: number
 
 
@@ -561,13 +613,21 @@ export class Iequipment_qualityConfig {
      * 固定正整数编号
      */
     readonly id: number
-
+    /**
+     * 装备品质
+     */
     readonly quality: EQuality
-
+    /**
+     * 允许属性档位下限
+     */
     readonly band_min: number
-
+    /**
+     * 允许属性档位上限
+     */
     readonly band_max: number
-
+    /**
+     * 品质耐久加成
+     */
     readonly durability_bonus: number
     /**
      * 每恢复1耐久消耗愿力
@@ -594,21 +654,27 @@ export class Iequipment_trait_rollConfig {
      */
     readonly id: number
     /**
-     * 引用 equipment_trait.id
+     * 关联装备特性编号
      */
     readonly trait_id: number
-
+    /**
+     * 装备品质
+     */
     readonly quality: EQuality
-
+    /**
+     * 收益参数下限
+     */
     readonly p_min: number
-
+    /**
+     * 收益参数上限
+     */
     readonly p_max: number
     /**
-     * 0表示无次数门槛
+     * 触发门槛下限；0表示无门槛
      */
     readonly n_min: number
     /**
-     * 0表示无次数门槛
+     * 触发门槛上限；0表示无门槛
      */
     readonly n_max: number
 
@@ -637,10 +703,12 @@ export class Iequipment_traitConfig {
      * 中文名称
      */
     readonly name: string
-
+    /**
+     * 适用装备部位
+     */
     readonly slot: EEquipmentSlot
     /**
-     * P为收益参数，N为次数门槛
+     * 特性效果说明；收益参数与触发门槛见特性品质参数表
      */
     readonly description: string
 
@@ -655,11 +723,11 @@ export class IequipmentConfig {
     }
 
     /**
-     * 引用 item.id
+     * 关联物品编号
      */
     readonly id: number
     /**
-     * 引用 equipment_base.id
+     * 关联装备底材编号
      */
     readonly base_id: number
 
@@ -679,7 +747,7 @@ export class Iinventory_ruleConfig {
     }
 
     /**
-     * 规则ID
+     * 固定规则编号
      */
     readonly id: number
     /**
@@ -724,7 +792,7 @@ export class Iinventory_startConfig {
      */
     readonly id: number
     /**
-     * 引用 item.id
+     * 关联物品编号
      */
     readonly item_id: number
     /**
@@ -759,7 +827,7 @@ export class IitemConfig {
     }
 
     /**
-     * 固定编号；1–100 预留货币
+     * 固定物品编号；1至100预留货币
      */
     readonly id: number
     /**
@@ -832,7 +900,7 @@ export class Imap_nodeConfig {
     }
 
     /**
-     * 节点ID
+     * 固定节点编号
      */
     readonly id: number
     /**
@@ -881,7 +949,7 @@ export class Imap_pool_categoryConfig {
      */
     readonly id: number
     /**
-     * 引用 map_pool.id
+     * 关联掉落池编号
      */
     readonly pool_id: number
     /**
@@ -910,7 +978,7 @@ export class Imap_pool_qualityConfig {
      */
     readonly id: number
     /**
-     * 引用 map_pool.id
+     * 关联掉落池编号
      */
     readonly pool_id: number
     /**
@@ -934,7 +1002,7 @@ export class Imap_pool_weaponConfig {
     }
 
     /**
-     * 掉落池编号，引用 map_pool.id
+     * 关联掉落池编号
      */
     readonly id: number
     /**
@@ -1014,7 +1082,7 @@ export class Imap_ruleConfig {
     }
 
     /**
-     * 规则ID
+     * 固定规则编号
      */
     readonly id: number
     /**
@@ -1081,21 +1149,37 @@ export class Imap_ruleConfig {
      * 独立搜索上限
      */
     readonly search_max: number
-
+    /**
+     * 普通战斗节点数量下限
+     */
     readonly normal_min: number
-
+    /**
+     * 普通战斗节点数量上限
+     */
     readonly normal_max: number
-
+    /**
+     * 精英战斗节点数量下限
+     */
     readonly elite_min: number
-
+    /**
+     * 精英战斗节点数量上限
+     */
     readonly elite_max: number
-
+    /**
+     * 悟道节点数量下限
+     */
     readonly insight_min: number
-
+    /**
+     * 悟道节点数量上限
+     */
     readonly insight_max: number
-
+    /**
+     * 借法节点数量下限
+     */
     readonly borrow_min: number
-
+    /**
+     * 借法节点数量上限
+     */
     readonly borrow_max: number
 
 
@@ -1112,7 +1196,7 @@ export class Imap_searchConfig {
     }
 
     /**
-     * 节点编号，引用 map_node.id
+     * 关联地图节点编号
      */
     readonly id: number
     /**
@@ -1172,11 +1256,11 @@ export class Ipotion_itemConfig {
     }
 
     /**
-     * 物品编号，引用 item.id
+     * 关联物品编号
      */
     readonly id: number
     /**
-     * 药效编号，引用 potion.id
+     * 关联药效编号
      */
     readonly potion_id: number
 
@@ -1220,7 +1304,7 @@ export class IrepairConfig {
     }
 
     /**
-     * 物品编号，引用 item.id
+     * 关联物品编号
      */
     readonly id: number
     /**
@@ -1245,7 +1329,7 @@ export class Iskill_effectConfig {
      */
     readonly id: number
     /**
-     * 引用 skill.id
+     * 关联技能编号
      */
     readonly skill_id: number
     /**
@@ -1285,16 +1369,20 @@ export class IskillConfig {
      * 中文名称
      */
     readonly name: string
-
+    /**
+     * 施放法力消耗
+     */
     readonly mp_cost: number
-
+    /**
+     * 冷却回合数
+     */
     readonly cooldown: number
     /**
      * 伤害类别
      */
     readonly kind: EDamageKind
     /**
-     * 每战次数；0不限
+     * 每战使用次数；0表示不限
      */
     readonly uses: number
     /**
@@ -1313,7 +1401,7 @@ export class IstaminaConfig {
     }
 
     /**
-     * 物品编号，引用 item.id
+     * 关联物品编号
      */
     readonly id: number
     /**

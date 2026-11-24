@@ -47,7 +47,7 @@ async function equipmentFixture(page,width){
     await page.evaluate(()=>{
         const v=window.__skillBattlePreview,m=v.trial,c=structuredClone(m.archive.config);
         window.__equipmentFixture={save:m.archive,currentConfig:m.currentConfig,raw:localStorage.getItem("nowchange.expedition.v1")};
-        c.fixtures.find(f=>f.templateId===101).durability=1;
+        c.fixtures.find(f=>f.templateId===110).durability=1;
         c.fixtures.push({id:90,templateId:1501,count:1,node:0,durability:24},{id:91,templateId:1701,count:1,node:0,durability:16});
         m.resetConfirmed();m.currentConfig=c;m.prepare(c,733);
         for(const slot of ["armor","accessory"])

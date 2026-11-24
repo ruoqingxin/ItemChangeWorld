@@ -30,8 +30,15 @@ test("真实配置包、六属性及五技能位",()=>{
     assert.deepEqual(C.RULES.player,{hp:240,mp:36,a:18,s:18,armor:6,speed:10});
     assert.equal(C.SKILLS.length,36);assert.equal(C.BASES.length,24);assert.equal(C.TRAITS.length,24);
     assert.equal(C.ENEMIES.length,15);assert.equal(c.build.setup.skills.length,5);
-    assert.equal(tables.item.get(101).name,"轻翎剑");assert.equal(tables.item.get(601).name,"青冥剑典");
-    assert.equal(c.templates.length,200);
+    for(let id=101;id<=108;id++){
+        assert.equal(tables.item.get(id),undefined);assert.equal(tables.equipment.get(id),undefined);
+        assert(!tables.map_variant.getDataList().some(row=>row.item_id===id));
+    }
+    assert.equal(tables.item.get(110).name,"青钢剑");assert.equal(tables.item.get(601).name,"青冥剑典");
+    assert.equal(c.fixtures.find(f=>f.id===1).templateId,110);
+    const itemIds=tables.item.getDataList().map(row=>row.id);
+    assert.deepEqual(itemIds,[...itemIds].sort((a,b)=>a-b));
+    assert.equal(c.templates.length,192);
 });
 test("六药单格单份与正确药效",()=>{
     for(let i=0;i<6;i++){const t=c.templates.find(t=>t.id===301+i);assert.equal(t.width*t.height,1);assert.equal(t.stack,1);}

@@ -207,7 +207,7 @@ test("七列多格碰撞、旋转、换包与无法重排时保留原物",()=>{
     const plan=I.containerPlan(c,arranged,null),removed=I.apply(c,arranged,plan,1000).state;
     assert.equal(removed.items.filter(i=>i.location.space==="bag").length,0);
     s.items.filter(i=>i.location.space==="bag").forEach(i=>i.location={space:"warehouse"});
-    for(let i=0;i<2;i++)s.items.push(I.createItem(c,101,"packed-weapon-"+i,
+    for(let i=0;i<2;i++)s.items.push(I.createItem(c,110,"packed-weapon-"+i,
         {space:"bag",x:i*2,y:0,rotated:false},17));
     I.validate(c,s);
     const before=structuredClone(s),projection=I.bagProjection(c,s);
