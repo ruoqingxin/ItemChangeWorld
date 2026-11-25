@@ -1,0 +1,121 @@
+{
+  "source": "C:\\Users\\Administrator\\Downloads\\_cosres_apps-ai-tools_nextimage_storage_out_user_2682_1795583262945_97232d7fb8da431284387e1c301c515c.png",
+  "items": [
+    {
+      "id": 121,
+      "name": "穿云枪",
+      "sheet_cell": [
+        0,
+        0
+      ],
+      "runtime_size": [
+        196,
+        308
+      ],
+      "alpha_bbox": [
+        51,
+        8,
+        155,
+        300
+      ],
+      "rotation_angle": 32.12
+    },
+    {
+      "id": 122,
+      "name": "精锻穿云枪",
+      "sheet_cell": [
+        0,
+        1
+      ],
+      "runtime_size": [
+        196,
+        308
+      ],
+      "alpha_bbox": [
+        48,
+        8,
+        156,
+        300
+      ],
+      "rotation_angle": 31.2
+    },
+    {
+      "id": 123,
+      "name": "百炼穿云枪",
+      "sheet_cell": [
+        0,
+        2
+      ],
+      "runtime_size": [
+        196,
+        308
+      ],
+      "alpha_bbox": [
+        44,
+        8,
+        160,
+        300
+      ],
+      "rotation_angle": 29.71
+    },
+    {
+      "id": 124,
+      "name": "凌云枪",
+      "sheet_cell": [
+        1,
+        0
+      ],
+      "runtime_size": [
+        196,
+        308
+      ],
+      "alpha_bbox": [
+        43,
+        8,
+        173,
+        300
+      ],
+      "rotation_angle": 29.98
+    },
+    {
+      "id": 125,
+      "name": "贯日枪",
+      "sheet_cell": [
+        1,
+        1
+      ],
+      "runtime_size": [
+        196,
+        308
+      ],
+      "alpha_bbox": [
+        42,
+        8,
+        177,
+        300
+      ],
+      "rotation_angle": 28.7
+    },
+    {
+      "id": 126,
+      "name": "九霄枪",
+      "sheet_cell": [
+        1,
+        2
+      ],
+      "runtime_size": [
+        196,
+        308
+      ],
+      "alpha_bbox": [
+        39,
+        8,
+        186,
+        300
+      ],
+      "rotation_angle": 29.26
+    }
+  ],
+  "background": "transparent",
+  "config_icon_column": "icon"
+}
