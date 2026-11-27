@@ -1,0 +1,376 @@
+hero_0178.png
+size: 363,448
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+skin65/Y_geboL
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/Y_geboR
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/Y_geboLhou
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/Y_geboRhou
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/J_shouL
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/shou_l
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/xiaobiL
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/Y_xiaobiR
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/yixiuL
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/yixiuLhou
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/yixiuR
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/Y_yixiuRhou
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/Y_shouL
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/Y_shouL2
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/Y_shouL3
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/Y_shouR
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/Y_shouR2
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/Y_shouR3
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/Y_xiaobiL
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/Y_yixiuL
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/Y_yixiuLhou
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/datuiL
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/datuiR
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/jiaoL
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/jiaoR
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/pigu
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/hulu
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/qunbai2
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/qunbai1
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/shenti
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/yaodai
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/hulu2
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/yibaiL
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/yibaiR
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/BY
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/erduo
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/faji
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/meimaoL
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/meimaoR
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/tou
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/touding
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/toufaL
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/toufaL2
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/toufaR
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/toufaR2
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/toufahou
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/yankuangL
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/yankuangR
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/yanqiuL
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/yanqiuR
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+skin65/zui
+  rotate: false
+  xy: 0, 0
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+
+hero_01.png
+size: 264,163
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+yz
+  rotate: false
+  xy: 2, 2
+  size: 209, 102
+  orig: 219, 114
+  offset: 5, 6
+  index: -1
+

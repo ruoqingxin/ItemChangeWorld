@@ -1,0 +1,735 @@
+{
+  "_$ver": 1,
+  "_$id": "test_skin_panel_root",
+  "_$type": "GWidget",
+  "name": "TestSkinPanelView",
+  "width": 1280,
+  "height": 720,
+  "_$comp": [
+    {
+      "_$type": "3593fc26-337e-42e3-92dc-1b9c2bb8f988",
+      "scriptPath": "../src/script/games/ui/components/ElementMapper.ts",
+      "adapter": {
+        "_$ref": "test_skin_adapter"
+      },
+      "elements": [
+        { "_$ref": "test_skin_adapter" },
+        { "_$ref": "test_skin_body_count" },
+        { "_$ref": "test_skin_body_list" },
+        { "_$ref": "test_skin_preview_box" },
+        { "_$ref": "test_skin_preview_status" },
+        { "_$ref": "test_skin_combo_text" },
+        { "_$ref": "test_skin_progress_text" },
+        { "_$ref": "test_skin_prev_btn" },
+        { "_$ref": "test_skin_next_btn" },
+        { "_$ref": "test_skin_random_btn" },
+        { "_$ref": "test_skin_auto_btn" },
+        { "_$ref": "test_skin_auto_text" },
+        { "_$ref": "test_skin_play_btn" },
+        { "_$ref": "test_skin_play_text" },
+        { "_$ref": "test_skin_animation_btn" },
+        { "_$ref": "test_skin_animation_text" },
+        { "_$ref": "test_skin_head_count" },
+        { "_$ref": "test_skin_head_list" },
+        { "_$ref": "test_skin_weapon_count" },
+        { "_$ref": "test_skin_weapon_list" },
+        { "_$ref": "test_skin_close_btn" },
+        { "_$ref": "test_skin_status_text" }
+      ],
+      "prefabs": null,
+      "mapperType": 1
+    }
+  ],
+  "_$child": [
+    {
+      "_$id": "test_skin_adapter",
+      "_$type": "GWidget",
+      "name": "adapter",
+      "width": 1280,
+      "height": 720,
+      "mouseThrough": true,
+      "relations": [
+        {
+          "_$type": "Relation",
+          "target": {
+            "_$ref": "test_skin_panel_root"
+          },
+          "data": [1, 0, 2, 0]
+        }
+      ],
+      "_$child": [
+        {
+          "_$id": "test_skin_screen_bg",
+          "_$type": "GImage",
+          "name": "img_screen",
+          "width": 1280,
+          "height": 720,
+          "autoSize": false,
+          "mouseEnabled": false,
+          "src": "ui/atlas/module/warehouse/graphite/panel.png",
+          "color": "#aeb8b4"
+        },
+        {
+          "_$id": "test_skin_header",
+          "_$type": "GImage",
+          "name": "img_header",
+          "x": 20,
+          "y": 16,
+          "width": 1240,
+          "height": 64,
+          "autoSize": false,
+          "mouseEnabled": false,
+          "src": "ui/atlas/module/warehouse/graphite/panel.png"
+        },
+        {
+          "_$id": "test_skin_title",
+          "_$type": "GTextField",
+          "name": "txt_title",
+          "x": 42,
+          "y": 24,
+          "width": 430,
+          "height": 28,
+          "text": "Spine 皮肤组合测试",
+          "font": "KaiTi",
+          "fontSize": 26,
+          "color": "#f0d79c",
+          "valign": "middle",
+          "mouseEnabled": false
+        },
+        {
+          "_$id": "test_skin_subtitle",
+          "_$type": "GTextField",
+          "name": "txt_subtitle",
+          "x": 43,
+          "y": 51,
+          "width": 520,
+          "height": 20,
+          "text": "全部组合 · 身体 × 头部 × 武器",
+          "font": "Microsoft YaHei",
+          "fontSize": 14,
+          "color": "#aab6b2",
+          "valign": "middle",
+          "mouseEnabled": false
+        },
+        {
+          "_$id": "test_skin_body_panel",
+          "_$type": "GWidget",
+          "name": "box_body",
+          "x": 20,
+          "y": 96,
+          "width": 236,
+          "height": 556,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "test_skin_body_bg",
+              "_$type": "GImage",
+              "name": "img_body_bg",
+              "width": 236,
+              "height": 556,
+              "autoSize": false,
+              "mouseEnabled": false,
+              "src": "ui/atlas/module/warehouse/graphite/page-normal.png"
+            },
+            {
+              "_$id": "test_skin_body_title",
+              "_$type": "GTextField",
+              "name": "txt_body_title",
+              "x": 16,
+              "y": 10,
+              "width": 120,
+              "height": 26,
+              "text": "身体",
+              "font": "KaiTi",
+              "fontSize": 22,
+              "color": "#f0d79c",
+              "valign": "middle",
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "test_skin_body_count",
+              "_$type": "GTextField",
+              "name": "txt_body_count",
+              "x": 138,
+              "y": 10,
+              "width": 82,
+              "height": 26,
+              "text": "0 / 0",
+              "font": "Microsoft YaHei",
+              "fontSize": 13,
+              "color": "#aeb8b4",
+              "align": "right",
+              "valign": "middle",
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "test_skin_body_list",
+              "_$type": "GList",
+              "name": "list_body",
+              "x": 10,
+              "y": 42,
+              "width": 216,
+              "height": 502,
+              "mouseThrough": true,
+              "layout": {
+                "type": 3,
+                "columns": 1,
+                "rowGap": 4,
+                "columnGap": 0
+              },
+              "_templateNode": {
+                "_$ref": "test_skin_body_template",
+                "_$tmpl": "itemTemplate"
+              },
+              "_initItemNum": null,
+              "_$child": [
+                {
+                  "_$id": "test_skin_body_template",
+                  "_$prefab": "b2ff5ca1-74e8-4029-ae17-fe79315f2752",
+                  "name": "TestSkinItem",
+                  "active": true,
+                  "x": 0,
+                  "y": 0,
+                  "visible": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "_$id": "test_skin_preview_panel",
+          "_$type": "GWidget",
+          "name": "box_preview",
+          "x": 272,
+          "y": 96,
+          "width": 620,
+          "height": 556,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "test_skin_preview_bg",
+              "_$type": "GImage",
+              "name": "img_preview_bg",
+              "width": 620,
+              "height": 556,
+              "autoSize": false,
+              "mouseEnabled": false,
+              "src": "ui/atlas/module/warehouse/graphite/page-normal.png"
+            },
+            {
+              "_$id": "test_skin_preview_title",
+              "_$type": "GTextField",
+              "name": "txt_preview_title",
+              "x": 18,
+              "y": 10,
+              "width": 220,
+              "height": 28,
+              "text": "实时预览",
+              "font": "KaiTi",
+              "fontSize": 22,
+              "color": "#f0d79c",
+              "valign": "middle",
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "test_skin_preview_box",
+              "_$type": "GWidget",
+              "name": "box_spine_preview",
+              "x": 12,
+              "y": 42,
+              "width": 596,
+              "height": 418,
+              "mouseThrough": true,
+              "_$child": [
+                {
+                  "_$id": "test_skin_preview_well",
+                  "_$type": "GImage",
+                  "name": "img_preview_well",
+                  "width": 596,
+                  "height": 418,
+                  "autoSize": false,
+                  "mouseEnabled": false,
+                  "src": "ui/atlas/module/warehouse/graphite/panel.png",
+                  "color": "#77827e"
+                },
+                {
+                  "_$id": "test_skin_preview_status",
+                  "_$type": "GTextField",
+                  "name": "txt_preview_status",
+                  "x": 32,
+                  "y": 170,
+                  "width": 532,
+                  "height": 42,
+                  "text": "正在加载完整 Spine 资源…",
+                  "font": "Microsoft YaHei",
+                  "fontSize": 18,
+                  "color": "#d9dfda",
+                  "align": "center",
+                  "valign": "middle",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "test_skin_combo_text",
+              "_$type": "GTextField",
+              "name": "txt_combo",
+              "x": 16,
+              "y": 468,
+              "width": 440,
+              "height": 26,
+              "text": "身体 / 头部 / 无武器",
+              "font": "Microsoft YaHei",
+              "fontSize": 14,
+              "color": "#e7e1d4",
+              "valign": "middle",
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "test_skin_progress_text",
+              "_$type": "GTextField",
+              "name": "txt_progress",
+              "x": 462,
+              "y": 468,
+              "width": 142,
+              "height": 26,
+              "text": "0 / 0",
+              "font": "Microsoft YaHei",
+              "fontSize": 13,
+              "color": "#dfc58d",
+              "align": "right",
+              "valign": "middle",
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "test_skin_prev_btn",
+              "_$type": "GWidget",
+              "name": "btn_prev",
+              "x": 14,
+              "y": 506,
+              "width": 78,
+              "height": 34,
+              "mouseEnabled": true,
+              "_$child": [
+                {
+                  "_$id": "test_skin_prev_bg",
+                  "_$type": "GImage",
+                  "name": "img_prev_bg",
+                  "width": 78,
+                  "height": 34,
+                  "autoSize": false,
+                  "mouseEnabled": false,
+                  "src": "ui/atlas/module/warehouse/graphite/page-normal.png"
+                },
+                {
+                  "_$id": "test_skin_prev_text",
+                  "_$type": "GTextField",
+                  "name": "txt_prev",
+                  "width": 78,
+                  "height": 34,
+                  "text": "上一组",
+                  "font": "Microsoft YaHei",
+                  "fontSize": 14,
+                  "color": "#e7e1d4",
+                  "align": "center",
+                  "valign": "middle",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "test_skin_next_btn",
+              "_$type": "GWidget",
+              "name": "btn_next",
+              "x": 98,
+              "y": 506,
+              "width": 78,
+              "height": 34,
+              "mouseEnabled": true,
+              "_$child": [
+                {
+                  "_$id": "test_skin_next_bg",
+                  "_$type": "GImage",
+                  "name": "img_next_bg",
+                  "width": 78,
+                  "height": 34,
+                  "autoSize": false,
+                  "mouseEnabled": false,
+                  "src": "ui/atlas/module/warehouse/graphite/page-normal.png"
+                },
+                {
+                  "_$id": "test_skin_next_text",
+                  "_$type": "GTextField",
+                  "name": "txt_next",
+                  "width": 78,
+                  "height": 34,
+                  "text": "下一组",
+                  "font": "Microsoft YaHei",
+                  "fontSize": 14,
+                  "color": "#e7e1d4",
+                  "align": "center",
+                  "valign": "middle",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "test_skin_random_btn",
+              "_$type": "GWidget",
+              "name": "btn_random",
+              "x": 182,
+              "y": 506,
+              "width": 72,
+              "height": 34,
+              "mouseEnabled": true,
+              "_$child": [
+                {
+                  "_$id": "test_skin_random_bg",
+                  "_$type": "GImage",
+                  "name": "img_random_bg",
+                  "width": 72,
+                  "height": 34,
+                  "autoSize": false,
+                  "mouseEnabled": false,
+                  "src": "ui/atlas/module/warehouse/graphite/page-normal.png"
+                },
+                {
+                  "_$id": "test_skin_random_text",
+                  "_$type": "GTextField",
+                  "name": "txt_random",
+                  "width": 72,
+                  "height": 34,
+                  "text": "随机",
+                  "font": "Microsoft YaHei",
+                  "fontSize": 14,
+                  "color": "#e7e1d4",
+                  "align": "center",
+                  "valign": "middle",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "test_skin_auto_btn",
+              "_$type": "GWidget",
+              "name": "btn_auto",
+              "x": 260,
+              "y": 506,
+              "width": 92,
+              "height": 34,
+              "mouseEnabled": true,
+              "_$child": [
+                {
+                  "_$id": "test_skin_auto_bg",
+                  "_$type": "GImage",
+                  "name": "img_auto_bg",
+                  "width": 92,
+                  "height": 34,
+                  "autoSize": false,
+                  "mouseEnabled": false,
+                  "src": "ui/atlas/module/warehouse/graphite/page-normal.png"
+                },
+                {
+                  "_$id": "test_skin_auto_text",
+                  "_$type": "GTextField",
+                  "name": "txt_auto",
+                  "width": 92,
+                  "height": 34,
+                  "text": "自动巡测",
+                  "font": "Microsoft YaHei",
+                  "fontSize": 14,
+                  "color": "#e7e1d4",
+                  "align": "center",
+                  "valign": "middle",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "test_skin_play_btn",
+              "_$type": "GWidget",
+              "name": "btn_play",
+              "x": 358,
+              "y": 506,
+              "width": 72,
+              "height": 34,
+              "mouseEnabled": true,
+              "_$child": [
+                {
+                  "_$id": "test_skin_play_bg",
+                  "_$type": "GImage",
+                  "name": "img_play_bg",
+                  "width": 72,
+                  "height": 34,
+                  "autoSize": false,
+                  "mouseEnabled": false,
+                  "src": "ui/atlas/module/warehouse/graphite/page-normal.png"
+                },
+                {
+                  "_$id": "test_skin_play_text",
+                  "_$type": "GTextField",
+                  "name": "txt_play",
+                  "width": 72,
+                  "height": 34,
+                  "text": "暂停",
+                  "font": "Microsoft YaHei",
+                  "fontSize": 14,
+                  "color": "#e7e1d4",
+                  "align": "center",
+                  "valign": "middle",
+                  "mouseEnabled": false
+                }
+              ]
+            },
+            {
+              "_$id": "test_skin_animation_btn",
+              "_$type": "GWidget",
+              "name": "btn_animation",
+              "x": 436,
+              "y": 506,
+              "width": 168,
+              "height": 34,
+              "mouseEnabled": true,
+              "_$child": [
+                {
+                  "_$id": "test_skin_animation_bg",
+                  "_$type": "GImage",
+                  "name": "img_animation_bg",
+                  "width": 168,
+                  "height": 34,
+                  "autoSize": false,
+                  "mouseEnabled": false,
+                  "src": "ui/atlas/module/warehouse/graphite/page-normal.png"
+                },
+                {
+                  "_$id": "test_skin_animation_text",
+                  "_$type": "GTextField",
+                  "name": "txt_animation",
+                  "width": 168,
+                  "height": 34,
+                  "text": "动画：idle_y ▸",
+                  "font": "Microsoft YaHei",
+                  "fontSize": 13,
+                  "color": "#e7e1d4",
+                  "align": "center",
+                  "valign": "middle",
+                  "mouseEnabled": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "_$id": "test_skin_head_panel",
+          "_$type": "GWidget",
+          "name": "box_head",
+          "x": 908,
+          "y": 96,
+          "width": 352,
+          "height": 250,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "test_skin_head_bg",
+              "_$type": "GImage",
+              "name": "img_head_bg",
+              "width": 352,
+              "height": 250,
+              "autoSize": false,
+              "mouseEnabled": false,
+              "src": "ui/atlas/module/warehouse/graphite/page-normal.png"
+            },
+            {
+              "_$id": "test_skin_head_title",
+              "_$type": "GTextField",
+              "name": "txt_head_title",
+              "x": 16,
+              "y": 10,
+              "width": 180,
+              "height": 26,
+              "text": "头部",
+              "font": "KaiTi",
+              "fontSize": 22,
+              "color": "#f0d79c",
+              "valign": "middle",
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "test_skin_head_count",
+              "_$type": "GTextField",
+              "name": "txt_head_count",
+              "x": 236,
+              "y": 10,
+              "width": 100,
+              "height": 26,
+              "text": "0 / 0",
+              "font": "Microsoft YaHei",
+              "fontSize": 13,
+              "color": "#aeb8b4",
+              "align": "right",
+              "valign": "middle",
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "test_skin_head_list",
+              "_$type": "GList",
+              "name": "list_head",
+              "x": 10,
+              "y": 42,
+              "width": 332,
+              "height": 198,
+              "mouseThrough": true,
+              "layout": {
+                "type": 3,
+                "columns": 1,
+                "rowGap": 4,
+                "columnGap": 0
+              },
+              "_templateNode": {
+                "_$ref": "test_skin_head_template",
+                "_$tmpl": "itemTemplate"
+              },
+              "_initItemNum": null,
+              "_$child": [
+                {
+                  "_$id": "test_skin_head_template",
+                  "_$prefab": "b2ff5ca1-74e8-4029-ae17-fe79315f2752",
+                  "name": "TestSkinItem",
+                  "active": true,
+                  "x": 0,
+                  "y": 0,
+                  "visible": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "_$id": "test_skin_weapon_panel",
+          "_$type": "GWidget",
+          "name": "box_weapon",
+          "x": 908,
+          "y": 360,
+          "width": 352,
+          "height": 292,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "test_skin_weapon_bg",
+              "_$type": "GImage",
+              "name": "img_weapon_bg",
+              "width": 352,
+              "height": 292,
+              "autoSize": false,
+              "mouseEnabled": false,
+              "src": "ui/atlas/module/warehouse/graphite/page-normal.png"
+            },
+            {
+              "_$id": "test_skin_weapon_title",
+              "_$type": "GTextField",
+              "name": "txt_weapon_title",
+              "x": 16,
+              "y": 10,
+              "width": 180,
+              "height": 26,
+              "text": "武器",
+              "font": "KaiTi",
+              "fontSize": 22,
+              "color": "#f0d79c",
+              "valign": "middle",
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "test_skin_weapon_count",
+              "_$type": "GTextField",
+              "name": "txt_weapon_count",
+              "x": 236,
+              "y": 10,
+              "width": 100,
+              "height": 26,
+              "text": "0 / 0",
+              "font": "Microsoft YaHei",
+              "fontSize": 13,
+              "color": "#aeb8b4",
+              "align": "right",
+              "valign": "middle",
+              "mouseEnabled": false
+            },
+            {
+              "_$id": "test_skin_weapon_list",
+              "_$type": "GList",
+              "name": "list_weapon",
+              "x": 10,
+              "y": 42,
+              "width": 332,
+              "height": 240,
+              "mouseThrough": true,
+              "layout": {
+                "type": 3,
+                "columns": 1,
+                "rowGap": 4,
+                "columnGap": 0
+              },
+              "_templateNode": {
+                "_$ref": "test_skin_weapon_template",
+                "_$tmpl": "itemTemplate"
+              },
+              "_initItemNum": null,
+              "_$child": [
+                {
+                  "_$id": "test_skin_weapon_template",
+                  "_$prefab": "b2ff5ca1-74e8-4029-ae17-fe79315f2752",
+                  "name": "TestSkinItem",
+                  "active": true,
+                  "x": 0,
+                  "y": 0,
+                  "visible": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "_$id": "test_skin_close_btn",
+          "_$type": "GWidget",
+          "name": "btn_close",
+          "x": 1192,
+          "y": 26,
+          "width": 46,
+          "height": 46,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "test_skin_close_icon",
+              "_$type": "GImage",
+              "name": "img_close",
+              "x": 9,
+              "y": 9,
+              "width": 28,
+              "height": 28,
+              "autoSize": false,
+              "mouseEnabled": false,
+              "src": "ui/atlas/module/lobby/close.png"
+            }
+          ]
+        },
+        {
+          "_$id": "test_skin_status_text",
+          "_$type": "GTextField",
+          "name": "txt_status",
+          "x": 20,
+          "y": 664,
+          "width": 1240,
+          "height": 34,
+          "text": "准备加载完整部件资源",
+          "font": "Microsoft YaHei",
+          "fontSize": 13,
+          "color": "#aeb8b4",
+          "align": "center",
+          "valign": "middle",
+          "mouseEnabled": false
+        }
+      ]
+    }
+  ]
+}

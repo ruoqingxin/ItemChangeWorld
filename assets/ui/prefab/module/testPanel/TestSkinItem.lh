@@ -1,0 +1,55 @@
+{
+  "_$ver": 1,
+  "_$id": "test_skin_item_root",
+  "_$type": "GWidget",
+  "name": "TestSkinItem",
+  "width": 220,
+  "height": 38,
+  "visible": false,
+  "mouseEnabled": true,
+  "_$child": [
+    {
+      "_$id": "test_skin_item_bg",
+      "_$type": "GImage",
+      "name": "img_item_bg",
+      "width": 220,
+      "height": 38,
+      "autoSize": false,
+      "mouseEnabled": false,
+      "src": "ui/atlas/module/warehouse/graphite/page-normal.png"
+    },
+    {
+      "_$id": "test_skin_item_name",
+      "_$type": "GTextField",
+      "name": "txt_item_name",
+      "x": 10,
+      "y": 2,
+      "width": 155,
+      "height": 34,
+      "text": "",
+      "font": "Microsoft YaHei",
+      "fontSize": 15,
+      "color": "#e7e1d4",
+      "valign": "middle",
+      "overflow": "shrink",
+      "mouseEnabled": false
+    },
+    {
+      "_$id": "test_skin_item_meta",
+      "_$type": "GTextField",
+      "name": "txt_item_meta",
+      "x": 166,
+      "y": 2,
+      "width": 44,
+      "height": 34,
+      "text": "",
+      "font": "Microsoft YaHei",
+      "fontSize": 12,
+      "color": "#b9c3bf",
+      "align": "right",
+      "valign": "middle",
+      "overflow": "shrink",
+      "mouseEnabled": false
+    }
+  ]
+}

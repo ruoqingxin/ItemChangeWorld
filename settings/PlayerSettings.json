@@ -25,7 +25,7 @@
   "addons": {
     "laya.ui": "ui2"
   },
-  "spineVersion": "4.1",
+  "spineVersion": "3.8",
   "splash": {
     "enabled": false,
     "fit": "center"

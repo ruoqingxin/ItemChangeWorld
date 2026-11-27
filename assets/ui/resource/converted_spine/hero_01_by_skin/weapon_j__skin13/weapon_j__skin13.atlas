@@ -1,0 +1,54 @@
+hero_015.png
+size: 694,123
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+J_skin13/bashou
+  rotate: true
+  xy: 2, 30
+  size: 53, 155
+  orig: 53, 155
+  offset: 0, 0
+  index: -1
+J_skin13/bianzi1
+  rotate: true
+  xy: 281, 14
+  size: 69, 92
+  orig: 69, 92
+  offset: 0, 0
+  index: -1
+J_skin13/bianzi2
+  rotate: true
+  xy: 375, 24
+  size: 59, 72
+  orig: 59, 72
+  offset: 0, 0
+  index: -1
+J_skin13/bianzi3
+  rotate: false
+  xy: 159, 2
+  size: 120, 81
+  orig: 120, 81
+  offset: 0, 0
+  index: -1
+J_skin13/bianzi4
+  rotate: true
+  xy: 2, 85
+  size: 36, 690
+  orig: 36, 690
+  offset: 0, 0
+  index: -1
+
+hero_01.png
+size: 264,163
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+yz
+  rotate: false
+  xy: 2, 2
+  size: 209, 102
+  orig: 219, 114
+  offset: 5, 6
+  index: -1
+

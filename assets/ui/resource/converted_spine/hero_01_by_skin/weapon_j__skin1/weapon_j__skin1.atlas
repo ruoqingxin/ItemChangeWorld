@@ -1,0 +1,26 @@
+hero_012.png
+size: 51,266
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+j_skin1/j_skin1_d
+  rotate: false
+  xy: 2, 2
+  size: 47, 262
+  orig: 108, 262
+  offset: 30, 0
+  index: -1
+
+hero_01.png
+size: 264,163
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+yz
+  rotate: false
+  xy: 2, 2
+  size: 209, 102
+  orig: 219, 114
+  offset: 5, 6
+  index: -1
+

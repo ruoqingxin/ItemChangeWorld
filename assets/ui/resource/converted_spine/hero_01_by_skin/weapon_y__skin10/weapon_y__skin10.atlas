@@ -1,0 +1,47 @@
+hero_0178.png
+size: 363,448
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+y_skin10/y_skin1_dai1
+  rotate: true
+  xy: 133, 2
+  size: 86, 225
+  orig: 86, 225
+  offset: 0, 0
+  index: -1
+y_skin10/y_skin1_dai2
+  rotate: true
+  xy: 133, 90
+  size: 132, 217
+  orig: 132, 217
+  offset: 0, 0
+  index: -1
+y_skin10/y_skin1_gun
+  rotate: false
+  xy: 2, 41
+  size: 129, 405
+  orig: 130, 405
+  offset: 1, 0
+  index: -1
+y_skin10/y_skin1_qi
+  rotate: true
+  xy: 133, 224
+  size: 222, 228
+  orig: 222, 228
+  offset: 0, 0
+  index: -1
+
+hero_01.png
+size: 264,163
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+yz
+  rotate: false
+  xy: 2, 2
+  size: 209, 102
+  orig: 219, 114
+  offset: 5, 6
+  index: -1
+

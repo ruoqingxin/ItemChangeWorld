@@ -1,0 +1,1239 @@
+{
+  "source": "E:\\NowChange\\ItemChangeWorld\\assets\\ui\\resource\\converted_spine\\hero_01",
+  "format": "Spine 3.8 JSON/atlas/png",
+  "skin_count": 68,
+  "default_skin_included_in_each_json": true,
+  "merged_skin_count": 61,
+  "weapon_skin_count": 7,
+  "all_animations_verified_in_laya_spine_3_8": true,
+  "premultiplied_alpha_required": true,
+  "unused_hero_0178_removed": true,
+  "folders": [
+    {
+      "skin": "skin1",
+      "folder": "skin1",
+      "json": "skin1.json",
+      "atlas": "skin1.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_018.png"
+      ],
+      "attachment_count": 48,
+      "animation_count": 29,
+      "deform_animation_count": 11,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2161281
+    },
+    {
+      "skin": "skin10",
+      "folder": "skin10",
+      "json": "skin10.json",
+      "atlas": "skin10.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_018.png",
+        "hero_019.png"
+      ],
+      "attachment_count": 57,
+      "animation_count": 29,
+      "deform_animation_count": 14,
+      "atlas_page_count": 3,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2231009
+    },
+    {
+      "skin": "skin1001",
+      "folder": "skin1001",
+      "json": "skin1001.json",
+      "atlas": "skin1001.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0110.png",
+        "hero_018.png"
+      ],
+      "attachment_count": 55,
+      "animation_count": 29,
+      "deform_animation_count": 21,
+      "atlas_page_count": 3,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2161099
+    },
+    {
+      "skin": "skin11",
+      "folder": "skin11",
+      "json": "skin11.json",
+      "atlas": "skin11.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0112.png"
+      ],
+      "attachment_count": 65,
+      "animation_count": 29,
+      "deform_animation_count": 16,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2246670
+    },
+    {
+      "skin": "skin12",
+      "folder": "skin12",
+      "json": "skin12.json",
+      "atlas": "skin12.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0113.png"
+      ],
+      "attachment_count": 62,
+      "animation_count": 29,
+      "deform_animation_count": 20,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2210693
+    },
+    {
+      "skin": "skin13",
+      "folder": "skin13",
+      "json": "skin13.json",
+      "atlas": "skin13.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0114.png"
+      ],
+      "attachment_count": 62,
+      "animation_count": 29,
+      "deform_animation_count": 16,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2136721
+    },
+    {
+      "skin": "skin15",
+      "folder": "skin15",
+      "json": "skin15.json",
+      "atlas": "skin15.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0115.png"
+      ],
+      "attachment_count": 39,
+      "animation_count": 29,
+      "deform_animation_count": 21,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2099122
+    },
+    {
+      "skin": "skin16",
+      "folder": "skin16",
+      "json": "skin16.json",
+      "atlas": "skin16.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0116.png"
+      ],
+      "attachment_count": 78,
+      "animation_count": 29,
+      "deform_animation_count": 20,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2247168
+    },
+    {
+      "skin": "skin17",
+      "folder": "skin17",
+      "json": "skin17.json",
+      "atlas": "skin17.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0117.png"
+      ],
+      "attachment_count": 62,
+      "animation_count": 29,
+      "deform_animation_count": 21,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2256972
+    },
+    {
+      "skin": "skin18",
+      "folder": "skin18",
+      "json": "skin18.json",
+      "atlas": "skin18.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0118.png"
+      ],
+      "attachment_count": 54,
+      "animation_count": 29,
+      "deform_animation_count": 17,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2165253
+    },
+    {
+      "skin": "skin19",
+      "folder": "skin19",
+      "json": "skin19.json",
+      "atlas": "skin19.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0119.png"
+      ],
+      "attachment_count": 67,
+      "animation_count": 29,
+      "deform_animation_count": 18,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2211049
+    },
+    {
+      "skin": "skin2",
+      "folder": "skin2",
+      "json": "skin2.json",
+      "atlas": "skin2.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0120.png"
+      ],
+      "attachment_count": 55,
+      "animation_count": 29,
+      "deform_animation_count": 21,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2161210
+    },
+    {
+      "skin": "skin20",
+      "folder": "skin20",
+      "json": "skin20.json",
+      "atlas": "skin20.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0121.png"
+      ],
+      "attachment_count": 52,
+      "animation_count": 29,
+      "deform_animation_count": 17,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2158761
+    },
+    {
+      "skin": "skin2000",
+      "folder": "skin2000",
+      "json": "skin2000.json",
+      "atlas": "skin2000.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0122.png"
+      ],
+      "attachment_count": 53,
+      "animation_count": 29,
+      "deform_animation_count": 20,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2127146
+    },
+    {
+      "skin": "skin24",
+      "folder": "skin24",
+      "json": "skin24.json",
+      "atlas": "skin24.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0124.png"
+      ],
+      "attachment_count": 55,
+      "animation_count": 29,
+      "deform_animation_count": 14,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2173658
+    },
+    {
+      "skin": "skin25",
+      "folder": "skin25",
+      "json": "skin25.json",
+      "atlas": "skin25.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0126.png"
+      ],
+      "attachment_count": 62,
+      "animation_count": 29,
+      "deform_animation_count": 16,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2258665
+    },
+    {
+      "skin": "skin27",
+      "folder": "skin27",
+      "json": "skin27.json",
+      "atlas": "skin27.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0128.png"
+      ],
+      "attachment_count": 59,
+      "animation_count": 29,
+      "deform_animation_count": 10,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2155176
+    },
+    {
+      "skin": "skin28",
+      "folder": "skin28",
+      "json": "skin28.json",
+      "atlas": "skin28.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0130.png"
+      ],
+      "attachment_count": 71,
+      "animation_count": 29,
+      "deform_animation_count": 16,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2197956
+    },
+    {
+      "skin": "skin29",
+      "folder": "skin29",
+      "json": "skin29.json",
+      "atlas": "skin29.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0131.png"
+      ],
+      "attachment_count": 53,
+      "animation_count": 29,
+      "deform_animation_count": 15,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2166535
+    },
+    {
+      "skin": "skin3",
+      "folder": "skin3",
+      "json": "skin3.json",
+      "atlas": "skin3.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0133.png"
+      ],
+      "attachment_count": 61,
+      "animation_count": 29,
+      "deform_animation_count": 20,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2182664
+    },
+    {
+      "skin": "skin30",
+      "folder": "skin30",
+      "json": "skin30.json",
+      "atlas": "skin30.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0134.png"
+      ],
+      "attachment_count": 46,
+      "animation_count": 29,
+      "deform_animation_count": 12,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2127523
+    },
+    {
+      "skin": "skin31",
+      "folder": "skin31",
+      "json": "skin31.json",
+      "atlas": "skin31.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0136.png"
+      ],
+      "attachment_count": 46,
+      "animation_count": 29,
+      "deform_animation_count": 12,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2135065
+    },
+    {
+      "skin": "skin32",
+      "folder": "skin32",
+      "json": "skin32.json",
+      "atlas": "skin32.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0138.png"
+      ],
+      "attachment_count": 53,
+      "animation_count": 29,
+      "deform_animation_count": 11,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2136666
+    },
+    {
+      "skin": "skin33",
+      "folder": "skin33",
+      "json": "skin33.json",
+      "atlas": "skin33.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0139.png"
+      ],
+      "attachment_count": 60,
+      "animation_count": 29,
+      "deform_animation_count": 11,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2208803
+    },
+    {
+      "skin": "skin34",
+      "folder": "skin34",
+      "json": "skin34.json",
+      "atlas": "skin34.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0140.png"
+      ],
+      "attachment_count": 66,
+      "animation_count": 29,
+      "deform_animation_count": 17,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2266431
+    },
+    {
+      "skin": "skin35",
+      "folder": "skin35",
+      "json": "skin35.json",
+      "atlas": "skin35.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0141.png"
+      ],
+      "attachment_count": 69,
+      "animation_count": 29,
+      "deform_animation_count": 16,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2249840
+    },
+    {
+      "skin": "skin36",
+      "folder": "skin36",
+      "json": "skin36.json",
+      "atlas": "skin36.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0142.png"
+      ],
+      "attachment_count": 62,
+      "animation_count": 29,
+      "deform_animation_count": 9,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2328542
+    },
+    {
+      "skin": "skin37",
+      "folder": "skin37",
+      "json": "skin37.json",
+      "atlas": "skin37.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0143.png"
+      ],
+      "attachment_count": 63,
+      "animation_count": 29,
+      "deform_animation_count": 16,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2176254
+    },
+    {
+      "skin": "skin39",
+      "folder": "skin39",
+      "json": "skin39.json",
+      "atlas": "skin39.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0144.png"
+      ],
+      "attachment_count": 73,
+      "animation_count": 29,
+      "deform_animation_count": 2,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2350574
+    },
+    {
+      "skin": "skin4",
+      "folder": "skin4",
+      "json": "skin4.json",
+      "atlas": "skin4.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0146.png"
+      ],
+      "attachment_count": 55,
+      "animation_count": 29,
+      "deform_animation_count": 21,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2223327
+    },
+    {
+      "skin": "skin40",
+      "folder": "skin40",
+      "json": "skin40.json",
+      "atlas": "skin40.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0147.png"
+      ],
+      "attachment_count": 64,
+      "animation_count": 29,
+      "deform_animation_count": 19,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2305149
+    },
+    {
+      "skin": "skin41",
+      "folder": "skin41",
+      "json": "skin41.json",
+      "atlas": "skin41.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0148.png"
+      ],
+      "attachment_count": 48,
+      "animation_count": 29,
+      "deform_animation_count": 0,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2151511
+    },
+    {
+      "skin": "skin42",
+      "folder": "skin42",
+      "json": "skin42.json",
+      "atlas": "skin42.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0149.png"
+      ],
+      "attachment_count": 68,
+      "animation_count": 29,
+      "deform_animation_count": 15,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2305547
+    },
+    {
+      "skin": "skin43",
+      "folder": "skin43",
+      "json": "skin43.json",
+      "atlas": "skin43.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0150.png"
+      ],
+      "attachment_count": 58,
+      "animation_count": 29,
+      "deform_animation_count": 10,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2242309
+    },
+    {
+      "skin": "skin44",
+      "folder": "skin44",
+      "json": "skin44.json",
+      "atlas": "skin44.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0151.png"
+      ],
+      "attachment_count": 59,
+      "animation_count": 29,
+      "deform_animation_count": 10,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2186335
+    },
+    {
+      "skin": "skin45",
+      "folder": "skin45",
+      "json": "skin45.json",
+      "atlas": "skin45.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0152.png"
+      ],
+      "attachment_count": 52,
+      "animation_count": 29,
+      "deform_animation_count": 7,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2163923
+    },
+    {
+      "skin": "skin46",
+      "folder": "skin46",
+      "json": "skin46.json",
+      "atlas": "skin46.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0154.png"
+      ],
+      "attachment_count": 70,
+      "animation_count": 29,
+      "deform_animation_count": 12,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2281547
+    },
+    {
+      "skin": "skin47",
+      "folder": "skin47",
+      "json": "skin47.json",
+      "atlas": "skin47.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0155.png"
+      ],
+      "attachment_count": 63,
+      "animation_count": 29,
+      "deform_animation_count": 6,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2274158
+    },
+    {
+      "skin": "skin48",
+      "folder": "skin48",
+      "json": "skin48.json",
+      "atlas": "skin48.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0156.png"
+      ],
+      "attachment_count": 61,
+      "animation_count": 29,
+      "deform_animation_count": 14,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2277283
+    },
+    {
+      "skin": "skin49",
+      "folder": "skin49",
+      "json": "skin49.json",
+      "atlas": "skin49.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0157.png"
+      ],
+      "attachment_count": 63,
+      "animation_count": 29,
+      "deform_animation_count": 9,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2244960
+    },
+    {
+      "skin": "skin5",
+      "folder": "skin5",
+      "json": "skin5.json",
+      "atlas": "skin5.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0158.png"
+      ],
+      "attachment_count": 63,
+      "animation_count": 29,
+      "deform_animation_count": 20,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2216553
+    },
+    {
+      "skin": "skin50",
+      "folder": "skin50",
+      "json": "skin50.json",
+      "atlas": "skin50.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0159.png"
+      ],
+      "attachment_count": 54,
+      "animation_count": 29,
+      "deform_animation_count": 10,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2165555
+    },
+    {
+      "skin": "skin51",
+      "folder": "skin51",
+      "json": "skin51.json",
+      "atlas": "skin51.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0160.png"
+      ],
+      "attachment_count": 57,
+      "animation_count": 29,
+      "deform_animation_count": 10,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2223366
+    },
+    {
+      "skin": "skin52",
+      "folder": "skin52",
+      "json": "skin52.json",
+      "atlas": "skin52.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0161.png"
+      ],
+      "attachment_count": 61,
+      "animation_count": 29,
+      "deform_animation_count": 10,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2195836
+    },
+    {
+      "skin": "skin53",
+      "folder": "skin53",
+      "json": "skin53.json",
+      "atlas": "skin53.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0162.png"
+      ],
+      "attachment_count": 47,
+      "animation_count": 29,
+      "deform_animation_count": 26,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2145130
+    },
+    {
+      "skin": "skin54",
+      "folder": "skin54",
+      "json": "skin54.json",
+      "atlas": "skin54.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0163.png"
+      ],
+      "attachment_count": 54,
+      "animation_count": 29,
+      "deform_animation_count": 0,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2185090
+    },
+    {
+      "skin": "skin55",
+      "folder": "skin55",
+      "json": "skin55.json",
+      "atlas": "skin55.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0164.png"
+      ],
+      "attachment_count": 57,
+      "animation_count": 29,
+      "deform_animation_count": 19,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2239786
+    },
+    {
+      "skin": "skin56",
+      "folder": "skin56",
+      "json": "skin56.json",
+      "atlas": "skin56.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0165.png"
+      ],
+      "attachment_count": 57,
+      "animation_count": 29,
+      "deform_animation_count": 14,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2254264
+    },
+    {
+      "skin": "skin57",
+      "folder": "skin57",
+      "json": "skin57.json",
+      "atlas": "skin57.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0166.png"
+      ],
+      "attachment_count": 65,
+      "animation_count": 29,
+      "deform_animation_count": 16,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2232345
+    },
+    {
+      "skin": "skin58",
+      "folder": "skin58",
+      "json": "skin58.json",
+      "atlas": "skin58.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0167.png"
+      ],
+      "attachment_count": 52,
+      "animation_count": 29,
+      "deform_animation_count": 16,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2216289
+    },
+    {
+      "skin": "skin59",
+      "folder": "skin59",
+      "json": "skin59.json",
+      "atlas": "skin59.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0168.png"
+      ],
+      "attachment_count": 52,
+      "animation_count": 29,
+      "deform_animation_count": 4,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2158325
+    },
+    {
+      "skin": "skin6",
+      "folder": "skin6",
+      "json": "skin6.json",
+      "atlas": "skin6.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0169.png"
+      ],
+      "attachment_count": 72,
+      "animation_count": 29,
+      "deform_animation_count": 20,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2249866
+    },
+    {
+      "skin": "skin60",
+      "folder": "skin60",
+      "json": "skin60.json",
+      "atlas": "skin60.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0170.png"
+      ],
+      "attachment_count": 61,
+      "animation_count": 29,
+      "deform_animation_count": 15,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2232309
+    },
+    {
+      "skin": "skin61",
+      "folder": "skin61",
+      "json": "skin61.json",
+      "atlas": "skin61.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0172.png"
+      ],
+      "attachment_count": 61,
+      "animation_count": 29,
+      "deform_animation_count": 16,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2287255
+    },
+    {
+      "skin": "skin62",
+      "folder": "skin62",
+      "json": "skin62.json",
+      "atlas": "skin62.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0173.png"
+      ],
+      "attachment_count": 64,
+      "animation_count": 29,
+      "deform_animation_count": 25,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2241925
+    },
+    {
+      "skin": "skin63",
+      "folder": "skin63",
+      "json": "skin63.json",
+      "atlas": "skin63.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0178.png"
+      ],
+      "attachment_count": 77,
+      "animation_count": 29,
+      "deform_animation_count": 9,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2305709
+    },
+    {
+      "skin": "skin64",
+      "folder": "skin64",
+      "json": "skin64.json",
+      "atlas": "skin64.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0178.png"
+      ],
+      "attachment_count": 62,
+      "animation_count": 29,
+      "deform_animation_count": 6,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2242890
+    },
+    {
+      "skin": "skin65",
+      "folder": "skin65",
+      "json": "skin65.json",
+      "atlas": "skin65.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0178.png"
+      ],
+      "attachment_count": 62,
+      "animation_count": 29,
+      "deform_animation_count": 11,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2251183
+    },
+    {
+      "skin": "skin7",
+      "folder": "skin7",
+      "json": "skin7.json",
+      "atlas": "skin7.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0174.png"
+      ],
+      "attachment_count": 57,
+      "animation_count": 29,
+      "deform_animation_count": 20,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2184017
+    },
+    {
+      "skin": "skin8",
+      "folder": "skin8",
+      "json": "skin8.json",
+      "atlas": "skin8.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0175.png"
+      ],
+      "attachment_count": 61,
+      "animation_count": 29,
+      "deform_animation_count": 21,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2206397
+    },
+    {
+      "skin": "skin9",
+      "folder": "skin9",
+      "json": "skin9.json",
+      "atlas": "skin9.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0176.png"
+      ],
+      "attachment_count": 62,
+      "animation_count": 29,
+      "deform_animation_count": 21,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2197049
+    },
+    {
+      "skin": "weapon_j/skin1",
+      "folder": "weapon_j__skin1",
+      "json": "weapon_j__skin1.json",
+      "atlas": "weapon_j__skin1.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_012.png"
+      ],
+      "attachment_count": 2,
+      "animation_count": 29,
+      "deform_animation_count": 0,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2048335
+    },
+    {
+      "skin": "weapon_j/skin11",
+      "folder": "weapon_j__skin11",
+      "json": "weapon_j__skin11.json",
+      "atlas": "weapon_j__skin11.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_013.png"
+      ],
+      "attachment_count": 5,
+      "animation_count": 29,
+      "deform_animation_count": 0,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2158646
+    },
+    {
+      "skin": "weapon_j/skin12",
+      "folder": "weapon_j__skin12",
+      "json": "weapon_j__skin12.json",
+      "atlas": "weapon_j__skin12.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_014.png"
+      ],
+      "attachment_count": 5,
+      "animation_count": 29,
+      "deform_animation_count": 0,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2152023
+    },
+    {
+      "skin": "weapon_j/skin13",
+      "folder": "weapon_j__skin13",
+      "json": "weapon_j__skin13.json",
+      "atlas": "weapon_j__skin13.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_015.png"
+      ],
+      "attachment_count": 5,
+      "animation_count": 29,
+      "deform_animation_count": 0,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2163667
+    },
+    {
+      "skin": "weapon_j/skin30",
+      "folder": "weapon_j__skin30",
+      "json": "weapon_j__skin30.json",
+      "atlas": "weapon_j__skin30.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_016.png"
+      ],
+      "attachment_count": 1,
+      "animation_count": 29,
+      "deform_animation_count": 0,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2048058
+    },
+    {
+      "skin": "weapon_j/skin31",
+      "folder": "weapon_j__skin31",
+      "json": "weapon_j__skin31.json",
+      "atlas": "weapon_j__skin31.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_017.png"
+      ],
+      "attachment_count": 1,
+      "animation_count": 29,
+      "deform_animation_count": 0,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2048057
+    },
+    {
+      "skin": "weapon_y/skin10",
+      "folder": "weapon_y__skin10",
+      "json": "weapon_y__skin10.json",
+      "atlas": "weapon_y__skin10.atlas",
+      "png": [
+        "hero_01.png",
+        "hero_0178.png"
+      ],
+      "attachment_count": 4,
+      "animation_count": 29,
+      "deform_animation_count": 0,
+      "atlas_page_count": 2,
+      "missing_atlas_regions": [],
+      "laya_ready": true,
+      "premultiplied_alpha": true,
+      "json_bytes": 2076718
+    }
+  ]
+}

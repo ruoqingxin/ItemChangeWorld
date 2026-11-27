@@ -80,6 +80,18 @@
                   "align": "center", "valign": "middle", "mouseEnabled": false
                 }
               ]
+            },
+            {
+              "_$id": "save_skin_test", "_$type": "GWidget", "name": "btn_skin_test",
+              "x": 150, "y": 322, "width": 220, "height": 24, "mouseEnabled": true,
+              "_$child": [
+                {
+                  "_$id": "save_skin_test_label", "_$type": "GTextField", "name": "txt_skin_test",
+                  "width": 220, "height": 24, "text": "Spine 皮肤组合测试 ▸",
+                  "font": "Microsoft YaHei", "fontSize": 14, "color": "#dfc58d",
+                  "align": "center", "valign": "middle", "mouseEnabled": false
+                }
+              ]
             }
           ]
         }
@@ -94,7 +106,7 @@
       {"_$ref": "save_background"}, {"_$ref": "save_adapter"}, {"_$ref": "save_panel"},
       {"_$ref": "save_title"}, {"_$ref": "save_detail"}, {"_$ref": "save_status"},
       {"_$ref": "save_error"}, {"_$ref": "save_confirm"}, {"_$ref": "save_confirm_label"},
-      {"_$ref": "save_reset"}
+      {"_$ref": "save_reset"}, {"_$ref": "save_skin_test"}
     ]
   }]
 }

@@ -1,0 +1,334 @@
+hero_0120.png
+size: 834,204
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+skin2/BY
+  rotate: false
+  xy: 680, 32
+  size: 61, 22
+  orig: 61, 22
+  offset: 0, 0
+  index: -1
+skin2/J_shouL
+  rotate: false
+  xy: 680, 2
+  size: 28, 28
+  orig: 28, 28
+  offset: 0, 0
+  index: -1
+skin2/J_shouR
+  rotate: false
+  xy: 758, 39
+  size: 34, 35
+  orig: 34, 35
+  offset: 0, 0
+  index: -1
+skin2/Y_shouL
+  rotate: false
+  xy: 150, 2
+  size: 49, 46
+  orig: 49, 46
+  offset: 0, 0
+  index: -1
+skin2/Y_shouL3
+  rotate: false
+  xy: 592, 3
+  size: 40, 48
+  orig: 40, 49
+  offset: 0, 1
+  index: -1
+skin2/Y_shouR
+  rotate: false
+  xy: 497, 60
+  size: 49, 48
+  orig: 49, 48
+  offset: 0, 0
+  index: -1
+skin2/Y_shouR2
+  rotate: false
+  xy: 690, 76
+  size: 44, 44
+  orig: 48, 46
+  offset: 2, 1
+  index: -1
+skin2/Y_shouR3
+  rotate: false
+  xy: 634, 13
+  size: 44, 44
+  orig: 47, 46
+  offset: 2, 1
+  index: -1
+skin2/datuiL
+  rotate: false
+  xy: 736, 76
+  size: 40, 50
+  orig: 40, 50
+  offset: 0, 0
+  index: -1
+skin2/datuiR
+  rotate: false
+  xy: 546, 2
+  size: 44, 49
+  orig: 44, 49
+  offset: 0, 0
+  index: -1
+skin2/erduo
+  rotate: false
+  xy: 744, 2
+  size: 29, 35
+  orig: 29, 35
+  offset: 0, 0
+  index: -1
+skin2/faku
+  rotate: false
+  xy: 283, 12
+  size: 47, 29
+  orig: 47, 29
+  offset: 0, 0
+  index: -1
+skin2/meimaoL
+  rotate: true
+  xy: 818, 148
+  size: 22, 12
+  orig: 22, 12
+  offset: 0, 0
+  index: -1
+skin2/meimaoR
+  rotate: true
+  xy: 818, 172
+  size: 30, 13
+  orig: 30, 13
+  offset: 0, 0
+  index: -1
+skin2/pigu
+  rotate: false
+  xy: 624, 86
+  size: 64, 34
+  orig: 64, 34
+  offset: 0, 0
+  index: -1
+skin2/shenti
+  rotate: false
+  xy: 644, 122
+  size: 83, 80
+  orig: 83, 80
+  offset: 0, 0
+  index: -1
+skin2/tou
+  rotate: true
+  xy: 332, 112
+  size: 90, 111
+  orig: 90, 111
+  offset: 0, 0
+  index: -1
+skin2/touding
+  rotate: false
+  xy: 540, 124
+  size: 102, 78
+  orig: 102, 78
+  offset: 0, 0
+  index: -1
+skin2/toufa
+  rotate: false
+  xy: 2, 56
+  size: 189, 146
+  orig: 189, 146
+  offset: 0, 0
+  index: -1
+skin2/toufaL
+  rotate: true
+  xy: 471, 14
+  size: 44, 73
+  orig: 44, 73
+  offset: 0, 0
+  index: -1
+skin2/toufaL2
+  rotate: true
+  xy: 624, 59
+  size: 25, 63
+  orig: 25, 63
+  offset: 0, 0
+  index: -1
+skin2/toufaR
+  rotate: true
+  xy: 445, 110
+  size: 92, 93
+  orig: 92, 93
+  offset: 0, 0
+  index: -1
+skin2/toufaR2
+  rotate: false
+  xy: 193, 93
+  size: 137, 109
+  orig: 137, 109
+  offset: 0, 0
+  index: -1
+skin2/xiaobiL
+  rotate: false
+  xy: 201, 2
+  size: 39, 46
+  orig: 39, 46
+  offset: 0, 0
+  index: -1
+skin2/xiaobiR
+  rotate: false
+  xy: 778, 78
+  size: 41, 48
+  orig: 41, 48
+  offset: 0, 0
+  index: -1
+skin2/xiaotuiL
+  rotate: true
+  xy: 416, 60
+  size: 48, 79
+  orig: 48, 79
+  offset: 0, 0
+  index: -1
+skin2/xiaotuiR
+  rotate: true
+  xy: 332, 56
+  size: 54, 82
+  orig: 54, 82
+  offset: 0, 0
+  index: -1
+skin2/y_shouL2
+  rotate: false
+  xy: 242, 2
+  size: 39, 46
+  orig: 39, 46
+  offset: 0, 0
+  index: -1
+skin2/yankuangL
+  rotate: false
+  xy: 794, 56
+  size: 22, 20
+  orig: 22, 20
+  offset: 0, 0
+  index: -1
+skin2/yankuangR
+  rotate: false
+  xy: 710, 10
+  size: 32, 20
+  orig: 32, 20
+  offset: 0, 0
+  index: -1
+skin2/yanqiuL
+  rotate: true
+  xy: 53, 2
+  size: 11, 13
+  orig: 11, 13
+  offset: 0, 0
+  index: -1
+skin2/yanqiuR
+  rotate: true
+  xy: 743, 40
+  size: 14, 13
+  orig: 14, 13
+  offset: 0, 0
+  index: -1
+skin2/yaodai1
+  rotate: false
+  xy: 332, 12
+  size: 67, 18
+  orig: 67, 18
+  offset: 0, 0
+  index: -1
+skin2/yaodai2
+  rotate: true
+  xy: 471, 2
+  size: 10, 59
+  orig: 10, 59
+  offset: 0, 0
+  index: -1
+skin2/yaodai3
+  rotate: true
+  xy: 689, 56
+  size: 18, 67
+  orig: 18, 67
+  offset: 0, 0
+  index: -1
+skin2/yaodai4
+  rotate: false
+  xy: 332, 32
+  size: 69, 22
+  orig: 69, 22
+  offset: 0, 0
+  index: -1
+skin2/yibai
+  rotate: true
+  xy: 53, 15
+  size: 39, 95
+  orig: 39, 95
+  offset: 0, 0
+  index: -1
+skin2/yibaiL
+  rotate: true
+  xy: 193, 50
+  size: 41, 90
+  orig: 41, 90
+  offset: 0, 0
+  index: -1
+skin2/yibaiR
+  rotate: true
+  xy: 729, 128
+  size: 74, 87
+  orig: 74, 87
+  offset: 0, 0
+  index: -1
+skin2/yixiuL
+  rotate: true
+  xy: 416, 2
+  size: 56, 53
+  orig: 56, 53
+  offset: 0, 0
+  index: -1
+skin2/yixiuL2
+  rotate: false
+  xy: 285, 43
+  size: 45, 48
+  orig: 45, 48
+  offset: 0, 0
+  index: -1
+skin2/yixiuR
+  rotate: false
+  xy: 548, 84
+  size: 74, 38
+  orig: 74, 38
+  offset: 0, 0
+  index: -1
+skin2/yixiuR2
+  rotate: false
+  xy: 2, 2
+  size: 49, 52
+  orig: 49, 52
+  offset: 0, 0
+  index: -1
+skin2/yixiuRhou
+  rotate: false
+  xy: 548, 53
+  size: 71, 29
+  orig: 71, 29
+  offset: 0, 0
+  index: -1
+skin2/zui
+  rotate: true
+  xy: 818, 128
+  size: 18, 14
+  orig: 18, 14
+  offset: 0, 0
+  index: -1
+
+hero_01.png
+size: 264,163
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+yz
+  rotate: false
+  xy: 2, 2
+  size: 209, 102
+  orig: 219, 114
+  offset: 5, 6
+  index: -1
+

@@ -1,0 +1,369 @@
+hero_0114.png
+size: 583,267
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+skin13/BY
+  rotate: false
+  xy: 520, 188
+  size: 60, 20
+  orig: 60, 20
+  offset: 0, 0
+  index: -1
+skin13/Y_geboR
+  rotate: false
+  xy: 328, 85
+  size: 46, 53
+  orig: 46, 53
+  offset: 0, 0
+  index: -1
+skin13/Y_shouL2
+  rotate: false
+  xy: 398, 2
+  size: 33, 40
+  orig: 33, 40
+  offset: 0, 0
+  index: -1
+skin13/Y_shouL3
+  rotate: false
+  xy: 515, 77
+  size: 32, 41
+  orig: 32, 41
+  offset: 0, 0
+  index: -1
+skin13/Y_shouR
+  rotate: true
+  xy: 377, 44
+  size: 43, 48
+  orig: 44, 48
+  offset: 1, 0
+  index: -1
+skin13/Y_shouR2
+  rotate: false
+  xy: 255, 3
+  size: 44, 49
+  orig: 44, 49
+  offset: 0, 0
+  index: -1
+skin13/Y_shouR3
+  rotate: true
+  xy: 427, 114
+  size: 30, 53
+  orig: 30, 53
+  offset: 0, 0
+  index: -1
+skin13/Y_xiaobiL
+  rotate: false
+  xy: 427, 64
+  size: 42, 48
+  orig: 42, 48
+  offset: 0, 0
+  index: -1
+skin13/Y_xiaobiR
+  rotate: false
+  xy: 549, 66
+  size: 32, 39
+  orig: 32, 39
+  offset: 0, 0
+  index: -1
+skin13/Y_yixiuL
+  rotate: false
+  xy: 376, 89
+  size: 47, 51
+  orig: 47, 51
+  offset: 0, 0
+  index: -1
+skin13/Y_yixiuLhou
+  rotate: false
+  xy: 301, 4
+  size: 45, 48
+  orig: 45, 48
+  offset: 0, 0
+  index: -1
+skin13/Y_yixiuRhou
+  rotate: false
+  xy: 172, 55
+  size: 60, 34
+  orig: 60, 34
+  offset: 0, 0
+  index: -1
+skin13/datuiL
+  rotate: false
+  xy: 433, 14
+  size: 39, 48
+  orig: 39, 48
+  offset: 0, 0
+  index: -1
+skin13/datuiR
+  rotate: true
+  xy: 539, 149
+  size: 37, 41
+  orig: 37, 41
+  offset: 0, 0
+  index: -1
+skin13/erduo
+  rotate: false
+  xy: 519, 44
+  size: 25, 31
+  orig: 25, 31
+  offset: 0, 0
+  index: -1
+skin13/fashi
+  rotate: false
+  xy: 172, 91
+  size: 80, 67
+  orig: 80, 67
+  offset: 0, 0
+  index: -1
+skin13/geboL
+  rotate: false
+  xy: 218, 2
+  size: 35, 50
+  orig: 35, 50
+  offset: 0, 0
+  index: -1
+skin13/jiaoL
+  rotate: false
+  xy: 497, 120
+  size: 35, 24
+  orig: 35, 24
+  offset: 0, 0
+  index: -1
+skin13/jiaoR
+  rotate: false
+  xy: 290, 54
+  size: 26, 34
+  orig: 26, 34
+  offset: 0, 0
+  index: -1
+skin13/meimaoL
+  rotate: false
+  xy: 547, 10
+  size: 21, 11
+  orig: 21, 11
+  offset: 0, 0
+  index: -1
+skin13/meimaoR
+  rotate: true
+  xy: 482, 114
+  size: 30, 13
+  orig: 30, 13
+  offset: 0, 0
+  index: -1
+skin13/pigu
+  rotate: false
+  xy: 427, 146
+  size: 62, 36
+  orig: 62, 36
+  offset: 0, 0
+  index: -1
+skin13/qunbaiL
+  rotate: true
+  xy: 234, 54
+  size: 34, 54
+  orig: 34, 54
+  offset: 0, 0
+  index: -1
+skin13/qunbaiR
+  rotate: false
+  xy: 358, 198
+  size: 68, 67
+  orig: 69, 67
+  offset: 1, 0
+  index: -1
+skin13/shenti
+  rotate: false
+  xy: 2, 8
+  size: 102, 73
+  orig: 102, 73
+  offset: 0, 0
+  index: -1
+skin13/shouL
+  rotate: false
+  xy: 519, 15
+  size: 26, 27
+  orig: 26, 27
+  offset: 0, 0
+  index: -1
+skin13/shouR
+  rotate: false
+  xy: 549, 107
+  size: 32, 40
+  orig: 32, 40
+  offset: 0, 0
+  index: -1
+skin13/tou
+  rotate: false
+  xy: 172, 160
+  size: 82, 105
+  orig: 82, 105
+  offset: 0, 0
+  index: -1
+skin13/touding
+  rotate: false
+  xy: 256, 192
+  size: 100, 73
+  orig: 100, 73
+  offset: 0, 0
+  index: -1
+skin13/toufa2
+  rotate: false
+  xy: 547, 23
+  size: 19, 21
+  orig: 19, 21
+  offset: 0, 0
+  index: -1
+skin13/toufaL
+  rotate: true
+  xy: 106, 2
+  size: 10, 29
+  orig: 10, 29
+  offset: 0, 0
+  index: -1
+skin13/toufaR
+  rotate: false
+  xy: 501, 195
+  size: 17, 32
+  orig: 17, 32
+  offset: 0, 0
+  index: -1
+skin13/toufahou
+  rotate: false
+  xy: 2, 83
+  size: 168, 182
+  orig: 168, 182
+  offset: 0, 0
+  index: -1
+skin13/toufahou2
+  rotate: true
+  xy: 471, 66
+  size: 46, 42
+  orig: 46, 42
+  offset: 0, 0
+  index: -1
+skin13/xiaobiL
+  rotate: true
+  xy: 348, 2
+  size: 40, 48
+  orig: 40, 48
+  offset: 0, 0
+  index: -1
+skin13/xiaotuiL
+  rotate: true
+  xy: 428, 184
+  size: 43, 71
+  orig: 43, 71
+  offset: 0, 0
+  index: -1
+skin13/xiaotuiR
+  rotate: true
+  xy: 254, 90
+  size: 52, 72
+  orig: 52, 72
+  offset: 0, 0
+  index: -1
+skin13/yankuangL
+  rotate: false
+  xy: 494, 3
+  size: 17, 14
+  orig: 17, 14
+  offset: 0, 0
+  index: -1
+skin13/yankuangR
+  rotate: false
+  xy: 546, 46
+  size: 27, 18
+  orig: 27, 18
+  offset: 0, 0
+  index: -1
+skin13/yanqiuL
+  rotate: false
+  xy: 137, 2
+  size: 10, 10
+  orig: 10, 10
+  offset: 0, 0
+  index: -1
+skin13/yanqiuR
+  rotate: false
+  xy: 568, 31
+  size: 13, 13
+  orig: 13, 13
+  offset: 0, 0
+  index: -1
+skin13/yaodai
+  rotate: false
+  xy: 256, 144
+  size: 75, 46
+  orig: 75, 46
+  offset: 0, 0
+  index: -1
+skin13/yibai
+  rotate: true
+  xy: 428, 229
+  size: 36, 90
+  orig: 36, 90
+  offset: 0, 0
+  index: -1
+skin13/yibaiL
+  rotate: true
+  xy: 318, 54
+  size: 29, 57
+  orig: 29, 57
+  offset: 0, 0
+  index: -1
+skin13/yibaiR
+  rotate: false
+  xy: 520, 210
+  size: 59, 55
+  orig: 59, 55
+  offset: 0, 0
+  index: -1
+skin13/yifuhou
+  rotate: true
+  xy: 491, 146
+  size: 36, 46
+  orig: 36, 46
+  offset: 0, 0
+  index: -1
+skin13/yixiuL
+  rotate: false
+  xy: 374, 142
+  size: 51, 54
+  orig: 51, 54
+  offset: 0, 0
+  index: -1
+skin13/yixiuR
+  rotate: true
+  xy: 106, 14
+  size: 67, 58
+  orig: 67, 58
+  offset: 0, 0
+  index: -1
+skin13/yixiuhou
+  rotate: true
+  xy: 474, 19
+  size: 45, 43
+  orig: 45, 43
+  offset: 0, 0
+  index: -1
+skin13/zui
+  rotate: false
+  xy: 474, 3
+  size: 18, 14
+  orig: 18, 14
+  offset: 0, 0
+  index: -1
+
+hero_01.png
+size: 264,163
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+yz
+  rotate: false
+  xy: 2, 2
+  size: 209, 102
+  orig: 219, 114
+  offset: 5, 6
+  index: -1
+

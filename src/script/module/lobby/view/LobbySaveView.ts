@@ -5,6 +5,7 @@ import { UIManager } from "../../../games/ui/UIManager";
 import { GameplayManager } from "../../gameplay/manager/GameplayManager";
 import { openLobbyScreen, openSkillBattleScreen } from "../../gameplay/utils/GameplayNavigation";
 import { SkillBattleConfirmView } from "../../gameplay/view/SkillBattleConfirmView";
+import { TestSkinPanelView } from "../../testPanel/view/TestSkinPanelView";
 
 export class LobbySaveView extends UIBaseView {
     get layer(): UILayer { return UILayer.Second; }
@@ -30,6 +31,9 @@ export class LobbySaveView extends UIBaseView {
         UIViewportLayout.coverBackground(this.getElement("img_save_background"), this.view);
         this.addClickListener(this.confirmButton, this.onClickConfirm);
         this.addClickListener(this.resetButton, this.onClickReset);
+        this.addClickListener(this.getElement("btn_skin_test"), () => {
+            UIManager.ins().openForm(TestSkinPanelView);
+        });
     }
 
     onOpen(): void {
