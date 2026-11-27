@@ -227,14 +227,25 @@ export class TestSkinPanelView extends UIBaseView {
         const animation = this.animationOptions[this.animationIndex] || "idle_y";
         this.preview.skinName = body.name;
 
-        const externalSkins: Laya.ExternalSkin[] = [this.createExternalSkin(head.name)];
-        if (weapon.name) {
-            externalSkins.push(this.createExternalSkin(weapon.name));
+        const skeleton = this.preview.getSkeleton();
+        const combinedSkin = new spine.Skin(body.name);
+        const bodySkin = this.skeletonData.findSkin(body.name);
+        const headSkin = this.skeletonData.findSkin(head.name);
+        const weaponSkin = weapon.name ? this.skeletonData.findSkin(weapon.name) : null;
+        combinedSkin.addSkin(bodySkin);
+        combinedSkin.addSkin(headSkin);
+        if (weaponSkin) combinedSkin.addSkin(weaponSkin);
+        skeleton.setSkin(combinedSkin);
+        skeleton.setSlotsToSetupPose();
+
+        // 额外武器插槽没有默认附件名，组合后需要显式挂接。
+        if (weaponSkin) {
+            for (const entry of weaponSkin.getAttachments()) {
+                skeleton.slots[entry.slotIndex].setAttachment(entry.attachment);
+            }
         }
-        this.preview.externalSkins = externalSkins;
-        this.preview.skinName = body.name;
+
         this.preview.play(animation, true, true, 0, 0, true);
-        externalSkins.forEach((skin) => skin.flush());
         this.playing = true;
         this.playText.text = "暂停";
         this.updateLists(body, head, weapon);
@@ -266,20 +277,6 @@ export class TestSkinPanelView extends UIBaseView {
         this.headList.scrollToSelected(false);
         this.weaponList.scrollToSelected(false);
         this.comboText.text = `${body.label} / ${head.label} / ${weapon.label}`;
-    }
-
-    private createExternalSkin(skinName: string): Laya.ExternalSkin {
-        const source = this.skeletonData.findSkin(skinName);
-        const external = new Laya.ExternalSkin();
-        external.templet = this.templet;
-        external.items = source.getAttachments().map((entry) => {
-            const item = new Laya.ExternalSkinItem();
-            item.skin = skinName;
-            item.slot = this.skeletonData.slots[entry.slotIndex].name;
-            item.attachment = entry.name;
-            return item;
-        });
-        return external;
     }
 
     private currentCombination(): number {
