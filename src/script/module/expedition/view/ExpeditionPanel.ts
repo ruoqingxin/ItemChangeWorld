@@ -339,7 +339,6 @@ export class ExpeditionPanel extends InventoryPanel {
     protected renderBattle(): void {
         super.renderBattle();
         this.buttons.loot.visible = false;
-        this.labels.brand.text = "末法寻仙 · 秘境斗法";
     }
     protected renderReset(): void {
         this.requestConfirmation("重建当前探索档？", "仅重建阶段 4 当前档，不删除其他应用数据。",

@@ -1,0 +1,317 @@
+[
+  {
+    "name": "skin1/1_geboL",
+    "page": "hero_018.png",
+    "rotate": true,
+    "xy": [
+      288,
+      2
+    ],
+    "size": [
+      44,
+      50
+    ],
+    "orig": [
+      44,
+      50
+    ],
+    "offset": [
+      0,
+      0
+    ]
+  },
+  {
+    "name": "skin1/1_geboR",
+    "page": "hero_018.png",
+    "rotate": false,
+    "xy": [
+      895,
+      7
+    ],
+    "size": [
+      43,
+      50
+    ],
+    "orig": [
+      43,
+      50
+    ],
+    "offset": [
+      0,
+      0
+    ]
+  },
+  {
+    "name": "skin1/1_shouL",
+    "page": "hero_018.png",
+    "rotate": true,
+    "xy": [
+      722,
+      4
+    ],
+    "size": [
+      25,
+      29
+    ],
+    "orig": [
+      25,
+      29
+    ],
+    "offset": [
+      0,
+      0
+    ]
+  },
+  {
+    "name": "skin1/1_shouR",
+    "page": "hero_018.png",
+    "rotate": true,
+    "xy": [
+      373,
+      2
+    ],
+    "size": [
+      34,
+      40
+    ],
+    "orig": [
+      34,
+      41
+    ],
+    "offset": [
+      0,
+      0
+    ]
+  },
+  {
+    "name": "skin1/1_xiaobiL",
+    "page": "hero_018.png",
+    "rotate": false,
+    "xy": [
+      482,
+      2
+    ],
+    "size": [
+      39,
+      53
+    ],
+    "orig": [
+      39,
+      53
+    ],
+    "offset": [
+      0,
+      0
+    ]
+  },
+  {
+    "name": "skin1/1_xiaobiR",
+    "page": "hero_018.png",
+    "rotate": false,
+    "xy": [
+      654,
+      26
+    ],
+    "size": [
+      31,
+      39
+    ],
+    "orig": [
+      31,
+      39
+    ],
+    "offset": [
+      0,
+      0
+    ]
+  },
+  {
+    "name": "skin1/Y_shouL2",
+    "page": "hero_018.png",
+    "rotate": true,
+    "xy": [
+      812,
+      3
+    ],
+    "size": [
+      45,
+      40
+    ],
+    "orig": [
+      45,
+      40
+    ],
+    "offset": [
+      0,
+      0
+    ]
+  },
+  {
+    "name": "skin1/y_geboL",
+    "page": "hero_018.png",
+    "rotate": false,
+    "xy": [
+      859,
+      59
+    ],
+    "size": [
+      68,
+      45
+    ],
+    "orig": [
+      68,
+      45
+    ],
+    "offset": [
+      0,
+      0
+    ]
+  },
+  {
+    "name": "skin1/y_geboR",
+    "page": "hero_018.png",
+    "rotate": true,
+    "xy": [
+      523,
+      3
+    ],
+    "size": [
+      52,
+      46
+    ],
+    "orig": [
+      53,
+      46
+    ],
+    "offset": [
+      0,
+      0
+    ]
+  },
+  {
+    "name": "skin1/y_shouL",
+    "page": "hero_018.png",
+    "rotate": false,
+    "xy": [
+      611,
+      24
+    ],
+    "size": [
+      41,
+      41
+    ],
+    "orig": [
+      41,
+      41
+    ],
+    "offset": [
+      0,
+      0
+    ]
+  },
+  {
+    "name": "skin1/y_shouR",
+    "page": "hero_018.png",
+    "rotate": true,
+    "xy": [
+      854,
+      2
+    ],
+    "size": [
+      55,
+      39
+    ],
+    "orig": [
+      55,
+      39
+    ],
+    "offset": [
+      0,
+      0
+    ]
+  },
+  {
+    "name": "skin1/y_shouR2",
+    "page": "hero_018.png",
+    "rotate": false,
+    "xy": [
+      940,
+      8
+    ],
+    "size": [
+      39,
+      49
+    ],
+    "orig": [
+      41,
+      51
+    ],
+    "offset": [
+      0,
+      0
+    ]
+  },
+  {
+    "name": "skin1/y_shouR3",
+    "page": "hero_018.png",
+    "rotate": false,
+    "xy": [
+      571,
+      6
+    ],
+    "size": [
+      38,
+      49
+    ],
+    "orig": [
+      41,
+      50
+    ],
+    "offset": [
+      0,
+      1
+    ]
+  },
+  {
+    "name": "skin1/y_xiaobiL",
+    "page": "hero_018.png",
+    "rotate": true,
+    "xy": [
+      340,
+      2
+    ],
+    "size": [
+      44,
+      31
+    ],
+    "orig": [
+      45,
+      32
+    ],
+    "offset": [
+      1,
+      1
+    ]
+  },
+  {
+    "name": "skin1/y_xiaobiR",
+    "page": "hero_018.png",
+    "rotate": false,
+    "xy": [
+      415,
+      2
+    ],
+    "size": [
+      40,
+      34
+    ],
+    "orig": [
+      40,
+      34
+    ],
+    "offset": [
+      0,
+      0
+    ]
+  }
+]

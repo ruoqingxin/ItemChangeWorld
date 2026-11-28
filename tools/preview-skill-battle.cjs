@@ -14,7 +14,7 @@ const html = `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 <title>末法寻仙 · 战斗</title><style>html,body{margin:0;width:100%;height:100%;background:#111613;overflow:hidden;font-family:Arial,"Microsoft YaHei",sans-serif}</style>
 </head><body><script src="/libs/laya.core.js"></script><script src="/libs/laya.webgl_2D.js"></script>
-<script src="/libs/laya.ui2.js"></script><script src="/jslib/asgard.js"></script><script src="/preview.js"></script></body></html>`;
+<script src="/libs/laya.ui2.js"></script><script src="/libs/spine-core-3.8.js"></script><script src="/libs/laya.spine.js"></script><script src="/jslib/asgard.js"></script><script src="/preview.js"></script></body></html>`;
 const types = { ".js": "application/javascript", ".bin": "application/octet-stream", ".png": "image/png" };
 http.createServer(async (req, res) => {
     try {

@@ -1,0 +1,1013 @@
+{
+  "meta": {
+    "bodies": [
+      "body/skin1",
+      "body/skin2",
+      "body/skin3",
+      "body/skin4",
+      "body/skin5",
+      "body/skin6",
+      "body/skin7",
+      "body/skin8",
+      "body/skin9",
+      "body/skin10",
+      "body/skin11",
+      "body/skin12",
+      "body/skin13",
+      "body/skin15",
+      "body/skin16",
+      "body/skin17",
+      "body/skin18",
+      "body/skin19",
+      "body/skin20",
+      "body/skin24",
+      "body/skin25",
+      "body/skin27",
+      "body/skin28",
+      "body/skin29",
+      "body/skin30",
+      "body/skin31",
+      "body/skin32",
+      "body/skin33",
+      "body/skin34",
+      "body/skin35",
+      "body/skin36",
+      "body/skin37",
+      "body/skin39",
+      "body/skin40",
+      "body/skin41",
+      "body/skin42",
+      "body/skin43",
+      "body/skin44",
+      "body/skin45",
+      "body/skin46",
+      "body/skin47",
+      "body/skin48",
+      "body/skin49",
+      "body/skin50",
+      "body/skin51",
+      "body/skin52",
+      "body/skin53",
+      "body/skin54",
+      "body/skin55",
+      "body/skin56",
+      "body/skin57",
+      "body/skin58",
+      "body/skin59",
+      "body/skin60",
+      "body/skin61",
+      "body/skin62",
+      "body/skin63",
+      "body/skin64",
+      "body/skin65",
+      "body/skin1001",
+      "body/skin2000"
+    ],
+    "heads": [
+      "head/skin1",
+      "head/skin2",
+      "head/skin3",
+      "head/skin3_1",
+      "head/skin4",
+      "head/skin5",
+      "head/skin6",
+      "head/skin7",
+      "head/skin8",
+      "head/skin9",
+      "head/skin9_1",
+      "head/skin10",
+      "head/skin10_1",
+      "head/skin11",
+      "head/skin12",
+      "head/skin13",
+      "head/skin15",
+      "head/skin16",
+      "head/skin17",
+      "head/skin18",
+      "head/skin19",
+      "head/skin20",
+      "head/skin20_1",
+      "head/skin24",
+      "head/skin24_1",
+      "head/skin25",
+      "head/skin25_1",
+      "head/skin27",
+      "head/skin27_1",
+      "head/skin28",
+      "head/skin29",
+      "head/skin29_1",
+      "head/skin30",
+      "head/skin30_1",
+      "head/skin31",
+      "head/skin31_1",
+      "head/skin32",
+      "head/skin33",
+      "head/skin34",
+      "head/skin35",
+      "head/skin36",
+      "head/skin37",
+      "head/skin39",
+      "head/skin40",
+      "head/skin41",
+      "head/skin42",
+      "head/skin43",
+      "head/skin44",
+      "head/skin45",
+      "head/skin45_1",
+      "head/skin46",
+      "head/skin47",
+      "head/skin48",
+      "head/skin49",
+      "head/skin50",
+      "head/skin51",
+      "head/skin52",
+      "head/skin53",
+      "head/skin54",
+      "head/skin55",
+      "head/skin56",
+      "head/skin57",
+      "head/skin58",
+      "head/skin59",
+      "head/skin60",
+      "head/skin60_1",
+      "head/skin61",
+      "head/skin62",
+      "head/skin63",
+      "head/skin64",
+      "head/skin65",
+      "head/skin1001",
+      "head/skin2000"
+    ],
+    "weapons": [
+      "",
+      "weapon_j/skin1",
+      "weapon_j/skin11",
+      "weapon_j/skin12",
+      "weapon_j/skin13",
+      "weapon_j/skin30",
+      "weapon_j/skin31",
+      "weapon_y/skin10"
+    ],
+    "clip": {
+      "x": 284,
+      "y": 138,
+      "width": 596,
+      "height": 418
+    }
+  },
+  "manifest": [
+    {
+      "kind": "body",
+      "index": 0,
+      "name": "body/skin1",
+      "file": "body-001.png"
+    },
+    {
+      "kind": "body",
+      "index": 1,
+      "name": "body/skin2",
+      "file": "body-002.png"
+    },
+    {
+      "kind": "body",
+      "index": 2,
+      "name": "body/skin3",
+      "file": "body-003.png"
+    },
+    {
+      "kind": "body",
+      "index": 3,
+      "name": "body/skin4",
+      "file": "body-004.png"
+    },
+    {
+      "kind": "body",
+      "index": 4,
+      "name": "body/skin5",
+      "file": "body-005.png"
+    },
+    {
+      "kind": "body",
+      "index": 5,
+      "name": "body/skin6",
+      "file": "body-006.png"
+    },
+    {
+      "kind": "body",
+      "index": 6,
+      "name": "body/skin7",
+      "file": "body-007.png"
+    },
+    {
+      "kind": "body",
+      "index": 7,
+      "name": "body/skin8",
+      "file": "body-008.png"
+    },
+    {
+      "kind": "body",
+      "index": 8,
+      "name": "body/skin9",
+      "file": "body-009.png"
+    },
+    {
+      "kind": "body",
+      "index": 9,
+      "name": "body/skin10",
+      "file": "body-010.png"
+    },
+    {
+      "kind": "body",
+      "index": 10,
+      "name": "body/skin11",
+      "file": "body-011.png"
+    },
+    {
+      "kind": "body",
+      "index": 11,
+      "name": "body/skin12",
+      "file": "body-012.png"
+    },
+    {
+      "kind": "body",
+      "index": 12,
+      "name": "body/skin13",
+      "file": "body-013.png"
+    },
+    {
+      "kind": "body",
+      "index": 13,
+      "name": "body/skin15",
+      "file": "body-014.png"
+    },
+    {
+      "kind": "body",
+      "index": 14,
+      "name": "body/skin16",
+      "file": "body-015.png"
+    },
+    {
+      "kind": "body",
+      "index": 15,
+      "name": "body/skin17",
+      "file": "body-016.png"
+    },
+    {
+      "kind": "body",
+      "index": 16,
+      "name": "body/skin18",
+      "file": "body-017.png"
+    },
+    {
+      "kind": "body",
+      "index": 17,
+      "name": "body/skin19",
+      "file": "body-018.png"
+    },
+    {
+      "kind": "body",
+      "index": 18,
+      "name": "body/skin20",
+      "file": "body-019.png"
+    },
+    {
+      "kind": "body",
+      "index": 19,
+      "name": "body/skin24",
+      "file": "body-020.png"
+    },
+    {
+      "kind": "body",
+      "index": 20,
+      "name": "body/skin25",
+      "file": "body-021.png"
+    },
+    {
+      "kind": "body",
+      "index": 21,
+      "name": "body/skin27",
+      "file": "body-022.png"
+    },
+    {
+      "kind": "body",
+      "index": 22,
+      "name": "body/skin28",
+      "file": "body-023.png"
+    },
+    {
+      "kind": "body",
+      "index": 23,
+      "name": "body/skin29",
+      "file": "body-024.png"
+    },
+    {
+      "kind": "body",
+      "index": 24,
+      "name": "body/skin30",
+      "file": "body-025.png"
+    },
+    {
+      "kind": "body",
+      "index": 25,
+      "name": "body/skin31",
+      "file": "body-026.png"
+    },
+    {
+      "kind": "body",
+      "index": 26,
+      "name": "body/skin32",
+      "file": "body-027.png"
+    },
+    {
+      "kind": "body",
+      "index": 27,
+      "name": "body/skin33",
+      "file": "body-028.png"
+    },
+    {
+      "kind": "body",
+      "index": 28,
+      "name": "body/skin34",
+      "file": "body-029.png"
+    },
+    {
+      "kind": "body",
+      "index": 29,
+      "name": "body/skin35",
+      "file": "body-030.png"
+    },
+    {
+      "kind": "body",
+      "index": 30,
+      "name": "body/skin36",
+      "file": "body-031.png"
+    },
+    {
+      "kind": "body",
+      "index": 31,
+      "name": "body/skin37",
+      "file": "body-032.png"
+    },
+    {
+      "kind": "body",
+      "index": 32,
+      "name": "body/skin39",
+      "file": "body-033.png"
+    },
+    {
+      "kind": "body",
+      "index": 33,
+      "name": "body/skin40",
+      "file": "body-034.png"
+    },
+    {
+      "kind": "body",
+      "index": 34,
+      "name": "body/skin41",
+      "file": "body-035.png"
+    },
+    {
+      "kind": "body",
+      "index": 35,
+      "name": "body/skin42",
+      "file": "body-036.png"
+    },
+    {
+      "kind": "body",
+      "index": 36,
+      "name": "body/skin43",
+      "file": "body-037.png"
+    },
+    {
+      "kind": "body",
+      "index": 37,
+      "name": "body/skin44",
+      "file": "body-038.png"
+    },
+    {
+      "kind": "body",
+      "index": 38,
+      "name": "body/skin45",
+      "file": "body-039.png"
+    },
+    {
+      "kind": "body",
+      "index": 39,
+      "name": "body/skin46",
+      "file": "body-040.png"
+    },
+    {
+      "kind": "body",
+      "index": 40,
+      "name": "body/skin47",
+      "file": "body-041.png"
+    },
+    {
+      "kind": "body",
+      "index": 41,
+      "name": "body/skin48",
+      "file": "body-042.png"
+    },
+    {
+      "kind": "body",
+      "index": 42,
+      "name": "body/skin49",
+      "file": "body-043.png"
+    },
+    {
+      "kind": "body",
+      "index": 43,
+      "name": "body/skin50",
+      "file": "body-044.png"
+    },
+    {
+      "kind": "body",
+      "index": 44,
+      "name": "body/skin51",
+      "file": "body-045.png"
+    },
+    {
+      "kind": "body",
+      "index": 45,
+      "name": "body/skin52",
+      "file": "body-046.png"
+    },
+    {
+      "kind": "body",
+      "index": 46,
+      "name": "body/skin53",
+      "file": "body-047.png"
+    },
+    {
+      "kind": "body",
+      "index": 47,
+      "name": "body/skin54",
+      "file": "body-048.png"
+    },
+    {
+      "kind": "body",
+      "index": 48,
+      "name": "body/skin55",
+      "file": "body-049.png"
+    },
+    {
+      "kind": "body",
+      "index": 49,
+      "name": "body/skin56",
+      "file": "body-050.png"
+    },
+    {
+      "kind": "body",
+      "index": 50,
+      "name": "body/skin57",
+      "file": "body-051.png"
+    },
+    {
+      "kind": "body",
+      "index": 51,
+      "name": "body/skin58",
+      "file": "body-052.png"
+    },
+    {
+      "kind": "body",
+      "index": 52,
+      "name": "body/skin59",
+      "file": "body-053.png"
+    },
+    {
+      "kind": "body",
+      "index": 53,
+      "name": "body/skin60",
+      "file": "body-054.png"
+    },
+    {
+      "kind": "body",
+      "index": 54,
+      "name": "body/skin61",
+      "file": "body-055.png"
+    },
+    {
+      "kind": "body",
+      "index": 55,
+      "name": "body/skin62",
+      "file": "body-056.png"
+    },
+    {
+      "kind": "body",
+      "index": 56,
+      "name": "body/skin63",
+      "file": "body-057.png"
+    },
+    {
+      "kind": "body",
+      "index": 57,
+      "name": "body/skin64",
+      "file": "body-058.png"
+    },
+    {
+      "kind": "body",
+      "index": 58,
+      "name": "body/skin65",
+      "file": "body-059.png"
+    },
+    {
+      "kind": "body",
+      "index": 59,
+      "name": "body/skin1001",
+      "file": "body-060.png"
+    },
+    {
+      "kind": "body",
+      "index": 60,
+      "name": "body/skin2000",
+      "file": "body-061.png"
+    },
+    {
+      "kind": "head",
+      "index": 0,
+      "name": "head/skin1",
+      "file": "head-001.png"
+    },
+    {
+      "kind": "head",
+      "index": 1,
+      "name": "head/skin2",
+      "file": "head-002.png"
+    },
+    {
+      "kind": "head",
+      "index": 2,
+      "name": "head/skin3",
+      "file": "head-003.png"
+    },
+    {
+      "kind": "head",
+      "index": 3,
+      "name": "head/skin3_1",
+      "file": "head-004.png"
+    },
+    {
+      "kind": "head",
+      "index": 4,
+      "name": "head/skin4",
+      "file": "head-005.png"
+    },
+    {
+      "kind": "head",
+      "index": 5,
+      "name": "head/skin5",
+      "file": "head-006.png"
+    },
+    {
+      "kind": "head",
+      "index": 6,
+      "name": "head/skin6",
+      "file": "head-007.png"
+    },
+    {
+      "kind": "head",
+      "index": 7,
+      "name": "head/skin7",
+      "file": "head-008.png"
+    },
+    {
+      "kind": "head",
+      "index": 8,
+      "name": "head/skin8",
+      "file": "head-009.png"
+    },
+    {
+      "kind": "head",
+      "index": 9,
+      "name": "head/skin9",
+      "file": "head-010.png"
+    },
+    {
+      "kind": "head",
+      "index": 10,
+      "name": "head/skin9_1",
+      "file": "head-011.png"
+    },
+    {
+      "kind": "head",
+      "index": 11,
+      "name": "head/skin10",
+      "file": "head-012.png"
+    },
+    {
+      "kind": "head",
+      "index": 12,
+      "name": "head/skin10_1",
+      "file": "head-013.png"
+    },
+    {
+      "kind": "head",
+      "index": 13,
+      "name": "head/skin11",
+      "file": "head-014.png"
+    },
+    {
+      "kind": "head",
+      "index": 14,
+      "name": "head/skin12",
+      "file": "head-015.png"
+    },
+    {
+      "kind": "head",
+      "index": 15,
+      "name": "head/skin13",
+      "file": "head-016.png"
+    },
+    {
+      "kind": "head",
+      "index": 16,
+      "name": "head/skin15",
+      "file": "head-017.png"
+    },
+    {
+      "kind": "head",
+      "index": 17,
+      "name": "head/skin16",
+      "file": "head-018.png"
+    },
+    {
+      "kind": "head",
+      "index": 18,
+      "name": "head/skin17",
+      "file": "head-019.png"
+    },
+    {
+      "kind": "head",
+      "index": 19,
+      "name": "head/skin18",
+      "file": "head-020.png"
+    },
+    {
+      "kind": "head",
+      "index": 20,
+      "name": "head/skin19",
+      "file": "head-021.png"
+    },
+    {
+      "kind": "head",
+      "index": 21,
+      "name": "head/skin20",
+      "file": "head-022.png"
+    },
+    {
+      "kind": "head",
+      "index": 22,
+      "name": "head/skin20_1",
+      "file": "head-023.png"
+    },
+    {
+      "kind": "head",
+      "index": 23,
+      "name": "head/skin24",
+      "file": "head-024.png"
+    },
+    {
+      "kind": "head",
+      "index": 24,
+      "name": "head/skin24_1",
+      "file": "head-025.png"
+    },
+    {
+      "kind": "head",
+      "index": 25,
+      "name": "head/skin25",
+      "file": "head-026.png"
+    },
+    {
+      "kind": "head",
+      "index": 26,
+      "name": "head/skin25_1",
+      "file": "head-027.png"
+    },
+    {
+      "kind": "head",
+      "index": 27,
+      "name": "head/skin27",
+      "file": "head-028.png"
+    },
+    {
+      "kind": "head",
+      "index": 28,
+      "name": "head/skin27_1",
+      "file": "head-029.png"
+    },
+    {
+      "kind": "head",
+      "index": 29,
+      "name": "head/skin28",
+      "file": "head-030.png"
+    },
+    {
+      "kind": "head",
+      "index": 30,
+      "name": "head/skin29",
+      "file": "head-031.png"
+    },
+    {
+      "kind": "head",
+      "index": 31,
+      "name": "head/skin29_1",
+      "file": "head-032.png"
+    },
+    {
+      "kind": "head",
+      "index": 32,
+      "name": "head/skin30",
+      "file": "head-033.png"
+    },
+    {
+      "kind": "head",
+      "index": 33,
+      "name": "head/skin30_1",
+      "file": "head-034.png"
+    },
+    {
+      "kind": "head",
+      "index": 34,
+      "name": "head/skin31",
+      "file": "head-035.png"
+    },
+    {
+      "kind": "head",
+      "index": 35,
+      "name": "head/skin31_1",
+      "file": "head-036.png"
+    },
+    {
+      "kind": "head",
+      "index": 36,
+      "name": "head/skin32",
+      "file": "head-037.png"
+    },
+    {
+      "kind": "head",
+      "index": 37,
+      "name": "head/skin33",
+      "file": "head-038.png"
+    },
+    {
+      "kind": "head",
+      "index": 38,
+      "name": "head/skin34",
+      "file": "head-039.png"
+    },
+    {
+      "kind": "head",
+      "index": 39,
+      "name": "head/skin35",
+      "file": "head-040.png"
+    },
+    {
+      "kind": "head",
+      "index": 40,
+      "name": "head/skin36",
+      "file": "head-041.png"
+    },
+    {
+      "kind": "head",
+      "index": 41,
+      "name": "head/skin37",
+      "file": "head-042.png"
+    },
+    {
+      "kind": "head",
+      "index": 42,
+      "name": "head/skin39",
+      "file": "head-043.png"
+    },
+    {
+      "kind": "head",
+      "index": 43,
+      "name": "head/skin40",
+      "file": "head-044.png"
+    },
+    {
+      "kind": "head",
+      "index": 44,
+      "name": "head/skin41",
+      "file": "head-045.png"
+    },
+    {
+      "kind": "head",
+      "index": 45,
+      "name": "head/skin42",
+      "file": "head-046.png"
+    },
+    {
+      "kind": "head",
+      "index": 46,
+      "name": "head/skin43",
+      "file": "head-047.png"
+    },
+    {
+      "kind": "head",
+      "index": 47,
+      "name": "head/skin44",
+      "file": "head-048.png"
+    },
+    {
+      "kind": "head",
+      "index": 48,
+      "name": "head/skin45",
+      "file": "head-049.png"
+    },
+    {
+      "kind": "head",
+      "index": 49,
+      "name": "head/skin45_1",
+      "file": "head-050.png"
+    },
+    {
+      "kind": "head",
+      "index": 50,
+      "name": "head/skin46",
+      "file": "head-051.png"
+    },
+    {
+      "kind": "head",
+      "index": 51,
+      "name": "head/skin47",
+      "file": "head-052.png"
+    },
+    {
+      "kind": "head",
+      "index": 52,
+      "name": "head/skin48",
+      "file": "head-053.png"
+    },
+    {
+      "kind": "head",
+      "index": 53,
+      "name": "head/skin49",
+      "file": "head-054.png"
+    },
+    {
+      "kind": "head",
+      "index": 54,
+      "name": "head/skin50",
+      "file": "head-055.png"
+    },
+    {
+      "kind": "head",
+      "index": 55,
+      "name": "head/skin51",
+      "file": "head-056.png"
+    },
+    {
+      "kind": "head",
+      "index": 56,
+      "name": "head/skin52",
+      "file": "head-057.png"
+    },
+    {
+      "kind": "head",
+      "index": 57,
+      "name": "head/skin53",
+      "file": "head-058.png"
+    },
+    {
+      "kind": "head",
+      "index": 58,
+      "name": "head/skin54",
+      "file": "head-059.png"
+    },
+    {
+      "kind": "head",
+      "index": 59,
+      "name": "head/skin55",
+      "file": "head-060.png"
+    },
+    {
+      "kind": "head",
+      "index": 60,
+      "name": "head/skin56",
+      "file": "head-061.png"
+    },
+    {
+      "kind": "head",
+      "index": 61,
+      "name": "head/skin57",
+      "file": "head-062.png"
+    },
+    {
+      "kind": "head",
+      "index": 62,
+      "name": "head/skin58",
+      "file": "head-063.png"
+    },
+    {
+      "kind": "head",
+      "index": 63,
+      "name": "head/skin59",
+      "file": "head-064.png"
+    },
+    {
+      "kind": "head",
+      "index": 64,
+      "name": "head/skin60",
+      "file": "head-065.png"
+    },
+    {
+      "kind": "head",
+      "index": 65,
+      "name": "head/skin60_1",
+      "file": "head-066.png"
+    },
+    {
+      "kind": "head",
+      "index": 66,
+      "name": "head/skin61",
+      "file": "head-067.png"
+    },
+    {
+      "kind": "head",
+      "index": 67,
+      "name": "head/skin62",
+      "file": "head-068.png"
+    },
+    {
+      "kind": "head",
+      "index": 68,
+      "name": "head/skin63",
+      "file": "head-069.png"
+    },
+    {
+      "kind": "head",
+      "index": 69,
+      "name": "head/skin64",
+      "file": "head-070.png"
+    },
+    {
+      "kind": "head",
+      "index": 70,
+      "name": "head/skin65",
+      "file": "head-071.png"
+    },
+    {
+      "kind": "head",
+      "index": 71,
+      "name": "head/skin1001",
+      "file": "head-072.png"
+    },
+    {
+      "kind": "head",
+      "index": 72,
+      "name": "head/skin2000",
+      "file": "head-073.png"
+    },
+    {
+      "kind": "weapon",
+      "index": 0,
+      "name": "",
+      "file": "weapon-001.png"
+    },
+    {
+      "kind": "weapon",
+      "index": 1,
+      "name": "weapon_j/skin1",
+      "file": "weapon-002.png"
+    },
+    {
+      "kind": "weapon",
+      "index": 2,
+      "name": "weapon_j/skin11",
+      "file": "weapon-003.png"
+    },
+    {
+      "kind": "weapon",
+      "index": 3,
+      "name": "weapon_j/skin12",
+      "file": "weapon-004.png"
+    },
+    {
+      "kind": "weapon",
+      "index": 4,
+      "name": "weapon_j/skin13",
+      "file": "weapon-005.png"
+    },
+    {
+      "kind": "weapon",
+      "index": 5,
+      "name": "weapon_j/skin30",
+      "file": "weapon-006.png"
+    },
+    {
+      "kind": "weapon",
+      "index": 6,
+      "name": "weapon_j/skin31",
+      "file": "weapon-007.png"
+    },
+    {
+      "kind": "weapon",
+      "index": 7,
+      "name": "weapon_y/skin10",
+      "file": "weapon-008.png"
+    }
+  ],
+  "errors": []
+}

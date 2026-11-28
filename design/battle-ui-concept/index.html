@@ -1,0 +1,1847 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>末法寻仙 · 战斗界面概念</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #07100d;
+      --ink-soft: #0d1a15;
+      --panel: rgba(8, 19, 15, 0.82);
+      --panel-solid: #0c1813;
+      --paper: rgba(224, 226, 205, 0.78);
+      --text: #e9e9db;
+      --muted: #9ca99d;
+      --faint: #6c7c71;
+      --jade: #87c7ae;
+      --jade-bright: #b7ead5;
+      --jade-dark: #426b5a;
+      --gold: #d5ba78;
+      --gold-soft: #a99261;
+      --red: #d36756;
+      --red-bright: #ef9a80;
+      --line: rgba(182, 207, 186, 0.25);
+      --serif: "STSong", "SimSun", "Songti SC", serif;
+      --sans: "Microsoft YaHei", "PingFang SC", sans-serif;
+      --brush: "STKaiti", "KaiTi", "FangSong", serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 40%, #17221c 0, #070b09 58%, #020403 100%);
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+      color: var(--text);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
+      user-select: none;
+    }
+
+    button {
+      color: inherit;
+      font: inherit;
+    }
+
+    .game {
+      position: relative;
+      width: min(100vw, 177.7778vh);
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      container-type: size;
+      isolation: isolate;
+      background: #0b110e;
+      box-shadow: 0 0 5cqw rgba(0, 0, 0, 0.85);
+    }
+
+    .scene {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: saturate(0.72) contrast(1.08) brightness(0.8);
+      transform: scale(1.015);
+      animation: scene-breathe 16s ease-in-out infinite alternate;
+    }
+
+    @keyframes scene-breathe {
+      from { transform: scale(1.015) translate3d(-0.2%, 0, 0); }
+      to { transform: scale(1.035) translate3d(0.2%, -0.4%, 0); }
+    }
+
+    .scene-grade {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        linear-gradient(180deg, rgba(2, 8, 6, 0.9) 0%, rgba(3, 11, 8, 0.24) 17%, transparent 45%, rgba(2, 7, 5, 0.36) 64%, rgba(3, 8, 6, 0.98) 100%),
+        radial-gradient(ellipse at 50% 44%, transparent 32%, rgba(0, 6, 4, 0.58) 100%),
+        linear-gradient(90deg, rgba(0, 8, 5, 0.75), transparent 26%, transparent 75%, rgba(0, 7, 4, 0.52));
+    }
+
+    .scene-grade::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: 0.22;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.78' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");
+      mix-blend-mode: soft-light;
+    }
+
+    .mist {
+      position: absolute;
+      z-index: 2;
+      left: 12%;
+      right: 12%;
+      bottom: 16%;
+      height: 18%;
+      opacity: 0.25;
+      filter: blur(1.2cqw);
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(185, 213, 198, 0.2), transparent 42%),
+        radial-gradient(ellipse at 62% 60%, rgba(185, 213, 198, 0.14), transparent 50%),
+        radial-gradient(ellipse at 86% 42%, rgba(185, 213, 198, 0.12), transparent 42%);
+      animation: mist-drift 11s ease-in-out infinite alternate;
+    }
+
+    @keyframes mist-drift {
+      from { transform: translateX(-1cqw); opacity: 0.18; }
+      to { transform: translateX(1.4cqw); opacity: 0.3; }
+    }
+
+    .motes {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .motes i {
+      position: absolute;
+      width: 0.13cqw;
+      height: 0.13cqw;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 0.8cqw var(--gold);
+      opacity: 0.28;
+      animation: mote-rise linear infinite;
+    }
+
+    .motes i:nth-child(1) { left: 15%; bottom: 34%; animation-duration: 9s; animation-delay: -2s; }
+    .motes i:nth-child(2) { left: 31%; bottom: 26%; animation-duration: 12s; animation-delay: -7s; }
+    .motes i:nth-child(3) { left: 43%; bottom: 41%; animation-duration: 8s; animation-delay: -5s; }
+    .motes i:nth-child(4) { left: 57%; bottom: 31%; animation-duration: 11s; animation-delay: -8s; }
+    .motes i:nth-child(5) { left: 67%; bottom: 45%; animation-duration: 10s; animation-delay: -3s; }
+    .motes i:nth-child(6) { left: 82%; bottom: 37%; animation-duration: 13s; animation-delay: -10s; }
+    .motes i:nth-child(7) { left: 91%; bottom: 24%; animation-duration: 9s; animation-delay: -4s; }
+
+    @keyframes mote-rise {
+      0% { transform: translate3d(0, 0, 0); opacity: 0; }
+      22% { opacity: 0.34; }
+      100% { transform: translate3d(2.4cqw, -22cqw, 0); opacity: 0; }
+    }
+
+    .topbar {
+      position: absolute;
+      z-index: 20;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 8.8cqw;
+      padding: 1.5cqw 2.2cqw 0;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      background: linear-gradient(180deg, rgba(1, 5, 4, 0.82), transparent);
+      pointer-events: none;
+    }
+
+    .identity {
+      display: flex;
+      align-items: center;
+      gap: 1cqw;
+      min-width: 22cqw;
+    }
+
+    .seal {
+      width: 3.5cqw;
+      height: 3.5cqw;
+      display: grid;
+      place-items: center;
+      position: relative;
+      color: var(--red-bright);
+      font-family: var(--brush);
+      font-size: 1.9cqw;
+      transform: rotate(-3deg);
+      border: 1px solid rgba(211, 103, 86, 0.78);
+      background:
+        linear-gradient(90deg, transparent 46%, rgba(211, 103, 86, 0.3) 47%, rgba(211, 103, 86, 0.3) 53%, transparent 54%),
+        linear-gradient(rgba(44, 21, 17, 0.72), rgba(17, 19, 14, 0.74));
+      box-shadow: inset 0 0 0 0.16cqw rgba(211, 103, 86, 0.18);
+    }
+
+    .seal::before,
+    .seal::after {
+      content: "";
+      position: absolute;
+      width: 0.65cqw;
+      height: 0.65cqw;
+      border-color: var(--red);
+    }
+
+    .seal::before {
+      top: -0.18cqw;
+      left: -0.18cqw;
+      border-top: 1px solid;
+      border-left: 1px solid;
+    }
+
+    .seal::after {
+      right: -0.18cqw;
+      bottom: -0.18cqw;
+      border-right: 1px solid;
+      border-bottom: 1px solid;
+    }
+
+    .brand {
+      font-family: var(--serif);
+      font-size: 2cqw;
+      letter-spacing: 0.3em;
+      color: #e8e4d3;
+      line-height: 1;
+      text-shadow: 0 0.18cqw 0.8cqw #000;
+    }
+
+    .location {
+      margin-top: 0.52cqw;
+      color: var(--gold-soft);
+      font-family: var(--serif);
+      font-size: 0.92cqw;
+      letter-spacing: 0.18em;
+    }
+
+    .location strong {
+      color: var(--gold);
+      font-weight: 500;
+    }
+
+    .turn {
+      position: absolute;
+      left: 50%;
+      top: 1.18cqw;
+      transform: translateX(-50%);
+      width: 19.5cqw;
+      height: 4.5cqw;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      isolation: isolate;
+    }
+
+    .turn::before {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      inset: 0 1.4cqw;
+      clip-path: polygon(12% 0, 88% 0, 100% 50%, 88% 100%, 12% 100%, 0 50%);
+      background:
+        linear-gradient(90deg, transparent, rgba(70, 80, 64, 0.45) 16%, rgba(8, 17, 13, 0.94) 35%, rgba(8, 17, 13, 0.94) 65%, rgba(70, 80, 64, 0.38) 84%, transparent);
+      border-top: 1px solid rgba(213, 186, 120, 0.44);
+      border-bottom: 1px solid rgba(213, 186, 120, 0.2);
+      box-shadow: 0 0.5cqw 1.6cqw rgba(0, 0, 0, 0.55);
+    }
+
+    .turn::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 0.35cqw;
+      bottom: 0.35cqw;
+      width: 1px;
+      background: linear-gradient(transparent, rgba(213, 186, 120, 0.55), transparent);
+    }
+
+    .turn-round,
+    .turn-state {
+      position: relative;
+      z-index: 1;
+      width: 50%;
+      text-align: center;
+    }
+
+    .turn-round span {
+      display: block;
+      color: var(--gold-soft);
+      font-size: 0.78cqw;
+      letter-spacing: 0.22em;
+    }
+
+    .turn-round strong {
+      display: block;
+      margin-top: 0.2cqw;
+      color: var(--gold);
+      font-family: var(--serif);
+      font-size: 1.52cqw;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+    }
+
+    .turn-round strong b {
+      color: inherit;
+      font: inherit;
+      font-weight: 500;
+    }
+
+    .turn-state {
+      padding-right: 0.3cqw;
+    }
+
+    .turn-state strong {
+      color: var(--jade-bright);
+      font-family: var(--serif);
+      font-size: 1.55cqw;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-shadow: 0 0 1cqw rgba(135, 199, 174, 0.35);
+    }
+
+    .turn-state span {
+      display: block;
+      margin-top: 0.24cqw;
+      color: var(--muted);
+      font-size: 0.68cqw;
+      letter-spacing: 0.16em;
+    }
+
+    .utilities {
+      display: flex;
+      align-items: center;
+      gap: 0.55cqw;
+      pointer-events: auto;
+    }
+
+    .utility {
+      height: 2.25cqw;
+      min-width: 4.1cqw;
+      padding: 0 0.85cqw;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4cqw;
+      border: 1px solid rgba(168, 193, 175, 0.22);
+      background: linear-gradient(180deg, rgba(13, 28, 21, 0.78), rgba(4, 11, 8, 0.72));
+      color: #b7c2b6;
+      font-size: 0.82cqw;
+      letter-spacing: 0.1em;
+      cursor: pointer;
+      transition: 160ms ease;
+    }
+
+    .utility:hover {
+      color: var(--jade-bright);
+      border-color: rgba(135, 199, 174, 0.55);
+      background: rgba(17, 38, 29, 0.88);
+    }
+
+    .utility-icon {
+      position: relative;
+      width: 0.85cqw;
+      height: 0.85cqw;
+      border: 1px solid currentColor;
+      border-radius: 50%;
+    }
+
+    .utility-icon.log::before,
+    .utility-icon.log::after {
+      content: "";
+      position: absolute;
+      left: 0.16cqw;
+      right: 0.16cqw;
+      height: 1px;
+      background: currentColor;
+    }
+
+    .utility-icon.log::before { top: 0.25cqw; }
+    .utility-icon.log::after { bottom: 0.22cqw; }
+
+    .utility-icon.pause::before {
+      content: "Ⅱ";
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      font-size: 0.52cqw;
+      font-weight: 700;
+    }
+
+    .enemy-unit,
+    .player-unit {
+      position: absolute;
+      z-index: 4;
+      pointer-events: none;
+      transform-origin: 50% 90%;
+    }
+
+    .enemy-unit {
+      right: 20.8%;
+      bottom: 15.7cqw;
+      width: 17.8cqw;
+      height: 27.8cqw;
+      transform: scaleX(-1);
+      filter: drop-shadow(-0.8cqw 1.1cqw 1.2cqw rgba(0, 0, 0, 0.86)) saturate(0.68) sepia(0.1) brightness(0.82);
+      animation: enemy-float 4.5s ease-in-out infinite alternate;
+    }
+
+    .enemy-unit img,
+    .player-unit img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      mix-blend-mode: multiply;
+      opacity: 0.94;
+    }
+
+    .player-unit {
+      left: 20.7%;
+      bottom: 15.5cqw;
+      width: 17.2cqw;
+      height: 29.2cqw;
+      filter: drop-shadow(0.45cqw 1cqw 1cqw rgba(0, 0, 0, 0.9)) saturate(0.72) brightness(0.9);
+      animation: player-float 5.2s ease-in-out infinite alternate;
+    }
+
+    @keyframes enemy-float {
+      from { transform: scaleX(-1) translateY(0); }
+      to { transform: scaleX(-1) translateY(-0.5cqw); }
+    }
+
+    @keyframes player-float {
+      from { transform: translateY(0); }
+      to { transform: translateY(-0.32cqw); }
+    }
+
+    .ground-ring {
+      position: absolute;
+      z-index: 3;
+      bottom: 15.2cqw;
+      width: 15.5cqw;
+      height: 3.8cqw;
+      border: 1px solid rgba(135, 199, 174, 0.32);
+      border-radius: 50%;
+      pointer-events: none;
+      background: radial-gradient(ellipse, rgba(87, 156, 130, 0.18), transparent 64%);
+      box-shadow: inset 0 0 1.2cqw rgba(111, 196, 163, 0.12), 0 0 1.2cqw rgba(79, 151, 126, 0.08);
+    }
+
+    .ground-ring::before,
+    .ground-ring::after {
+      content: "";
+      position: absolute;
+      inset: 0.52cqw 1.1cqw;
+      border: 1px dashed rgba(135, 199, 174, 0.18);
+      border-radius: 50%;
+      animation: ring-turn 25s linear infinite;
+    }
+
+    .ground-ring::after {
+      inset: -0.7cqw -1.2cqw;
+      border-style: solid;
+      opacity: 0.28;
+      animation-direction: reverse;
+    }
+
+    @keyframes ring-turn {
+      to { transform: rotate(360deg); }
+    }
+
+    .ground-ring.player { left: 20.1%; }
+    .ground-ring.enemy {
+      right: 19.7%;
+      border-color: rgba(211, 103, 86, 0.3);
+      background: radial-gradient(ellipse, rgba(151, 67, 56, 0.17), transparent 64%);
+      box-shadow: inset 0 0 1.2cqw rgba(211, 103, 86, 0.1), 0 0 1.5cqw rgba(136, 43, 33, 0.08);
+    }
+
+    .ground-ring.enemy::before,
+    .ground-ring.enemy::after {
+      border-color: rgba(211, 103, 86, 0.18);
+    }
+
+    .plate {
+      position: absolute;
+      z-index: 10;
+      backdrop-filter: blur(0.55cqw);
+    }
+
+    .player-card {
+      left: 2.2cqw;
+      top: 28.3cqw;
+      width: 21.3cqw;
+      height: 9.35cqw;
+      padding: 1cqw 1cqw 0.8cqw;
+      border-left: 1px solid rgba(135, 199, 174, 0.58);
+      background:
+        linear-gradient(90deg, rgba(10, 26, 19, 0.92), rgba(7, 17, 13, 0.62) 82%, transparent);
+      box-shadow: inset 0.16cqw 0 0 rgba(135, 199, 174, 0.09);
+    }
+
+    .player-card::before {
+      content: "";
+      position: absolute;
+      left: -1px;
+      top: 0;
+      width: 4.5cqw;
+      height: 1px;
+      background: var(--jade);
+      box-shadow: 0 0 0.8cqw rgba(135, 199, 174, 0.4);
+    }
+
+    .player-card::after {
+      content: "";
+      position: absolute;
+      left: -1px;
+      bottom: 0;
+      width: 2.8cqw;
+      height: 1px;
+      background: rgba(213, 186, 120, 0.42);
+    }
+
+    .player-top {
+      display: flex;
+      align-items: center;
+      gap: 0.8cqw;
+    }
+
+    .portrait {
+      width: 3.9cqw;
+      height: 3.9cqw;
+      margin-top: -0.25cqw;
+      padding: 0.16cqw;
+      border-radius: 50%;
+      background: conic-gradient(from 45deg, var(--gold-soft), #6b7d70, var(--gold), #4b5a50, var(--gold-soft));
+      box-shadow: 0 0 1cqw rgba(0, 0, 0, 0.9);
+      flex: none;
+    }
+
+    .portrait img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      border-radius: 50%;
+      object-fit: cover;
+      filter: saturate(0.72) contrast(1.06);
+    }
+
+    .player-heading {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .name-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.5cqw;
+    }
+
+    .name {
+      font-family: var(--serif);
+      font-size: 1.45cqw;
+      letter-spacing: 0.15em;
+      color: #edebdd;
+      white-space: nowrap;
+    }
+
+    .realm {
+      color: var(--gold-soft);
+      font-size: 0.7cqw;
+      letter-spacing: 0.12em;
+      white-space: nowrap;
+    }
+
+    .resource {
+      display: flex;
+      align-items: center;
+      gap: 0.5cqw;
+      margin-top: 0.38cqw;
+    }
+
+    .resource-label {
+      width: 2.35cqw;
+      color: var(--muted);
+      font-size: 0.72cqw;
+      letter-spacing: 0.08em;
+    }
+
+    .bar {
+      position: relative;
+      flex: 1;
+      height: 0.52cqw;
+      overflow: hidden;
+      background: rgba(1, 5, 4, 0.82);
+      border: 1px solid rgba(156, 169, 157, 0.12);
+    }
+
+    .bar > i {
+      display: block;
+      width: var(--fill);
+      height: 100%;
+      background: linear-gradient(90deg, #4c8d74, #99d4bc);
+      box-shadow: 0 0 0.65cqw rgba(135, 199, 174, 0.42);
+      transition: width 420ms cubic-bezier(0.22, 0.75, 0.2, 1);
+    }
+
+    .bar.mp > i {
+      background: linear-gradient(90deg, #496b83, #80b7cb);
+      box-shadow: 0 0 0.65cqw rgba(104, 165, 193, 0.35);
+    }
+
+    .value {
+      width: 4.55cqw;
+      text-align: right;
+      color: #d4ded3;
+      font-family: var(--serif);
+      font-size: 0.76cqw;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .chips {
+      display: flex;
+      gap: 0.42cqw;
+      margin-top: 0.72cqw;
+      padding-left: 4.7cqw;
+    }
+
+    .chip {
+      height: 1.55cqw;
+      padding: 0 0.55cqw;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3cqw;
+      border: 1px solid rgba(144, 174, 156, 0.17);
+      color: var(--muted);
+      background: rgba(3, 10, 7, 0.4);
+      font-size: 0.67cqw;
+      letter-spacing: 0.08em;
+      white-space: nowrap;
+    }
+
+    .chip b {
+      color: var(--jade-bright);
+      font-weight: 500;
+    }
+
+    .chip.danger b {
+      color: var(--red-bright);
+    }
+
+    .enemy-card {
+      right: 28.1cqw;
+      top: 10.8cqw;
+      width: 22.6cqw;
+      padding: 0.78cqw 0.92cqw;
+      border-top: 1px solid rgba(211, 103, 86, 0.4);
+      border-right: 1px solid rgba(211, 103, 86, 0.14);
+      background:
+        linear-gradient(90deg, rgba(15, 22, 18, 0.9), rgba(21, 16, 13, 0.7) 72%, transparent);
+    }
+
+    .enemy-card::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 2.3cqw;
+      height: 1px;
+      background: var(--red);
+      box-shadow: 0 0 0.75cqw rgba(211, 103, 86, 0.48);
+    }
+
+    .enemy-head {
+      display: flex;
+      align-items: center;
+      gap: 0.7cqw;
+    }
+
+    .enemy-sigil {
+      width: 3.5cqw;
+      height: 3.5cqw;
+      display: grid;
+      place-items: center;
+      flex: none;
+      color: #e3b1a0;
+      font-family: var(--brush);
+      font-size: 1.7cqw;
+      border: 1px solid rgba(211, 103, 86, 0.48);
+      border-radius: 50%;
+      background:
+        radial-gradient(circle, rgba(152, 66, 54, 0.3), rgba(11, 13, 10, 0.74) 66%),
+        repeating-conic-gradient(from 10deg, rgba(211, 103, 86, 0.26) 0 1deg, transparent 1deg 30deg);
+      box-shadow: inset 0 0 1cqw rgba(211, 103, 86, 0.18);
+    }
+
+    .enemy-title {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .enemy-title .name-row {
+      margin-bottom: 0.4cqw;
+    }
+
+    .enemy-title .name {
+      font-size: 1.28cqw;
+    }
+
+    .danger-tag {
+      color: var(--red-bright);
+      font-family: var(--serif);
+      font-size: 0.68cqw;
+      letter-spacing: 0.1em;
+      padding: 0.18cqw 0.35cqw;
+      border: 1px solid rgba(211, 103, 86, 0.38);
+      background: rgba(93, 32, 25, 0.28);
+      white-space: nowrap;
+    }
+
+    .enemy-card .bar {
+      height: 0.48cqw;
+    }
+
+    .enemy-card .bar > i {
+      background: linear-gradient(90deg, #8d3e34, #d87766);
+      box-shadow: 0 0 0.65cqw rgba(211, 103, 86, 0.34);
+    }
+
+    .enemy-card .value {
+      width: 4.05cqw;
+      color: #e1c2b7;
+    }
+
+    .intent {
+      right: 2.35cqw;
+      top: 12.9cqw;
+      width: 17.8cqw;
+      min-height: 12.8cqw;
+      padding: 1.15cqw 1.15cqw 1.1cqw;
+      border: 1px solid rgba(211, 103, 86, 0.32);
+      clip-path: polygon(0 0, calc(100% - 1.15cqw) 0, 100% 1.15cqw, 100% 100%, 1.15cqw 100%, 0 calc(100% - 1.15cqw));
+      background:
+        linear-gradient(135deg, rgba(77, 30, 24, 0.22), transparent 34%),
+        linear-gradient(180deg, rgba(12, 21, 17, 0.94), rgba(7, 13, 10, 0.9));
+      box-shadow: 0 0.8cqw 2.2cqw rgba(0, 0, 0, 0.46);
+      cursor: pointer;
+      transition: transform 180ms ease, border-color 180ms ease;
+    }
+
+    .intent:hover {
+      transform: translateX(-0.3cqw);
+      border-color: rgba(239, 154, 128, 0.65);
+    }
+
+    .intent::before {
+      content: "";
+      position: absolute;
+      left: -3cqw;
+      top: 5.5cqw;
+      width: 3.1cqw;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(211, 103, 86, 0.46));
+    }
+
+    .intent-kicker {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--red-bright);
+      font-family: var(--serif);
+      font-size: 0.8cqw;
+      letter-spacing: 0.22em;
+    }
+
+    .intent-kicker::after {
+      content: "";
+      width: 1.55cqw;
+      height: 1.55cqw;
+      background: rgba(123, 44, 33, 0.76);
+      border: 1px solid rgba(239, 154, 128, 0.28);
+      transform: rotate(45deg);
+    }
+
+    .intent-main {
+      display: flex;
+      gap: 0.85cqw;
+      margin-top: 0.9cqw;
+    }
+
+    .intent-mark {
+      width: 4.05cqw;
+      height: 4.05cqw;
+      flex: none;
+      display: grid;
+      place-items: center;
+      color: #e8c5b5;
+      font-family: var(--brush);
+      font-size: 2.4cqw;
+      border: 1px solid rgba(211, 103, 86, 0.4);
+      background:
+        radial-gradient(circle at 50% 50%, rgba(159, 71, 54, 0.28), rgba(6, 13, 9, 0.6) 68%);
+      position: relative;
+    }
+
+    .intent-mark::after {
+      content: "";
+      position: absolute;
+      inset: -0.3cqw;
+      border: 1px solid rgba(211, 103, 86, 0.13);
+      transform: rotate(45deg);
+    }
+
+    .intent-copy {
+      min-width: 0;
+    }
+
+    .intent-name {
+      color: #eee7d8;
+      font-family: var(--serif);
+      font-size: 1.32cqw;
+      letter-spacing: 0.1em;
+      white-space: nowrap;
+    }
+
+    .intent-damage {
+      margin-top: 0.45cqw;
+      color: var(--red-bright);
+      font-family: var(--serif);
+      font-size: 1.08cqw;
+      letter-spacing: 0.04em;
+    }
+
+    .intent-damage strong {
+      font-size: 1.75cqw;
+      font-weight: 500;
+      margin-right: 0.16cqw;
+    }
+
+    .intent-tags {
+      display: flex;
+      gap: 0.3cqw;
+      margin-top: 0.58cqw;
+    }
+
+    .intent-tags span {
+      padding: 0.16cqw 0.36cqw;
+      border: 1px solid rgba(211, 103, 86, 0.24);
+      color: #c6a096;
+      font-size: 0.62cqw;
+      letter-spacing: 0.06em;
+    }
+
+    .battle-caption {
+      position: absolute;
+      z-index: 9;
+      left: 50%;
+      top: 38.1cqw;
+      transform: translateX(-50%);
+      min-width: 17cqw;
+      padding: 0.42cqw 1cqw;
+      text-align: center;
+      color: rgba(231, 229, 213, 0.88);
+      font-family: var(--serif);
+      font-size: 0.86cqw;
+      letter-spacing: 0.14em;
+      background: linear-gradient(90deg, transparent, rgba(4, 10, 7, 0.58), transparent);
+      opacity: 0;
+      transition: opacity 240ms ease;
+      pointer-events: none;
+    }
+
+    .battle-caption.show {
+      opacity: 1;
+    }
+
+    .preview {
+      position: absolute;
+      z-index: 18;
+      left: 8.8%;
+      right: 8.8%;
+      bottom: 14.35cqw;
+      height: 3.2cqw;
+      display: flex;
+      align-items: center;
+      padding: 0 2.5cqw;
+      background:
+        linear-gradient(90deg, transparent, rgba(5, 14, 10, 0.9) 6%, rgba(5, 14, 10, 0.9) 94%, transparent);
+      border-top: 1px solid rgba(135, 199, 174, 0.15);
+      color: var(--muted);
+      pointer-events: none;
+    }
+
+    .preview::before,
+    .preview::after {
+      content: "";
+      width: 0.38cqw;
+      height: 0.38cqw;
+      border: 1px solid var(--jade);
+      transform: rotate(45deg);
+      opacity: 0.65;
+    }
+
+    .preview-kicker {
+      margin-left: 0.85cqw;
+      color: var(--gold-soft);
+      font-size: 0.7cqw;
+      letter-spacing: 0.2em;
+    }
+
+    .preview-name {
+      margin-left: 0.9cqw;
+      color: var(--jade-bright);
+      font-family: var(--serif);
+      font-size: 1.28cqw;
+      letter-spacing: 0.14em;
+    }
+
+    .preview-desc {
+      margin-left: 1.25cqw;
+      color: #c7cfc4;
+      font-size: 0.83cqw;
+      letter-spacing: 0.04em;
+    }
+
+    .preview-forecast {
+      margin-left: auto;
+      margin-right: 0.9cqw;
+      color: #aab7aa;
+      font-family: var(--serif);
+      font-size: 0.78cqw;
+      letter-spacing: 0.04em;
+    }
+
+    .preview-forecast b {
+      color: var(--red-bright);
+      font-weight: 500;
+    }
+
+    .dock {
+      position: absolute;
+      z-index: 16;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      width: 92%;
+      height: 13.85cqw;
+      padding: 1.2cqw 2.25cqw 1.45cqw;
+      background:
+        linear-gradient(180deg, rgba(18, 34, 27, 0.97), rgba(6, 15, 11, 0.985) 24%, rgba(5, 12, 9, 0.99)),
+        radial-gradient(ellipse at 50% 0, rgba(135, 199, 174, 0.12), transparent 45%);
+      clip-path: polygon(1.45cqw 0, calc(100% - 1.45cqw) 0, 100% 1.45cqw, 100% calc(100% - 1.45cqw), calc(100% - 1.45cqw) 100%, 1.45cqw 100%, 0 calc(100% - 1.45cqw), 0 1.45cqw);
+      box-shadow: 0 -0.5cqw 2cqw rgba(0, 0, 0, 0.78);
+    }
+
+    .dock::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      clip-path: inherit;
+      border: 1px solid rgba(142, 174, 157, 0.22);
+      background:
+        linear-gradient(90deg, transparent 2%, rgba(213, 186, 120, 0.12) 26%, transparent 26.2%, transparent 73.8%, rgba(213, 186, 120, 0.12) 74%, transparent 98%);
+    }
+
+    .dock::after {
+      content: "";
+      position: absolute;
+      left: 8%;
+      right: 8%;
+      top: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(135, 199, 174, 0.55), transparent);
+      box-shadow: 0 0 0.7cqw rgba(135, 199, 174, 0.22);
+    }
+
+    .dock-inner {
+      position: relative;
+      height: 100%;
+      display: grid;
+      grid-template-columns: 5.15cqw 43.9cqw 12.8cqw 12.8cqw 1fr;
+      align-items: stretch;
+      gap: 0.8cqw;
+    }
+
+    .rail-label {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-right: 0.8cqw;
+      border-right: 1px solid rgba(156, 177, 162, 0.15);
+    }
+
+    .rail-label strong {
+      color: var(--gold);
+      font-family: var(--serif);
+      font-size: 0.95cqw;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      line-height: 1.4;
+    }
+
+    .rail-label span {
+      margin-top: 0.5cqw;
+      color: var(--faint);
+      font-size: 0.57cqw;
+      letter-spacing: 0.1em;
+      line-height: 1.7;
+    }
+
+    .skills {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.55cqw;
+    }
+
+    .skill {
+      position: relative;
+      min-width: 0;
+      padding: 0.72cqw 0.55cqw 0.6cqw;
+      border: 1px solid rgba(148, 173, 157, 0.14);
+      background:
+        linear-gradient(155deg, rgba(30, 53, 42, 0.34), rgba(6, 14, 10, 0.64) 55%);
+      text-align: left;
+      cursor: pointer;
+      overflow: hidden;
+      transition: border-color 160ms ease, transform 160ms ease, background 160ms ease;
+    }
+
+    .skill::before {
+      content: "";
+      position: absolute;
+      inset: 0.28cqw;
+      border: 1px solid rgba(143, 167, 151, 0.08);
+      pointer-events: none;
+    }
+
+    .skill::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 1px;
+      background: rgba(150, 177, 159, 0.12);
+    }
+
+    .skill:hover {
+      border-color: rgba(135, 199, 174, 0.38);
+      background: linear-gradient(155deg, rgba(39, 70, 55, 0.48), rgba(7, 17, 12, 0.7) 56%);
+    }
+
+    .skill.selected {
+      transform: translateY(-0.4cqw);
+      border-color: rgba(183, 234, 213, 0.64);
+      background:
+        radial-gradient(circle at 20% 12%, rgba(137, 210, 181, 0.2), transparent 42%),
+        linear-gradient(155deg, rgba(49, 91, 71, 0.56), rgba(8, 21, 15, 0.88) 58%);
+      box-shadow: inset 0 0 1.25cqw rgba(122, 207, 172, 0.12), 0 0 1.2cqw rgba(115, 195, 163, 0.13);
+    }
+
+    .skill.selected::after {
+      height: 0.13cqw;
+      background: var(--jade);
+      box-shadow: 0 0 0.7cqw rgba(135, 199, 174, 0.8);
+    }
+
+    .skill-topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.28cqw;
+    }
+
+    .skill-glyph {
+      width: 1.95cqw;
+      height: 1.95cqw;
+      display: grid;
+      place-items: center;
+      flex: none;
+      border: 1px solid rgba(135, 199, 174, 0.24);
+      border-radius: 50%;
+      color: #b4d8c8;
+      font-family: var(--brush);
+      font-size: 1.05cqw;
+      background: rgba(6, 17, 11, 0.6);
+    }
+
+    .skill.selected .skill-glyph {
+      color: #e3fff1;
+      border-color: rgba(183, 234, 213, 0.65);
+      box-shadow: 0 0 0.8cqw rgba(135, 199, 174, 0.2);
+    }
+
+    .skill-key {
+      color: rgba(218, 224, 212, 0.38);
+      font-family: var(--serif);
+      font-size: 0.64cqw;
+    }
+
+    .skill-name {
+      margin-top: 0.52cqw;
+      color: #e4e7dc;
+      font-family: var(--serif);
+      font-size: 1.16cqw;
+      letter-spacing: 0.1em;
+      white-space: nowrap;
+    }
+
+    .skill.selected .skill-name {
+      color: #f0fff7;
+    }
+
+    .skill-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.42cqw;
+      margin-top: 0.45cqw;
+      color: #7f9184;
+      font-size: 0.58cqw;
+      letter-spacing: 0.03em;
+      white-space: nowrap;
+    }
+
+    .mana {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.22cqw;
+      color: #86aebc;
+    }
+
+    .mana::before {
+      content: "";
+      width: 0.37cqw;
+      height: 0.37cqw;
+      border-radius: 50%;
+      border: 1px solid currentColor;
+      box-shadow: inset 0 0 0.2cqw currentColor;
+    }
+
+    .cooldown {
+      margin-left: auto;
+      color: var(--gold-soft);
+    }
+
+    .side-action {
+      position: relative;
+      padding: 0.6cqw;
+      border: 1px solid rgba(151, 174, 158, 0.15);
+      background: rgba(7, 16, 12, 0.58);
+      cursor: pointer;
+      transition: 160ms ease;
+    }
+
+    .side-action:hover {
+      border-color: rgba(213, 186, 120, 0.36);
+      background: rgba(19, 33, 25, 0.74);
+    }
+
+    .side-action .action-glyph {
+      width: 2.3cqw;
+      height: 2.3cqw;
+      display: grid;
+      place-items: center;
+      color: var(--gold);
+      font-family: var(--brush);
+      font-size: 1.35cqw;
+      border: 1px solid rgba(213, 186, 120, 0.24);
+      border-radius: 50%;
+      margin-bottom: 0.55cqw;
+    }
+
+    .side-action strong {
+      display: block;
+      color: #dfe2d7;
+      font-family: var(--serif);
+      font-size: 0.94cqw;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+    }
+
+    .side-action small {
+      display: block;
+      margin-top: 0.3cqw;
+      color: var(--faint);
+      font-size: 0.57cqw;
+      letter-spacing: 0.05em;
+    }
+
+    .commit-wrap {
+      display: flex;
+      flex-direction: column;
+      justify-content: stretch;
+      min-width: 0;
+    }
+
+    .commit {
+      width: 100%;
+      flex: 1;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(174, 219, 198, 0.5);
+      background:
+        radial-gradient(circle at 50% 0, rgba(148, 220, 190, 0.18), transparent 55%),
+        linear-gradient(180deg, #294c3b, #13291f);
+      box-shadow: inset 0 0 1.2cqw rgba(153, 220, 191, 0.1), 0 0 1.3cqw rgba(76, 145, 116, 0.14);
+      cursor: pointer;
+      transition: 160ms ease;
+    }
+
+    .commit:hover {
+      border-color: var(--jade-bright);
+      filter: brightness(1.1);
+    }
+
+    .commit:active {
+      transform: translateY(0.12cqw);
+      filter: brightness(0.92);
+    }
+
+    .commit .commit-action {
+      color: var(--gold-soft);
+      font-size: 0.62cqw;
+      letter-spacing: 0.28em;
+    }
+
+    .commit strong {
+      margin-top: 0.45cqw;
+      color: #edf9ef;
+      font-family: var(--serif);
+      font-size: 1.45cqw;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+    }
+
+    .commit span {
+      margin-top: 0.35cqw;
+      color: rgba(214, 234, 219, 0.55);
+      font-size: 0.56cqw;
+      letter-spacing: 0.08em;
+    }
+
+    .end-turn {
+      height: 2cqw;
+      margin-top: 0.45cqw;
+      border: 1px solid rgba(155, 174, 160, 0.16);
+      background: rgba(4, 10, 7, 0.48);
+      color: var(--muted);
+      font-size: 0.63cqw;
+      letter-spacing: 0.12em;
+      cursor: pointer;
+    }
+
+    .end-turn:hover {
+      color: var(--gold);
+      border-color: rgba(213, 186, 120, 0.34);
+    }
+
+    .hint {
+      position: absolute;
+      z-index: 17;
+      left: 50%;
+      bottom: 0.25cqw;
+      transform: translateX(-50%);
+      color: rgba(160, 177, 164, 0.42);
+      font-size: 0.53cqw;
+      letter-spacing: 0.08em;
+      pointer-events: none;
+    }
+
+    .toast {
+      position: absolute;
+      z-index: 40;
+      left: 50%;
+      top: 9.2cqw;
+      transform: translate(-50%, -0.55cqw);
+      padding: 0.58cqw 1.2cqw;
+      color: #dadfd3;
+      font-family: var(--serif);
+      font-size: 0.78cqw;
+      letter-spacing: 0.12em;
+      border: 1px solid rgba(213, 186, 120, 0.28);
+      background: rgba(5, 12, 8, 0.88);
+      opacity: 0;
+      transition: 200ms ease;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    .hit-flash {
+      position: absolute;
+      z-index: 12;
+      right: 20%;
+      top: 23%;
+      width: 21cqw;
+      height: 24cqw;
+      opacity: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(120deg, transparent 44%, rgba(235, 250, 238, 0.9) 48%, transparent 51%),
+        linear-gradient(154deg, transparent 44%, rgba(135, 199, 174, 0.8) 48%, transparent 51%);
+      filter: drop-shadow(0 0 0.5cqw var(--jade));
+    }
+
+    .hit-flash.play {
+      animation: hit-slash 520ms cubic-bezier(0.16, 0.8, 0.3, 1);
+    }
+
+    @keyframes hit-slash {
+      0% { opacity: 0; transform: translate(1.2cqw, -1cqw) scale(0.55) rotate(-8deg); }
+      20% { opacity: 1; }
+      60% { opacity: 0.75; }
+      100% { opacity: 0; transform: translate(-1.6cqw, 1.3cqw) scale(1.18) rotate(4deg); }
+    }
+
+    .damage-pop {
+      position: absolute;
+      z-index: 30;
+      right: 25%;
+      top: 23%;
+      color: #f4eee0;
+      font-family: var(--serif);
+      font-size: 3.1cqw;
+      text-shadow: 0 0.2cqw 0.3cqw #000, 0 0 1.5cqw rgba(211, 103, 86, 0.72);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(0);
+    }
+
+    .damage-pop.play {
+      animation: damage-float 950ms ease-out;
+    }
+
+    @keyframes damage-float {
+      0% { opacity: 0; transform: translateY(0.8cqw) scale(0.8); }
+      18% { opacity: 1; transform: translateY(0) scale(1.08); }
+      72% { opacity: 1; }
+      100% { opacity: 0; transform: translateY(-3cqw) scale(1); }
+    }
+
+    .enemy-unit.hit {
+      animation: enemy-hit 420ms ease;
+    }
+
+    @keyframes enemy-hit {
+      0%, 100% { filter: drop-shadow(-0.8cqw 1.1cqw 1.2cqw rgba(0, 0, 0, 0.86)) saturate(0.68) brightness(0.82); }
+      22% { filter: drop-shadow(-0.8cqw 1.1cqw 1.2cqw rgba(0, 0, 0, 0.86)) saturate(0) brightness(2.2); transform: scaleX(-1) translateX(-0.6cqw); }
+      50% { transform: scaleX(-1) translateX(0.4cqw); }
+    }
+
+    .focus-outline:focus-visible {
+      outline: 1px solid var(--jade-bright);
+      outline-offset: 0.18cqw;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="game" id="game" aria-label="末法寻仙战斗界面">
+    <img class="scene" src="assets/battle-background.png" alt="">
+    <div class="scene-grade"></div>
+    <div class="mist"></div>
+    <div class="motes" aria-hidden="true">
+      <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+    </div>
+
+    <header class="topbar">
+      <div class="identity">
+        <div class="seal" aria-hidden="true">末</div>
+        <div>
+          <div class="brand">末法寻仙</div>
+          <div class="location"><strong>断魂坡</strong> · 残阵 · 第 7 战</div>
+        </div>
+      </div>
+
+      <div class="turn" aria-live="polite">
+        <div class="turn-round">
+          <span>轮回</span>
+          <strong>第 <b id="round-number">3</b> 回合</strong>
+        </div>
+        <div class="turn-state">
+          <strong id="turn-state">我方行动</strong>
+          <span>一次一式 · 落子无悔</span>
+        </div>
+      </div>
+
+      <div class="utilities">
+        <button class="utility focus-outline" id="log-button" type="button">
+          <span class="utility-icon log" aria-hidden="true"></span>
+          战况
+        </button>
+        <button class="utility focus-outline" id="pause-button" type="button" aria-label="暂停">
+          <span class="utility-icon pause" aria-hidden="true"></span>
+          暂停
+        </button>
+      </div>
+    </header>
+
+    <div class="ground-ring enemy" aria-hidden="true"></div>
+    <div class="ground-ring player" aria-hidden="true"></div>
+
+    <div class="enemy-unit" id="enemy-unit" aria-hidden="true">
+      <img src="assets/enemy.png" alt="">
+    </div>
+    <div class="player-unit" aria-hidden="true">
+      <img src="assets/player.png" alt="">
+    </div>
+
+    <section class="plate player-card" aria-label="我方状态">
+      <div class="player-top">
+        <div class="portrait">
+          <img src="assets/player-portrait.png" alt="">
+        </div>
+        <div class="player-heading">
+          <div class="name-row">
+            <span class="name">散修</span>
+            <span class="realm">引气 · 三层</span>
+          </div>
+          <div class="resource">
+            <span class="resource-label">气血</span>
+            <span class="bar" style="--fill: 68%"><i id="player-hp-bar"></i></span>
+            <span class="value" id="player-hp-value">68 / 100</span>
+          </div>
+          <div class="resource">
+            <span class="resource-label">法力</span>
+            <span class="bar mp" style="--fill: 60%"><i id="player-mp-bar"></i></span>
+            <span class="value" id="player-mp-value">3 / 5</span>
+          </div>
+        </div>
+      </div>
+      <div class="chips">
+        <span class="chip">护盾 <b id="shield-value">12</b></span>
+        <span class="chip danger">裂伤 <b>1</b></span>
+        <span class="chip">剑意 <b>2</b></span>
+      </div>
+    </section>
+
+    <section class="plate enemy-card" aria-label="敌方状态">
+      <div class="enemy-head">
+        <div class="enemy-sigil" aria-hidden="true">魇</div>
+        <div class="enemy-title">
+          <div class="name-row">
+            <span class="name">裂岩魇</span>
+            <span class="danger-tag">精英 · 二阶</span>
+          </div>
+          <div class="resource">
+            <span class="resource-label">气血</span>
+            <span class="bar" style="--fill: 74%"><i id="enemy-hp-bar"></i></span>
+            <span class="value" id="enemy-hp-value">244 / 330</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="plate intent" id="intent-card" aria-label="敌方意图">
+      <div class="intent-kicker">敌方意图</div>
+      <div class="intent-main">
+        <div class="intent-mark" aria-hidden="true">裂</div>
+        <div class="intent-copy">
+          <div class="intent-name">裂石横击</div>
+          <div class="intent-damage">将造成 <strong>18</strong> 伤害</div>
+          <div class="intent-tags">
+            <span>破甲 1</span>
+            <span>重击</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="battle-caption" id="battle-caption">剑起，风随。</div>
+    <div class="hit-flash" id="hit-flash"></div>
+    <div class="damage-pop" id="damage-pop">-14</div>
+    <div class="toast" id="toast" role="status"></div>
+
+    <section class="preview" aria-label="招式预览">
+      <span class="preview-kicker">已选招式</span>
+      <strong class="preview-name" id="preview-name">斩风</strong>
+      <span class="preview-desc" id="preview-desc">造成 14 点伤害 · 附加裂伤</span>
+      <span class="preview-forecast" id="preview-forecast">敌方气血 <b>244 → 230</b></span>
+    </section>
+
+    <section class="dock" aria-label="招式与行动">
+      <div class="dock-inner">
+        <div class="rail-label">
+          <strong>招式编队</strong>
+          <span>五式 · 本回合<br>可用一式</span>
+        </div>
+
+        <div class="skills" role="list" aria-label="技能列表">
+          <button class="skill selected focus-outline" type="button" data-skill="0" aria-pressed="true">
+            <span class="skill-topline">
+              <span class="skill-glyph">斩</span>
+              <span class="skill-key">壹</span>
+            </span>
+            <span class="skill-name">斩风</span>
+            <span class="skill-meta"><span class="mana">1</span><span>剑式</span><span class="cooldown">就绪</span></span>
+          </button>
+          <button class="skill focus-outline" type="button" data-skill="1" aria-pressed="false">
+            <span class="skill-topline">
+              <span class="skill-glyph">云</span>
+              <span class="skill-key">贰</span>
+            </span>
+            <span class="skill-name">流云诀</span>
+            <span class="skill-meta"><span class="mana">2</span><span>身法</span><span class="cooldown">就绪</span></span>
+          </button>
+          <button class="skill focus-outline" type="button" data-skill="2" aria-pressed="false">
+            <span class="skill-topline">
+              <span class="skill-glyph">元</span>
+              <span class="skill-key">叁</span>
+            </span>
+            <span class="skill-name">归元</span>
+            <span class="skill-meta"><span class="mana">2</span><span>调息</span><span class="cooldown">冷却 2</span></span>
+          </button>
+          <button class="skill focus-outline" type="button" data-skill="3" aria-pressed="false">
+            <span class="skill-topline">
+              <span class="skill-glyph">煞</span>
+              <span class="skill-key">肆</span>
+            </span>
+            <span class="skill-name">破煞</span>
+            <span class="skill-meta"><span class="mana">3</span><span>绝式</span><span class="cooldown">就绪</span></span>
+          </button>
+          <button class="skill focus-outline" type="button" data-skill="4" aria-pressed="false">
+            <span class="skill-topline">
+              <span class="skill-glyph">心</span>
+              <span class="skill-key">伍</span>
+            </span>
+            <span class="skill-name">守心</span>
+            <span class="skill-meta"><span class="mana">1</span><span>守势</span><span class="cooldown">就绪</span></span>
+          </button>
+        </div>
+
+        <button class="side-action focus-outline" id="guard-action" type="button">
+          <span class="action-glyph">守</span>
+          <strong>防御</strong>
+          <small>减伤 · 聚气</small>
+        </button>
+        <button class="side-action focus-outline" id="potion-action" type="button">
+          <span class="action-glyph">药</span>
+          <strong>用药</strong>
+          <small>回春散 ×2</small>
+        </button>
+
+        <div class="commit-wrap">
+          <button class="commit focus-outline" id="commit-button" type="button">
+            <span class="commit-action">施展</span>
+            <strong id="commit-name">斩风</strong>
+            <span>消耗 1 法力</span>
+          </button>
+          <button class="end-turn focus-outline" id="end-turn" type="button">结束回合</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="hint">数字键 1—5 选招 · 空格确认 · 回合内仅一次主动行动</div>
+  </main>
+
+  <script>
+    const skills = [
+      {
+        name: "斩风",
+        cost: 1,
+        tag: "剑式",
+        glyph: "斩",
+        damage: 14,
+        description: "造成 14 点伤害 · 附加裂伤",
+        effect: "风刃掠过，敌方气血骤减。"
+      },
+      {
+        name: "流云诀",
+        cost: 2,
+        tag: "身法",
+        glyph: "云",
+        damage: 9,
+        shield: 10,
+        description: "造成 9 点伤害 · 获得 10 护盾",
+        effect: "身随云转，借势化劲。"
+      },
+      {
+        name: "归元",
+        cost: 2,
+        tag: "调息",
+        glyph: "元",
+        heal: 18,
+        description: "恢复 18 点气血 · 冷却 2 回合",
+        effect: "引气归元，伤势稍缓。"
+      },
+      {
+        name: "破煞",
+        cost: 3,
+        tag: "绝式",
+        glyph: "煞",
+        damage: 27,
+        description: "造成 27 点伤害 · 击破护盾",
+        effect: "煞气溃散，阵纹齐鸣。"
+      },
+      {
+        name: "守心",
+        cost: 1,
+        tag: "守势",
+        glyph: "心",
+        shield: 16,
+        description: "获得 16 点护盾 · 下回合法力 +1",
+        effect: "心台澄明，万念俱寂。"
+      }
+    ];
+
+    const state = {
+      selected: 0,
+      actionKind: "skill",
+      round: 3,
+      playerHp: 68,
+      playerMaxHp: 100,
+      playerMp: 3,
+      playerMaxMp: 5,
+      enemyHp: 244,
+      enemyMaxHp: 330,
+      shield: 12,
+      busy: false
+    };
+
+    const skillButtons = [...document.querySelectorAll(".skill")];
+    const previewName = document.querySelector("#preview-name");
+    const previewDesc = document.querySelector("#preview-desc");
+    const previewForecast = document.querySelector("#preview-forecast");
+    const commitName = document.querySelector("#commit-name");
+    const commitButton = document.querySelector("#commit-button");
+    const toast = document.querySelector("#toast");
+    const caption = document.querySelector("#battle-caption");
+    const enemyUnit = document.querySelector("#enemy-unit");
+    const hitFlash = document.querySelector("#hit-flash");
+    const damagePop = document.querySelector("#damage-pop");
+    let toastTimer = 0;
+
+    function setBar(element, value, max) {
+      const ratio = Math.max(0, Math.min(1, value / max));
+      element.style.width = `${ratio * 100}%`;
+      element.parentElement.style.setProperty("--fill", `${ratio * 100}%`);
+    }
+
+    function refreshResources() {
+      document.querySelector("#player-hp-value").textContent = `${state.playerHp} / ${state.playerMaxHp}`;
+      document.querySelector("#player-mp-value").textContent = `${state.playerMp} / ${state.playerMaxMp}`;
+      document.querySelector("#enemy-hp-value").textContent = `${state.enemyHp} / ${state.enemyMaxHp}`;
+      document.querySelector("#shield-value").textContent = String(state.shield);
+      setBar(document.querySelector("#player-hp-bar"), state.playerHp, state.playerMaxHp);
+      setBar(document.querySelector("#player-mp-bar"), state.playerMp, state.playerMaxMp);
+      setBar(document.querySelector("#enemy-hp-bar"), state.enemyHp, state.enemyMaxHp);
+    }
+
+    function selectSkill(index) {
+      if (state.busy) return;
+      const skill = skills[index];
+      if (!skill) return;
+      state.selected = index;
+      state.actionKind = "skill";
+      skillButtons.forEach((button, i) => {
+        const active = i === index;
+        button.classList.toggle("selected", active);
+        button.setAttribute("aria-pressed", String(active));
+      });
+      previewName.textContent = skill.name;
+      previewDesc.textContent = skill.description;
+      commitName.textContent = skill.name;
+
+      if (skill.damage) {
+        previewForecast.innerHTML = `敌方气血 <b>${state.enemyHp} → ${Math.max(0, state.enemyHp - skill.damage)}</b>`;
+      } else if (skill.heal) {
+        previewForecast.innerHTML = `我方气血 <b>${state.playerHp} → ${Math.min(state.playerMaxHp, state.playerHp + skill.heal)}</b>`;
+      } else {
+        previewForecast.innerHTML = `护盾 <b>${state.shield} → ${state.shield + (skill.shield || 0)}</b>`;
+      }
+
+      const cost = commitButton.querySelector("span:last-child");
+      cost.textContent = `消耗 ${skill.cost} 法力`;
+    }
+
+    function showToast(text) {
+      window.clearTimeout(toastTimer);
+      toast.textContent = text;
+      toast.classList.add("show");
+      toastTimer = window.setTimeout(() => toast.classList.remove("show"), 1800);
+    }
+
+    function showCaption(text) {
+      caption.textContent = text;
+      caption.classList.add("show");
+      window.setTimeout(() => caption.classList.remove("show"), 1500);
+    }
+
+    function enemyTurn() {
+      const incoming = Math.max(0, 18 - state.shield);
+      state.shield = 0;
+      state.playerHp = Math.max(0, state.playerHp - incoming);
+      state.round += 1;
+      state.playerMp = Math.min(state.playerMaxMp, state.playerMp + 1);
+      state.busy = false;
+      document.querySelector("#round-number").textContent = String(state.round);
+      document.querySelector("#turn-state").textContent = "我方行动";
+      refreshResources();
+      selectSkill(0);
+      showCaption(incoming ? `裂石横击落下，气血 -${incoming}` : "护盾破碎，未受伤害");
+      document.querySelector(".turn-state span").textContent = "一次一式 · 落子无悔";
+    }
+
+    function commitSkill() {
+      if (state.busy) return;
+      if (state.actionKind === "guard") {
+        state.busy = true;
+        state.shield += 8;
+        state.playerMp = Math.min(state.playerMaxMp, state.playerMp + 1);
+        refreshResources();
+        document.querySelector("#turn-state").textContent = "守势已成";
+        document.querySelector(".turn-state span").textContent = "聚气凝盾 · 敌方将动";
+        showCaption("凝神守势，护盾 +8，法力 +1");
+        window.setTimeout(enemyTurn, 900);
+        return;
+      }
+      if (state.actionKind === "potion") {
+        const before = state.playerHp;
+        state.playerHp = Math.min(state.playerMaxHp, state.playerHp + 24);
+        refreshResources();
+        showToast(`气血 +${state.playerHp - before} · 不消耗本回合行动`);
+        state.actionKind = "skill";
+        selectSkill(state.selected);
+        return;
+      }
+      const skill = skills[state.selected];
+      if (state.playerMp < skill.cost) {
+        showToast("法力不足，无法施展此式");
+        return;
+      }
+
+      state.busy = true;
+      state.playerMp -= skill.cost;
+      if (skill.damage) {
+        state.enemyHp = Math.max(0, state.enemyHp - skill.damage);
+        damagePop.textContent = `-${skill.damage}`;
+        damagePop.style.color = skill.name === "破煞" ? "#f5d49a" : "#f4eee0";
+        damagePop.classList.remove("play");
+        hitFlash.classList.remove("play");
+        enemyUnit.classList.remove("hit");
+        void damagePop.offsetWidth;
+        damagePop.classList.add("play");
+        hitFlash.classList.add("play");
+        enemyUnit.classList.add("hit");
+        showCaption(skill.effect);
+      }
+      if (skill.shield) state.shield += skill.shield;
+      if (skill.heal) state.playerHp = Math.min(state.playerMaxHp, state.playerHp + skill.heal);
+
+      document.querySelector("#turn-state").textContent = "招式结算";
+      document.querySelector(".turn-state span").textContent = "剑意流转 · 敌方将动";
+      refreshResources();
+      window.setTimeout(() => {
+        if (state.enemyHp <= 0) {
+          state.busy = false;
+          document.querySelector("#turn-state").textContent = "战斗结束";
+          document.querySelector(".turn-state span").textContent = "敌影消散 · 残阵归寂";
+          showCaption("裂岩魇已伏诛");
+          return;
+        }
+        enemyTurn();
+      }, 1350);
+    }
+
+    skillButtons.forEach(button => {
+      button.addEventListener("click", () => selectSkill(Number(button.dataset.skill)));
+    });
+
+    commitButton.addEventListener("click", commitSkill);
+
+    document.querySelector("#guard-action").addEventListener("click", () => {
+      if (state.busy) return;
+      state.actionKind = "guard";
+      previewName.textContent = "防御";
+      previewDesc.textContent = "获得 8 点护盾 · 回复 1 点法力";
+      previewForecast.innerHTML = `护盾 <b>${state.shield} → ${state.shield + 8}</b>`;
+      commitName.textContent = "防御";
+      commitButton.querySelector("span:last-child").textContent = "结束主动行动";
+    });
+
+    document.querySelector("#potion-action").addEventListener("click", () => {
+      if (state.busy) return;
+      state.actionKind = "potion";
+      previewName.textContent = "回春散";
+      previewDesc.textContent = "恢复 24 点气血 · 不消耗主动行动";
+      previewForecast.innerHTML = `我方气血 <b>${state.playerHp} → ${Math.min(state.playerMaxHp, state.playerHp + 24)}</b>`;
+      commitName.textContent = "服用";
+      commitButton.querySelector("span:last-child").textContent = "不消耗主动行动";
+      showToast("已备好回春散，确认后服用");
+    });
+
+    document.querySelector("#end-turn").addEventListener("click", () => {
+      if (state.busy) return;
+      state.busy = true;
+      document.querySelector("#turn-state").textContent = "敌方行动";
+      document.querySelector(".turn-state span").textContent = "裂岩魇 · 蓄势";
+      window.setTimeout(enemyTurn, 850);
+    });
+
+    document.querySelector("#intent-card").addEventListener("click", () => {
+      showToast("裂石横击：造成 18 点伤害，并令护甲降低 1");
+    });
+
+    document.querySelector("#log-button").addEventListener("click", () => {
+      showToast(`第 ${state.round} 回合 · 敌方仍将施展裂石横击`);
+    });
+
+    document.querySelector("#pause-button").addEventListener("click", () => {
+      showToast(state.busy ? "招式结算中，暂不可暂停" : "已暂停 · 点击界面继续");
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key >= "1" && event.key <= "5") {
+        selectSkill(Number(event.key) - 1);
+      } else if (event.code === "Space") {
+        event.preventDefault();
+        commitSkill();
+      }
+    });
+
+    refreshResources();
+    selectSkill(0);
+  </script>
+</body>
+</html>

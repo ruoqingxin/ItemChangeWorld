@@ -34,7 +34,17 @@
         { "_$ref": "test_skin_weapon_count" },
         { "_$ref": "test_skin_weapon_list" },
         { "_$ref": "test_skin_close_btn" },
-        { "_$ref": "test_skin_status_text" }
+        { "_$ref": "test_skin_status_text" },
+        { "_$ref": "test_skin_preset_shadow" },
+        { "_$ref": "test_skin_preset_flame" },
+        { "_$ref": "test_skin_preset_frost" },
+        { "_$ref": "test_skin_preset_gold" },
+        { "_$ref": "test_skin_preset_verdant" },
+        { "_$ref": "test_skin_preset_violet" },
+        { "_$ref": "test_skin_preset_phantom" },
+        { "_$ref": "test_skin_preset_berserker" },
+        { "_$ref": "test_skin_preset_bamboo" },
+        { "_$ref": "test_skin_preset_occultist" }
       ],
       "prefabs": null,
       "mapperType": 1
@@ -110,6 +120,366 @@
           "color": "#aab6b2",
           "valign": "middle",
           "mouseEnabled": false
+        },
+        {
+          "_$id": "test_skin_preset_shadow",
+          "_$type": "GWidget",
+          "name": "btn_preset_shadow",
+          "x": 520,
+          "y": 32,
+          "width": 62,
+          "height": 32,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "test_skin_preset_shadow_bg",
+              "_$type": "GImage",
+              "name": "img_preset_shadow_bg",
+              "width": 62,
+              "height": 32,
+              "autoSize": false,
+              "mouseEnabled": false,
+              "src": "ui/atlas/module/warehouse/graphite/page-normal.png"
+            },
+            {
+              "_$id": "test_skin_preset_shadow_text",
+              "_$type": "GTextField",
+              "name": "txt_preset_shadow",
+              "width": 62,
+              "height": 32,
+              "text": "幽影刺客",
+              "font": "Microsoft YaHei",
+              "fontSize": 12,
+              "color": "#e7e1d4",
+              "align": "center",
+              "valign": "middle",
+              "mouseEnabled": false
+            }
+          ]
+        },
+        {
+          "_$id": "test_skin_preset_flame",
+          "_$type": "GWidget",
+          "name": "btn_preset_flame",
+          "x": 586,
+          "y": 32,
+          "width": 62,
+          "height": 32,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "test_skin_preset_flame_bg",
+              "_$type": "GImage",
+              "name": "img_preset_flame_bg",
+              "width": 62,
+              "height": 32,
+              "autoSize": false,
+              "mouseEnabled": false,
+              "src": "ui/atlas/module/warehouse/graphite/page-normal.png"
+            },
+            {
+              "_$id": "test_skin_preset_flame_text",
+              "_$type": "GTextField",
+              "name": "txt_preset_flame",
+              "width": 62,
+              "height": 32,
+              "text": "赤焰妖将",
+              "font": "Microsoft YaHei",
+              "fontSize": 12,
+              "color": "#e7e1d4",
+              "align": "center",
+              "valign": "middle",
+              "mouseEnabled": false
+            }
+          ]
+        },
+        {
+          "_$id": "test_skin_preset_frost",
+          "_$type": "GWidget",
+          "name": "btn_preset_frost",
+          "x": 652,
+          "y": 32,
+          "width": 62,
+          "height": 32,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "test_skin_preset_frost_bg",
+              "_$type": "GImage",
+              "name": "img_preset_frost_bg",
+              "width": 62,
+              "height": 32,
+              "autoSize": false,
+              "mouseEnabled": false,
+              "src": "ui/atlas/module/warehouse/graphite/page-normal.png"
+            },
+            {
+              "_$id": "test_skin_preset_frost_text",
+              "_$type": "GTextField",
+              "name": "txt_preset_frost",
+              "width": 62,
+              "height": 32,
+              "text": "玄冰守卫",
+              "font": "Microsoft YaHei",
+              "fontSize": 12,
+              "color": "#e7e1d4",
+              "align": "center",
+              "valign": "middle",
+              "mouseEnabled": false
+            }
+          ]
+        },
+        {
+          "_$id": "test_skin_preset_gold",
+          "_$type": "GWidget",
+          "name": "btn_preset_gold",
+          "x": 718,
+          "y": 32,
+          "width": 62,
+          "height": 32,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "test_skin_preset_gold_bg",
+              "_$type": "GImage",
+              "name": "img_preset_gold_bg",
+              "width": 62,
+              "height": 32,
+              "autoSize": false,
+              "mouseEnabled": false,
+              "src": "ui/atlas/module/warehouse/graphite/page-normal.png"
+            },
+            {
+              "_$id": "test_skin_preset_gold_text",
+              "_$type": "GTextField",
+              "name": "txt_preset_gold",
+              "width": 62,
+              "height": 32,
+              "text": "金令尊者",
+              "font": "Microsoft YaHei",
+              "fontSize": 12,
+              "color": "#e7e1d4",
+              "align": "center",
+              "valign": "middle",
+              "mouseEnabled": false
+            }
+          ]
+        },
+        {
+          "_$id": "test_skin_preset_verdant",
+          "_$type": "GWidget",
+          "name": "btn_preset_verdant",
+          "x": 784,
+          "y": 32,
+          "width": 62,
+          "height": 32,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "test_skin_preset_verdant_bg",
+              "_$type": "GImage",
+              "name": "img_preset_verdant_bg",
+              "width": 62,
+              "height": 32,
+              "autoSize": false,
+              "mouseEnabled": false,
+              "src": "ui/atlas/module/warehouse/graphite/page-normal.png"
+            },
+            {
+              "_$id": "test_skin_preset_verdant_text",
+              "_$type": "GTextField",
+              "name": "txt_preset_verdant",
+              "width": 62,
+              "height": 32,
+              "text": "青木祭司",
+              "font": "Microsoft YaHei",
+              "fontSize": 12,
+              "color": "#e7e1d4",
+              "align": "center",
+              "valign": "middle",
+              "mouseEnabled": false
+            }
+          ]
+        },
+        {
+          "_$id": "test_skin_preset_violet",
+          "_$type": "GWidget",
+          "name": "btn_preset_violet",
+          "x": 850,
+          "y": 32,
+          "width": 62,
+          "height": 32,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "test_skin_preset_violet_bg",
+              "_$type": "GImage",
+              "name": "img_preset_violet_bg",
+              "width": 62,
+              "height": 32,
+              "autoSize": false,
+              "mouseEnabled": false,
+              "src": "ui/atlas/module/warehouse/graphite/page-normal.png"
+            },
+            {
+              "_$id": "test_skin_preset_violet_text",
+              "_$type": "GTextField",
+              "name": "txt_preset_violet",
+              "width": 62,
+              "height": 32,
+              "text": "紫电魔修",
+              "font": "Microsoft YaHei",
+              "fontSize": 12,
+              "color": "#e7e1d4",
+              "align": "center",
+              "valign": "middle",
+              "mouseEnabled": false
+            }
+          ]
+        },
+        {
+          "_$id": "test_skin_preset_phantom",
+          "_$type": "GWidget",
+          "name": "btn_preset_phantom",
+          "x": 916,
+          "y": 32,
+          "width": 62,
+          "height": 32,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "test_skin_preset_phantom_bg",
+              "_$type": "GImage",
+              "name": "img_preset_phantom_bg",
+              "width": 62,
+              "height": 32,
+              "autoSize": false,
+              "mouseEnabled": false,
+              "src": "ui/atlas/module/warehouse/graphite/page-normal.png"
+            },
+            {
+              "_$id": "test_skin_preset_phantom_text",
+              "_$type": "GTextField",
+              "name": "txt_preset_phantom",
+              "width": 62,
+              "height": 32,
+              "text": "白发魅影",
+              "font": "Microsoft YaHei",
+              "fontSize": 12,
+              "color": "#e7e1d4",
+              "align": "center",
+              "valign": "middle",
+              "mouseEnabled": false
+            }
+          ]
+        },
+        {
+          "_$id": "test_skin_preset_berserker",
+          "_$type": "GWidget",
+          "name": "btn_preset_berserker",
+          "x": 982,
+          "y": 32,
+          "width": 62,
+          "height": 32,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "test_skin_preset_berserker_bg",
+              "_$type": "GImage",
+              "name": "img_preset_berserker_bg",
+              "width": 62,
+              "height": 32,
+              "autoSize": false,
+              "mouseEnabled": false,
+              "src": "ui/atlas/module/warehouse/graphite/page-normal.png"
+            },
+            {
+              "_$id": "test_skin_preset_berserker_text",
+              "_$type": "GTextField",
+              "name": "txt_preset_berserker",
+              "width": 62,
+              "height": 32,
+              "text": "赤发狂客",
+              "font": "Microsoft YaHei",
+              "fontSize": 12,
+              "color": "#e7e1d4",
+              "align": "center",
+              "valign": "middle",
+              "mouseEnabled": false
+            }
+          ]
+        },
+        {
+          "_$id": "test_skin_preset_bamboo",
+          "_$type": "GWidget",
+          "name": "btn_preset_bamboo",
+          "x": 1048,
+          "y": 32,
+          "width": 62,
+          "height": 32,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "test_skin_preset_bamboo_bg",
+              "_$type": "GImage",
+              "name": "img_preset_bamboo_bg",
+              "width": 62,
+              "height": 32,
+              "autoSize": false,
+              "mouseEnabled": false,
+              "src": "ui/atlas/module/warehouse/graphite/page-normal.png"
+            },
+            {
+              "_$id": "test_skin_preset_bamboo_text",
+              "_$type": "GTextField",
+              "name": "txt_preset_bamboo",
+              "width": 62,
+              "height": 32,
+              "text": "斗笠剑客",
+              "font": "Microsoft YaHei",
+              "fontSize": 12,
+              "color": "#e7e1d4",
+              "align": "center",
+              "valign": "middle",
+              "mouseEnabled": false
+            }
+          ]
+        },
+        {
+          "_$id": "test_skin_preset_occultist",
+          "_$type": "GWidget",
+          "name": "btn_preset_occultist",
+          "x": 1114,
+          "y": 32,
+          "width": 62,
+          "height": 32,
+          "mouseEnabled": true,
+          "_$child": [
+            {
+              "_$id": "test_skin_preset_occultist_bg",
+              "_$type": "GImage",
+              "name": "img_preset_occultist_bg",
+              "width": 62,
+              "height": 32,
+              "autoSize": false,
+              "mouseEnabled": false,
+              "src": "ui/atlas/module/warehouse/graphite/page-normal.png"
+            },
+            {
+              "_$id": "test_skin_preset_occultist_text",
+              "_$type": "GTextField",
+              "name": "txt_preset_occultist",
+              "width": 62,
+              "height": 32,
+              "text": "黑袍术士",
+              "font": "Microsoft YaHei",
+              "fontSize": 12,
+              "color": "#e7e1d4",
+              "align": "center",
+              "valign": "middle",
+              "mouseEnabled": false
+            }
+          ]
         },
         {
           "_$id": "test_skin_body_panel",

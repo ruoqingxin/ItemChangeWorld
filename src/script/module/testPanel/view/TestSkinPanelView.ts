@@ -9,9 +9,118 @@ interface ISkinOption {
     meta: string;
 }
 
+interface IWeaponVariantRecipe {
+    name: string;
+    label: string;
+    sources: string[];
+    color: [number, number, number, number];
+}
+
+interface IEnemyPreset {
+    button: string;
+    label: string;
+    body: string;
+    head: string;
+    weapon: string;
+}
+
 const SPINE_SOURCE = "ui/resource/converted_spine/hero_01/hero_01.json";
 const SKIN_ITEM_PREFAB = "ui/prefab/module/testPanel/TestSkinItem.lh";
 const AUTO_INTERVAL = 900;
+const WEAPON_VARIANTS: IWeaponVariantRecipe[] = [
+    {
+        name: "weapon_j/skin41",
+        label: "青霜剑",
+        sources: ["weapon_j/skin1", "weapon_j/skin30"],
+        color: [0.62, 0.95, 1, 1],
+    },
+    {
+        name: "weapon_j/skin42",
+        label: "赤霄连刃",
+        sources: ["weapon_j/skin13", "weapon_j/skin31"],
+        color: [1, 0.55, 0.35, 1],
+    },
+    {
+        name: "weapon_j/skin43",
+        label: "鎏金月环",
+        sources: ["weapon_j/skin11", "weapon_j/skin13"],
+        color: [1, 0.82, 0.35, 1],
+    },
+    {
+        name: "weapon_j/skin44",
+        label: "碧血弯刀",
+        sources: ["weapon_j/skin12", "weapon_j/skin30"],
+        color: [0.42, 1, 0.62, 1],
+    },
+    {
+        name: "weapon_j/skin45",
+        label: "白虹剑",
+        sources: ["weapon_j/skin1", "weapon_j/skin31"],
+        color: [0.85, 0.92, 1, 1],
+    },
+    {
+        name: "weapon_j/skin46",
+        label: "紫曜毒刃",
+        sources: ["weapon_j/skin12", "weapon_j/skin13"],
+        color: [0.78, 0.42, 1, 1],
+    },
+    {
+        name: "weapon_y/skin11",
+        label: "玄冥令旗",
+        sources: ["weapon_y/skin10", "weapon_j/skin11"],
+        color: [0.68, 0.5, 1, 1],
+    },
+    {
+        name: "weapon_y/skin12",
+        label: "赤焰令旗",
+        sources: ["weapon_y/skin10", "weapon_j/skin13"],
+        color: [1, 0.4, 0.25, 1],
+    },
+];
+const WEAPON_VARIANT_LABELS = new Map(WEAPON_VARIANTS.map((item) => [item.name, item.label]));
+const ENEMY_PRESETS: IEnemyPreset[] = [
+    { button: "btn_preset_shadow", label: "幽影刺客", body: "body/skin15", head: "head/skin15", weapon: "weapon_j/skin46" },
+    { button: "btn_preset_flame", label: "赤焰妖将", body: "body/skin13", head: "head/skin57", weapon: "weapon_j/skin42" },
+    { button: "btn_preset_frost", label: "玄冰守卫", body: "body/skin41", head: "head/skin31", weapon: "weapon_j/skin41" },
+    { button: "btn_preset_gold", label: "金令尊者", body: "body/skin24", head: "head/skin13", weapon: "weapon_y/skin12" },
+    { button: "btn_preset_verdant", label: "青木祭司", body: "body/skin47", head: "head/skin36", weapon: "weapon_j/skin11" },
+    { button: "btn_preset_violet", label: "紫电魔修", body: "body/skin48", head: "head/skin11", weapon: "weapon_j/skin46" },
+    { button: "btn_preset_phantom", label: "白发魅影", body: "body/skin55", head: "head/skin4", weapon: "weapon_j/skin45" },
+    { button: "btn_preset_berserker", label: "赤发狂客", body: "body/skin61", head: "head/skin56", weapon: "weapon_j/skin42" },
+    { button: "btn_preset_bamboo", label: "斗笠剑客", body: "body/skin39", head: "head/skin19", weapon: "weapon_j/skin41" },
+    { button: "btn_preset_occultist", label: "黑袍术士", body: "body/skin10", head: "head/skin37", weapon: "weapon_y/skin11" },
+];
+const FACE_SLOT_NAMES = [
+    "tou",
+    "zui",
+    "yanqiuR",
+    "yanqiuL",
+    "yankuangL",
+    "yankuangR",
+    "BY",
+    "meimaoL",
+    "meimaoR",
+    "erduoR",
+];
+const FACE_SLOT_TINT: [number, number, number, number] = [1, 0.88, 0.78, 1];
+const HAND_SKIN_SLOT_PATTERN = /(shou|xiaobi|gebo)/i;
+const UNAVAILABLE_SKIN_NAMES = new Set([
+    // 这些源资源的网格会散裂或贴图为空，测试页不参与组合。
+    "body/skin5",
+    "body/skin8",
+    "body/skin9",
+    "body/skin34",
+    "body/skin63",
+    "body/skin64",
+    "body/skin65",
+    "head/skin5",
+    "head/skin8",
+    "head/skin9",
+    "head/skin34",
+    "head/skin63",
+    "head/skin64",
+    "head/skin65",
+]);
 
 export class TestSkinPanelView extends UIBaseView {
     get layer(): UILayer { return UILayer.Second; }
@@ -46,6 +155,7 @@ export class TestSkinPanelView extends UIBaseView {
     private autoRunning = false;
     private playing = true;
     private loading = false;
+    private activePresetLabel = "";
 
     protected onConstruct(): void {
         this.bodyCount = this.getElement("txt_body_count");
@@ -71,6 +181,9 @@ export class TestSkinPanelView extends UIBaseView {
         this.addClickListener(this.getElement("btn_auto"), this.onClickAuto);
         this.addClickListener(this.getElement("btn_play"), this.onClickPlay);
         this.addClickListener(this.getElement("btn_animation"), this.onClickAnimation);
+        for (const preset of ENEMY_PRESETS) {
+            this.addClickListener(this.getElement(preset.button), () => this.applyEnemyPreset(preset));
+        }
         this.addClickListener(this.getElement("btn_close"), this.close);
     }
 
@@ -95,9 +208,14 @@ export class TestSkinPanelView extends UIBaseView {
             if (!this.isOpened) {
                 return;
             }
+            const skeletonData = loaded?.optimize?.data as spine.SkeletonData;
+            if (!skeletonData) {
+                throw new Error("Spine 模板未生成有效的骨骼数据");
+            }
             this.templet = loaded;
-            (this.templet as any)._premultipliedAlpha = true;
-            this.skeletonData = (this.templet as any).skeletonData as spine.SkeletonData;
+            this.skeletonData = skeletonData;
+            this.sanitizeWeaponSkins();
+            this.createWeaponVariants();
             this.prepareOptions();
             this.removeWeaponAttachmentTimelines();
             this.preparePreview();
@@ -137,6 +255,10 @@ export class TestSkinPanelView extends UIBaseView {
             ...this.collectSkins(skins, "weapon_j/"),
             ...this.collectSkins(skins, "weapon_y/"),
         ];
+        this.weaponOptions = this.weaponOptions.map((item) => {
+            const label = WEAPON_VARIANT_LABELS.get(item.name);
+            return label ? { ...item, label, meta: "新" } : item;
+        });
         this.animationOptions = this.skeletonData.animations.map((animation) => animation.name);
         this.animationIndex = Math.max(0, this.animationOptions.indexOf("idle_y"));
         this.bodyIndex = Math.max(0, this.bodyOptions.findIndex((item) => item.name === "body/skin1"));
@@ -150,13 +272,45 @@ export class TestSkinPanelView extends UIBaseView {
 
     private collectSkins(source: spine.Skin[], prefix: string): ISkinOption[] {
         return source
-            .filter((skin) => skin.name.startsWith(prefix))
+            .filter((skin) => skin.name.startsWith(prefix) && !UNAVAILABLE_SKIN_NAMES.has(skin.name))
             .map((skin) => ({
                 name: skin.name,
                 label: skin.name.slice(prefix.length),
                 meta: String(skin.getAttachments().length),
             }))
             .sort((left, right) => left.label.localeCompare(right.label, undefined, { numeric: true }));
+    }
+
+    private sanitizeWeaponSkins(): void {
+        const skin = this.skeletonData.findSkin("weapon_j/skin1");
+        const groundSlot = this.skeletonData.findSlot("j_weapon10");
+        if (!skin || !groundSlot) return;
+        // 原资源在 j_weapon10 额外复制了一把落在地上的剑，只保留手持插槽。
+        skin.removeAttachment(groundSlot.index, "j_weapon");
+    }
+
+    private createWeaponVariants(): void {
+        const existingNames = new Set(this.skeletonData.skins.map((skin) => skin.name));
+        for (const recipe of WEAPON_VARIANTS) {
+            if (existingNames.has(recipe.name)) continue;
+            const skin = new spine.Skin(recipe.name);
+            const copiedAttachments = new Set<string>();
+            for (const sourceName of recipe.sources) {
+                const source = this.skeletonData.findSkin(sourceName);
+                if (!source) continue;
+                for (const entry of source.getAttachments()) {
+                    const key = `${entry.slotIndex}/${entry.name}`;
+                    if (copiedAttachments.has(key)) continue;
+                    copiedAttachments.add(key);
+                    const copy = entry.attachment.copy() as spine.MeshAttachment;
+                    copy.color = new spine.Color(...recipe.color);
+                    skin.setAttachment(entry.slotIndex, entry.name, copy);
+                }
+            }
+            if (skin.getAttachments().length === 0) continue;
+            this.skeletonData.skins.push(skin);
+            existingNames.add(recipe.name);
+        }
     }
 
     private removeWeaponAttachmentTimelines(): void {
@@ -200,6 +354,7 @@ export class TestSkinPanelView extends UIBaseView {
     }
 
     private applyRequestedSkin(bodyName: string, headName: string, weaponName: string): void {
+        this.activePresetLabel = "";
         const body = this.bodyOptions.findIndex((item) => item.name === bodyName);
         const head = this.headOptions.findIndex((item) => item.name === headName);
         const weapon = this.weaponOptions.findIndex((item) => item.name === weaponName);
@@ -210,9 +365,23 @@ export class TestSkinPanelView extends UIBaseView {
     }
 
     private selectByList(list: List<TestSkinItemCtrl>, index: number): void {
+        this.activePresetLabel = "";
         if (list === this.bodyList) this.bodyIndex = index;
         else if (list === this.headList) this.headIndex = index;
         else this.weaponIndex = index;
+        this.refreshView();
+    }
+
+    private applyEnemyPreset(preset: IEnemyPreset): void {
+        const bodyIndex = this.bodyOptions.findIndex((item) => item.name === preset.body);
+        const headIndex = this.headOptions.findIndex((item) => item.name === preset.head);
+        const weaponIndex = this.weaponOptions.findIndex((item) => item.name === preset.weapon);
+        if (bodyIndex < 0 || headIndex < 0 || weaponIndex < 0) return;
+        this.activePresetLabel = preset.label;
+        this.bodyIndex = bodyIndex;
+        this.headIndex = headIndex;
+        this.weaponIndex = weaponIndex;
+        this.stopAutoTest();
         this.refreshView();
     }
 
@@ -244,6 +413,7 @@ export class TestSkinPanelView extends UIBaseView {
                 skeleton.slots[entry.slotIndex].setAttachment(entry.attachment);
             }
         }
+        this.applyFaceTint(skeleton);
 
         this.preview.play(animation, true, true, 0, 0, true);
         this.playing = true;
@@ -254,7 +424,8 @@ export class TestSkinPanelView extends UIBaseView {
         this.autoText.text = this.autoRunning ? "停止巡测" : "自动巡测";
         this.autoText.color = this.autoRunning ? "#f0d79c" : "#e7e1d4";
         this.animationText.text = `动画：${animation} ▸`;
-        this.statusText.text = `身体 ${body.name} · 头部 ${head.name} · 武器 ${weapon.name || "无"} · 当前动画 ${animation}`;
+        const presetPrefix = this.activePresetLabel ? `已应用「${this.activePresetLabel}」 · ` : "";
+        this.statusText.text = `${presetPrefix}身体 ${body.name} · 头部 ${head.name} · 武器 ${weapon.name || "无"} · 当前动画 ${animation}`;
     }
 
     private updateLists(body: ISkinOption, head: ISkinOption, weapon: ISkinOption): void {
@@ -284,6 +455,19 @@ export class TestSkinPanelView extends UIBaseView {
             this.weaponOptions.length + this.weaponIndex;
     }
 
+    private applyFaceTint(skeleton: spine.Skeleton): void {
+        for (const slotName of FACE_SLOT_NAMES) {
+            const slot = skeleton.findSlot(slotName);
+            if (slot) slot.color = new spine.Color(...FACE_SLOT_TINT);
+        }
+        // 手、前臂和上臂使用同一肤色，避免脸与手出现蓝皮色差。
+        for (const slot of skeleton.slots) {
+            if (HAND_SKIN_SLOT_PATTERN.test(slot.data.name)) {
+                slot.color = new spine.Color(...FACE_SLOT_TINT);
+            }
+        }
+    }
+
     private combinationCount(): number {
         return this.bodyOptions.length * this.headOptions.length * this.weaponOptions.length;
     }
@@ -291,6 +475,7 @@ export class TestSkinPanelView extends UIBaseView {
     private stepCombination(delta: number): void {
         const count = this.combinationCount();
         if (count <= 0) return;
+        this.activePresetLabel = "";
         const next = (this.currentCombination() + delta + count) % count;
         const weaponLen = this.weaponOptions.length;
         const perBody = this.headOptions.length * weaponLen;

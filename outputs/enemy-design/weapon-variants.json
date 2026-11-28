@@ -1,0 +1,85 @@
+{
+  "render": [
+    {
+      "index": 0,
+      "label": "无武器",
+      "file": "weapon-00.png"
+    },
+    {
+      "index": 1,
+      "label": "skin1",
+      "file": "weapon-01.png"
+    },
+    {
+      "index": 2,
+      "label": "skin11",
+      "file": "weapon-02.png"
+    },
+    {
+      "index": 3,
+      "label": "skin12",
+      "file": "weapon-03.png"
+    },
+    {
+      "index": 4,
+      "label": "skin13",
+      "file": "weapon-04.png"
+    },
+    {
+      "index": 5,
+      "label": "skin30",
+      "file": "weapon-05.png"
+    },
+    {
+      "index": 6,
+      "label": "skin31",
+      "file": "weapon-06.png"
+    },
+    {
+      "index": 7,
+      "label": "skin41",
+      "file": "weapon-07.png"
+    },
+    {
+      "index": 8,
+      "label": "skin42",
+      "file": "weapon-08.png"
+    },
+    {
+      "index": 9,
+      "label": "skin43",
+      "file": "weapon-09.png"
+    },
+    {
+      "index": 10,
+      "label": "skin44",
+      "file": "weapon-10.png"
+    },
+    {
+      "index": 11,
+      "label": "skin45",
+      "file": "weapon-11.png"
+    },
+    {
+      "index": 12,
+      "label": "skin46",
+      "file": "weapon-12.png"
+    },
+    {
+      "index": 13,
+      "label": "skin10",
+      "file": "weapon-13.png"
+    },
+    {
+      "index": 14,
+      "label": "skin11",
+      "file": "weapon-14.png"
+    },
+    {
+      "index": 15,
+      "label": "skin12",
+      "file": "weapon-15.png"
+    }
+  ],
+  "errors": []
+}

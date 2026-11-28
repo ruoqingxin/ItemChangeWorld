@@ -1,0 +1,181 @@
+{
+  "manifest": [
+    {
+      "i": 0,
+      "label": "幽影刺客",
+      "body": "body/skin15",
+      "head": "head/skin15",
+      "weapon": "weapon_j/skin30",
+      "file": "candidate-01.png",
+      "bi": 10,
+      "hi": 13,
+      "wi": 5
+    },
+    {
+      "i": 1,
+      "label": "赤焰妖将",
+      "body": "body/skin13",
+      "head": "head/skin57",
+      "weapon": "weapon_j/skin13",
+      "file": "candidate-02.png",
+      "bi": 9,
+      "hi": 57,
+      "wi": 4
+    },
+    {
+      "i": 2,
+      "label": "玄冰守卫",
+      "body": "body/skin41",
+      "head": "head/skin31",
+      "weapon": "weapon_j/skin1",
+      "file": "candidate-03.png",
+      "bi": 30,
+      "hi": 31,
+      "wi": 1
+    },
+    {
+      "i": 3,
+      "label": "金令尊者",
+      "body": "body/skin24",
+      "head": "head/skin13",
+      "weapon": "weapon_y/skin10",
+      "file": "candidate-04.png",
+      "bi": 16,
+      "hi": 12,
+      "wi": 7
+    },
+    {
+      "i": 4,
+      "label": "青木祭司",
+      "body": "body/skin47",
+      "head": "head/skin36",
+      "weapon": "weapon_j/skin11",
+      "file": "candidate-05.png",
+      "bi": 36,
+      "hi": 36,
+      "wi": 2
+    },
+    {
+      "i": 5,
+      "label": "紫电魔修",
+      "body": "body/skin48",
+      "head": "head/skin11",
+      "weapon": "weapon_j/skin31",
+      "file": "candidate-06.png",
+      "bi": 37,
+      "hi": 10,
+      "wi": 6
+    },
+    {
+      "i": 6,
+      "label": "白骨妖姬",
+      "body": "body/skin55",
+      "head": "head/skin4",
+      "weapon": "weapon_j/skin12",
+      "file": "candidate-07.png",
+      "bi": 44,
+      "hi": 4,
+      "wi": 3
+    },
+    {
+      "i": 7,
+      "label": "赤发狂客",
+      "body": "body/skin61",
+      "head": "head/skin56",
+      "weapon": "weapon_j/skin13",
+      "file": "candidate-08.png",
+      "bi": 50,
+      "hi": 56,
+      "wi": 4
+    },
+    {
+      "i": 8,
+      "label": "斗笠剑客",
+      "body": "body/skin39",
+      "head": "head/skin19",
+      "weapon": "weapon_j/skin30",
+      "file": "candidate-09.png",
+      "bi": 28,
+      "hi": 17,
+      "wi": 5
+    },
+    {
+      "i": 9,
+      "label": "黑袍术士",
+      "body": "body/skin10",
+      "head": "head/skin37",
+      "weapon": "weapon_y/skin10",
+      "file": "candidate-10.png",
+      "bi": 6,
+      "hi": 37,
+      "wi": 7
+    },
+    {
+      "i": 10,
+      "label": "寒潭剑修",
+      "body": "body/skin3",
+      "head": "head/skin3",
+      "weapon": "weapon_j/skin30",
+      "file": "candidate-11.png",
+      "bi": 2,
+      "hi": 2,
+      "wi": 5
+    },
+    {
+      "i": 11,
+      "label": "覆面武僧",
+      "body": "body/skin43",
+      "head": "head/skin18",
+      "weapon": "weapon_j/skin11",
+      "file": "candidate-12.png",
+      "bi": 32,
+      "hi": 16,
+      "wi": 2
+    },
+    {
+      "i": 12,
+      "label": "紫衣长老",
+      "body": "body/skin18",
+      "head": "head/skin17",
+      "weapon": "weapon_j/skin13",
+      "file": "candidate-13.png",
+      "bi": 13,
+      "hi": 15,
+      "wi": 4
+    },
+    {
+      "i": 13,
+      "label": "兽纹蛮将",
+      "body": "body/skin46",
+      "head": "head/skin34",
+      "weapon": "weapon_j/skin1",
+      "file": "candidate-14.png",
+      "bi": 35,
+      "hi": -1,
+      "wi": 1
+    },
+    {
+      "i": 14,
+      "label": "蓝甲执刃",
+      "body": "body/skin31",
+      "head": "head/skin30",
+      "weapon": "weapon_j/skin31",
+      "file": "candidate-15.png",
+      "bi": 22,
+      "hi": 29,
+      "wi": 6
+    },
+    {
+      "i": 15,
+      "label": "白发邪君",
+      "body": "body/skin6",
+      "head": "head/skin10",
+      "weapon": "weapon_j/skin12",
+      "file": "candidate-16.png",
+      "bi": 4,
+      "hi": 8,
+      "wi": 3
+    }
+  ],
+  "errors": []
+}

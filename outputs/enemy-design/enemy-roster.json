@@ -1,0 +1,92 @@
+[
+  {
+    "id": "shadow_assassin",
+    "label": "幽影刺客",
+    "body": "body/skin15",
+    "head": "head/skin15",
+    "weapon": "weapon_j/skin30",
+    "role": "突进刺客",
+    "behavior": "潜行接近，短距离突刺后后撤，强调高闪避和背击。"
+  },
+  {
+    "id": "red_flame_general",
+    "label": "赤焰妖将",
+    "body": "body/skin13",
+    "head": "head/skin57",
+    "weapon": "weapon_j/skin13",
+    "role": "精英重击",
+    "behavior": "蓄力横斩与火焰追击，作为前期精英或小首领。"
+  },
+  {
+    "id": "frost_guard",
+    "label": "玄冰守卫",
+    "body": "body/skin41",
+    "head": "head/skin31",
+    "weapon": "weapon_j/skin1",
+    "role": "重型守卫",
+    "behavior": "正面格挡、冰冻减速，双剑重击，移动慢但压迫感强。"
+  },
+  {
+    "id": "gold_enforcer",
+    "label": "金令尊者",
+    "body": "body/skin24",
+    "head": "head/skin13",
+    "weapon": "weapon_y/skin10",
+    "role": "指挥型首领",
+    "behavior": "旗令强化周围敌人，远程法术压制，适合区域首领。"
+  },
+  {
+    "id": "verdant_priest",
+    "label": "青木祭司",
+    "body": "body/skin47",
+    "head": "head/skin36",
+    "weapon": "weapon_j/skin11",
+    "role": "治疗干扰",
+    "behavior": "缠绕限制与恢复同伴，金环作为中距离法器。"
+  },
+  {
+    "id": "violet_raider",
+    "label": "紫电魔修",
+    "body": "body/skin48",
+    "head": "head/skin11",
+    "weapon": "weapon_j/skin31",
+    "role": "法术刺客",
+    "behavior": "雷电瞬步与多段连击，和幽影刺客区分在更高法伤。"
+  },
+  {
+    "id": "white_phantom",
+    "label": "白发魅影",
+    "body": "body/skin55",
+    "head": "head/skin4",
+    "weapon": "weapon_j/skin12",
+    "role": "高速剑姬",
+    "behavior": "残影分身、回旋斩与流血，适合中后期敏捷型敌人。"
+  },
+  {
+    "id": "crimson_berserker",
+    "label": "赤发狂客",
+    "body": "body/skin61",
+    "head": "head/skin56",
+    "weapon": "weapon_j/skin13",
+    "role": "狂暴战士",
+    "behavior": "低血量狂暴、破甲重斩，红发与赤袍形成高风险视觉信号。"
+  },
+  {
+    "id": "bamboo_swordsman",
+    "label": "斗笠剑客",
+    "body": "body/skin39",
+    "head": "head/skin19",
+    "weapon": "weapon_j/skin30",
+    "role": "反击剑客",
+    "behavior": "架势招架、后发先至，斗笠造型适合作为游历型强敌。"
+  },
+  {
+    "id": "black_robe_occultist",
+    "label": "黑袍术士",
+    "body": "body/skin10",
+    "head": "head/skin37",
+    "weapon": "weapon_y/skin10",
+    "role": "范围术士",
+    "behavior": "诅咒区域、延迟法阵与召唤，站位于后排并由近战单位保护。"
+  }
+]
